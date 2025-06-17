@@ -7,6 +7,7 @@ import PriceChart from "@/components/PriceChart";
 import SignalHistory from "@/components/SignalHistory";
 import AdminPanel from "@/components/AdminPanel";
 import SpiritualBridge from "@/components/SpiritualBridge";
+import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff } from "lucide-react";
 
@@ -41,6 +42,11 @@ interface SpiritualReading {
   dimensionalShift: number;
   konsRank: 'NOVICE' | 'ADEPT' | 'MASTER' | 'TRANSCENDENT';
   personalAura: number;
+  ethMovement: {
+    direction: 'HOME' | 'OUT' | 'RESTING';
+    message: string;
+    confidence: number;
+  };
 }
 
 export default function Dashboard() {
@@ -88,29 +94,66 @@ export default function Dashboard() {
       <Sidebar onAdminClick={() => setIsAdminOpen(true)} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="waides-card waides-border border-b p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h2 className="text-xl font-semibold waides-text-primary">ETH Trading Dashboard</h2>
-              <div className="flex items-center space-x-2 text-sm waides-text-secondary">
-                <div 
-                  className={`w-2 h-2 rounded-full animate-pulse ${
-                    isConnected ? 'bg-green-500' : 'bg-red-500'
-                  }`} 
-                />
-                <span>{isConnected ? 'Live Data' : 'Disconnected'}</span>
+        {/* Enhanced Professional Header */}
+        <header className="waides-card waides-border border-b bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur-sm">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center space-x-6">
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                  Waides AI
+                </h1>
+                <p className="text-xs waides-text-secondary">Next-Gen ETH Trading Intelligence</p>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 px-3 py-1 bg-green-500/20 rounded-full">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-xs font-medium text-green-400">KonsLang Active</span>
+                </div>
+                
+                <div className="flex items-center space-x-2 px-3 py-1 bg-blue-500/20 rounded-full">
+                  <div className={`w-2 h-2 rounded-full ${
+                    isConnected ? 'bg-blue-500 animate-pulse' : 'bg-red-500'
+                  }`} />
+                  <span className={`text-xs font-medium ${
+                    isConnected ? 'text-blue-400' : 'text-red-400'
+                  }`}>
+                    {isConnected ? 'Live Feed' : 'Reconnecting'}
+                  </span>
+                </div>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
+              {spiritualReading && (
+                <div className="flex items-center space-x-3 px-4 py-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs waides-text-secondary">ETH Says</span>
+                    <span className={`text-sm font-bold ${
+                      spiritualReading.ethMovement.direction === 'HOME' ? 'text-blue-400' :
+                      spiritualReading.ethMovement.direction === 'OUT' ? 'text-green-400' : 'text-purple-400'
+                    }`}>
+                      {spiritualReading.ethMovement.direction === 'HOME' ? 'Going Home' :
+                       spiritualReading.ethMovement.direction === 'OUT' ? 'Going Out' : 'At Rest'}
+                    </span>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">
+                      {Math.round(spiritualReading.ethMovement.confidence)}%
+                    </span>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex items-center space-x-2 text-sm waides-text-secondary">
                 {isConnected ? (
                   <Wifi className="w-4 h-4 text-green-500" />
                 ) : (
                   <WifiOff className="w-4 h-4 text-red-500" />
                 )}
-                <span>{isConnected ? 'Connected' : 'Reconnecting...'}</span>
+                <span className="hidden md:inline">
+                  {new Date().toLocaleTimeString()}
+                </span>
               </div>
             </div>
           </div>
@@ -217,57 +260,17 @@ export default function Dashboard() {
                 <SignalHistory />
               </div>
 
-              {/* Spiritual Bridge Section */}
+              {/* ETH Communication Engine - Primary Feature */}
               {spiritualReading && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <SpiritualBridge spiritualReading={spiritualReading} />
-                  </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <EthCommunicationEngine 
+                    ethMovement={spiritualReading.ethMovement}
+                    konsRank={spiritualReading.konsRank}
+                    dimensionalShift={spiritualReading.dimensionalShift}
+                    sacredTime={spiritualReading.sacredTime}
+                  />
                   
-                  {/* Spiritual Stats */}
-                  <div className="waides-card rounded-xl p-6 waides-border border">
-                    <h4 className="text-lg font-semibold mb-4 waides-text-primary">Spiritual Status</h4>
-                    
-                    <div className="space-y-4">
-                      <div className="text-center p-4 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-lg">
-                        <div className="text-2xl font-bold text-purple-300">
-                          {spiritualReading.konsRank}
-                        </div>
-                        <div className="text-sm waides-text-secondary">Current Rank</div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm waides-text-secondary">Sacred Time Active</span>
-                          <span className={`text-sm font-medium ${
-                            spiritualReading.sacredTime !== 'mundane_time' ? 'text-purple-400' : 'text-gray-400'
-                          }`}>
-                            {spiritualReading.sacredTime !== 'mundane_time' ? 'Yes' : 'No'}
-                          </span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm waides-text-secondary">Energy Level</span>
-                          <span className="text-sm font-medium text-yellow-400">
-                            {Math.round(spiritualReading.dimensionalShift)}%
-                          </span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm waides-text-secondary">Aura Resonance</span>
-                          <span className="text-sm font-medium text-blue-400">
-                            {Math.round(spiritualReading.personalAura)}%
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4 pt-4 border-t waides-border">
-                        <div className="text-xs waides-text-secondary text-center">
-                          Spiritual bridge actively enhancing signal analysis
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <SpiritualBridge spiritualReading={spiritualReading} />
                 </div>
               )}
             </>

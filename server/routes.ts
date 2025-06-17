@@ -110,7 +110,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sacredTime: spiritualReading.sacredTime,
           dimensionalShift: spiritualReading.dimensionalShift,
           konsRank: spiritualReading.konsRank,
-          personalAura: spiritualBridge.getPersonalAura()
+          personalAura: spiritualBridge.getPersonalAura(),
+          ethMovement: spiritualReading.ethMovement
         }
       });
     } catch (error) {

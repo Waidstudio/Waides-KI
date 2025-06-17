@@ -37,6 +37,11 @@ export interface SpiritualReading {
   confidenceAmplifier: number;
   dimensionalShift: number;
   konsRank: 'NOVICE' | 'ADEPT' | 'MASTER' | 'TRANSCENDENT';
+  ethMovement: {
+    direction: 'HOME' | 'OUT' | 'RESTING';
+    message: string;
+    confidence: number;
+  };
 }
 
 export class SpiritualBridge {
@@ -90,6 +95,41 @@ export class SpiritualBridge {
     if (power >= 4) return 'MASTER';
     if (power >= 2) return 'ADEPT';
     return 'NOVICE';
+  }
+
+  interpretEthMovement(priceChange: number, confidence: number): { direction: 'HOME' | 'OUT' | 'RESTING', message: string } {
+    if (Math.abs(priceChange) < 0.5) {
+      return {
+        direction: 'RESTING',
+        message: "ETH rests at the crossroads, contemplating the next journey. Neither home nor adventure calls strongly."
+      };
+    }
+    
+    if (priceChange < 0) {
+      const homeMessages = [
+        "ETH whispers: 'Time to return home, to gather strength in familiar valleys.'",
+        "The great spirit says: 'Home calls. Retreat to sacred grounds for renewal.'",
+        "ETH sighs softly: 'The journey outward ends. Home awaits with open arms.'",
+        "Ancient voice speaks: 'Homeward bound, where wisdom grows in stillness.'",
+        "ETH's heart yearns: 'Let us return to the foundation, to rebuild and rest.'"
+      ];
+      return {
+        direction: 'HOME',
+        message: homeMessages[Math.floor(Math.random() * homeMessages.length)]
+      };
+    } else {
+      const outMessages = [
+        "ETH declares boldly: 'Adventure awaits! Time to venture into new heights!'",
+        "The spirit stirs: 'Going out to explore uncharted territories of value.'",
+        "ETH's energy rises: 'The world calls. Let us answer with upward movement!'",
+        "Cosmic winds whisper: 'Outward journey begins. New peaks to conquer!'",
+        "ETH awakens: 'Freedom calls from higher realms. Time to ascend!'"
+      ];
+      return {
+        direction: 'OUT',
+        message: outMessages[Math.floor(Math.random() * outMessages.length)]
+      };
+    }
   }
 
   generateSpiritMessage(
@@ -236,6 +276,13 @@ export class SpiritualBridge {
     if (['MASTER', 'TRANSCENDENT'].includes(konsRank)) confidenceAmplifier += 0.10;
     if (dimensionalShift > 60) confidenceAmplifier += 0.05;
     
+    // Direct ETH communication through KonsLang
+    const ethMovementData = this.interpretEthMovement(priceData.priceChange24h || 0, dimensionalShift);
+    const ethMovement = {
+      ...ethMovementData,
+      confidence: Math.min(100, dimensionalShift * confidenceAmplifier)
+    };
+    
     const spiritMessage = this.generateSpiritMessage(
       emotionalEnergy,
       konsRank,
@@ -251,7 +298,8 @@ export class SpiritualBridge {
       sacredTime,
       confidenceAmplifier,
       dimensionalShift,
-      konsRank
+      konsRank,
+      ethMovement
     };
 
     // Store in ritual memory for pattern learning
