@@ -33,53 +33,25 @@ interface Signal {
 
 export default function Dashboard() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  const [wsData, setWsData] = useState<EthData | null>(null);
+  const [isConnected, setIsConnected] = useState(true);
 
-  // Fetch initial data
+  // Fetch initial data with automatic refresh
   const { data, error, isLoading, refetch } = useQuery<{
     ethData: EthData;
     signal: Signal;
   }>({
     queryKey: ['/api/eth'],
-    refetchInterval: 30000, // Refetch every 30 seconds as fallback
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  // WebSocket connection for real-time updates
+  // Set connection status based on query success
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${protocol}//${window.location.host}`);
-    
-    ws.onopen = () => {
+    if (data) {
       setIsConnected(true);
-      console.log('WebSocket connected');
-    };
-    
-    ws.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        if (message.type === 'eth_update') {
-          setWsData(message.data);
-        }
-      } catch (error) {
-        console.error('WebSocket message error:', error);
-      }
-    };
-    
-    ws.onclose = () => {
+    } else if (error) {
       setIsConnected(false);
-      console.log('WebSocket disconnected');
-    };
-    
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      setIsConnected(false);
-    };
-    
-    return () => {
-      ws.close();
-    };
-  }, []);
+    }
+  }, [data, error]);
 
   if (error) {
     return (
@@ -94,7 +66,7 @@ export default function Dashboard() {
     );
   }
 
-  const currentEthData = wsData || data?.ethData;
+  const currentEthData = data?.ethData;
   const currentSignal = data?.signal;
 
   return (

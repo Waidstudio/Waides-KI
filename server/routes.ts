@@ -5,7 +5,7 @@ import { EthMonitor } from "./services/ethMonitor.js";
 import { SignalAnalyzer } from "./services/signalAnalyzer.js";
 import { KonsEngine } from "./services/konsEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
-import { WebSocketServer } from 'ws';
+
 
 let ethMonitor: EthMonitor;
 let signalAnalyzer: SignalAnalyzer;
@@ -47,7 +47,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         targetPrice: signal.targetPrice,
         stopLoss: signal.stopLoss,
         description: signal.description,
-        konsMessage,
+        konsMessage: konsMessage,
         isActive: true
       });
       
@@ -151,18 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
 
-  // WebSocket for real-time updates
-  const wss = new WebSocketServer({ server: httpServer });
-  
-  wss.on('connection', (ws) => {
-    console.log('WebSocket client connected');
-    
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
-    });
-  });
-
-  // Broadcast updates every 30 seconds
+  // Store data every 30 seconds for real-time updates
   setInterval(async () => {
     try {
       const ethData = await ethMonitor.fetchEthData();
@@ -171,23 +160,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Store the data
       await storage.createEthData({
         price: ethData.price,
-        volume: ethData.volume,
-        marketCap: ethData.marketCap,
-        priceChange24h: ethData.priceChange24h
-      });
-      
-      const updateData = {
-        type: 'eth_update',
-        data: { ...ethData, fearGreedIndex }
-      };
-      
-      wss.clients.forEach((client) => {
-        if (client.readyState === 1) { // WebSocket.OPEN
-          client.send(JSON.stringify(updateData));
-        }
+        volume: ethData.volume || null,
+        marketCap: ethData.marketCap || null,
+        priceChange24h: ethData.priceChange24h || null
       });
     } catch (error) {
-      console.error('WebSocket update error:', error);
+      console.error('Background data update error:', error);
     }
   }, 30000);
 

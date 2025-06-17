@@ -85,7 +85,10 @@ export class MemStorage implements IStorage {
     const id = this.currentId.ethData++;
     const data: EthData = { 
       id, 
-      ...insertData, 
+      price: insertData.price,
+      volume: insertData.volume || null,
+      marketCap: insertData.marketCap || null,
+      priceChange24h: insertData.priceChange24h || null,
       timestamp: new Date() 
     };
     this.ethDataList.push(data);
@@ -104,7 +107,14 @@ export class MemStorage implements IStorage {
     const id = this.currentId.signals++;
     const signal: Signal = { 
       id, 
-      ...insertSignal, 
+      type: insertSignal.type,
+      confidence: insertSignal.confidence,
+      entryPoint: insertSignal.entryPoint || null,
+      targetPrice: insertSignal.targetPrice || null,
+      stopLoss: insertSignal.stopLoss || null,
+      description: insertSignal.description,
+      konsMessage: insertSignal.konsMessage || null,
+      isActive: insertSignal.isActive || null,
       timestamp: new Date() 
     };
     this.signalsList.push(signal);
