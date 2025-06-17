@@ -1,3 +1,5 @@
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 import { users, apiKeys, ethData, signals, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal } from "@shared/schema";
 
 export interface IStorage {
@@ -19,117 +21,89 @@ export interface IStorage {
   deactivateSignals(): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private apiKeys: Map<string, ApiKey>;
-  private ethDataList: EthData[];
-  private signalsList: Signal[];
-  private currentId: { users: number, apiKeys: number, ethData: number, signals: number };
-
-  constructor() {
-    this.users = new Map();
-    this.apiKeys = new Map();
-    this.ethDataList = [];
-    this.signalsList = [];
-    this.currentId = { users: 1, apiKeys: 1, ethData: 1, signals: 1 };
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId.users++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async getApiKey(service: string): Promise<ApiKey | undefined> {
-    return this.apiKeys.get(service);
+    const [apiKey] = await db.select().from(apiKeys).where(eq(apiKeys.service, service));
+    return apiKey || undefined;
   }
 
   async upsertApiKey(insertApiKey: InsertApiKey): Promise<ApiKey> {
-    const existing = this.apiKeys.get(insertApiKey.service);
+    const existing = await this.getApiKey(insertApiKey.service);
     if (existing) {
-      const updated = { ...existing, key: insertApiKey.key, createdAt: new Date() };
-      this.apiKeys.set(insertApiKey.service, updated);
+      const [updated] = await db
+        .update(apiKeys)
+        .set(insertApiKey)
+        .where(eq(apiKeys.service, insertApiKey.service))
+        .returning();
       return updated;
     } else {
-      const id = this.currentId.apiKeys++;
-      const apiKey: ApiKey = { 
-        id, 
-        ...insertApiKey, 
-        createdAt: new Date() 
-      };
-      this.apiKeys.set(insertApiKey.service, apiKey);
-      return apiKey;
+      const [created] = await db
+        .insert(apiKeys)
+        .values(insertApiKey)
+        .returning();
+      return created;
     }
   }
 
   async getAllApiKeys(): Promise<ApiKey[]> {
-    return Array.from(this.apiKeys.values());
+    return await db.select().from(apiKeys);
   }
 
   async getLatestEthData(): Promise<EthData | undefined> {
-    return this.ethDataList[this.ethDataList.length - 1];
+    const [latest] = await db.select().from(ethData).orderBy(desc(ethData.timestamp));
+    return latest || undefined;
   }
 
   async createEthData(insertData: InsertEthData): Promise<EthData> {
-    const id = this.currentId.ethData++;
-    const data: EthData = { 
-      id, 
-      price: insertData.price,
-      volume: insertData.volume || null,
-      marketCap: insertData.marketCap || null,
-      priceChange24h: insertData.priceChange24h || null,
-      timestamp: new Date() 
-    };
-    this.ethDataList.push(data);
+    const [data] = await db
+      .insert(ethData)
+      .values(insertData)
+      .returning();
     return data;
   }
 
   async getEthDataHistory(limit: number = 50): Promise<EthData[]> {
-    return this.ethDataList.slice(-limit);
+    return await db.select().from(ethData).orderBy(desc(ethData.timestamp)).limit(limit);
   }
 
   async getActiveSignal(): Promise<Signal | undefined> {
-    return this.signalsList.find(signal => signal.isActive);
+    const [signal] = await db.select().from(signals).where(eq(signals.isActive, true)).orderBy(desc(signals.timestamp));
+    return signal || undefined;
   }
 
   async createSignal(insertSignal: InsertSignal): Promise<Signal> {
-    const id = this.currentId.signals++;
-    const signal: Signal = { 
-      id, 
-      type: insertSignal.type,
-      confidence: insertSignal.confidence,
-      entryPoint: insertSignal.entryPoint || null,
-      targetPrice: insertSignal.targetPrice || null,
-      stopLoss: insertSignal.stopLoss || null,
-      description: insertSignal.description,
-      konsMessage: insertSignal.konsMessage || null,
-      isActive: insertSignal.isActive || null,
-      timestamp: new Date() 
-    };
-    this.signalsList.push(signal);
+    const [signal] = await db
+      .insert(signals)
+      .values(insertSignal)
+      .returning();
     return signal;
   }
 
   async getSignalHistory(limit: number = 20): Promise<Signal[]> {
-    return this.signalsList.slice(-limit).reverse();
+    return await db.select().from(signals).orderBy(desc(signals.timestamp)).limit(limit);
   }
 
   async deactivateSignals(): Promise<void> {
-    this.signalsList.forEach(signal => {
-      signal.isActive = false;
-    });
+    await db.update(signals).set({ isActive: false }).where(eq(signals.isActive, true));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

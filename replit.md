@@ -91,7 +91,12 @@ The application is configured for deployment on Replit with:
 ## Changelog
 
 Changelog:
-- June 17, 2025. Initial setup
+- June 17, 2025. Initial setup with in-memory storage
+- June 17, 2025. Integrated PostgreSQL database for persistent data storage
+  - Replaced MemStorage with DatabaseStorage implementation
+  - Added database schema with tables for users, api_keys, eth_data, and signals
+  - Deployed schema using Drizzle ORM migration system
+  - All ETH price data, trading signals, and spiritual readings now persist across sessions
 
 ## User Preferences
 
