@@ -261,18 +261,27 @@ export default function Dashboard() {
                 <SignalHistory />
               </div>
 
-              {/* ETH Communication Engine - Primary Feature */}
-              {spiritualReading && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <EthCommunicationEngine 
-                    ethMovement={spiritualReading.ethMovement}
-                    konsRank={spiritualReading.konsRank}
-                    dimensionalShift={spiritualReading.dimensionalShift}
-                    sacredTime={spiritualReading.sacredTime}
-                  />
-                  
-                  <SpiritualBridge spiritualReading={spiritualReading} />
+              {/* Divine Command Center - Sacred Communication */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="xl:col-span-2">
+                  <DivineCommandCenter />
                 </div>
+                
+                {spiritualReading && (
+                  <div>
+                    <EthCommunicationEngine 
+                      ethMovement={spiritualReading.ethMovement}
+                      konsRank={spiritualReading.konsRank}
+                      dimensionalShift={spiritualReading.dimensionalShift}
+                      sacredTime={spiritualReading.sacredTime}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Spiritual Bridge and Additional Insights */}
+              {spiritualReading && (
+                <SpiritualBridge spiritualReading={spiritualReading} />
               )}
             </>
           )}
