@@ -8,6 +8,7 @@ import SignalHistory from "@/components/SignalHistory";
 import AdminPanel from "@/components/AdminPanel";
 import SpiritualBridge from "@/components/SpiritualBridge";
 import EthCommunicationEngine from "@/components/EthCommunicationEngine";
+import DivineCommandCenter from "@/components/DivineCommandCenter";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff } from "lucide-react";
 

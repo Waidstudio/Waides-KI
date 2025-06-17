@@ -5,6 +5,7 @@ import { EthMonitor } from "./services/ethMonitor.js";
 import { SignalAnalyzer } from "./services/signalAnalyzer.js";
 import { KonsEngine } from "./services/konsEngine.js";
 import { SpiritualBridge } from "./services/spiritualBridge.js";
+import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
 
@@ -12,6 +13,7 @@ let ethMonitor: EthMonitor;
 let signalAnalyzer: SignalAnalyzer;
 let konsEngine: KonsEngine;
 let spiritualBridge: SpiritualBridge;
+let divineCommLayer: DivineCommLayer;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -19,6 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   signalAnalyzer = new SignalAnalyzer();
   konsEngine = new KonsEngine();
   spiritualBridge = new SpiritualBridge();
+  divineCommLayer = new DivineCommLayer();
 
   // Get current ETH data and signals with spiritual layer
   app.get("/api/eth", async (req, res) => {
@@ -235,6 +238,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Aura adjustment error:', error);
       res.status(500).json({ error: 'Failed to adjust aura' });
+    }
+  });
+
+  // Divine Signal - Sacred Communication between Kons Powa and ETH
+  app.get("/api/divine-signal", async (req, res) => {
+    try {
+      const ethData = await ethMonitor.fetchEthData();
+      const divineSignal = divineCommLayer.openDivineChannel(ethData);
+      const hierarchyStatus = divineCommLayer.getSpiritualHierarchyStatus();
+      
+      res.json({
+        divineSignal,
+        hierarchyStatus,
+        ethPrice: ethData.price,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Divine communication error:', error);
+      res.status(500).json({ error: 'Failed to open divine channel' });
     }
   });
 
