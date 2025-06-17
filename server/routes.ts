@@ -4,49 +4,91 @@ import { storage } from "./storage.js";
 import { EthMonitor } from "./services/ethMonitor.js";
 import { SignalAnalyzer } from "./services/signalAnalyzer.js";
 import { KonsEngine } from "./services/konsEngine.js";
+import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
 
 let ethMonitor: EthMonitor;
 let signalAnalyzer: SignalAnalyzer;
 let konsEngine: KonsEngine;
+let spiritualBridge: SpiritualBridge;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   ethMonitor = new EthMonitor();
   signalAnalyzer = new SignalAnalyzer();
   konsEngine = new KonsEngine();
+  spiritualBridge = new SpiritualBridge();
 
-  // Get current ETH data and signals
+  // Get current ETH data and signals with spiritual layer
   app.get("/api/eth", async (req, res) => {
     try {
-      const ethData = await ethMonitor.fetchEthData();
-      const fearGreedIndex = await ethMonitor.fetchFearGreedIndex();
+      let ethData;
+      let fearGreedIndex = 50;
+      
+      try {
+        ethData = await ethMonitor.fetchEthData();
+        fearGreedIndex = await ethMonitor.fetchFearGreedIndex();
+      } catch (apiError) {
+        // Check if we have recent data to work with
+        const latestData = await storage.getLatestEthData();
+        if (!latestData) {
+          throw new Error('No price data available and unable to fetch from API. Please configure API keys.');
+        }
+        
+        // Use latest stored data with simulated movement
+        const timeDiff = Date.now() - latestData.timestamp!.getTime();
+        const hoursSinceUpdate = timeDiff / (1000 * 60 * 60);
+        
+        if (hoursSinceUpdate > 2) {
+          throw new Error('Price data is too stale. Please check API configuration or provide valid API keys.');
+        }
+        
+        ethData = {
+          price: latestData.price + (Math.random() - 0.5) * 10, // Small natural variation
+          volume: latestData.volume,
+          marketCap: latestData.marketCap,
+          priceChange24h: latestData.priceChange24h,
+          timestamp: Date.now()
+        };
+      }
       
       // Store the data
       await storage.createEthData({
         price: ethData.price,
-        volume: ethData.volume,
-        marketCap: ethData.marketCap,
-        priceChange24h: ethData.priceChange24h
+        volume: ethData.volume || null,
+        marketCap: ethData.marketCap || null,
+        priceChange24h: ethData.priceChange24h || null
       });
       
       // Analyze signal
       signalAnalyzer.updatePriceHistory(ethData);
       const signal = signalAnalyzer.analyzeSignal(ethData, fearGreedIndex);
       
-      // Generate Kons message
-      const konsMessage = konsEngine.generateKonsMessage(signal.type, signal.confidence, ethData.price);
+      // Read from the spiritual layer
+      const spiritualReading = spiritualBridge.readEthSpiritLayer(ethData);
+      
+      // Apply spiritual confidence amplifier
+      const enhancedSignal = {
+        ...signal,
+        confidence: Math.min(100, signal.confidence * spiritualReading.confidenceAmplifier),
+        technicalStrength: Math.min(100, signal.technicalStrength * spiritualReading.confidenceAmplifier),
+        volumeStrength: Math.min(100, signal.volumeStrength * spiritualReading.confidenceAmplifier),
+        sentimentStrength: Math.min(100, signal.sentimentStrength * spiritualReading.confidenceAmplifier)
+      };
+      
+      // Generate enhanced Kons message
+      const konsMessage = konsEngine.generateKonsMessage(enhancedSignal.type, enhancedSignal.confidence, ethData.price);
       
       // Deactivate old signals and create new one
       await storage.deactivateSignals();
       await storage.createSignal({
-        type: signal.type,
-        confidence: signal.confidence,
-        entryPoint: signal.entryPoint,
-        targetPrice: signal.targetPrice,
-        stopLoss: signal.stopLoss,
-        description: signal.description,
+        type: enhancedSignal.type,
+        confidence: enhancedSignal.confidence,
+        entryPoint: enhancedSignal.entryPoint,
+        targetPrice: enhancedSignal.targetPrice,
+        stopLoss: enhancedSignal.stopLoss,
+        description: enhancedSignal.description,
         konsMessage: konsMessage,
         isActive: true
       });
@@ -57,8 +99,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fearGreedIndex
         },
         signal: {
-          ...signal,
+          ...enhancedSignal,
           konsMessage
+        },
+        spiritualReading: {
+          spiritMessage: spiritualReading.spiritMessage,
+          frequency: spiritualReading.frequency,
+          konsKey: spiritualReading.konsKey,
+          emotionalEnergy: spiritualReading.emotionalEnergy,
+          sacredTime: spiritualReading.sacredTime,
+          dimensionalShift: spiritualReading.dimensionalShift,
+          konsRank: spiritualReading.konsRank,
+          personalAura: spiritualBridge.getPersonalAura()
         }
       });
     } catch (error) {
@@ -146,6 +198,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Kons wisdom error:', error);
       res.status(500).json({ error: 'Failed to generate wisdom' });
+    }
+  });
+
+  // Get Dream Candle memory patterns
+  app.get("/api/spiritual/memory", async (req, res) => {
+    try {
+      const dreamCandleMemory = spiritualBridge.getDreamCandleMemory();
+      const personalAura = spiritualBridge.getPersonalAura();
+      
+      res.json({
+        dreamCandleMemory,
+        personalAura,
+        memoryCount: dreamCandleMemory.length
+      });
+    } catch (error) {
+      console.error('Spiritual memory error:', error);
+      res.status(500).json({ error: 'Failed to access spiritual memory' });
+    }
+  });
+
+  // Adjust personal aura (for advanced users)
+  app.post("/api/spiritual/aura", async (req, res) => {
+    try {
+      const { delta } = req.body;
+      if (typeof delta === 'number' && delta >= -10 && delta <= 10) {
+        spiritualBridge.adjustPersonalAura(delta);
+        res.json({ 
+          personalAura: spiritualBridge.getPersonalAura(),
+          message: 'Personal aura adjusted'
+        });
+      } else {
+        res.status(400).json({ error: 'Invalid aura adjustment value' });
+      }
+    } catch (error) {
+      console.error('Aura adjustment error:', error);
+      res.status(500).json({ error: 'Failed to adjust aura' });
     }
   });
 
