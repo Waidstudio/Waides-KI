@@ -46,9 +46,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         ethData = {
           price: latestData.price + (Math.random() - 0.5) * 10, // Small natural variation
-          volume: latestData.volume,
-          marketCap: latestData.marketCap,
-          priceChange24h: latestData.priceChange24h,
+          volume: latestData.volume || undefined,
+          marketCap: latestData.marketCap || undefined,
+          priceChange24h: latestData.priceChange24h || undefined,
           timestamp: Date.now()
         };
       }

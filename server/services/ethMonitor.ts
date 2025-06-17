@@ -1,8 +1,8 @@
 export interface EthPriceData {
   price: number;
-  volume?: number;
-  marketCap?: number;
-  priceChange24h?: number;
+  volume?: number | null;
+  marketCap?: number | null;
+  priceChange24h?: number | null;
   timestamp: number;
 }
 
