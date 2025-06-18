@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
+import WaidBotProPage from "@/pages/waidbot-pro";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -12,6 +13,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/waidbot" component={WaidBotPage} />
+      <Route path="/waidbot-pro" component={WaidBotProPage} />
       <Route component={NotFound} />
     </Switch>
   );

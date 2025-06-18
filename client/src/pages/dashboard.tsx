@@ -151,6 +151,12 @@ export default function Dashboard() {
                       <span>WaidBot</span>
                     </Button>
                   </Link>
+                  <Link href="/waidbot-pro">
+                    <Button variant="ghost" className="text-sm flex items-center space-x-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
+                      <Brain className="w-4 h-4 text-blue-400" />
+                      <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">WaidBot Pro</span>
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
