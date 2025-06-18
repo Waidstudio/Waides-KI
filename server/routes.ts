@@ -6,6 +6,7 @@ import { SignalAnalyzer } from "./services/signalAnalyzer.js";
 import { KonsEngine } from "./services/konsEngine.js";
 import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
+import { PionexTrader } from "./services/pionexTrader.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
 
