@@ -54,12 +54,16 @@ interface SpiritualReading {
 }
 
 export default function Dashboard() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [location] = useLocation();
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
   };
 
   const { data, isLoading, error } = useQuery({
@@ -116,7 +120,76 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex">
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-slate-900 to-slate-950 border-r border-slate-700 transform transition-transform duration-300 ease-in-out ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:relative lg:translate-x-0`}>
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-6 border-b border-slate-700">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              Waides AI
+            </h2>
+            <button
+              onClick={closeSidebar}
+              className="p-2 rounded-lg hover:bg-slate-700/50 transition-colors lg:hidden"
+            >
+              <Menu className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+          
+          {/* Navigation Menu */}
+          <nav className="flex-1 p-4 space-y-2">
+            <Link href="/" onClick={closeSidebar}>
+              <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-slate-700/50 ${
+                location === '/' ? 'bg-slate-700/50 border-l-4 border-green-400' : ''
+              }`}>
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="font-medium">Dashboard</span>
+              </div>
+            </Link>
+            
+            <Link href="/waidbot" onClick={closeSidebar}>
+              <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-slate-700/50 ${
+                location === '/waidbot' ? 'bg-slate-700/50 border-l-4 border-blue-400' : ''
+              }`}>
+                <Brain className="w-5 h-5 text-blue-400" />
+                <span className="font-medium">WaidBot</span>
+              </div>
+            </Link>
+            
+            <Link href="/waidbot-pro" onClick={closeSidebar}>
+              <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-slate-700/50 ${
+                location === '/waidbot-pro' ? 'bg-slate-700/50 border-l-4 border-purple-400' : ''
+              }`}>
+                <Brain className="w-5 h-5 text-purple-400" />
+                <div className="flex flex-col">
+                  <span className="font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">WaidBot Pro</span>
+                  <span className="text-xs text-slate-400">Advanced AI Trading</span>
+                </div>
+              </div>
+            </Link>
+          </nav>
+          
+          {/* Sidebar Footer */}
+          <div className="p-4 border-t border-slate-700">
+            <div className="flex items-center space-x-2 text-sm text-slate-400">
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+              <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         {/* Header */}
         <header className="bg-gradient-to-r from-slate-950/95 to-slate-900/95 backdrop-blur-xl border-b border-slate-800">
           <div className="flex items-center justify-between p-4 lg:px-6">
@@ -124,43 +197,16 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={toggleSidebar}
-                className="lg:hidden p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+                className="p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors lg:hidden"
               >
                 <Menu className="w-5 h-5 text-slate-400" />
               </button>
               
-              {/* Navigation & Header Title */}
-              <div className="flex items-center space-x-6">
-                <div className="hidden sm:block">
-                  <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                    Waides AI
-                  </h1>
-                  <p className="text-xs text-slate-400 hidden lg:block">Next-Gen ETH Trading Intelligence</p>
-                </div>
-                
-                {/* Navigation Menu */}
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <Link href="/" className="inline-block">
-                    <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 py-2 hover:bg-slate-700/50 transition-colors text-slate-200">
-                      <span className="hidden sm:inline">Dashboard</span>
-                      <span className="sm:hidden">Home</span>
-                    </Button>
-                  </Link>
-                  <Link href="/waidbot" className="inline-block">
-                    <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 py-2 flex items-center space-x-1 hover:bg-slate-700/50 transition-colors text-slate-200">
-                      <Brain className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="hidden sm:inline">WaidBot</span>
-                      <span className="sm:hidden">Bot</span>
-                    </Button>
-                  </Link>
-                  <Link href="/waidbot-pro" className="inline-block">
-                    <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 py-2 flex items-center space-x-1 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 hover:from-blue-600/30 hover:to-purple-600/30 transition-colors">
-                      <Brain className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
-                      <span className="hidden sm:inline bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">WaidBot Pro</span>
-                      <span className="sm:hidden bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">Pro</span>
-                    </Button>
-                  </Link>
-                </div>
+              {/* Header Title */}
+              <div className="lg:hidden">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                  Waides AI
+                </h1>
               </div>
             </div>
                 
