@@ -10,7 +10,7 @@ import SpiritualBridge from "@/components/SpiritualBridge";
 import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import DivineCommandCenter from "@/components/DivineCommandCenter";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Wifi, WifiOff } from "lucide-react";
+import { AlertCircle, Wifi, WifiOff, Menu } from "lucide-react";
 
 interface EthData {
   price: number;
@@ -53,6 +53,8 @@ interface SpiritualReading {
 export default function Dashboard() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [currentPage, setCurrentPage] = useState('dashboard');
 
   // Fetch initial data with automatic refresh
   const { data, error, isLoading, refetch } = useQuery<{
@@ -90,44 +92,73 @@ export default function Dashboard() {
   const currentSignal = data?.signal;
   const spiritualReading = data?.spiritualReading;
 
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page);
+    // You can add routing logic here later
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden waides-bg">
-      <Sidebar onAdminClick={() => setIsAdminOpen(true)} />
+      <Sidebar 
+        onAdminClick={() => setIsAdminOpen(true)}
+        isCollapsed={sidebarCollapsed}
+        onToggle={toggleSidebar}
+        onNavigate={handleNavigate}
+        currentPage={currentPage}
+      />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Enhanced Professional Header */}
-        <header className="waides-card waides-border border-b bg-gradient-to-r from-slate-900/50 to-slate-800/50 backdrop-blur-sm">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center space-x-6">
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                  Waides AI
-                </h1>
-                <p className="text-xs waides-text-secondary">Next-Gen ETH Trading Intelligence</p>
-              </div>
+        {/* Mobile-First Enhanced Header */}
+        <header className="waides-card waides-border border-b bg-gradient-to-r from-slate-950/95 to-slate-900/95 backdrop-blur-xl">
+          <div className="flex items-center justify-between p-4 lg:px-6">
+            {/* Mobile Menu Button */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleSidebar}
+                className="lg:hidden p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
+              >
+                <Menu className="w-5 h-5 waides-text-secondary" />
+              </button>
               
+              {/* Header Title & Status */}
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 px-3 py-1 bg-green-500/20 rounded-full">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-xs font-medium text-green-400">KonsLang Active</span>
+                <div className="hidden sm:block">
+                  <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                    Waides AI
+                  </h1>
+                  <p className="text-xs waides-text-secondary hidden lg:block">Next-Gen ETH Trading Intelligence</p>
                 </div>
                 
-                <div className="flex items-center space-x-2 px-3 py-1 bg-blue-500/20 rounded-full">
-                  <div className={`w-2 h-2 rounded-full ${
-                    isConnected ? 'bg-blue-500 animate-pulse' : 'bg-red-500'
-                  }`} />
-                  <span className={`text-xs font-medium ${
-                    isConnected ? 'text-blue-400' : 'text-red-400'
-                  }`}>
-                    {isConnected ? 'Live Feed' : 'Reconnecting'}
-                  </span>
+                {/* Status Indicators */}
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-500/20 rounded-full border border-green-500/30">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <span className="text-xs font-medium text-green-400 hidden sm:inline">KonsLang</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-500/20 rounded-full border border-blue-500/30">
+                    <div className={`w-2 h-2 rounded-full ${
+                      isConnected ? 'bg-blue-500 animate-pulse' : 'bg-red-500'
+                    }`} />
+                    <span className={`text-xs font-medium hidden sm:inline ${
+                      isConnected ? 'text-blue-400' : 'text-red-400'
+                    }`}>
+                      {isConnected ? 'Live' : 'Offline'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            {/* Right Section */}
+            <div className="flex items-center space-x-3">
+              {/* ETH Movement Display */}
               {spiritualReading && (
-                <div className="flex items-center space-x-3 px-4 py-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
+                <div className="hidden md:flex items-center space-x-3 px-4 py-2 bg-purple-500/20 rounded-xl border border-purple-500/30">
                   <div className="flex flex-col items-center">
                     <span className="text-xs waides-text-secondary">ETH Says</span>
                     <span className={`text-sm font-bold ${
@@ -146,13 +177,14 @@ export default function Dashboard() {
                 </div>
               )}
               
+              {/* Connection Status & Time */}
               <div className="flex items-center space-x-2 text-sm waides-text-secondary">
                 {isConnected ? (
                   <Wifi className="w-4 h-4 text-green-500" />
                 ) : (
                   <WifiOff className="w-4 h-4 text-red-500" />
                 )}
-                <span className="hidden md:inline">
+                <span className="hidden lg:inline font-mono text-xs">
                   {new Date().toLocaleTimeString()}
                 </span>
               </div>
@@ -160,9 +192,12 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* Main Dashboard */}
-        <main className="flex-1 overflow-auto p-6 space-y-6">
-          {isLoading ? (
+        {/* Main Dashboard Content */}
+        <main className={`flex-1 overflow-auto transition-all duration-300 ${
+          sidebarCollapsed ? 'lg:ml-0' : 'lg:ml-0'
+        }`}>
+          <div className="p-4 lg:p-8 space-y-8 max-w-full">
+            {isLoading ? (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="waides-card rounded-xl p-6 waides-border border animate-pulse">
@@ -285,6 +320,7 @@ export default function Dashboard() {
               )}
             </>
           )}
+          </div>
         </main>
       </div>
 
