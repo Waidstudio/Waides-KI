@@ -121,6 +121,14 @@ Changelog:
   - Added comprehensive candlestick data API endpoints
   - Enhanced dashboard with live market data visualization
   - Integrated WebSocket connection status monitoring
+- June 18, 2025. Complete System Rebranding from Pionex to Waid
+  - Renamed all backend files: pionex_bot.py → waidbot.py, pionexTrader.ts → waidTrader.ts
+  - Updated all class names: PionexTrader → WaidTrader, PionexOrder → WaidOrder
+  - Changed API endpoints: /api/pionex-status → /api/waid-status
+  - Modified environment variables: PIONEX_API_KEY → WAID_API_KEY, PIONEX_SECRET_KEY → WAID_SECRET_KEY
+  - Updated frontend components to display "Waid Automation" instead of "Pionex Automation"
+  - Ensured consistent Waid branding throughout all user-facing elements
+  - System fully operational with new branding while maintaining all trading features
 
 ## User Preferences
 

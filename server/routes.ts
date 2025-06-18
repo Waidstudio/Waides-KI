@@ -709,6 +709,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
 
+  // Real-time automated trading engine
+  let realTimeTrading = false;
+  let tradingInterval: NodeJS.Timeout | null = null;
+
+  const startRealTimeTrading = () => {
+    if (realTimeTrading || tradingInterval) return;
+    
+    realTimeTrading = true;
+    console.log('🤖 Real-time automated trading started');
+    
+    tradingInterval = setInterval(async () => {
+      try {
+        if (!waidTrader.isConfigured()) {
+          console.log('⚠️ Waid API not configured, skipping automated trade');
+          return;
+        }
+
+        // Get current divine signal
+        let ethData;
+        try {
+          ethData = await ethMonitor.fetchEthData();
+        } catch (apiError) {
+          const latestStoredData = await storage.getLatestEthData();
+          if (latestStoredData) {
+            ethData = {
+              price: latestStoredData.price,
+              volume: latestStoredData.volume || 0,
+              marketCap: latestStoredData.marketCap || 0,
+              priceChange24h: latestStoredData.priceChange24h || 0
+            };
+          } else {
+            console.log('No ETH data available for real-time trading');
+            return;
+          }
+        }
+
+        const divineSignal = await divineCommLayer.generateDivineCommand(ethData);
+        
+        // Execute trade if conditions are met
+        if (divineSignal.breathLock && 
+            !divineSignal.autoCancelEvil && 
+            (divineSignal.action === 'BUY LONG' || divineSignal.action === 'SELL SHORT')) {
+          
+          console.log(`🚀 Real-time trade execution: ${divineSignal.action} at ${ethData.price} USDT`);
+          
+          const tradeResult = await waidTrader.executeKonsTrade(
+            divineSignal.action,
+            ethData.price,
+            0.001 // Small quantity for real-time trading
+          );
+          
+          console.log(`✅ Real-time trade result: ${tradeResult.status}`);
+          
+          // Store signal for history
+          await storage.deactivateSignals();
+          await storage.createSignal({
+            type: divineSignal.action === 'BUY LONG' ? 'LONG' : 'SHORT',
+            confidence: Math.round(divineSignal.energeticPurity),
+            description: `Real-time: ${divineSignal.reason}`,
+            entryPoint: ethData.price,
+            konsMessage: `${divineSignal.konsTitle}: ${divineSignal.strategy} executed`,
+            isActive: false
+          });
+        } else {
+          console.log(`⏳ Real-time monitoring: ${divineSignal.action} - Conditions not met for execution`);
+        }
+        
+      } catch (error) {
+        console.error('Real-time trading error:', error);
+      }
+    }, 15000); // Execute every 15 seconds for real-time trading
+  };
+
+  const stopRealTimeTrading = () => {
+    realTimeTrading = false;
+    if (tradingInterval) {
+      clearInterval(tradingInterval);
+      tradingInterval = null;
+    }
+    console.log('🛑 Real-time automated trading stopped');
+  };
+
   // Store data every 30 seconds for real-time updates
   setInterval(async () => {
     try {
@@ -726,6 +808,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Background data update error:', error);
     }
   }, 30000);
+
+  // Real-time trading control endpoints
+  app.post("/api/realtime-trading/start", (req, res) => {
+    try {
+      if (realTimeTrading) {
+        return res.json({ status: 'already_running', message: 'Real-time trading is already active' });
+      }
+      startRealTimeTrading();
+      res.json({ status: 'started', message: 'Real-time automated trading started' });
+    } catch (error) {
+      console.error('Start real-time trading error:', error);
+      res.status(500).json({ error: 'Failed to start real-time trading' });
+    }
+  });
+
+  app.post("/api/realtime-trading/stop", (req, res) => {
+    try {
+      stopRealTimeTrading();
+      res.json({ status: 'stopped', message: 'Real-time automated trading stopped' });
+    } catch (error) {
+      console.error('Stop real-time trading error:', error);
+      res.status(500).json({ error: 'Failed to stop real-time trading' });
+    }
+  });
+
+  app.get("/api/realtime-trading/status", (req, res) => {
+    try {
+      res.json({
+        isRunning: realTimeTrading,
+        waidConfigured: waidTrader.isConfigured(),
+        message: realTimeTrading ? 'Real-time trading active' : 'Real-time trading inactive'
+      });
+    } catch (error) {
+      console.error('Real-time trading status error:', error);
+      res.status(500).json({ error: 'Failed to get real-time trading status' });
+    }
+  });
 
   return httpServer;
 }

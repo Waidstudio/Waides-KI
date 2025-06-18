@@ -267,7 +267,7 @@ export default function DivineCommandCenter() {
         {/* Automated Trading Controls */}
         <div className="border-t border-slate-700/50 pt-4 space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-semibold waides-text-primary">Pionex Automation</h4>
+            <h4 className="text-sm font-semibold waides-text-primary">Waid Automation</h4>
             <div className="text-xs waides-text-secondary">
               Breath: {hierarchyStatus.breathStability}%
             </div>
