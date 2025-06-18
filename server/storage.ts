@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { users, apiKeys, ethData, signals, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal } from "@shared/schema";
+import { users, apiKeys, ethData, signals, candlesticks, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick } from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -19,6 +19,10 @@ export interface IStorage {
   createSignal(signal: InsertSignal): Promise<Signal>;
   getSignalHistory(limit?: number): Promise<Signal[]>;
   deactivateSignals(): Promise<void>;
+  
+  createCandlestick(candlestick: InsertCandlestick): Promise<Candlestick>;
+  getCandlestickHistory(symbol: string, interval: string, limit?: number): Promise<Candlestick[]>;
+  getLatestCandlestick(symbol: string, interval: string): Promise<Candlestick | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {

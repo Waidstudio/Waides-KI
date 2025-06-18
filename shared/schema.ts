@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, real, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, real, timestamp, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -37,6 +37,21 @@ export const signals = pgTable("signals", {
   isActive: boolean("is_active").default(false),
 });
 
+export const candlesticks = pgTable("candlesticks", {
+  id: serial("id").primaryKey(),
+  symbol: text("symbol").notNull(),
+  openTime: bigint("open_time", { mode: "number" }).notNull(),
+  closeTime: bigint("close_time", { mode: "number" }).notNull(),
+  open: real("open").notNull(),
+  high: real("high").notNull(),
+  low: real("low").notNull(),
+  close: real("close").notNull(),
+  volume: real("volume").notNull(),
+  interval: text("interval").notNull(),
+  isFinal: boolean("is_final").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -57,6 +72,11 @@ export const insertSignalSchema = createInsertSchema(signals).omit({
   timestamp: true,
 });
 
+export const insertCandlestickSchema = createInsertSchema(candlesticks).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertApiKey = z.infer<typeof insertApiKeySchema>;
@@ -65,3 +85,5 @@ export type InsertEthData = z.infer<typeof insertEthDataSchema>;
 export type EthData = typeof ethData.$inferSelect;
 export type InsertSignal = z.infer<typeof insertSignalSchema>;
 export type Signal = typeof signals.$inferSelect;
+export type InsertCandlestick = z.infer<typeof insertCandlestickSchema>;
+export type Candlestick = typeof candlesticks.$inferSelect;
