@@ -535,6 +535,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Populate initial candlestick data from Binance
+  app.post("/api/binance/populate-candlesticks", async (req, res) => {
+    try {
+      const { symbol = 'ETHUSDT', interval = '1m', limit = 100 } = req.body;
+      
+      const klines = await binanceWS.getHistoricalKlines(limit);
+      let stored = 0;
+      
+      for (const kline of klines) {
+        try {
+          await storage.createCandlestick({
+            symbol: symbol.toUpperCase(),
+            openTime: kline.openTime,
+            closeTime: kline.closeTime,
+            open: kline.open,
+            high: kline.high,
+            low: kline.low,
+            close: kline.close,
+            volume: kline.volume,
+            interval: interval,
+            isFinal: true
+          });
+          stored++;
+        } catch (error) {
+          // Skip duplicates
+        }
+      }
+      
+      res.json({
+        symbol: symbol.toUpperCase(),
+        interval,
+        requested: limit,
+        stored,
+        message: `Successfully populated ${stored} candlesticks`,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Populate candlesticks error:', error);
+      res.status(500).json({ error: 'Failed to populate candlestick data' });
+    }
+  });
+
   // WebSocket Connection Status
   app.get("/api/binance/status", async (req, res) => {
     try {

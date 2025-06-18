@@ -9,6 +9,7 @@ import AdminPanel from "@/components/AdminPanel";
 import SpiritualBridge from "@/components/SpiritualBridge";
 import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import DivineCommandCenter from "@/components/DivineCommandCenter";
+import CandlestickChart from "@/components/CandlestickChart";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff, Menu } from "lucide-react";
 
@@ -279,15 +280,8 @@ export default function Dashboard() {
                   )}
                 </div>
                 
-                {/* Recent Alerts Placeholder */}
-                <div className="waides-card rounded-xl p-6 waides-border border">
-                  <h3 className="text-lg font-semibold mb-4 waides-text-primary">Recent Alerts</h3>
-                  <div className="space-y-3">
-                    <div className="text-sm waides-text-secondary text-center py-8">
-                      Alert system coming soon...
-                    </div>
-                  </div>
-                </div>
+                {/* Real-time Candlestick Chart */}
+                <CandlestickChart symbol="ETHUSDT" interval="1m" limit={50} />
               </div>
 
               {/* Chart and History Row */}

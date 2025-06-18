@@ -46,9 +46,10 @@ export class BinanceWebSocketService {
   private reconnectDelay: number = 5000; // 5 seconds
   private isConnected: boolean = false;
   private candlestickListeners: ((data: CandlestickData) => void)[] = [];
-  private baseUrl: string = 'wss://stream.binance.com:9443/ws/';
+  private baseUrl: string = 'wss://stream.binance.us:9443/ws/';
   private symbol: string = 'ethusdt'; // ETH/USDT pair
   private interval: string = '1m'; // 1-minute candlesticks
+  private fallbackMode: boolean = false;
 
   constructor() {
     this.connect();
@@ -126,8 +127,38 @@ export class BinanceWebSocketService {
         this.connect();
       }, this.reconnectDelay * this.reconnectAttempts);
     } else {
-      console.error('❌ Max reconnection attempts reached for Binance WebSocket');
+      console.error('❌ Max reconnection attempts reached for Binance WebSocket, enabling fallback mode');
+      this.fallbackMode = true;
+      this.startFallbackPolling();
     }
+  }
+
+  private startFallbackPolling(): void {
+    console.log('📊 Starting fallback polling for candlestick data');
+    setInterval(async () => {
+      try {
+        const klines = await this.getHistoricalKlines(1);
+        if (klines.length > 0) {
+          const latestKline = klines[0];
+          const candlestickData: CandlestickData = {
+            symbol: this.symbol.toUpperCase(),
+            openTime: latestKline.openTime,
+            closeTime: latestKline.closeTime,
+            open: latestKline.open,
+            high: latestKline.high,
+            low: latestKline.low,
+            close: latestKline.close,
+            volume: latestKline.volume,
+            interval: this.interval,
+            isFinal: true,
+            timestamp: Date.now()
+          };
+          this.notifyCandlestickListeners(candlestickData);
+        }
+      } catch (error) {
+        console.error('Fallback polling error:', error);
+      }
+    }, 60000); // Poll every minute
   }
 
   private notifyCandlestickListeners(data: CandlestickData): void {
