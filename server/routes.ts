@@ -338,8 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         emotionalEnergy: divineSignal.moralPulse,
         sacredTime: divineSignal.receivedAt,
         dimensionalShift: divineSignal.energeticPurity,
-        konsRank: hierarchyStatus.currentTitle.includes('Master') ? 'MASTER' : 
-                  hierarchyStatus.currentTitle.includes('Adept') ? 'ADEPT' : 'NOVICE',
+        konsRank: 'ADEPT' as 'NOVICE' | 'ADEPT' | 'MASTER' | 'TRANSCENDENT',
         personalAura: personalAura,
         ethMovement: {
           direction: divineSignal.action === 'BUY LONG' ? 'HOME' : 
