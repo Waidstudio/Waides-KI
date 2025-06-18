@@ -8,23 +8,23 @@ from typing import Dict, Optional, List
 from .kons_powa_comm import divine_eth_intent, kons_communicator
 from .eth_connector import get_eth_price
 
-class PionexBot:
+class WaidBot:
     def __init__(self):
-        self.api_key = os.getenv("PIONEX_API_KEY")
-        self.secret_key = os.getenv("PIONEX_SECRET_KEY")
-        self.base_url = "https://api.pionex.com"
+        self.api_key = os.getenv("WAID_API_KEY")
+        self.secret_key = os.getenv("WAID_SECRET_KEY")
+        self.base_url = "https://api.waid.com"
         self.last_trade_time = 0
         self.min_trade_interval = 60  # Minimum 1 minute between trades
         self.trade_history = []
         
     def is_configured(self) -> bool:
-        """Check if Pionex API credentials are available"""
+        """Check if Waid API credentials are available"""
         return bool(self.api_key and self.secret_key)
     
     def _generate_signature(self, timestamp: str, method: str, request_path: str, body: str = '') -> str:
-        """Generate HMAC signature for Pionex API"""
+        """Generate HMAC signature for Waid API"""
         if not self.secret_key:
-            raise ValueError("Pionex secret key not configured")
+            raise ValueError("Waid secret key not configured")
         
         message = timestamp + method + request_path + body
         signature = hmac.new(
@@ -35,18 +35,18 @@ class PionexBot:
         return signature
     
     def _make_request(self, method: str, path: str, body: Optional[Dict] = None) -> Dict:
-        """Make authenticated request to Pionex API"""
+        """Make authenticated request to Waid API"""
         if not self.is_configured():
-            raise ValueError("Pionex API credentials not configured")
+            raise ValueError("Waid API credentials not configured")
         
         timestamp = str(int(time.time() * 1000))
         body_json = json.dumps(body) if body else ''
         signature = self._generate_signature(timestamp, method, path, body_json)
         
         headers = {
-            'PIONEX-KEY': self.api_key,
-            'PIONEX-SIGNATURE': signature,
-            'PIONEX-TIMESTAMP': timestamp,
+            'WAID-KEY': self.api_key,
+            'WAID-SIGNATURE': signature,
+            'WAID-TIMESTAMP': timestamp,
             'Content-Type': 'application/json'
         }
         
@@ -60,7 +60,7 @@ class PionexBot:
             raise ValueError(f"Unsupported HTTP method: {method}")
         
         if response.status_code != 200:
-            raise Exception(f"Pionex API error: {response.status_code} {response.text}")
+            raise Exception(f"Waid API error: {response.status_code} {response.text}")
         
         return response.json()
     
@@ -111,7 +111,7 @@ class PionexBot:
         if not self.is_configured():
             return {
                 "status": "error",
-                "message": "Pionex API credentials not configured",
+                "message": "Waid API credentials not configured",
                 "executed": False
             }
         

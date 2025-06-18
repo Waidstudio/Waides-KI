@@ -591,6 +591,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ultimate ETH Trading Bot Integration (Python Backend)
+  app.get("/api/ultimate-bot/signal", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/signal', { timeout: 10000 });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const signal = await response.json();
+      res.json(signal);
+    } catch (error) {
+      console.error('Ultimate bot signal error:', error);
+      res.status(500).json({ error: 'Failed to get ultimate bot signal' });
+    }
+  });
+
+  app.post("/api/ultimate-bot/auto-trade", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/auto-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000
+      });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error('Ultimate bot auto-trade error:', error);
+      res.status(500).json({ error: 'Failed to execute ultimate bot trade' });
+    }
+  });
+
+  app.post("/api/ultimate-bot/manual-trade", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/manual-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req.body),
+        timeout: 15000
+      });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error('Ultimate bot manual trade error:', error);
+      res.status(500).json({ error: 'Failed to execute manual trade' });
+    }
+  });
+
+  app.post("/api/ultimate-bot/automated-trading/start", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/automated-trading/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req.body),
+        timeout: 10000
+      });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error('Start automated trading error:', error);
+      res.status(500).json({ error: 'Failed to start automated trading' });
+    }
+  });
+
+  app.post("/api/ultimate-bot/automated-trading/stop", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/automated-trading/stop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 10000
+      });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error('Stop automated trading error:', error);
+      res.status(500).json({ error: 'Failed to stop automated trading' });
+    }
+  });
+
+  app.get("/api/ultimate-bot/system-status", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/system-status', { timeout: 10000 });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const status = await response.json();
+      res.json(status);
+    } catch (error) {
+      console.error('Ultimate bot system status error:', error);
+      res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  app.get("/api/ultimate-bot/trade-history", async (req, res) => {
+    try {
+      const response = await fetch('http://localhost:5001/api/trade-history', { timeout: 10000 });
+      if (!response.ok) {
+        throw new Error(`Python backend error: ${response.status}`);
+      }
+      const history = await response.json();
+      res.json(history);
+    } catch (error) {
+      console.error('Ultimate bot trade history error:', error);
+      res.status(500).json({ error: 'Failed to get trade history' });
+    }
+  });
+
   const httpServer = createServer(app);
 
   // Store data every 30 seconds for real-time updates
