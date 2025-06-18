@@ -8,6 +8,7 @@ import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
+import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
 
@@ -18,6 +19,7 @@ let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
 let waidTrader: WaidTrader;
 let binanceWS: BinanceWebSocketService;
+let waidBotEngine: WaidBotEngine;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -28,6 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   divineCommLayer = new DivineCommLayer();
   waidTrader = new WaidTrader();
   binanceWS = new BinanceWebSocketService();
+  waidBotEngine = new WaidBotEngine();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -844,6 +847,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Real-time trading status error:', error);
       res.status(500).json({ error: 'Failed to get real-time trading status' });
+    }
+  });
+
+  // WaidBot KonsLang Engine Endpoints
+  app.get("/api/waidbot/analysis", async (req, res) => {
+    try {
+      const ethData = await ethMonitor.fetchEthData();
+      const divineSignal = divineCommLayer.openDivineChannel(ethData);
+      const recentCandlesticks = await storage.getCandlestickHistory('ETHUSDT', '1m', 10);
+      
+      const konsAnalysis = await waidBotEngine.analyzeWithKonsLang(ethData, divineSignal, recentCandlesticks);
+      
+      res.json({
+        ethData,
+        divineSignal,
+        konsAnalysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('WaidBot analysis error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot analysis' });
+    }
+  });
+
+  app.get("/api/waidbot/decision", async (req, res) => {
+    try {
+      const ethData = await ethMonitor.fetchEthData();
+      const divineSignal = divineCommLayer.openDivineChannel(ethData);
+      const recentCandlesticks = await storage.getCandlestickHistory('ETHUSDT', '1m', 10);
+      
+      const konsAnalysis = await waidBotEngine.analyzeWithKonsLang(ethData, divineSignal, recentCandlesticks);
+      const decision = await waidBotEngine.makeWaidDecision(ethData, divineSignal, konsAnalysis);
+      
+      res.json({
+        decision,
+        konsAnalysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('WaidBot decision error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot decision' });
+    }
+  });
+
+  app.post("/api/waidbot/execute", async (req, res) => {
+    try {
+      const decision = waidBotEngine.getLastDecision();
+      if (!decision) {
+        return res.status(400).json({ error: 'No decision available to execute' });
+      }
+
+      const result = await waidBotEngine.executeDecision(decision);
+      res.json(result);
+    } catch (error) {
+      console.error('WaidBot execution error:', error);
+      res.status(500).json({ error: 'Failed to execute WaidBot decision' });
+    }
+  });
+
+  app.post("/api/waidbot/enable", (req, res) => {
+    try {
+      waidBotEngine.enableTrading();
+      res.json({ message: 'WaidBot trading enabled', enabled: true });
+    } catch (error) {
+      console.error('WaidBot enable error:', error);
+      res.status(500).json({ error: 'Failed to enable WaidBot trading' });
+    }
+  });
+
+  app.post("/api/waidbot/disable", (req, res) => {
+    try {
+      waidBotEngine.disableTrading();
+      res.json({ message: 'WaidBot trading disabled', enabled: false });
+    } catch (error) {
+      console.error('WaidBot disable error:', error);
+      res.status(500).json({ error: 'Failed to disable WaidBot trading' });
+    }
+  });
+
+  app.get("/api/waidbot/status", (req, res) => {
+    try {
+      const lastDecision = waidBotEngine.getLastDecision();
+      const decisionHistory = waidBotEngine.getDecisionHistory(10);
+      
+      res.json({
+        tradingEnabled: waidBotEngine.isTradingEnabled(),
+        lastDecision,
+        decisionHistory,
+        totalDecisions: decisionHistory.length
+      });
+    } catch (error) {
+      console.error('WaidBot status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot status' });
     }
   });
 
