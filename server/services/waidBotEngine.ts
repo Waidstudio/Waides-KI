@@ -124,7 +124,15 @@ export class WaidBotEngine {
     const historicalData = await storage.getEthDataHistory(20);
     
     // Convert to quantum market data format
-    const marketData = divineQuantumFluxStrategy.convertEthDataToMarketData(ethData, historicalData);
+    const ethDataWithId = { 
+      ...ethData, 
+      id: 1,
+      volume: ethData.volume || 0,
+      marketCap: ethData.marketCap || 0,
+      priceChange24h: ethData.priceChange24h || 0,
+      timestamp: new Date(ethData.timestamp)
+    }; // Add missing properties for compatibility
+    const marketData = divineQuantumFluxStrategy.convertEthDataToMarketData(ethDataWithId, historicalData);
     
     // Generate quantum signal using Divine Quantum Flux Strategy
     const quantumSignal = divineQuantumFluxStrategy.generateSignal(marketData);
@@ -158,70 +166,59 @@ export class WaidBotEngine {
         nextGenStrategy: quantumSignal.strategy
       };
     }
-    else if (konsAnalysis.divineAlignment > 75 && konsAnalysis.ethVibration === 'ASCENDING') {
+    else if (quantumSignal.strategy === 'HYPER_MOMENTUM_ACCUMULATION') {
       decision = {
         action: 'BUY_ETH',
-        reasoning: `KonsLang: Strong bullish alignment - ETH ascending with ${konsAnalysis.divineAlignment}% divine confirmation`,
-        confidence: Math.min(95, konsAnalysis.divineAlignment),
-        konsWisdom: 'Buy ETH spot during ascending wave with conviction',
+        reasoning: `Divine Quantum Flux: Strong momentum alignment - ${(quantumSignal.confidence * 100).toFixed(1)}% quantum confidence. Strategic ETH accumulation`,
+        confidence: quantumSignal.confidence * 100,
+        konsWisdom: 'Momentum flows in our favor - accumulate with quantum precision',
         ethPosition: 'LONG',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'LONG'),
-        urgency: konsAnalysis.marketMood === 'EUPHORIC' ? 'IMMEDIATE' : 'WITHIN_HOUR',
-        microMovementCapture: false,
-        nextGenStrategy: 'SPOT_ACCUMULATION'
+        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
+        urgency: quantumSignal.timeframe === '5m' ? 'WITHIN_HOUR' : 'IMMEDIATE',
+        microMovementCapture: true,
+        nextGenStrategy: quantumSignal.strategy
       };
     }
-    else if (konsAnalysis.divineAlignment > 85 && konsAnalysis.ethVibration === 'DESCENDING') {
+    else if (quantumSignal.strategy === 'DEFENSIVE_LIQUIDATION') {
       decision = {
         action: 'SELL_ETH',
-        reasoning: `KonsLang: Ultra-strong bearish alignment - ETH descending with ${konsAnalysis.divineAlignment}% divine confirmation. Protective ETH liquidation`,
-        confidence: Math.min(98, konsAnalysis.divineAlignment),
-        konsWisdom: 'Protect capital from descending energy - preservation over profit',
+        reasoning: `Divine Quantum Flux: Critical defensive signal - ${(quantumSignal.confidence * 100).toFixed(1)}% quantum certainty. Immediate protective liquidation required`,
+        confidence: quantumSignal.confidence * 100,
+        konsWisdom: 'Quantum collapse imminent - preserve capital through immediate liquidation',
         ethPosition: 'NEUTRAL',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'NEUTRAL'),
+        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
         urgency: 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: 'DEFENSIVE_LIQUIDATION'
+        nextGenStrategy: quantumSignal.strategy
       };
     }
-    else if (konsAnalysis.divineAlignment > 70 && konsAnalysis.ethVibration === 'DESCENDING') {
+    else if (quantumSignal.strategy === 'PROTECTIVE_SELLING') {
       decision = {
         action: 'SELL_ETH',
-        reasoning: `KonsLang: Strong bearish alignment - ETH descending with ${konsAnalysis.divineAlignment}% divine confirmation`,
-        confidence: Math.min(90, konsAnalysis.divineAlignment),
-        konsWisdom: 'Sell ETH spot to preserve capital during descent',
+        reasoning: `Divine Quantum Flux: Moderate protective signal - ${(quantumSignal.confidence * 100).toFixed(1)}% quantum confidence. Strategic position reduction`,
+        confidence: quantumSignal.confidence * 100,
+        konsWisdom: 'Quantum waves suggest defensive positioning - protect accumulated gains',
         ethPosition: 'NEUTRAL',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'LONG'),
-        urgency: konsAnalysis.marketMood === 'FEARFUL' ? 'IMMEDIATE' : 'WITHIN_HOUR',
+        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
+        urgency: quantumSignal.timeframe === '15m' ? 'WITHIN_HOUR' : 'WHEN_READY',
         microMovementCapture: false,
-        nextGenStrategy: 'CAPITAL_PRESERVATION'
-      };
-    }
-    else if (konsAnalysis.marketMood === 'BALANCED' && konsAnalysis.ethVibration === 'OSCILLATING') {
-      decision = {
-        action: 'HOLD',
-        reasoning: 'KonsLang: Market in balanced oscillation - maintaining current positions',
-        confidence: 60,
-        konsWisdom: 'In balance, the wise trader waits for clarity',
-        ethPosition: 'NEUTRAL',
-        tradingPair: 'NONE',
-        quantity: 0,
-        urgency: 'WHEN_READY'
+        nextGenStrategy: quantumSignal.strategy
       };
     }
     else {
       decision = {
-        action: 'OBSERVE',
-        reasoning: `KonsLang: Insufficient alignment (${konsAnalysis.divineAlignment}%) for confident trading`,
-        confidence: 45,
-        konsWisdom: 'Observation sharpens future decisions',
+        action: 'HOLD',
+        reasoning: `Divine Quantum Flux: Quantum superposition state - ${(quantumSignal.confidence * 100).toFixed(1)}% confidence. Awaiting quantum collapse into actionable signal`,
+        confidence: quantumSignal.confidence * 100,
+        konsWisdom: 'Quantum patience preserves capital while awaiting perfect alignment',
         ethPosition: 'NEUTRAL',
         tradingPair: 'NONE',
         quantity: 0,
-        urgency: 'PATIENCE'
+        urgency: 'WHEN_READY',
+        nextGenStrategy: 'QUANTUM_SUPERPOSITION'
       };
     }
 
@@ -252,6 +249,21 @@ export class WaidBotEngine {
     }
     
     return Math.round(baseSize * multiplier); // Full position for ETH accumulation
+  }
+
+  private calculateQuantumPosition(size: string | undefined, confidence: number): number {
+    // Quantum position calculation based on Divine Quantum Flux Strategy
+    const baseSize = 200; // Base USDT amount for quantum trading
+    const quantumMultiplier = confidence;
+    
+    switch (size) {
+      case 'full_position':
+        return Math.floor(baseSize * quantumMultiplier * 2); // Maximum position
+      case 'half_position':
+        return Math.floor(baseSize * quantumMultiplier); // Standard position
+      default:
+        return Math.floor(baseSize * quantumMultiplier * 0.5); // Conservative position
+    }
   }
 
   private generateKonsMessage(
@@ -325,12 +337,18 @@ export class WaidBotEngine {
     }
 
     // Here you would integrate with actual exchange APIs
-    // For now, we'll simulate the execution
+    // Simulate trade execution and calculate PnL for quantum learning
+    const simulatedPnL = Math.random() > 0.3 ? Math.random() * 100 : -Math.random() * 50; // 70% win rate simulation
+    
+    // Update Divine Quantum Flux Strategy based on trade outcome
+    divineQuantumFluxStrategy.updateQuantumState({ pnl: simulatedPnL });
+    
     console.log(`🚀 WaidBot executing: ${decision.action} ${decision.quantity} USDT on ${decision.tradingPair}`);
+    console.log(`⚛️ Quantum state adapted with PnL: ${simulatedPnL.toFixed(2)}`);
     
     return {
       success: true,
-      message: `Executed ${decision.action} for ${decision.quantity} USDT on ${decision.tradingPair}`
+      message: `Executed ${decision.action} for ${decision.quantity} USDT - Quantum state evolved`
     };
   }
 
