@@ -103,8 +103,23 @@ export default function WaidBotEngine() {
     );
   }
 
-  const konsAnalysis: KonsLangAnalysis = analysis?.konsAnalysis;
-  const currentDecision: WaidDecision = decision?.decision;
+  const konsAnalysis: KonsLangAnalysis = analysis?.konsAnalysis || {
+    marketMood: 'BALANCED',
+    ethVibration: 'DORMANT',
+    divineAlignment: 50,
+    tradingWindow: 'NORMAL',
+    konsMessage: 'KonsLang analysis initializing...'
+  };
+  const currentDecision: WaidDecision = decision?.decision || {
+    action: 'OBSERVE',
+    reasoning: 'Analyzing market conditions...',
+    confidence: 0,
+    konsWisdom: 'Patience brings clarity.',
+    ethPosition: 'NEUTRAL',
+    tradingPair: 'NONE',
+    quantity: 0,
+    urgency: 'PATIENCE'
+  };
 
   const getActionIcon = (action: string) => {
     switch (action) {
