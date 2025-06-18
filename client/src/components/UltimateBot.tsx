@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Robot, Zap, Play, Square, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, XCircle, Activity } from "lucide-react";
+import { Bot, Zap, Play, Square, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, XCircle, Activity } from "lucide-react";
 
 interface UltimateBotSignal {
   action: string;
@@ -30,7 +30,7 @@ interface UltimateBotSignal {
 
 interface AutomatedTradingStatus {
   is_running: boolean;
-  pionex_configured: boolean;
+  waid_configured: boolean;
   last_trade_time: number;
   trade_count: number;
 }
@@ -163,7 +163,7 @@ export default function UltimateBot() {
       <Card className="waides-card waides-border border bg-gradient-to-r from-purple-900/20 to-blue-900/20">
         <CardHeader>
           <CardTitle className="text-xl waides-text-primary flex items-center space-x-3">
-            <Robot className="w-6 h-6 text-purple-400" />
+            <Bot className="w-6 h-6 text-purple-400" />
             <span>Ultimate ETH Trading Bot</span>
             <Badge variant="outline" className="bg-purple-500/20 text-purple-400">
               Kons Powa Powered
@@ -174,9 +174,9 @@ export default function UltimateBot() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="space-y-2">
               <div className="text-2xl font-bold text-purple-400">
-                {tradingStatus?.pionex_configured ? '✅' : '❌'}
+                {tradingStatus?.waid_configured ? '✅' : '❌'}
               </div>
-              <div className="text-sm waides-text-secondary">Pionex Connected</div>
+              <div className="text-sm waides-text-secondary">Waid Connected</div>
             </div>
             <div className="space-y-2">
               <div className="text-2xl font-bold text-blue-400">

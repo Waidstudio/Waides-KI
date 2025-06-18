@@ -594,7 +594,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Ultimate ETH Trading Bot Integration (Python Backend)
   app.get("/api/ultimate-bot/signal", async (req, res) => {
     try {
-      const response = await fetch('http://localhost:5001/api/signal', { timeout: 10000 });
+      const response = await fetch('http://localhost:5001/api/signal');
       if (!response.ok) {
         throw new Error(`Python backend error: ${response.status}`);
       }
@@ -610,8 +610,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const response = await fetch('http://localhost:5001/api/auto-trade', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 15000
+        headers: { 'Content-Type': 'application/json' }
       });
       if (!response.ok) {
         throw new Error(`Python backend error: ${response.status}`);
