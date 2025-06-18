@@ -5,7 +5,7 @@ interface Position {
   quantity: number;
   entryPrice: number;
   entryTime: number;
-  positionType: 'LONG' | 'SHORT';
+  positionType: 'LONG';
   unrealizedPnL: number;
   realizedPnL: number;
 }

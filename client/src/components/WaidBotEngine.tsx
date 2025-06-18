@@ -7,12 +7,12 @@ import { Progress } from "@/components/ui/progress";
 import { Brain, TrendingUp, TrendingDown, Eye, Zap, Activity, Play, Square, RefreshCw } from "lucide-react";
 
 interface WaidDecision {
-  action: 'BUY_ETH3L' | 'SELL_ETH3L' | 'BUY_ETH3S' | 'SELL_ETH3S' | 'HOLD' | 'OBSERVE';
+  action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
   reasoning: string;
   confidence: number;
   konsWisdom: string;
-  ethPosition: 'LONG' | 'SHORT' | 'NEUTRAL';
-  tradingPair: 'ETH3L/USDT' | 'ETH3S/USDT' | 'NONE';
+  ethPosition: 'LONG' | 'NEUTRAL';
+  tradingPair: 'ETH/USDT' | 'NONE';
   quantity: number;
   urgency: 'IMMEDIATE' | 'WITHIN_HOUR' | 'WHEN_READY' | 'PATIENCE';
 }
@@ -185,7 +185,7 @@ export default function WaidBotEngine() {
 
         <CardContent className="space-y-4">
           <div className="text-sm waides-text-secondary">
-            KonsLang-powered autonomous ETH3L/ETH3S spot trading without external APIs
+            KonsLang-powered autonomous ETH spot trading without external APIs
           </div>
           
           <div className="grid grid-cols-2 gap-4">
