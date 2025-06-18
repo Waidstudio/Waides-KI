@@ -213,6 +213,13 @@ export class WaidBotEngine {
       };
     }
 
+    // Add BTC/SOL confirmation signals for analysis only (not for trading)
+    const btcConfirmation = await this.generateBTCConfirmation();
+    const solConfirmation = await this.generateSOLConfirmation();
+    
+    decision.btcConfirmation = btcConfirmation;
+    decision.solConfirmation = solConfirmation;
+
     // Store decision
     this.lastDecision = decision;
     this.decisionHistory.push(decision);
@@ -313,5 +320,59 @@ export class WaidBotEngine {
       success: true,
       message: `Executed ${decision.action} for ${decision.quantity} USDT on ${decision.tradingPair}`
     };
+  }
+
+  private async generateBTCConfirmation(): Promise<{
+    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    strength: number;
+    supportLevel: number;
+  }> {
+    try {
+      // Fetch BTC data for confirmation signals only (not for trading)
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true');
+      const btcData = await response.json();
+      
+      const priceChange = btcData.bitcoin.usd_24h_change || 0;
+      const volume = btcData.bitcoin.usd_24h_vol || 0;
+      
+      // Analyze BTC trend for ETH confirmation
+      let trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
+      if (priceChange > 3) trend = 'BULLISH';
+      else if (priceChange < -3) trend = 'BEARISH';
+      
+      const strength = Math.min(100, Math.abs(priceChange) * 10);
+      const supportLevel = btcData.bitcoin.usd * (1 - Math.abs(priceChange) / 100);
+      
+      return { trend, strength, supportLevel };
+    } catch (error) {
+      return { trend: 'NEUTRAL', strength: 50, supportLevel: 45000 };
+    }
+  }
+
+  private async generateSOLConfirmation(): Promise<{
+    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    strength: number;
+    momentum: number;
+  }> {
+    try {
+      // Fetch SOL data for confirmation signals only (not for trading)
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true');
+      const solData = await response.json();
+      
+      const priceChange = solData.solana.usd_24h_change || 0;
+      const volume = solData.solana.usd_24h_vol || 0;
+      
+      // Analyze SOL trend for ETH confirmation
+      let trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
+      if (priceChange > 4) trend = 'BULLISH';
+      else if (priceChange < -4) trend = 'BEARISH';
+      
+      const strength = Math.min(100, Math.abs(priceChange) * 8);
+      const momentum = Math.min(100, (volume / 1000000) * priceChange);
+      
+      return { trend, strength, momentum };
+    } catch (error) {
+      return { trend: 'NEUTRAL', strength: 50, momentum: 25 };
+    }
   }
 }

@@ -195,7 +195,7 @@ export default function WaidBotEngine() {
 
         <CardContent className="space-y-4">
           <div className="text-sm waides-text-secondary">
-            KonsLang-powered autonomous ETH spot trading without external APIs
+            KonsLang-powered autonomous ETH spot trading with BTC/SOL confirmation signals
           </div>
           
           <div className="grid grid-cols-2 gap-4">
