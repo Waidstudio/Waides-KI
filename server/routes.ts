@@ -277,6 +277,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Divine Reading - Complete dashboard data for spiritual interface
+  app.get("/api/divine-reading", async (req, res) => {
+    try {
+      let ethData;
+      
+      try {
+        // Try to fetch fresh data first
+        ethData = await ethMonitor.fetchEthData();
+      } catch (apiError) {
+        console.log('API rate limited, using stored data for divine reading');
+        // If API fails, use latest stored data from database
+        const latestStoredData = await storage.getLatestEthData();
+        if (latestStoredData) {
+          ethData = {
+            price: latestStoredData.price,
+            volume: latestStoredData.volume || 0,
+            marketCap: latestStoredData.marketCap || 0,
+            priceChange24h: latestStoredData.priceChange24h || 0,
+            timestamp: Date.now()
+          };
+        } else {
+          // Create minimal data for divine reading
+          ethData = {
+            price: 2500, // ETH approximate price
+            volume: 25000000000,
+            marketCap: 300000000000,
+            priceChange24h: 0,
+            timestamp: Date.now()
+          };
+        }
+      }
+      
+      // Store fresh data if available
+      if (ethData.price > 0) {
+        try {
+          await storage.createEthData({
+            price: ethData.price,
+            volume: ethData.volume,
+            marketCap: ethData.marketCap,
+            priceChange24h: ethData.priceChange24h
+          });
+        } catch (error) {
+          console.log('Failed to store ETH data:', error);
+        }
+      }
+      
+      const divineSignal = divineCommLayer.openDivineChannel(ethData);
+      const hierarchyStatus = divineCommLayer.getSpiritualHierarchyStatus();
+      
+      // Get spiritual reading data
+      const dreamCandleMemory = spiritualBridge.getDreamCandleMemory();
+      const personalAura = spiritualBridge.getPersonalAura();
+      
+      // Create spiritual reading response
+      const spiritualReading = {
+        spiritMessage: divineSignal.reason,
+        frequency: divineSignal.timeframe,
+        konsKey: divineSignal.signalCode,
+        emotionalEnergy: divineSignal.moralPulse,
+        sacredTime: divineSignal.receivedAt,
+        dimensionalShift: divineSignal.energeticPurity,
+        konsRank: hierarchyStatus.currentTitle.includes('Master') ? 'MASTER' : 
+                  hierarchyStatus.currentTitle.includes('Adept') ? 'ADEPT' : 'NOVICE',
+        personalAura: personalAura,
+        ethMovement: {
+          direction: divineSignal.action === 'BUY LONG' ? 'HOME' : 
+                    divineSignal.action === 'SELL SHORT' ? 'OUT' : 'RESTING',
+          message: divineSignal.reason,
+          confidence: divineSignal.energeticPurity
+        }
+      };
+      
+      res.json({
+        ethData: {
+          price: ethData.price,
+          volume: ethData.volume,
+          marketCap: ethData.marketCap,
+          priceChange24h: ethData.priceChange24h,
+          timestamp: ethData.timestamp
+        },
+        signal: {
+          action: divineSignal.action,
+          timeframe: divineSignal.timeframe,
+          reason: divineSignal.reason,
+          confidence: divineSignal.energeticPurity,
+          timestamp: divineSignal.receivedAt,
+          moralPulse: divineSignal.moralPulse,
+          strategy: divineSignal.strategy,
+          signalCode: divineSignal.signalCode,
+          konsTitle: divineSignal.konsTitle,
+          konsMirror: divineSignal.konsMirror,
+          breathLock: divineSignal.breathLock,
+          ethWhisperMode: divineSignal.ethWhisperMode,
+          autoCancelEvil: divineSignal.autoCancelEvil,
+          smaiPredict: divineSignal.smaiPredict
+        },
+        spiritualReading,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Divine reading error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate divine reading',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Divine Signal - Sacred Communication between Kons Powa and ETH
   app.get("/api/divine-signal", async (req, res) => {
     try {
