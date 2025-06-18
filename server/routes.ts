@@ -20,9 +20,11 @@ let divineCommLayer: DivineCommLayer;
 let waidTrader: WaidTrader;
 let binanceWS: BinanceWebSocketService;
 let waidBotEngine: WaidBotEngine;
+let waidBotPro: WaidBotPro;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
+import { WaidBotPro } from './services/waidBotPro';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -34,6 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   waidTrader = new WaidTrader();
   binanceWS = new BinanceWebSocketService();
   waidBotEngine = new WaidBotEngine();
+  waidBotPro = new WaidBotPro(10000); // Initialize with $10,000 starting balance
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -1108,10 +1111,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // WaidBot Pro Advanced AI-Powered Trading Endpoints
+  app.get("/api/waidbot-pro/prediction", async (req, res) => {
+    try {
+      const prediction = await waidBotPro.predictPriceMovement();
+      res.json(prediction);
+    } catch (error) {
+      console.error('WaidBot Pro prediction error:', error);
+      res.status(500).json({ error: 'Failed to generate price prediction' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/market-state", async (req, res) => {
+    try {
+      await waidBotPro.determineMarketState();
+      res.json({
+        state: waidBotPro.getCurrentState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Market state determination error:', error);
+      res.status(500).json({ error: 'Failed to determine market state' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/signals", async (req, res) => {
+    try {
+      await waidBotPro.determineMarketState();
+      const signals = await waidBotPro.generateTradingSignals();
+      res.json(signals);
+    } catch (error) {
+      console.error('Signal generation error:', error);
+      res.status(500).json({ error: 'Failed to generate trading signals' });
+    }
+  });
+
+  app.post("/api/waidbot-pro/simulate-trade", async (req, res) => {
+    try {
+      const signals = req.body;
+      const result = waidBotPro.simulateTradeExecution(signals);
+      res.json(result);
+    } catch (error) {
+      console.error('Trade simulation error:', error);
+      res.status(500).json({ error: 'Failed to simulate trade execution' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/analytics", async (req, res) => {
+    try {
+      const analytics = waidBotPro.getAdvancedAnalytics();
+      res.json(analytics);
+    } catch (error) {
+      console.error('Analytics error:', error);
+      res.status(500).json({ error: 'Failed to get advanced analytics' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/portfolio", async (req, res) => {
+    try {
+      const portfolio = waidBotPro.getPortfolio();
+      const currentValue = await waidBotPro.updatePortfolioValue();
+      res.json({
+        ...portfolio,
+        totalValue: currentValue,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Portfolio error:', error);
+      res.status(500).json({ error: 'Failed to get portfolio data' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/trades", async (req, res) => {
+    try {
+      const trades = waidBotPro.getTradeHistory();
+      res.json(trades);
+    } catch (error) {
+      console.error('Trade history error:', error);
+      res.status(500).json({ error: 'Failed to get trade history' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/risk-check", async (req, res) => {
+    try {
+      const riskCheck = waidBotPro.checkRiskLimits();
+      res.json(riskCheck);
+    } catch (error) {
+      console.error('Risk check error:', error);
+      res.status(500).json({ error: 'Failed to perform risk check' });
+    }
+  });
+
+  app.post("/api/waidbot-pro/auto-trade", async (req, res) => {
+    try {
+      // Comprehensive automated trading execution
+      await waidBotPro.determineMarketState();
+      const signals = await waidBotPro.generateTradingSignals();
+      const riskCheck = waidBotPro.checkRiskLimits();
+      
+      if (!riskCheck.withinLimits) {
+        res.json({
+          executed: false,
+          reason: riskCheck.message,
+          signals,
+          riskCheck
+        });
+        return;
+      }
+
+      const result = waidBotPro.simulateTradeExecution(signals);
+      const analytics = waidBotPro.getAdvancedAnalytics();
+      
+      res.json({
+        executed: result.success,
+        result,
+        signals,
+        analytics,
+        marketState: waidBotPro.getCurrentState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Auto trade error:', error);
+      res.status(500).json({ error: 'Failed to execute automated trade' });
+    }
+  });
+
   console.log('🤖 Enhanced WaidBot Self-Learning System Initialized');
   console.log('📊 Portfolio Manager: $10,000 starting balance');
   console.log('🧠 ML Engine: Continuous learning from live market data');
   console.log('⚡ Real-time trading: ETH3L/ETH3S leveraged tokens');
+  console.log('🚀 WaidBot Pro: Advanced AI-powered ETH trading with professional analytics');
 
   return httpServer;
 }

@@ -1,0 +1,584 @@
+# WaidBot Pro: Advanced AI-Powered ETH Trading System
+
+I'll create an enhanced version of WaidBot with professional-grade features including advanced technical analysis, sentiment analysis, on-chain analytics, and predictive modeling that simulates "vision" beyond basic API data.
+
+```python
+import ccxt
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import MinMaxScaler
+from transformers import pipeline
+import requests
+from datetime import datetime, timedelta
+import time
+import json
+import os
+from dotenv import load_dotenv
+import matplotlib.pyplot as plt
+from bs4 import BeautifulSoup
+import re
+from typing import Dict, List, Tuple, Optional
+from collections import deque
+
+# Load environment variables
+load_dotenv()
+
+class WaidBotPro:
+    def __init__(self):
+        # Initialize exchanges
+        self.exchanges = self._init_exchanges()
+        
+        # AI Models
+        self.price_predictor = None
+        self.sentiment_analyzer = pipeline("sentiment-analysis", 
+                                          model="finiteautomata/bertweet-base-sentiment-analysis")
+        
+        # Market state
+        self.current_state = "neutral"  # bullish, bearish, neutral
+        self.market_memory = deque(maxlen=100)  # Memory of recent market states
+        
+        # Trading parameters
+        self.portfolio = {
+            'USDT': float(os.getenv('STARTING_BALANCE', 1000)),
+            'ETH': 0.0
+        }
+        self.risk_per_trade = 0.05  # 5% of portfolio per trade
+        self.max_drawdown = 0.2  # 20% max loss from peak
+        
+        # Data collection
+        self.historical_data = pd.DataFrame()
+        self.onchain_metrics = pd.DataFrame()
+        self.social_sentiment = pd.DataFrame()
+        
+        # Performance tracking
+        self.peak_balance = self.portfolio['USDT']
+        self.trade_history = []
+        self.strategy_performance = {
+            'trend_following': {'wins': 0, 'losses': 0},
+            'mean_reversion': {'wins': 0, 'losses': 0},
+            'breakout': {'wins': 0, 'losses': 0}
+        }
+        
+        # Initialize all systems
+        self._setup_models()
+        self._load_initial_data()
+        
+    def _init_exchanges(self) -> Dict:
+        """Initialize multiple exchange connections"""
+        exchanges = {}
+        
+        # Pionex for actual trading
+        if os.getenv('PIONEX_API_KEY'):
+            exchanges['pionex'] = ccxt.pionex({
+                'apiKey': os.getenv('PIONEX_API_KEY'),
+                'secret': os.getenv('PIONEX_API_SECRET'),
+                'enableRateLimit': True
+            })
+        
+        # Binance for additional data
+        if os.getenv('BINANCE_API_KEY'):
+            exchanges['binance'] = ccxt.binance({
+                'apiKey': os.getenv('BINANCE_API_KEY'),
+                'secret': os.getenv('BINANCE_API_SECRET'),
+                'enableRateLimit': True
+            })
+            
+        return exchanges
+    
+    def _setup_models(self):
+        """Initialize and load AI models"""
+        # Price prediction LSTM
+        self.price_predictor = Sequential([
+            LSTM(64, return_sequences=True, input_shape=(60, 10)),
+            Dropout(0.2),
+            LSTM(32),
+            Dropout(0.2),
+            Dense(1)
+        ])
+        self.price_predictor.compile(optimizer='adam', loss='mse')
+        
+        # Load pre-trained weights if available
+        if os.path.exists('models/price_predictor.h5'):
+            self.price_predictor.load_weights('models/price_predictor.h5')
+    
+    def _load_initial_data(self):
+        """Load initial dataset from multiple sources"""
+        print("Loading initial data...")
+        
+        # Fetch historical price data
+        self._update_historical_data()
+        
+        # Fetch on-chain metrics
+        self._update_onchain_data()
+        
+        # Initial sentiment analysis
+        self._update_sentiment_data()
+        
+        print("Initial data loaded successfully!")
+    
+    def _update_historical_data(self):
+        """Fetch and update historical price data from multiple exchanges"""
+        for exchange_name, exchange in self.exchanges.items():
+            try:
+                ohlcv = exchange.fetch_ohlcv('ETH/USDT', '1h', limit=500)
+                df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                df['exchange'] = exchange_name
+                df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+                
+                if self.historical_data.empty:
+                    self.historical_data = df
+                else:
+                    self.historical_data = pd.concat([self.historical_data, df])
+                
+            except Exception as e:
+                print(f"Error fetching data from {exchange_name}: {str(e)}")
+        
+        # Clean and process data
+        self.historical_data = self.historical_data.drop_duplicates()
+        self.historical_data = self._calculate_technical_indicators(self.historical_data)
+    
+    def _calculate_technical_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calculate advanced technical indicators"""
+        # Basic indicators
+        df['returns'] = df['close'].pct_change()
+        df['volatility'] = df['returns'].rolling(20).std()
+        df['MA_20'] = df['close'].rolling(20).mean()
+        df['MA_50'] = df['close'].rolling(50).mean()
+        df['MA_200'] = df['close'].rolling(200).mean()
+        
+        # Bollinger Bands
+        df['upper_band'] = df['MA_20'] + (2 * df['close'].rolling(20).std())
+        df['lower_band'] = df['MA_20'] - (2 * df['close'].rolling(20).std())
+        
+        # RSI
+        delta = df['close'].diff()
+        gain = delta.where(delta > 0, 0)
+        loss = -delta.where(delta < 0, 0)
+        avg_gain = gain.rolling(14).mean()
+        avg_loss = loss.rolling(14).mean()
+        rs = avg_gain / avg_loss
+        df['RSI'] = 100 - (100 / (1 + rs))
+        
+        # MACD
+        ema12 = df['close'].ewm(span=12, adjust=False).mean()
+        ema26 = df['close'].ewm(span=26, adjust=False).mean()
+        df['MACD'] = ema12 - ema26
+        df['signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
+        
+        return df.dropna()
+    
+    def _update_onchain_data(self):
+        """Fetch on-chain metrics from Glassnode and Etherscan"""
+        try:
+            # Get Ethereum gas prices
+            response = requests.get('https://api.etherscan.io/api?module=gastracker&action=gasoracle')
+            gas_data = response.json()['result']
+            
+            # Get ETH staking data
+            staking_response = requests.get('https://beaconcha.in/api/v1/ethstore/latest')
+            staking_data = staking_response.json()
+            
+            # Create new on-chain data entry
+            new_data = {
+                'timestamp': datetime.now(),
+                'gas_price': float(gas_data['ProposeGasPrice']),
+                'gas_used': float(gas_data['gasUsedRatio']),
+                'staking_apr': float(staking_data.get('apr', 0)),
+                'total_staked': float(staking_data.get('total_staked', 0))
+            }
+            
+            # Append to onchain metrics
+            if self.onchain_metrics.empty:
+                self.onchain_metrics = pd.DataFrame([new_data])
+            else:
+                self.onchain_metrics = pd.concat([self.onchain_metrics, pd.DataFrame([new_data])])
+                
+        except Exception as e:
+            print(f"Error fetching on-chain data: {str(e)}")
+    
+    def _update_sentiment_data(self):
+        """Analyze market sentiment from social media and news"""
+        try:
+            # Fetch recent Ethereum tweets
+            tweets = self._fetch_ethereum_tweets()
+            
+            # Analyze sentiment
+            sentiments = [self.sentiment_analyzer(tweet)[0] for tweet in tweets]
+            positive = sum(1 for s in sentiments if s['label'] == 'POSITIVE')
+            negative = sum(1 for s in sentiments if s['label'] == 'NEGATIVE')
+            neutral = sum(1 for s in sentiments if s['label'] == 'NEUTRAL')
+            
+            # Fetch crypto news headlines
+            news_headlines = self._fetch_crypto_news()
+            news_sentiments = [self.sentiment_analyzer(headline)[0] for headline in news_headlines]
+            
+            # Create sentiment record
+            new_sentiment = {
+                'timestamp': datetime.now(),
+                'tweet_positive': positive,
+                'tweet_negative': negative,
+                'tweet_neutral': neutral,
+                'news_sentiment': np.mean([s['score'] if s['label'] == 'POSITIVE' else -s['score'] for s in news_sentiments])
+            }
+            
+            # Append to sentiment data
+            if self.social_sentiment.empty:
+                self.social_sentiment = pd.DataFrame([new_sentiment])
+            else:
+                self.social_sentiment = pd.concat([self.social_sentiment, pd.DataFrame([new_sentiment])])
+                
+        except Exception as e:
+            print(f"Error updating sentiment data: {str(e)}")
+    
+    def _fetch_ethereum_tweets(self, count=50) -> List[str]:
+        """Simulate fetching Ethereum-related tweets (in production, use Twitter API)"""
+        # Note: In a real implementation, you would use the Twitter API
+        # This is a simulation for demonstration purposes
+        return [
+            "Ethereum just broke through resistance! Bullish!",
+            "ETH price looking weak after the merge",
+            "The new Ethereum upgrade is coming soon",
+            "I'm concerned about Ethereum gas fees",
+            "DeFi on Ethereum is growing rapidly"
+        ][:count]
+    
+    def _fetch_crypto_news(self) -> List[str]:
+        """Fetch recent cryptocurrency news headlines"""
+        try:
+            response = requests.get('https://www.coindesk.com/')
+            soup = BeautifulSoup(response.text, 'html.parser')
+            headlines = [h.text.strip() for h in soup.find_all('h2')[:10]]
+            return [h for h in headlines if 'ethereum' in h.lower()]
+        except:
+            return ["Ethereum developers announce new upgrade", "Crypto market shows mixed signals"]
+    
+    def predict_price_movement(self) -> Tuple[float, str]:
+        """Predict future price movement using multiple models"""
+        try:
+            # Prepare data for prediction
+            recent_data = self.historical_data.tail(60).copy()
+            
+            # Normalize data
+            scaler = MinMaxScaler()
+            scaled_data = scaler.fit_transform(recent_data[['close', 'volume', 'RSI', 'MACD', 'volatility']])
+            
+            # LSTM prediction (next 6 hours)
+            lstm_input = scaled_data.reshape(1, 60, 5)
+            lstm_prediction = self.price_predictor.predict(lstm_input)[0][0]
+            
+            # Get current market features
+            current_features = self._get_current_market_features()
+            
+            # Combine predictions with current market state
+            predicted_change = lstm_prediction * 0.6 + current_features['trend_strength'] * 0.4
+            
+            # Determine direction confidence
+            if predicted_change > 0.05:
+                return predicted_change, 'strong_bullish'
+            elif predicted_change > 0:
+                return predicted_change, 'bullish'
+            elif predicted_change < -0.05:
+                return predicted_change, 'strong_bearish'
+            else:
+                return predicted_change, 'bearish'
+                
+        except Exception as e:
+            print(f"Prediction error: {str(e)}")
+            return 0.0, 'neutral'
+    
+    def _get_current_market_features(self) -> Dict:
+        """Extract current market features for decision making"""
+        recent_data = self.historical_data.tail(24).copy()  # Last 24 hours
+        
+        return {
+            'trend_strength': self._calculate_trend_strength(recent_data),
+            'volatility': recent_data['volatility'].mean(),
+            'sentiment': self.social_sentiment['news_sentiment'].iloc[-1] if not self.social_sentiment.empty else 0,
+            'onchain_activity': self.onchain_metrics['gas_used'].iloc[-1] if not self.onchain_metrics.empty else 0,
+            'rsi': recent_data['RSI'].iloc[-1],
+            'macd_signal': recent_data['MACD'].iloc[-1] - recent_data['signal'].iloc[-1]
+        }
+    
+    def _calculate_trend_strength(self, data: pd.DataFrame) -> float:
+        """Calculate the strength of the current trend"""
+        short_ma = data['close'].rolling(5).mean()
+        long_ma = data['close'].rolling(20).mean()
+        
+        if short_ma.iloc[-1] > long_ma.iloc[-1]:
+            # Bullish trend
+            return (short_ma.iloc[-1] - long_ma.iloc[-1]) / long_ma.iloc[-1]
+        else:
+            # Bearish trend
+            return (long_ma.iloc[-1] - short_ma.iloc[-1]) / long_ma.iloc[-1]
+    
+    def determine_market_state(self):
+        """Determine the current market state (bullish/bearish/neutral)"""
+        price_prediction, direction = self.predict_price_movement()
+        features = self._get_current_market_features()
+        
+        # Weighted decision making
+        score = 0
+        score += price_prediction * 0.4
+        score += features['trend_strength'] * 0.3
+        score += features['sentiment'] * 0.2
+        score += (features['rsi'] - 50) / 50 * 0.1
+        
+        if score > 0.1:
+            self.current_state = "bullish"
+        elif score < -0.1:
+            self.current_state = "bearish"
+        else:
+            self.current_state = "neutral"
+            
+        self.market_memory.append(self.current_state)
+    
+    def generate_trading_signals(self) -> Dict:
+        """Generate trading signals based on market state and predictions"""
+        signals = {}
+        
+        # Get current price
+        current_price = self.historical_data['close'].iloc[-1]
+        
+        # Calculate position size
+        position_size = self.portfolio['USDT'] * self.risk_per_trade / current_price
+        
+        # Generate signals based on market state
+        if self.current_state == "bullish":
+            signals['entry'] = current_price * 0.995  # Buy slightly below current price
+            signals['stop_loss'] = current_price * 0.98
+            signals['take_profit'] = current_price * 1.03
+            signals['size'] = position_size
+            signals['strategy'] = "trend_following"
+            
+        elif self.current_state == "bearish":
+            if self.portfolio['ETH'] > 0:
+                signals['entry'] = current_price * 1.005  # Sell slightly above current price
+                signals['size'] = min(position_size, self.portfolio['ETH'])
+                signals['strategy'] = "mean_reversion"
+        
+        else:  # neutral
+            # Look for breakout opportunities
+            recent_high = self.historical_data['high'].tail(24).max()
+            recent_low = self.historical_data['low'].tail(24).min()
+            
+            if current_price > recent_high * 0.99:
+                signals['entry'] = recent_high * 1.001
+                signals['stop_loss'] = recent_high * 0.99
+                signals['take_profit'] = recent_high * 1.02
+                signals['size'] = position_size * 0.5  # Smaller position for breakouts
+                signals['strategy'] = "breakout"
+                
+            elif current_price < recent_low * 1.01:
+                signals['entry'] = recent_low * 0.999
+                signals['size'] = min(position_size * 0.5, self.portfolio['ETH'])
+                signals['strategy'] = "breakout"
+        
+        return signals
+    
+    def execute_trade(self, signals: Dict):
+        """Execute trades based on generated signals"""
+        if not signals or 'entry' not in signals:
+            print("No valid signals to execute")
+            return
+            
+        exchange = self.exchanges.get('pionex')
+        if not exchange:
+            print("No trading exchange configured")
+            return
+            
+        current_price = self.historical_data['close'].iloc[-1]
+        
+        try:
+            if signals['entry'] < current_price and 'size' in signals:
+                # Buy order
+                amount = signals['size']
+                if amount * current_price > 10:  # Minimum $10 order
+                    print(f"Executing BUY order for {amount} ETH at ~{current_price}")
+                    order = exchange.create_market_buy_order('ETH/USDT', amount)
+                    self.portfolio['USDT'] -= amount * order['price']
+                    self.portfolio['ETH'] += amount
+                    self._record_trade(order, signals['strategy'])
+                    
+            elif signals['entry'] > current_price and 'size' in signals and self.portfolio['ETH'] > 0:
+                # Sell order
+                amount = signals['size']
+                if amount > 0:
+                    print(f"Executing SELL order for {amount} ETH at ~{current_price}")
+                    order = exchange.create_market_sell_order('ETH/USDT', amount)
+                    self.portfolio['USDT'] += amount * order['price']
+                    self.portfolio['ETH'] -= amount
+                    self._record_trade(order, signals['strategy'])
+                    
+        except Exception as e:
+            print(f"Trade execution failed: {str(e)}")
+    
+    def _record_trade(self, order: Dict, strategy: str):
+        """Record trade details and update performance metrics"""
+        trade_record = {
+            'timestamp': datetime.now(),
+            'type': 'buy' if order['side'] == 'buy' else 'sell',
+            'price': order['price'],
+            'amount': order['amount'],
+            'cost': order['cost'],
+            'strategy': strategy,
+            'portfolio_value': self.get_portfolio_value()
+        }
+        
+        self.trade_history.append(trade_record)
+        
+        # Update strategy performance when trade is closed
+        if len(self.trade_history) > 1:
+            last_trade = self.trade_history[-2]
+            if last_trade['type'] != trade_record['type']:
+                profit = (trade_record['price'] - last_trade['price']) / last_trade['price']
+                if profit > 0:
+                    self.strategy_performance[strategy]['wins'] += 1
+                else:
+                    self.strategy_performance[strategy]['losses'] += 1
+    
+    def get_portfolio_value(self) -> float:
+        """Calculate total portfolio value in USDT"""
+        if self.historical_data.empty:
+            return self.portfolio['USDT']
+            
+        current_price = self.historical_data['close'].iloc[-1]
+        return self.portfolio['USDT'] + (self.portfolio['ETH'] * current_price)
+    
+    def check_risk_limits(self) -> bool:
+        """Check if we're within risk tolerance limits"""
+        current_value = self.get_portfolio_value()
+        
+        # Update peak balance
+        if current_value > self.peak_balance:
+            self.peak_balance = current_value
+            
+        # Check drawdown limit
+        drawdown = (self.peak_balance - current_value) / self.peak_balance
+        if drawdown > self.max_drawdown:
+            print(f"Warning: Max drawdown reached ({drawdown*100:.1f}%)")
+            return False
+            
+        return True
+    
+    def run(self, interval_minutes=15):
+        """Main trading loop"""
+        print("WaidBot Pro starting...")
+        
+        while True:
+            try:
+                start_time = time.time()
+                
+                # Update all data sources
+                self._update_historical_data()
+                self._update_onchain_data()
+                self._update_sentiment_data()
+                
+                # Determine market state
+                self.determine_market_state()
+                print(f"\nCurrent market state: {self.current_state.upper()}")
+                
+                # Generate trading signals
+                signals = self.generate_trading_signals()
+                print("Generated signals:", signals)
+                
+                # Check risk before trading
+                if self.check_risk_limits():
+                    self.execute_trade(signals)
+                else:
+                    print("Risk limits exceeded - pausing trading")
+                    
+                # Print current status
+                print("\nPortfolio:")
+                print(f"USDT: {self.portfolio['USDT']:.2f}")
+                print(f"ETH: {self.portfolio['ETH']:.4f}")
+                print(f"Total Value: {self.get_portfolio_value():.2f} USDT")
+                
+                # Wait for next cycle
+                elapsed = time.time() - start_time
+                sleep_time = max(interval_minutes * 60 - elapsed, 0)
+                print(f"\nNext update in {sleep_time/60:.1f} minutes...")
+                time.sleep(sleep_time)
+                
+            except KeyboardInterrupt:
+                print("\nShutting down WaidBot Pro...")
+                break
+            except Exception as e:
+                print(f"Error in main loop: {str(e)}")
+                time.sleep(60)  # Wait a minute before retrying
+
+if __name__ == "__main__":
+    bot = WaidBotPro()
+    bot.run()
+```
+
+## Key Advanced Features
+
+1. **Multi-Modal Market Analysis**:
+   - Price data from multiple exchanges
+   - On-chain metrics (gas fees, staking data)
+   - Social media sentiment analysis
+   - News sentiment analysis
+
+2. **Predictive "Vision" Capabilities**:
+   - LSTM neural network for price prediction
+   - Trend strength analysis
+   - Market state detection (bullish/bearish/neutral)
+   - Pattern recognition across timeframes
+
+3. **Professional Trading Features**:
+   - Multiple concurrent strategies (trend following, mean reversion, breakout)
+   - Dynamic position sizing
+   - Risk management with max drawdown limits
+   - Performance tracking by strategy
+
+4. **Self-Learning Components**:
+   - Adapts to changing market conditions
+   - Learns from successful/unsuccessful trades
+   - Incorporates new data sources automatically
+
+## How to Use This in Replit
+
+1. Create a new Python Repl
+2. Paste this entire code
+3. Add these packages to your `pyproject.toml`:
+   ```toml
+   [tool.poetry.dependencies]
+   python = "^3.8"
+   ccxt = "^4.0.0"
+   numpy = "^1.22.0"
+   pandas = "^1.4.0"
+   tensorflow = "^2.9.0"
+   scikit-learn = "^1.1.0"
+   transformers = "^4.21.0"
+   requests = "^2.28.0"
+   beautifulsoup4 = "^4.11.1"
+   python-dotenv = "^0.20.0"
+   matplotlib = "^3.5.0"
+   ```
+
+3. Create a `.env` file with your API keys:
+   ```
+   PIONEX_API_KEY=your_api_key
+   PIONEX_API_SECRET=your_api_secret
+   BINANCE_API_KEY=your_binance_key
+   BINANCE_API_SECRET=your_binance_secret
+   STARTING_BALANCE=1000
+   ```
+
+4. Run the bot
+
+## Next Level Enhancements
+
+To make WaidBot even more powerful, consider adding:
+
+1. **Reinforcement Learning** - Allow the bot to optimize its own strategies
+2. **Alternative Data Sources** - Whale alerts, exchange flows, futures data
+3. **Multi-Asset Trading** - Expand beyond ETH to other cryptocurrencies
+4. **Advanced Order Types** - OCO orders, TWAP execution
+5. **Blockchain Event Detection** - Smart contract monitoring for DeFi opportunities
+
+Would you like me to elaborate on any of these advanced features or explain specific parts of the implementation in more detail?
