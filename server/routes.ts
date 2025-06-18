@@ -21,6 +21,9 @@ let waidTrader: WaidTrader;
 let binanceWS: BinanceWebSocketService;
 let waidBotEngine: WaidBotEngine;
 
+import { mlEngine } from './services/mlEngine';
+import { portfolioManager } from './services/portfolioManager';
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
   ethMonitor = new EthMonitor();

@@ -1,4 +1,5 @@
 import WaidBotEngine from "@/components/WaidBotEngine";
+import PortfolioManager from "@/components/PortfolioManager";
 
 export default function WaidBotPage() {
   return (
@@ -13,7 +14,10 @@ export default function WaidBotPage() {
           </p>
         </div>
         
-        <WaidBotEngine />
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <WaidBotEngine />
+          <PortfolioManager />
+        </div>
       </div>
     </div>
   );
