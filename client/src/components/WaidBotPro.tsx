@@ -538,6 +538,161 @@ export function WaidBotPro() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="konslang" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* AI Evolution Status */}
+            <Card className="bg-gray-900 border-orange-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-orange-600 to-red-600 text-white">
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  KonsLang AI Evolution
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-800 p-3 rounded-lg">
+                    <div className="text-sm text-gray-400">Evolution Stage</div>
+                    <div className="text-lg font-bold text-orange-400">
+                      {konsMemoryStats?.evolutionStage || 'apprentice'}
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 p-3 rounded-lg">
+                    <div className="text-sm text-gray-400">Total Memories</div>
+                    <div className="text-lg font-bold text-blue-400">
+                      {konsMemoryStats?.totalMemories || 0}
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 p-3 rounded-lg">
+                    <div className="text-sm text-gray-400">Wisdom Level</div>
+                    <div className="text-lg font-bold text-purple-400">
+                      {konsMemoryStats?.wisdomLevel || 70}%
+                    </div>
+                  </div>
+                  <div className="bg-gray-800 p-3 rounded-lg">
+                    <div className="text-sm text-gray-400">Success Rate</div>
+                    <div className="text-lg font-bold text-green-400">
+                      {konsMemoryStats?.successRate?.toFixed(1) || 0}%
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-gray-800 p-4 rounded-lg">
+                  <div className="text-sm text-gray-400 mb-2">Spiritual Alignment</div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-1000"
+                      style={{ width: `${konsMemoryStats?.spiritualAlignment || 90}%` }}
+                    />
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    {konsMemoryStats?.spiritualAlignment || 90}% aligned with divine trading wisdom
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Personality Matrix */}
+            <Card className="bg-gray-900 border-red-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
+                <CardTitle className="flex items-center gap-2">
+                  <Zap className="w-5 h-5" />
+                  Personality Matrix
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-3">
+                {konsPersonality && Object.entries(konsPersonality).map(([trait, value]) => (
+                  <div key={trait} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-400 capitalize">
+                      {trait.replace(/([A-Z])/g, ' $1').trim()}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-gray-700 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-red-500 to-orange-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${value}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-300 w-8">{Math.round(value as number)}%</span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Learning Progress */}
+            <Card className="bg-gray-900 border-yellow-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white">
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Learning Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                {konsLearning && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Total Experiences</span>
+                      <span className="text-lg font-bold text-yellow-400">
+                        {konsLearning.totalExperiences}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Average Profit</span>
+                      <span className={`text-lg font-bold ${konsLearning.averageProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        ${konsLearning.averageProfit?.toFixed(2) || '0.00'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Best Strategy</span>
+                      <span className="text-sm text-blue-400 font-semibold">
+                        {konsLearning.bestStrategy}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400">Adaptation Level</span>
+                      <span className="text-lg font-bold text-purple-400">
+                        {konsLearning.adaptationLevel}/10
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Sacred Patterns */}
+            <Card className="bg-gray-900 border-purple-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                <CardTitle className="flex items-center gap-2">
+                  <Atom className="w-5 h-5" />
+                  Sacred Patterns
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {konsSacredPatterns && Object.entries(konsSacredPatterns).map(([pattern, confidence]) => (
+                    <div key={pattern} className="flex items-center justify-between p-2 bg-gray-800 rounded">
+                      <span className="text-sm text-gray-300 capitalize">
+                        {pattern.replace(/_/g, ' ')}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-gray-700 rounded-full h-1.5">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 h-1.5 rounded-full"
+                            style={{ width: `${(confidence as number) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-400 w-8">
+                          {Math.round((confidence as number) * 100)}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
         <TabsContent value="prediction" className="space-y-4">
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
