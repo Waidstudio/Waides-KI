@@ -3,6 +3,7 @@ import { DivineSignal } from './divineCommLayer';
 import { mlEngine } from './mlEngine';
 import { portfolioManager } from './portfolioManager';
 import { storage } from '../storage';
+import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 
 export interface WaidDecision {
   action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
@@ -119,7 +120,16 @@ export class WaidBotEngine {
     
     let decision: WaidDecision;
     
-    // KonsLang Decision Matrix
+    // Get historical data for quantum analysis
+    const historicalData = await storage.getEthDataHistory(20);
+    
+    // Convert to quantum market data format
+    const marketData = divineQuantumFluxStrategy.convertEthDataToMarketData(ethData, historicalData);
+    
+    // Generate quantum signal using Divine Quantum Flux Strategy
+    const quantumSignal = divineQuantumFluxStrategy.generateSignal(marketData);
+    
+    // KonsLang Decision Matrix with Quantum Enhancement
     if (konsAnalysis.tradingWindow === 'FORBIDDEN') {
       decision = {
         action: 'OBSERVE',
@@ -129,21 +139,23 @@ export class WaidBotEngine {
         ethPosition: 'NEUTRAL',
         tradingPair: 'NONE',
         quantity: 0,
-        urgency: 'PATIENCE'
+        urgency: 'PATIENCE',
+        nextGenStrategy: 'QUANTUM_SUPERPOSITION'
       };
     }
-    else if (konsAnalysis.divineAlignment > 85 && konsAnalysis.ethVibration === 'ASCENDING') {
+    // Divine Quantum Flux Strategy Decision Matrix
+    else if (quantumSignal.strategy === 'QUANTUM_ENTANGLEMENT_BUY') {
       decision = {
         action: 'BUY_ETH',
-        reasoning: `KonsLang: Ultra-strong bullish alignment - ETH ascending with ${konsAnalysis.divineAlignment}% divine confirmation. Maximum ETH accumulation strategy`,
-        confidence: Math.min(98, konsAnalysis.divineAlignment),
-        konsWisdom: 'Ride the ascending wave with full conviction - accumulate ETH at optimal entry',
+        reasoning: `Divine Quantum Flux: Singularity-level alignment detected - ${quantumSignal.confidence * 100}% quantum certainty. Maximum ETH accumulation at perfect entry point`,
+        confidence: quantumSignal.confidence * 100,
+        konsWisdom: 'Quantum entanglement achieved - ride the singularity wave with full conviction',
         ethPosition: 'LONG',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'LONG'),
+        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
         urgency: 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: 'HYPER_MOMENTUM_ACCUMULATION'
+        nextGenStrategy: quantumSignal.strategy
       };
     }
     else if (konsAnalysis.divineAlignment > 75 && konsAnalysis.ethVibration === 'ASCENDING') {
