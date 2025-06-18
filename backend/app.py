@@ -6,7 +6,7 @@ import threading
 from typing import Dict, Any
 
 from .kons_powa_comm import divine_eth_intent, kons_communicator
-from .pionex_bot import waid_bot, run_bot
+from .waidbot import waid_bot, run_bot
 from .eth_connector import get_eth_price, get_eth_detailed_data
 
 app = Flask(__name__)
@@ -46,7 +46,7 @@ class AutomatedTradingEngine:
         """Main automated trading loop"""
         while self.is_running:
             try:
-                result = pionex_bot.run_automated_bot()
+                result = waid_bot.run_automated_bot()
                 print(f"Automated trade result: {result.get('status', 'unknown')}")
                 
                 # Log significant events

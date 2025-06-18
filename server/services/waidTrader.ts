@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { EthPriceData } from './ethMonitor';
 
-interface PionexOrder {
+interface WaidOrder {
   symbol: string;
   side: 'buy' | 'sell';
   type: 'limit' | 'market';
@@ -9,26 +9,26 @@ interface PionexOrder {
   price?: string;
 }
 
-interface PionexResponse {
+interface WaidResponse {
   orderId?: string;
   status: string;
   message?: string;
   error?: string;
 }
 
-export class PionexTrader {
+export class WaidTrader {
   private apiKey: string | undefined;
   private secretKey: string | undefined;
-  private baseUrl = 'https://api.pionex.com';
+  private baseUrl = 'https://api.waid.com';
 
   constructor() {
-    this.apiKey = process.env.PIONEX_API_KEY;
-    this.secretKey = process.env.PIONEX_SECRET_KEY;
+    this.apiKey = process.env.WAID_API_KEY;
+    this.secretKey = process.env.WAID_SECRET_KEY;
   }
 
   private generateSignature(timestamp: string, method: string, requestPath: string, body: string = ''): string {
     if (!this.secretKey) {
-      throw new Error('Pionex secret key not configured');
+      throw new Error('Waid secret key not configured');
     }
     
     const raw = `${timestamp}${method}${requestPath}${body}`;
@@ -40,7 +40,7 @@ export class PionexTrader {
 
   private async makeRequest(method: string, path: string, body?: any): Promise<any> {
     if (!this.apiKey || !this.secretKey) {
-      throw new Error('Pionex API credentials not configured');
+      throw new Error('Waid API credentials not configured');
     }
 
     const timestamp = Date.now().toString();
@@ -48,9 +48,9 @@ export class PionexTrader {
     const signature = this.generateSignature(timestamp, method, path, jsonBody);
 
     const headers = {
-      'PIONEX-KEY': this.apiKey,
-      'PIONEX-SIGN': signature,
-      'PIONEX-TIMESTAMP': timestamp,
+      'WAID-KEY': this.apiKey,
+      'WAID-SIGN': signature,
+      'WAID-TIMESTAMP': timestamp,
       'Content-Type': 'application/json'
     };
 

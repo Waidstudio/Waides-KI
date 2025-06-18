@@ -6,7 +6,7 @@ import { SignalAnalyzer } from "./services/signalAnalyzer.js";
 import { KonsEngine } from "./services/konsEngine.js";
 import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
-import { PionexTrader } from "./services/pionexTrader.js";
+import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
@@ -16,7 +16,7 @@ let signalAnalyzer: SignalAnalyzer;
 let konsEngine: KonsEngine;
 let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
-let pionexTrader: PionexTrader;
+let waidTrader: WaidTrader;
 let binanceWS: BinanceWebSocketService;
 
 export async function registerRoutes(app: Express): Promise<Server> {
