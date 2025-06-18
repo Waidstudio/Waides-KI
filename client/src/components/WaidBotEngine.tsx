@@ -299,8 +299,7 @@ export default function WaidBotEngine() {
               <div>
                 <div className="text-sm waides-text-secondary">Position</div>
                 <div className={`font-semibold ${
-                  currentDecision.ethPosition === 'LONG' ? 'text-green-400' :
-                  currentDecision.ethPosition === 'SHORT' ? 'text-red-400' : 'text-gray-400'
+                  currentDecision.ethPosition === 'LONG' ? 'text-green-400' : 'text-gray-400'
                 }`}>
                   {currentDecision.ethPosition}
                 </div>
@@ -396,36 +395,24 @@ export default function WaidBotEngine() {
         </Card>
       )}
 
-      {/* Trading Pairs Info */}
+      {/* Spot Trading Info */}
       <Card className="waides-card waides-border border">
         <CardHeader>
-          <CardTitle>ETH Leveraged Tokens</CardTitle>
+          <CardTitle>ETH Spot Trading</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-green-900/20 rounded-lg p-4 border border-green-500/30">
-              <div className="flex items-center space-x-2 mb-2">
-                <TrendingUp className="w-5 h-5 text-green-400" />
-                <span className="font-semibold text-green-400">ETH3L</span>
-              </div>
-              <p className="text-sm waides-text-secondary">
-                3x Long ETH - Amplifies ETH gains by 3x
-              </p>
+          <div className="bg-blue-900/20 rounded-lg p-4 border border-blue-500/30">
+            <div className="flex items-center space-x-2 mb-2">
+              <TrendingUp className="w-5 h-5 text-blue-400" />
+              <span className="font-semibold text-blue-400">ETH/USDT</span>
             </div>
-            
-            <div className="bg-red-900/20 rounded-lg p-4 border border-red-500/30">
-              <div className="flex items-center space-x-2 mb-2">
-                <TrendingDown className="w-5 h-5 text-red-400" />
-                <span className="font-semibold text-red-400">ETH3S</span>
-              </div>
-              <p className="text-sm waides-text-secondary">
-                3x Short ETH - Profits when ETH falls
-              </p>
-            </div>
+            <p className="text-sm waides-text-secondary">
+              Spot trading of Ethereum against USDT - Safe, direct ETH ownership
+            </p>
           </div>
           
           <div className="text-xs waides-text-secondary">
-            WaidBot analyzes market conditions using KonsLang to autonomously trade these leveraged tokens
+            WaidBot analyzes market conditions using KonsLang to buy and sell ETH spot positions only
           </div>
         </CardContent>
       </Card>

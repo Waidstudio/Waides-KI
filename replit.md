@@ -150,6 +150,16 @@ Changelog:
   - Built comprehensive WaidBot Pro frontend (client/src/components/WaidBotPro.tsx) with tabbed interface
   - Added navigation integration with dashboard menu highlighting WaidBot Pro as premium offering
   - System provides professional-grade market analysis without external API dependencies
+- June 18, 2025. Complete Conversion to Spot-Only ETH Trading
+  - Removed all leveraged tokens (ETH3L/ETH3S) and derivatives trading from entire system
+  - Updated WaidDecision interface to only support BUY_ETH, SELL_ETH, HOLD, OBSERVE actions
+  - Modified ethPosition to only support LONG and NEUTRAL (removed SHORT for derivatives)
+  - Changed tradingPair to only support ETH/USDT spot trading (removed ETH3L/USDT, ETH3S/USDT)
+  - Updated WaidBotEngine decision-making logic for spot-only trading strategies
+  - Converted Portfolio Manager to handle only LONG positions for spot ETH ownership
+  - Updated all frontend components to display spot ETH trading instead of leveraged tokens
+  - Modified WaidBotEngine component to show "ETH Spot Trading" with ETH/USDT pair information
+  - System now fully compliant with spot-only trading requirements, no derivatives or futures allowed
 
 ## User Preferences
 
