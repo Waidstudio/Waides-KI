@@ -139,6 +139,27 @@ export function WaidBotPro() {
     refetchInterval: 15000,
   });
 
+  // KonsLang AI Learning Features
+  const { data: konsPersonality } = useQuery({
+    queryKey: ['/api/konslang/personality'],
+    refetchInterval: 30000,
+  });
+
+  const { data: konsLearning } = useQuery({
+    queryKey: ['/api/konslang/learning'],
+    refetchInterval: 20000,
+  });
+
+  const { data: konsMemoryStats } = useQuery({
+    queryKey: ['/api/konslang/memory-stats'],
+    refetchInterval: 15000,
+  });
+
+  const { data: konsSacredPatterns } = useQuery({
+    queryKey: ['/api/konslang/patterns'],
+    refetchInterval: 45000,
+  });
+
   // Auto trading mutation
   const autoTradeMutation = useMutation({
     mutationFn: () => apiRequest('/api/waidbot-pro/auto-trade', { method: 'POST' }),
@@ -311,10 +332,14 @@ export function WaidBotPro() {
       </div>
 
       <Tabs defaultValue="quantum" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6 bg-gray-800">
+        <TabsList className="grid w-full grid-cols-7 bg-gray-800">
           <TabsTrigger value="quantum" className="text-gray-300 bg-gradient-to-r from-purple-600 to-blue-600">
             <Atom className="w-4 h-4 mr-1" />
             Quantum
+          </TabsTrigger>
+          <TabsTrigger value="konslang" className="text-gray-300 bg-gradient-to-r from-orange-600 to-red-600">
+            <Brain className="w-4 h-4 mr-1" />
+            KonsLang AI
           </TabsTrigger>
           <TabsTrigger value="prediction" className="text-gray-300">Prediction</TabsTrigger>
           <TabsTrigger value="signals" className="text-gray-300">Signals</TabsTrigger>

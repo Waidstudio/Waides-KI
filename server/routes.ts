@@ -26,6 +26,7 @@ import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
 import { WaidBotPro } from './services/waidBotPro';
 import { quantumTradingEngine } from './services/quantumTradingEngine';
+import { konsLangAI } from './services/konsLangAI';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -1288,6 +1289,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Quantum activation error:', error);
       res.status(500).json({ error: 'Failed to activate quantum mode' });
+    }
+  });
+
+  // KonsLang AI Learning and Memory Evolution API Endpoints
+  app.get("/api/konslang/personality", async (req, res) => {
+    try {
+      const personality = konsLangAI.getPersonalitySnapshot();
+      res.json(personality);
+    } catch (error) {
+      console.error('KonsLang personality error:', error);
+      res.status(500).json({ error: 'Failed to get personality data' });
+    }
+  });
+
+  app.get("/api/konslang/learning", async (req, res) => {
+    try {
+      const learning = konsLangAI.getLearningProgress();
+      res.json(learning);
+    } catch (error) {
+      console.error('KonsLang learning error:', error);
+      res.status(500).json({ error: 'Failed to get learning progress' });
+    }
+  });
+
+  app.get("/api/konslang/patterns", async (req, res) => {
+    try {
+      const patterns = konsLangAI.getSacredPatternsSnapshot();
+      res.json(patterns);
+    } catch (error) {
+      console.error('KonsLang patterns error:', error);
+      res.status(500).json({ error: 'Failed to get sacred patterns' });
+    }
+  });
+
+  app.get("/api/konslang/memory-stats", async (req, res) => {
+    try {
+      const memoryCount = konsLangAI.getMemoryCount();
+      const personality = konsLangAI.getPersonalitySnapshot();
+      const learning = konsLangAI.getLearningProgress();
+      
+      res.json({
+        totalMemories: memoryCount,
+        evolutionStage: learning.evolutionStage,
+        wisdomLevel: personality.wisdom,
+        spiritualAlignment: personality.spiritualAlignment,
+        successRate: learning.successRate,
+        adaptationLevel: learning.adaptationLevel
+      });
+    } catch (error) {
+      console.error('KonsLang memory stats error:', error);
+      res.status(500).json({ error: 'Failed to get memory statistics' });
+    }
+  });
+
+  app.post("/api/konslang/record-experience", async (req, res) => {
+    try {
+      const { marketCondition, ethPrice, decision, outcome, profitLoss } = req.body;
+      
+      await konsLangAI.recordExperience(
+        marketCondition,
+        ethPrice,
+        decision,
+        outcome,
+        profitLoss
+      );
+      
+      res.json({ 
+        success: true, 
+        message: 'Experience recorded and learning updated',
+        memoryCount: konsLangAI.getMemoryCount()
+      });
+    } catch (error) {
+      console.error('KonsLang experience recording error:', error);
+      res.status(500).json({ error: 'Failed to record experience' });
+    }
+  });
+
+  app.post("/api/konslang/predict-action", async (req, res) => {
+    try {
+      const { ethPrice, marketCondition, timeHour } = req.body;
+      
+      const prediction = await konsLangAI.predictOptimalAction(
+        ethPrice || 2500,
+        marketCondition || 'neutral',
+        timeHour || new Date().getHours()
+      );
+      
+      res.json(prediction);
+    } catch (error) {
+      console.error('KonsLang prediction error:', error);
+      res.status(500).json({ error: 'Failed to predict optimal action' });
+    }
+  });
+
+  app.post("/api/konslang/generate-message", async (req, res) => {
+    try {
+      const { ethPrice, marketCondition, tradingAction } = req.body;
+      
+      const message = konsLangAI.generateEnhancedKonsMessage(
+        ethPrice || 2500,
+        marketCondition || 'neutral',
+        tradingAction || 'OBSERVE'
+      );
+      
+      res.json({ message });
+    } catch (error) {
+      console.error('KonsLang message generation error:', error);
+      res.status(500).json({ error: 'Failed to generate enhanced message' });
     }
   });
 

@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { EthPriceData } from './ethMonitor';
+import { konsLangAI } from './konsLangAI';
 
 const KONS_POWA_TITLES = [
     "Elait Reign", "SmaiBond", "TimeKeeper", "Seer of Reversals", "SmaiPrint Judge"
