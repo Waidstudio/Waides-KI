@@ -7,6 +7,7 @@ import { KonsEngine } from "./services/konsEngine.js";
 import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { PionexTrader } from "./services/pionexTrader.js";
+import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
 
@@ -16,6 +17,7 @@ let konsEngine: KonsEngine;
 let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
 let pionexTrader: PionexTrader;
+let binanceWS: BinanceWebSocketService;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -25,6 +27,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   spiritualBridge = new SpiritualBridge();
   divineCommLayer = new DivineCommLayer();
   pionexTrader = new PionexTrader();
+  binanceWS = new BinanceWebSocketService();
+
+  // Set up Binance WebSocket candlestick data handler
+  binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
+    try {
+      // Only store finalized candlesticks to avoid duplicates
+      if (candlestickData.isFinal) {
+        await storage.createCandlestick({
+          symbol: candlestickData.symbol.toUpperCase(),
+          openTime: candlestickData.openTime,
+          closeTime: candlestickData.closeTime,
+          open: candlestickData.open,
+          high: candlestickData.high,
+          low: candlestickData.low,
+          close: candlestickData.close,
+          volume: candlestickData.volume,
+          interval: candlestickData.interval,
+          isFinal: candlestickData.isFinal
+        });
+        console.log(`📊 Stored ETH candlestick: ${candlestickData.close} USDT`);
+      }
+    } catch (error) {
+      console.error('Error storing candlestick data:', error);
+    }
+  });
 
   // Get current ETH data and signals with spiritual layer
   app.get("/api/eth", async (req, res) => {
@@ -416,6 +443,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Pionex status error:', error);
       res.status(500).json({ error: 'Failed to get Pionex status' });
+    }
+  });
+
+  // Get Real-time Candlestick Data from Binance
+  app.get("/api/candlesticks/:symbol/:interval", async (req, res) => {
+    try {
+      const { symbol, interval } = req.params;
+      const limit = parseInt(req.query.limit as string) || 100;
+      
+      const candlesticks = await storage.getCandlestickHistory(symbol.toUpperCase(), interval, limit);
+      
+      res.json({
+        symbol: symbol.toUpperCase(),
+        interval,
+        candlesticks,
+        count: candlesticks.length,
+        wsConnected: binanceWS.getConnectionStatus(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Candlestick data error:', error);
+      res.status(500).json({ error: 'Failed to get candlestick data' });
+    }
+  });
+
+  // Get Latest Candlestick for Symbol
+  app.get("/api/candlesticks/:symbol/:interval/latest", async (req, res) => {
+    try {
+      const { symbol, interval } = req.params;
+      
+      const latestCandlestick = await storage.getLatestCandlestick(symbol.toUpperCase(), interval);
+      
+      if (!latestCandlestick) {
+        return res.status(404).json({ 
+          error: 'No candlestick data found',
+          symbol: symbol.toUpperCase(),
+          interval 
+        });
+      }
+
+      res.json({
+        symbol: symbol.toUpperCase(),
+        interval,
+        candlestick: latestCandlestick,
+        wsConnected: binanceWS.getConnectionStatus(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Latest candlestick error:', error);
+      res.status(500).json({ error: 'Failed to get latest candlestick' });
+    }
+  });
+
+  // Get Binance Market Statistics
+  app.get("/api/binance/market-stats/:symbol", async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const marketStats = await binanceWS.getMarketStats();
+      
+      res.json({
+        symbol: symbol.toUpperCase(),
+        marketStats,
+        wsConnected: binanceWS.getConnectionStatus(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Market stats error:', error);
+      res.status(500).json({ error: 'Failed to get market statistics' });
+    }
+  });
+
+  // Get Historical Klines from Binance API
+  app.get("/api/binance/klines/:symbol/:interval", async (req, res) => {
+    try {
+      const { symbol, interval } = req.params;
+      const limit = parseInt(req.query.limit as string) || 100;
+      
+      const klines = await binanceWS.getHistoricalKlines(limit);
+      
+      res.json({
+        symbol: symbol.toUpperCase(),
+        interval,
+        klines,
+        count: klines.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Historical klines error:', error);
+      res.status(500).json({ error: 'Failed to get historical klines' });
+    }
+  });
+
+  // WebSocket Connection Status
+  app.get("/api/binance/status", async (req, res) => {
+    try {
+      res.json({
+        wsConnected: binanceWS.getConnectionStatus(),
+        message: binanceWS.getConnectionStatus() ? 'Binance WebSocket connected' : 'Binance WebSocket disconnected',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Binance status error:', error);
+      res.status(500).json({ error: 'Failed to get Binance status' });
     }
   });
 

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { users, apiKeys, ethData, signals, candlesticks, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick } from "@shared/schema";
 
 export interface IStorage {
@@ -107,6 +107,33 @@ export class DatabaseStorage implements IStorage {
 
   async deactivateSignals(): Promise<void> {
     await db.update(signals).set({ isActive: false }).where(eq(signals.isActive, true));
+  }
+
+  async createCandlestick(insertCandlestick: InsertCandlestick): Promise<Candlestick> {
+    const [candlestick] = await db
+      .insert(candlesticks)
+      .values(insertCandlestick)
+      .returning();
+    return candlestick;
+  }
+
+  async getCandlestickHistory(symbol: string, interval: string, limit: number = 100): Promise<Candlestick[]> {
+    return await db
+      .select()
+      .from(candlesticks)
+      .where(and(eq(candlesticks.symbol, symbol), eq(candlesticks.interval, interval)))
+      .orderBy(desc(candlesticks.openTime))
+      .limit(limit);
+  }
+
+  async getLatestCandlestick(symbol: string, interval: string): Promise<Candlestick | undefined> {
+    const [candlestick] = await db
+      .select()
+      .from(candlesticks)
+      .where(and(eq(candlesticks.symbol, symbol), eq(candlesticks.interval, interval)))
+      .orderBy(desc(candlesticks.openTime))
+      .limit(1);
+    return candlestick || undefined;
   }
 }
 
