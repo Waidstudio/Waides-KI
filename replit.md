@@ -184,6 +184,17 @@ Changelog:
   - Created KonsLang AI API endpoints: /api/konslang/* for personality, learning, patterns, memory stats, experience recording
   - Added KonsLang AI Evolution tab to WaidBot Pro with real-time personality matrix and learning progress visualization
   - System now learns from every trading experience and evolves its personality and decision-making over time
+- June 18, 2025. Enhanced WaidBot Pro with ETH-Only Trading and Confirmation Signals
+  - Converted entire system to focus exclusively on ETH spot trading (ETH/USDT pair only)
+  - Removed all multi-coin trading functionality including ETH3L/ETH3S leveraged tokens
+  - Updated WaidDecision interface to support only BUY_ETH, SELL_ETH, HOLD, OBSERVE actions
+  - Modified ethPosition to support only LONG and NEUTRAL (removed SHORT for derivatives)
+  - Added BTC and SOL confirmation signals for analysis only (not for trading)
+  - Implemented generateBTCConfirmation() and generateSOLConfirmation() methods in WaidBotEngine
+  - Enhanced frontend to display BTC/SOL confirmation signals with trend analysis and strength indicators
+  - Updated position calculation logic for ETH-only trading with conservative selling for protection
+  - Modified KonsLang decision-making to prioritize ETH accumulation and defensive liquidation strategies
+  - System now provides comprehensive ETH trading analysis with multi-asset confirmation without trading other cryptocurrencies
 
 ## User Preferences
 

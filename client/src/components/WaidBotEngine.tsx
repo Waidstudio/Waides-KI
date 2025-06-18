@@ -309,8 +309,7 @@ export default function WaidBotEngine() {
               <div>
                 <div className="text-sm waides-text-secondary">Position</div>
                 <div className={`font-semibold ${
-                  currentDecision.ethPosition === 'LONG' ? 'text-green-400' : 
-                  currentDecision.ethPosition === 'SHORT' ? 'text-red-400' : 'text-gray-400'
+                  currentDecision.ethPosition === 'LONG' ? 'text-green-400' : 'text-gray-400'
                 }`}>
                   {currentDecision.ethPosition}
                 </div>
