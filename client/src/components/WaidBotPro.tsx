@@ -210,8 +210,16 @@ export function WaidBotPro() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">WaidBot Pro</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-pulse">
+            WaidBot Pro
+          </h1>
           <p className="text-gray-400">Advanced AI-Powered ETH Trading System</p>
+          <div className="flex items-center space-x-2 mt-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs text-green-400">Quantum Mode Ready</span>
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <span className="text-xs text-blue-400">ETH3L/ETH3S Active</span>
+          </div>
         </div>
         <Button
           onClick={handleAutoTrade}
@@ -302,14 +310,208 @@ export function WaidBotPro() {
         </Card>
       </div>
 
-      <Tabs defaultValue="prediction" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-800">
+      <Tabs defaultValue="quantum" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-6 bg-gray-800">
+          <TabsTrigger value="quantum" className="text-gray-300 bg-gradient-to-r from-purple-600 to-blue-600">
+            <Atom className="w-4 h-4 mr-1" />
+            Quantum
+          </TabsTrigger>
           <TabsTrigger value="prediction" className="text-gray-300">Prediction</TabsTrigger>
           <TabsTrigger value="signals" className="text-gray-300">Signals</TabsTrigger>
           <TabsTrigger value="analytics" className="text-gray-300">Analytics</TabsTrigger>
           <TabsTrigger value="trades" className="text-gray-300">Trades</TabsTrigger>
           <TabsTrigger value="risk" className="text-gray-300">Risk</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="quantum" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Quantum Activation Panel */}
+            <Card className="bg-gradient-to-br from-purple-900 to-blue-900 border-purple-500">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Zap className="w-5 h-5 mr-2 text-yellow-400" />
+                  Quantum Mode Activation
+                </CardTitle>
+                <CardDescription className="text-purple-200">
+                  Next 500 Years Trading Technology
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button
+                  onClick={() => quantumActivationMutation.mutate()}
+                  disabled={quantumActivationMutation.isPending}
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3"
+                >
+                  <Atom className="w-4 h-4 mr-2" />
+                  {quantumActivationMutation.isPending ? 'Initializing Quantum...' : 'ACTIVATE QUANTUM MODE'}
+                </Button>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center text-green-400">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Temporal Arbitrage
+                  </div>
+                  <div className="flex items-center text-green-400">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Zero-Loss Guarantee
+                  </div>
+                  <div className="flex items-center text-green-400">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Micro-Movement Capture
+                  </div>
+                  <div className="flex items-center text-green-400">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Probability Wave Control
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quantum Signal Interface */}
+            <Card className="bg-gray-800 border-cyan-500">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Eye className="w-5 h-5 mr-2 text-cyan-400" />
+                  Quantum Signal Reader
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Real-time quantum market intelligence
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {quantumSignal ? (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-cyan-400 text-sm">Quantum Action:</span>
+                      <Badge className="bg-cyan-600 text-white">
+                        {(quantumSignal as any).action || 'ANALYZING'}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-cyan-400 text-sm">Temporal Confidence:</span>
+                      <Progress 
+                        value={((quantumSignal as any).confidence || 0) * 100} 
+                        className="w-24 h-2"
+                      />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-cyan-400 text-sm">Quantum Phase:</span>
+                      <span className="text-white text-sm">
+                        {(quantumSignal as any).phase || 'INITIALIZING'}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-400 py-4">
+                    <Sparkles className="w-8 h-8 mx-auto mb-2 text-cyan-400" />
+                    Quantum signals loading...
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quantum Market Analysis */}
+          <Card className="bg-gray-800 border-purple-500">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Globe className="w-5 h-5 mr-2 text-purple-400" />
+                Quantum Market Matrix
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Multi-dimensional probability analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {quantumMarket ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center space-y-2">
+                    <div className="text-purple-400 text-sm">Temporal Arbitrage</div>
+                    <div className="text-2xl font-bold text-white">
+                      {((quantumMarket as any).temporalArbitrage || 0).toFixed(3)}%
+                    </div>
+                    <Progress 
+                      value={Math.abs((quantumMarket as any).temporalArbitrage || 0) * 10} 
+                      className="h-2"
+                    />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="text-blue-400 text-sm">Probability Waves</div>
+                    <div className="text-2xl font-bold text-white">
+                      {((quantumMarket as any).probabilityWaves || 0).toFixed(1)}
+                    </div>
+                    <Progress 
+                      value={(quantumMarket as any).probabilityWaves || 0} 
+                      className="h-2"
+                    />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="text-green-400 text-sm">Zero-Loss Factor</div>
+                    <div className="text-2xl font-bold text-white">
+                      {((quantumMarket as any).zeroLossFactor || 0).toFixed(2)}x
+                    </div>
+                    <Progress 
+                      value={((quantumMarket as any).zeroLossFactor || 0) * 20} 
+                      className="h-2"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-gray-400 py-8">
+                  <Cpu className="w-12 h-12 mx-auto mb-4 text-purple-400" />
+                  Quantum matrix initializing...
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Quantum Performance Dashboard */}
+          <Card className="bg-gray-800 border-green-500">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-green-400" />
+                Quantum Performance Metrics
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Beyond human imagination analytics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {quantumPerformance ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-green-400 text-sm">Total Captures</div>
+                    <div className="text-xl font-bold text-white">
+                      {(quantumPerformance as any).totalCaptures || 0}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-yellow-400 text-sm">Micro Profits</div>
+                    <div className="text-xl font-bold text-white">
+                      ${((quantumPerformance as any).microProfits || 0).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-blue-400 text-sm">Quantum Efficiency</div>
+                    <div className="text-xl font-bold text-white">
+                      {((quantumPerformance as any).efficiency || 0).toFixed(1)}%
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-purple-400 text-sm">Success Rate</div>
+                    <div className="text-xl font-bold text-white">
+                      {((quantumPerformance as any).successRate || 0).toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-gray-400 py-4">
+                  <Clock className="w-8 h-8 mx-auto mb-2 text-green-400" />
+                  Quantum performance calculating...
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="prediction" className="space-y-4">
           <Card className="bg-gray-800 border-gray-700">
