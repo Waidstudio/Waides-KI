@@ -6,7 +6,7 @@ import threading
 from typing import Dict, Any
 
 from .kons_powa_comm import divine_eth_intent, kons_communicator
-from .pionex_bot import pionex_bot, run_bot
+from .pionex_bot import waid_bot, run_bot
 from .eth_connector import get_eth_price, get_eth_detailed_data
 
 app = Flask(__name__)
@@ -76,7 +76,7 @@ def get_signal():
 def execute_auto_trade():
     """Execute single automated trade based on divine signal"""
     try:
-        result = pionex_bot.run_automated_bot()
+        result = waid_bot.run_automated_bot()
         return jsonify({"executed": result})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -90,7 +90,7 @@ def execute_manual_trade():
         quantity = float(data.get('quantity', 0.01))
         
         current_price = get_eth_price()
-        result = pionex_bot.execute_kons_trade(action, current_price, quantity)
+        result = waid_bot.execute_kons_trade(action, current_price, quantity)
         
         return jsonify(result)
     except Exception as e:
@@ -122,9 +122,9 @@ def get_automated_trading_status():
     """Get current automated trading status"""
     return jsonify({
         "is_running": auto_engine.is_running,
-        "pionex_configured": pionex_bot.is_configured(),
-        "last_trade_time": pionex_bot.last_trade_time,
-        "trade_count": len(pionex_bot.trade_history)
+        "waid_configured": waid_bot.is_configured(),
+        "last_trade_time": waid_bot.last_trade_time,
+        "trade_count": len(waid_bot.trade_history)
     })
 
 @app.route('/api/eth-price', methods=['GET'])
@@ -144,12 +144,12 @@ def get_current_eth_price():
 
 @app.route('/api/account-balance', methods=['GET'])
 def get_account_balance():
-    """Get Pionex account balance"""
+    """Get Waid account balance"""
     try:
-        if not pionex_bot.is_configured():
-            return jsonify({"error": "Pionex API not configured"}), 400
+        if not waid_bot.is_configured():
+            return jsonify({"error": "Waid API not configured"}), 400
         
-        balance = pionex_bot.get_account_balance()
+        balance = waid_bot.get_account_balance()
         return jsonify(balance)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -158,8 +158,8 @@ def get_account_balance():
 def get_trade_history():
     """Get recent trade history"""
     try:
-        history = pionex_bot.get_trade_history()
-        stats = pionex_bot.get_performance_stats()
+        history = waid_bot.get_trade_history()
+        stats = waid_bot.get_performance_stats()
         
         return jsonify({
             "history": history,
@@ -221,10 +221,10 @@ def get_system_status():
                     "eth_whisper_mode": kons_communicator.eth_whisper_mode,
                     "signal_count": len(kons_communicator.signal_history)
                 },
-                "pionex_bot": {
-                    "configured": pionex_bot.is_configured(),
-                    "trade_count": len(pionex_bot.trade_history),
-                    "last_trade_time": pionex_bot.last_trade_time
+                "waid_bot": {
+                    "configured": waid_bot.is_configured(),
+                    "trade_count": len(waid_bot.trade_history),
+                    "last_trade_time": waid_bot.last_trade_time
                 },
                 "automated_trading": {
                     "is_running": auto_engine.is_running
@@ -261,11 +261,11 @@ if __name__ == '__main__':
     print("🤖 Kons Powa Divine Intelligence Activated")
     print("📊 Real-time ETH Trading System Online")
     
-    # Check if Pionex is configured
-    if pionex_bot.is_configured():
-        print("✅ Pionex API configured and ready")
+    # Check if Waid is configured
+    if waid_bot.is_configured():
+        print("✅ Waid API configured and ready")
     else:
-        print("⚠️  Pionex API not configured - set PIONEX_API_KEY and PIONEX_SECRET_KEY")
+        print("⚠️  Waid API not configured - set WAID_API_KEY and WAID_SECRET_KEY")
     
     # Run Flask app
     port = int(os.getenv('PORT', 5001))  # Use port 5001 to avoid conflict with Node.js

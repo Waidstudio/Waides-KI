@@ -255,9 +255,9 @@ class WaidBot:
         }
 
 # Global instance
-pionex_bot = PionexBot()
+waid_bot = WaidBot()
 
 # Backward compatibility function
 def run_bot() -> Dict:
     """Simple function wrapper for backward compatibility"""
-    return pionex_bot.run_automated_bot()
+    return waid_bot.run_automated_bot()
