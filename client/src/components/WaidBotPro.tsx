@@ -18,7 +18,15 @@ import {
   AlertTriangle,
   CheckCircle,
   Play,
-  Pause
+  Pause,
+  Zap,
+  Atom,
+  Globe,
+  Clock,
+  Lock,
+  Sparkles,
+  Eye,
+  Cpu
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -115,6 +123,22 @@ export function WaidBotPro() {
     refetchInterval: 60000,
   });
 
+  // Quantum Trading Features - Next 500 Years Technology
+  const { data: quantumSignal } = useQuery({
+    queryKey: ['/api/waidbot-pro/quantum-signal'],
+    refetchInterval: 5000, // Ultra-fast quantum updates
+  });
+
+  const { data: quantumMarket } = useQuery({
+    queryKey: ['/api/waidbot-pro/quantum-market'],
+    refetchInterval: 8000,
+  });
+
+  const { data: quantumPerformance } = useQuery({
+    queryKey: ['/api/waidbot-pro/quantum-performance'],
+    refetchInterval: 15000,
+  });
+
   // Auto trading mutation
   const autoTradeMutation = useMutation({
     mutationFn: () => apiRequest('/api/waidbot-pro/auto-trade', { method: 'POST' }),
@@ -135,6 +159,16 @@ export function WaidBotPro() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/portfolio'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/trades'] });
+    },
+  });
+
+  // Quantum Mode Activation
+  const quantumActivationMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-pro/activate-quantum', { method: 'POST' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/quantum-signal'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/quantum-market'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/quantum-performance'] });
     },
   });
 
