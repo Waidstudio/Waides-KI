@@ -113,6 +113,14 @@ Changelog:
   - Built ETH Whisper Mode for passive market listening
   - Added breath stability control and whisper mode toggle APIs
   - Enhanced Divine Command Center with automated trading controls
+- June 18, 2025. Integrated Binance WebSocket for Real-time Candlestick Data
+  - Added Binance WebSocket service for live ETH/USDT candlestick streaming
+  - Created candlesticks database table for persistent storage
+  - Built real-time candlestick chart component with OHLC visualization
+  - Implemented fallback polling system using Binance REST API
+  - Added comprehensive candlestick data API endpoints
+  - Enhanced dashboard with live market data visualization
+  - Integrated WebSocket connection status monitoring
 
 ## User Preferences
 
