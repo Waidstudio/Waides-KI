@@ -26,7 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   konsEngine = new KonsEngine();
   spiritualBridge = new SpiritualBridge();
   divineCommLayer = new DivineCommLayer();
-  pionexTrader = new PionexTrader();
+  waidTrader = new WaidTrader();
   binanceWS = new BinanceWebSocketService();
 
   // Set up Binance WebSocket candlestick data handler
@@ -321,10 +321,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Execute Automated Trade via Kons Powa Divine Signal
   app.post("/api/execute-trade", async (req, res) => {
     try {
-      if (!pionexTrader.isConfigured()) {
+      if (!waidTrader.isConfigured()) {
         return res.status(400).json({ 
-          error: 'Pionex API keys not configured',
-          message: 'Please set PIONEX_API_KEY and PIONEX_SECRET_KEY in environment'
+          error: 'Waid API keys not configured',
+          message: 'Please set WAID_API_KEY and WAID_SECRET_KEY in environment'
         });
       }
 
@@ -366,7 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { quantity = 0.01 } = req.body;
-      const tradeResult = await pionexTrader.executeKonsTrade(
+      const tradeResult = await waidTrader.executeKonsTrade(
         divineSignal.action,
         ethData.price,
         quantity
@@ -424,25 +424,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get Pionex Account Status
-  app.get("/api/pionex-status", async (req, res) => {
+  // Get Waid Account Status
+  app.get("/api/waid-status", async (req, res) => {
     try {
-      if (!pionexTrader.isConfigured()) {
+      if (!waidTrader.isConfigured()) {
         return res.json({
           configured: false,
-          message: 'Pionex API keys not configured'
+          message: 'Waid API keys not configured'
         });
       }
 
-      const balance = await pionexTrader.getAccountBalance();
+      const balance = await waidTrader.getAccountBalance();
       res.json({
         configured: true,
         balance,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Pionex status error:', error);
-      res.status(500).json({ error: 'Failed to get Pionex status' });
+      console.error('Waid status error:', error);
+      res.status(500).json({ error: 'Failed to get Waid status' });
     }
   });
 

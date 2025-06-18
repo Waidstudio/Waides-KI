@@ -65,7 +65,7 @@ export class WaidTrader {
     return response.json();
   }
 
-  async sendOrder(order: PionexOrder): Promise<PionexResponse> {
+  async sendOrder(order: WaidOrder): Promise<WaidResponse> {
     try {
       const result = await this.makeRequest('POST', '/api/v1/order', order);
       return {
@@ -85,7 +85,7 @@ export class WaidTrader {
     action: 'BUY LONG' | 'SELL SHORT' | 'NO TRADE' | 'OBSERVE',
     ethPrice: number,
     quantity: number = 0.01
-  ): Promise<PionexResponse> {
+  ): Promise<WaidResponse> {
     if (action === 'NO TRADE' || action === 'OBSERVE') {
       return {
         status: 'skipped',
@@ -94,7 +94,7 @@ export class WaidTrader {
     }
 
     const side = action === 'BUY LONG' ? 'buy' : 'sell';
-    const order: PionexOrder = {
+    const order: WaidOrder = {
       symbol: 'ETHUSDT',
       side,
       type: 'limit',
