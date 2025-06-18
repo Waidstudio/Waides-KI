@@ -139,22 +139,25 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Navigation Menu */}
-                <div className="hidden md:flex items-center space-x-2">
-                  <Link href="/">
-                    <Button variant="ghost" className="text-sm">
-                      Dashboard
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <Link href="/" className="inline-block">
+                    <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 py-2 hover:bg-slate-700/50 transition-colors text-slate-200">
+                      <span className="hidden sm:inline">Dashboard</span>
+                      <span className="sm:hidden">Home</span>
                     </Button>
                   </Link>
-                  <Link href="/waidbot">
-                    <Button variant="ghost" className="text-sm flex items-center space-x-2">
-                      <Brain className="w-4 h-4" />
-                      <span>WaidBot</span>
+                  <Link href="/waidbot" className="inline-block">
+                    <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 py-2 flex items-center space-x-1 hover:bg-slate-700/50 transition-colors text-slate-200">
+                      <Brain className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">WaidBot</span>
+                      <span className="sm:hidden">Bot</span>
                     </Button>
                   </Link>
-                  <Link href="/waidbot-pro">
-                    <Button variant="ghost" className="text-sm flex items-center space-x-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
-                      <Brain className="w-4 h-4 text-blue-400" />
-                      <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">WaidBot Pro</span>
+                  <Link href="/waidbot-pro" className="inline-block">
+                    <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 py-2 flex items-center space-x-1 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 hover:from-blue-600/30 hover:to-purple-600/30 transition-colors">
+                      <Brain className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
+                      <span className="hidden sm:inline bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">WaidBot Pro</span>
+                      <span className="sm:hidden bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-semibold">Pro</span>
                     </Button>
                   </Link>
                 </div>
