@@ -15,6 +15,7 @@ let signalAnalyzer: SignalAnalyzer;
 let konsEngine: KonsEngine;
 let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
+let pionexTrader: PionexTrader;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -23,6 +24,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   konsEngine = new KonsEngine();
   spiritualBridge = new SpiritualBridge();
   divineCommLayer = new DivineCommLayer();
+  pionexTrader = new PionexTrader();
 
   // Get current ETH data and signals with spiritual layer
   app.get("/api/eth", async (req, res) => {
@@ -286,6 +288,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Divine communication error:', error);
       res.status(500).json({ error: 'Failed to open divine channel' });
+    }
+  });
+
+  // Execute Automated Trade via Kons Powa Divine Signal
+  app.post("/api/execute-trade", async (req, res) => {
+    try {
+      if (!pionexTrader.isConfigured()) {
+        return res.status(400).json({ 
+          error: 'Pionex API keys not configured',
+          message: 'Please set PIONEX_API_KEY and PIONEX_SECRET_KEY in environment'
+        });
+      }
+
+      let ethData;
+      try {
+        ethData = await ethMonitor.fetchEthData();
+      } catch (apiError) {
+        const latestStoredData = await storage.getLatestEthData();
+        if (latestStoredData) {
+          ethData = {
+            price: latestStoredData.price,
+            volume: latestStoredData.volume || 0,
+            marketCap: latestStoredData.marketCap || 0,
+            priceChange24h: latestStoredData.priceChange24h || 0,
+            timestamp: Date.now()
+          };
+        } else {
+          throw new Error('No ETH price data available for trading');
+        }
+      }
+
+      const divineSignal = divineCommLayer.openDivineChannel(ethData);
+      
+      // Check if trade is allowed by Kons Powa
+      if (!divineSignal.breathLock) {
+        return res.json({
+          status: 'blocked',
+          reason: 'BreathLock: Trading suspended for protection',
+          divineSignal
+        });
+      }
+
+      if (divineSignal.autoCancelEvil) {
+        return res.json({
+          status: 'cancelled',
+          reason: 'AutoCancel: Evil trade detected and blocked by Kons Protection',
+          divineSignal
+        });
+      }
+
+      const { quantity = 0.01 } = req.body;
+      const tradeResult = await pionexTrader.executeKonsTrade(
+        divineSignal.action,
+        ethData.price,
+        quantity
+      );
+
+      res.json({
+        status: 'executed',
+        divineSignal,
+        tradeResult,
+        ethPrice: ethData.price,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Trade execution error:', error);
+      res.status(500).json({ 
+        error: 'Failed to execute trade',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Adjust Breath Stability (Next-Gen Feature)
+  app.post("/api/breath-control", async (req, res) => {
+    try {
+      const { delta } = req.body;
+      if (typeof delta === 'number' && delta >= -20 && delta <= 20) {
+        divineCommLayer.adjustBreathStability(delta);
+        const status = divineCommLayer.getSpiritualHierarchyStatus();
+        res.json({
+          breathStability: status.breathStability,
+          message: `Breath stability adjusted by ${delta}`
+        });
+      } else {
+        res.status(400).json({ error: 'Invalid breath adjustment value (-20 to +20)' });
+      }
+    } catch (error) {
+      console.error('Breath control error:', error);
+      res.status(500).json({ error: 'Failed to adjust breath stability' });
+    }
+  });
+
+  // Toggle ETH Whisper Mode
+  app.post("/api/whisper-mode", async (req, res) => {
+    try {
+      divineCommLayer.toggleEthWhisperMode();
+      const status = divineCommLayer.getSpiritualHierarchyStatus();
+      res.json({
+        ethWhisperMode: status.ethWhisperMode,
+        message: `ETH Whisper Mode ${status.ethWhisperMode ? 'activated' : 'deactivated'}`
+      });
+    } catch (error) {
+      console.error('Whisper mode error:', error);
+      res.status(500).json({ error: 'Failed to toggle whisper mode' });
+    }
+  });
+
+  // Get Pionex Account Status
+  app.get("/api/pionex-status", async (req, res) => {
+    try {
+      if (!pionexTrader.isConfigured()) {
+        return res.json({
+          configured: false,
+          message: 'Pionex API keys not configured'
+        });
+      }
+
+      const balance = await pionexTrader.getAccountBalance();
+      res.json({
+        configured: true,
+        balance,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Pionex status error:', error);
+      res.status(500).json({ error: 'Failed to get Pionex status' });
     }
   });
 

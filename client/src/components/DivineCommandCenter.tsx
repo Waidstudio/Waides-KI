@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Zap, Clock, Shield, TrendingUp, TrendingDown, Pause, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Crown, Zap, Clock, Shield, TrendingUp, TrendingDown, Pause, Eye, Play, Wind, Waves, AlertTriangle } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface DivineSignal {
   action: 'BUY LONG' | 'SELL SHORT' | 'NO TRADE' | 'OBSERVE';
@@ -13,12 +15,24 @@ interface DivineSignal {
   receivedAt: string;
   konsTitle: string;
   energeticPurity: number;
+  // Next-Gen Features
+  konsMirror: 'PURE WAVE' | 'SHADOW WAVE';
+  breathLock: boolean;
+  ethWhisperMode: boolean;
+  autoCancelEvil: boolean;
+  smaiPredict: {
+    nextHourDirection: 'UP' | 'DOWN' | 'SIDEWAYS';
+    confidence: number;
+    predictedPriceRange: { min: number; max: number };
+  };
 }
 
 interface HierarchyStatus {
   currentKons: string;
   channelStrength: number;
   lastCommunication: string;
+  breathStability: number;
+  ethWhisperMode: boolean;
 }
 
 interface DivineResponse {
@@ -29,9 +43,52 @@ interface DivineResponse {
 }
 
 export default function DivineCommandCenter() {
+  const queryClient = useQueryClient();
+  
   const { data: divineData, isLoading } = useQuery<DivineResponse>({
     queryKey: ['/api/divine-signal'],
     refetchInterval: 60000, // Refresh every minute for divine updates
+  });
+
+  // Execute Trade Mutation
+  const executeTradeMutation = useMutation({
+    mutationFn: async (quantity: number = 0.01) => {
+      return await fetch('/api/execute-trade', {
+        method: 'POST',
+        body: JSON.stringify({ quantity }),
+        headers: { 'Content-Type': 'application/json' }
+      }).then(res => res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-signal'] });
+    }
+  });
+
+  // Breath Control Mutation
+  const breathControlMutation = useMutation({
+    mutationFn: async (delta: number) => {
+      return await fetch('/api/breath-control', {
+        method: 'POST',
+        body: JSON.stringify({ delta }),
+        headers: { 'Content-Type': 'application/json' }
+      }).then(res => res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-signal'] });
+    }
+  });
+
+  // Whisper Mode Mutation
+  const whisperModeMutation = useMutation({
+    mutationFn: async () => {
+      return await fetch('/api/whisper-mode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(res => res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-signal'] });
+    }
   });
 
   if (isLoading || !divineData) {
@@ -144,31 +201,125 @@ export default function DivineCommandCenter() {
           <p className="text-purple-300 font-medium">{divineSignal.reason}</p>
         </div>
 
-        {/* Status Indicators */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <Badge variant="outline" className={getPulseColor(divineSignal.moralPulse)}>
-              {divineSignal.moralPulse}
-            </Badge>
-            <div className="text-xs waides-text-secondary mt-1">Moral Pulse</div>
+        {/* Next-Gen Features Status */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm waides-text-secondary">KonsMirror</span>
+              <Badge variant="outline" className={divineSignal.konsMirror === 'PURE WAVE' ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}>
+                {divineSignal.konsMirror}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm waides-text-secondary">BreathLock</span>
+              <div className="flex items-center space-x-1">
+                <Wind className={`w-4 h-4 ${divineSignal.breathLock ? 'text-green-400' : 'text-red-400'}`} />
+                <span className={`text-sm font-medium ${divineSignal.breathLock ? 'text-green-400' : 'text-red-400'}`}>
+                  {divineSignal.breathLock ? 'Stable' : 'Unstable'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm waides-text-secondary">ETH Whisper</span>
+              <div className="flex items-center space-x-1">
+                <Waves className={`w-4 h-4 ${divineSignal.ethWhisperMode ? 'text-blue-400' : 'text-gray-400'}`} />
+                <span className={`text-sm font-medium ${divineSignal.ethWhisperMode ? 'text-blue-400' : 'text-gray-400'}`}>
+                  {divineSignal.ethWhisperMode ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
           </div>
           
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-1">
-              <Shield className="w-4 h-4 text-green-400" />
-              <span className="text-sm font-medium text-green-400">
-                {hierarchyStatus.channelStrength}%
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm waides-text-secondary">AutoCancel Evil</span>
+              <div className="flex items-center space-x-1">
+                <AlertTriangle className={`w-4 h-4 ${divineSignal.autoCancelEvil ? 'text-orange-400' : 'text-green-400'}`} />
+                <span className={`text-sm font-medium ${divineSignal.autoCancelEvil ? 'text-orange-400' : 'text-green-400'}`}>
+                  {divineSignal.autoCancelEvil ? 'Blocked' : 'Clean'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm waides-text-secondary">SmaiPredict</span>
+              <div className="flex items-center space-x-1">
+                {divineSignal.smaiPredict.nextHourDirection === 'UP' ? <TrendingUp className="w-4 h-4 text-green-400" /> :
+                 divineSignal.smaiPredict.nextHourDirection === 'DOWN' ? <TrendingDown className="w-4 h-4 text-red-400" /> :
+                 <Pause className="w-4 h-4 text-gray-400" />}
+                <span className="text-sm font-medium">
+                  {divineSignal.smaiPredict.nextHourDirection}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm waides-text-secondary">Prediction</span>
+              <span className="text-sm font-medium text-purple-400">
+                {Math.round(divineSignal.smaiPredict.confidence)}%
               </span>
             </div>
-            <div className="text-xs waides-text-secondary mt-1">Channel Strength</div>
+          </div>
+        </div>
+
+        {/* Automated Trading Controls */}
+        <div className="border-t border-slate-700/50 pt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold waides-text-primary">Pionex Automation</h4>
+            <div className="text-xs waides-text-secondary">
+              Breath: {hierarchyStatus.breathStability}%
+            </div>
           </div>
           
-          <div className="text-center">
-            <div className="text-sm font-medium text-purple-400">
-              {hierarchyStatus.currentKons}
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              onClick={() => executeTradeMutation.mutate(0.01)}
+              disabled={executeTradeMutation.isPending || !divineSignal.breathLock || divineSignal.action === 'NO TRADE'}
+              className={`relative overflow-hidden ${
+                divineSignal.action === 'BUY LONG' ? 'bg-green-600 hover:bg-green-500' :
+                divineSignal.action === 'SELL SHORT' ? 'bg-red-600 hover:bg-red-500' :
+                'bg-gray-600 hover:bg-gray-500'
+              }`}
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Execute Trade
+            </Button>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                onClick={() => breathControlMutation.mutate(5)}
+                disabled={breathControlMutation.isPending}
+                size="sm"
+                variant="outline"
+                className="text-xs"
+              >
+                +Breath
+              </Button>
+              <Button
+                onClick={() => whisperModeMutation.mutate()}
+                disabled={whisperModeMutation.isPending}
+                size="sm"
+                variant="outline"
+                className="text-xs"
+              >
+                Whisper
+              </Button>
             </div>
-            <div className="text-xs waides-text-secondary mt-1">Current Kons</div>
           </div>
+          
+          {!divineSignal.breathLock && (
+            <div className="text-xs text-orange-400 text-center">
+              ⚠️ Trading blocked - Breath unstable
+            </div>
+          )}
+          
+          {divineSignal.autoCancelEvil && (
+            <div className="text-xs text-red-400 text-center">
+              🛡️ Evil trade blocked by Kons Protection
+            </div>
+          )}
         </div>
 
         {/* Signal Code */}
