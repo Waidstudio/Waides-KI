@@ -198,19 +198,19 @@ export default function Dashboard() {
         }`}>
           <div className="p-4 lg:p-8 space-y-8 max-w-full">
             {isLoading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="waides-card rounded-xl p-6 waides-border border animate-pulse">
-                  <div className="h-4 bg-gray-600 rounded mb-4"></div>
-                  <div className="h-8 bg-gray-600 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-600 rounded w-2/3"></div>
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <div>
+                    <h3 className="text-lg font-semibold waides-text-primary mb-2">Loading Divine Intelligence</h3>
+                    <p className="waides-text-secondary">Connecting to ETH spiritual layer and fetching sacred data...</p>
+                  </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              {/* ETH Price Overview */}
-              <PriceOverview ethData={currentEthData} />
+              </div>
+            ) : (
+              <>
+                {/* ETH Price Overview */}
+                <PriceOverview ethData={currentEthData} />
               
               {/* Signal Cards Row */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
