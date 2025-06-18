@@ -1,5 +1,7 @@
 import { EthPriceData } from './ethMonitor';
 import { DivineSignal } from './divineCommLayer';
+import { mlEngine } from './mlEngine';
+import { portfolioManager } from './portfolioManager';
 import { storage } from '../storage';
 
 export interface WaidDecision {
@@ -11,6 +13,9 @@ export interface WaidDecision {
   tradingPair: 'ETH3L/USDT' | 'ETH3S/USDT' | 'NONE';
   quantity: number;
   urgency: 'IMMEDIATE' | 'WITHIN_HOUR' | 'WHEN_READY' | 'PATIENCE';
+  mlPrediction?: any;
+  portfolioRisk?: string;
+  executionStatus?: 'PENDING' | 'EXECUTED' | 'FAILED' | 'CANCELLED';
 }
 
 export interface KonsLangAnalysis {
