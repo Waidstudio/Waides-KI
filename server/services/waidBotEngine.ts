@@ -5,12 +5,12 @@ import { portfolioManager } from './portfolioManager';
 import { storage } from '../storage';
 
 export interface WaidDecision {
-  action: 'BUY_ETH' | 'SELL_ETH' | 'BUY_ETH3L' | 'SELL_ETH3L' | 'BUY_ETH3S' | 'SELL_ETH3S' | 'HOLD' | 'OBSERVE';
+  action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
   reasoning: string;
   confidence: number;
   konsWisdom: string;
-  ethPosition: 'LONG' | 'SHORT' | 'NEUTRAL';
-  tradingPair: 'ETH/USDT' | 'ETH3L/USDT' | 'ETH3S/USDT' | 'NONE';
+  ethPosition: 'LONG' | 'NEUTRAL';
+  tradingPair: 'ETH/USDT' | 'NONE';
   quantity: number;
   urgency: 'IMMEDIATE' | 'WITHIN_HOUR' | 'WHEN_READY' | 'PATIENCE';
   mlPrediction?: any;
@@ -18,6 +18,17 @@ export interface WaidDecision {
   executionStatus?: 'PENDING' | 'EXECUTED' | 'FAILED' | 'CANCELLED';
   microMovementCapture?: boolean;
   nextGenStrategy?: string;
+  // Confirmation signals from other assets for analysis only
+  btcConfirmation?: {
+    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    strength: number;
+    supportLevel: number;
+  };
+  solConfirmation?: {
+    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    strength: number;
+    momentum: number;
+  };
 }
 
 export interface KonsLangAnalysis {
@@ -123,16 +134,16 @@ export class WaidBotEngine {
     }
     else if (konsAnalysis.divineAlignment > 85 && konsAnalysis.ethVibration === 'ASCENDING') {
       decision = {
-        action: 'BUY_ETH3L',
-        reasoning: `KonsLang: Ultra-strong bullish alignment - ETH ascending with ${konsAnalysis.divineAlignment}% divine confirmation. ETH3L maximizes micro-movement capture`,
+        action: 'BUY_ETH',
+        reasoning: `KonsLang: Ultra-strong bullish alignment - ETH ascending with ${konsAnalysis.divineAlignment}% divine confirmation. Maximum ETH accumulation strategy`,
         confidence: Math.min(98, konsAnalysis.divineAlignment),
-        konsWisdom: 'Ride the ascending wave with 3x leveraged conviction - every satoshi amplified',
+        konsWisdom: 'Ride the ascending wave with full conviction - accumulate ETH at optimal entry',
         ethPosition: 'LONG',
-        tradingPair: 'ETH3L/USDT',
+        tradingPair: 'ETH/USDT',
         quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'LONG'),
         urgency: 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: 'HYPER_MOMENTUM_AMPLIFICATION'
+        nextGenStrategy: 'HYPER_MOMENTUM_ACCUMULATION'
       };
     }
     else if (konsAnalysis.divineAlignment > 75 && konsAnalysis.ethVibration === 'ASCENDING') {
@@ -151,16 +162,16 @@ export class WaidBotEngine {
     }
     else if (konsAnalysis.divineAlignment > 85 && konsAnalysis.ethVibration === 'DESCENDING') {
       decision = {
-        action: 'BUY_ETH3S',
-        reasoning: `KonsLang: Ultra-strong bearish alignment - ETH descending with ${konsAnalysis.divineAlignment}% divine confirmation. ETH3S profits from every decline`,
+        action: 'SELL_ETH',
+        reasoning: `KonsLang: Ultra-strong bearish alignment - ETH descending with ${konsAnalysis.divineAlignment}% divine confirmation. Protective ETH liquidation`,
         confidence: Math.min(98, konsAnalysis.divineAlignment),
-        konsWisdom: 'Profit from the descent with 3x leveraged precision - every drop amplified',
-        ethPosition: 'SHORT',
-        tradingPair: 'ETH3S/USDT',
-        quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'SHORT'),
+        konsWisdom: 'Protect capital from descending energy - preservation over profit',
+        ethPosition: 'NEUTRAL',
+        tradingPair: 'ETH/USDT',
+        quantity: this.calculatePosition(konsAnalysis.divineAlignment, 'NEUTRAL'),
         urgency: 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: 'QUANTUM_REVERSAL_CAPTURE'
+        nextGenStrategy: 'DEFENSIVE_LIQUIDATION'
       };
     }
     else if (konsAnalysis.divineAlignment > 70 && konsAnalysis.ethVibration === 'DESCENDING') {
@@ -212,11 +223,16 @@ export class WaidBotEngine {
     return decision;
   }
 
-  private calculatePosition(alignment: number, direction: 'LONG' | 'SHORT'): number {
-    // Position size based on divine alignment for spot ETH trading
+  private calculatePosition(alignment: number, direction: 'LONG' | 'NEUTRAL'): number {
+    // Position size based on divine alignment for ETH-only trading
     const baseSize = 100; // Base USDT amount
     const multiplier = alignment / 100;
-    return Math.round(baseSize * multiplier);
+    
+    if (direction === 'NEUTRAL') {
+      return Math.round(baseSize * multiplier * 0.3); // Conservative selling for protection
+    }
+    
+    return Math.round(baseSize * multiplier); // Full position for ETH accumulation
   }
 
   private generateKonsMessage(

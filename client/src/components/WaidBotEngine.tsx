@@ -15,6 +15,16 @@ interface WaidDecision {
   tradingPair: 'ETH/USDT' | 'NONE';
   quantity: number;
   urgency: 'IMMEDIATE' | 'WITHIN_HOUR' | 'WHEN_READY' | 'PATIENCE';
+  btcConfirmation?: {
+    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    strength: number;
+    supportLevel: number;
+  };
+  solConfirmation?: {
+    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    strength: number;
+    momentum: number;
+  };
 }
 
 interface KonsLangAnalysis {
