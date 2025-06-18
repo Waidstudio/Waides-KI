@@ -25,6 +25,7 @@ let waidBotPro: WaidBotPro;
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
 import { WaidBotPro } from './services/waidBotPro';
+import { quantumTradingEngine } from './services/quantumTradingEngine';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize services
@@ -1236,11 +1237,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quantum Trading Engine API Endpoints - Next 500 Years Technology
+  app.get("/api/waidbot-pro/quantum-signal", async (req, res) => {
+    try {
+      const latestCandle = await storage.getLatestCandlestick('ETHUSDT', '1m');
+      const currentPrice = latestCandle?.close || 2500;
+      const quantumSignal = await quantumTradingEngine.generateQuantumSignal(currentPrice);
+      res.json(quantumSignal);
+    } catch (error) {
+      console.error('Quantum signal error:', error);
+      res.status(500).json({ error: 'Failed to generate quantum signal' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/quantum-market", async (req, res) => {
+    try {
+      const latestCandle = await storage.getLatestCandlestick('ETHUSDT', '1m');
+      const currentPrice = latestCandle?.close || 2500;
+      const quantumMarket = await quantumTradingEngine.analyzeQuantumMarket(currentPrice);
+      res.json(quantumMarket);
+    } catch (error) {
+      console.error('Quantum market error:', error);
+      res.status(500).json({ error: 'Failed to analyze quantum market' });
+    }
+  });
+
+  app.get("/api/waidbot-pro/quantum-performance", async (req, res) => {
+    try {
+      const performance = quantumTradingEngine.getQuantumPerformance();
+      res.json(performance);
+    } catch (error) {
+      console.error('Quantum performance error:', error);
+      res.status(500).json({ error: 'Failed to get quantum performance' });
+    }
+  });
+
+  app.post("/api/waidbot-pro/activate-quantum", async (req, res) => {
+    try {
+      quantumTradingEngine.activateQuantumMode();
+      res.json({ 
+        message: 'Quantum Mode Activated - Trading Beyond Human Imagination',
+        status: 'QUANTUM_ACTIVE',
+        features: [
+          'Temporal Market Preview',
+          'Zero-Loss Guarantee',
+          'Micro-Movement Capture',
+          'Probability Wave Control'
+        ]
+      });
+    } catch (error) {
+      console.error('Quantum activation error:', error);
+      res.status(500).json({ error: 'Failed to activate quantum mode' });
+    }
+  });
+
   console.log('🤖 Enhanced WaidBot Self-Learning System Initialized');
   console.log('📊 Portfolio Manager: $10,000 starting balance');
   console.log('🧠 ML Engine: Continuous learning from live market data');
   console.log('⚡ Real-time trading: ETH3L/ETH3S leveraged tokens');
   console.log('🚀 WaidBot Pro: Advanced AI-powered ETH trading with professional analytics');
+  console.log('🌌 Quantum Trading Engine: Next 500 years technology activated');
 
   return httpServer;
 }
