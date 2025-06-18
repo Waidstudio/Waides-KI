@@ -737,7 +737,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               price: latestStoredData.price,
               volume: latestStoredData.volume || 0,
               marketCap: latestStoredData.marketCap || 0,
-              priceChange24h: latestStoredData.priceChange24h || 0
+              priceChange24h: latestStoredData.priceChange24h || 0,
+              timestamp: latestStoredData.timestamp?.getTime() || Date.now()
             };
           } else {
             console.log('No ETH data available for real-time trading');
@@ -745,7 +746,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
 
-        const divineSignal = await divineCommLayer.generateDivineCommand(ethData);
+        const divineSignal = divineCommLayer.openDivineChannel(ethData);
         
         // Execute trade if conditions are met
         if (divineSignal.breathLock && 

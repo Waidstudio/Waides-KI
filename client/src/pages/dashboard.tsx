@@ -10,6 +10,7 @@ import SpiritualBridge from "@/components/SpiritualBridge";
 import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import DivineCommandCenter from "@/components/DivineCommandCenter";
 import CandlestickChart from "@/components/CandlestickChart";
+import RealTimeTrading from "@/components/RealTimeTrading";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff, Menu } from "lucide-react";
 
@@ -289,6 +290,9 @@ export default function Dashboard() {
                 <PriceChart />
                 <SignalHistory />
               </div>
+
+              {/* Real-Time Trading Engine */}
+              <RealTimeTrading />
 
               {/* Divine Command Center - Sacred Communication */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
