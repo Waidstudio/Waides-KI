@@ -946,5 +946,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced Machine Learning Engine endpoints
+  app.get("/api/ml/prediction", async (req, res) => {
+    try {
+      const latestData = await storage.getLatestEthData();
+      const currentPrice = latestData?.price || 0;
+      const prediction = await mlEngine.generatePrediction(currentPrice);
+      res.json(prediction);
+    } catch (error) {
+      console.error('ML prediction error:', error);
+      res.status(500).json({ error: 'Failed to generate ML prediction' });
+    }
+  });
+
+  app.post("/api/ml/train", async (req, res) => {
+    try {
+      await mlEngine.trainModels();
+      const stats = mlEngine.getModelStats();
+      res.json({ message: 'Models trained successfully', stats });
+    } catch (error) {
+      console.error('ML training error:', error);
+      res.status(500).json({ error: 'Failed to train ML models' });
+    }
+  });
+
+  app.get("/api/ml/stats", async (req, res) => {
+    try {
+      const stats = mlEngine.getModelStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('ML stats error:', error);
+      res.status(500).json({ error: 'Failed to get ML stats' });
+    }
+  });
+
+  // Portfolio Management endpoints
+  app.get("/api/portfolio/stats", async (req, res) => {
+    try {
+      const stats = portfolioManager.getPortfolioStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Portfolio stats error:', error);
+      res.status(500).json({ error: 'Failed to get portfolio stats' });
+    }
+  });
+
+  app.get("/api/portfolio/trades", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const trades = portfolioManager.getRecentTrades(limit);
+      res.json(trades);
+    } catch (error) {
+      console.error('Portfolio trades error:', error);
+      res.status(500).json({ error: 'Failed to get trade history' });
+    }
+  });
+
+  app.post("/api/portfolio/position/open", async (req, res) => {
+    try {
+      const { symbol, side, currentPrice, confidence } = req.body;
+      const result = await portfolioManager.openPosition(symbol, side, currentPrice, confidence);
+      res.json(result);
+    } catch (error) {
+      console.error('Open position error:', error);
+      res.status(500).json({ error: 'Failed to open position' });
+    }
+  });
+
+  app.post("/api/portfolio/position/close", async (req, res) => {
+    try {
+      const { symbol, currentPrice, reason } = req.body;
+      const result = await portfolioManager.closePosition(symbol, currentPrice, reason);
+      res.json(result);
+    } catch (error) {
+      console.error('Close position error:', error);
+      res.status(500).json({ error: 'Failed to close position' });
+    }
+  });
+
+  app.post("/api/portfolio/risk-params", async (req, res) => {
+    try {
+      const riskParams = req.body;
+      portfolioManager.updateRiskParameters(riskParams);
+      res.json({ message: 'Risk parameters updated successfully' });
+    } catch (error) {
+      console.error('Risk params error:', error);
+      res.status(500).json({ error: 'Failed to update risk parameters' });
+    }
+  });
+
+  console.log('🤖 Enhanced WaidBot Self-Learning System Initialized');
+  console.log('📊 Portfolio Manager: $10,000 starting balance');
+  console.log('🧠 ML Engine: Continuous learning from live market data');
+  console.log('⚡ Real-time trading: ETH3L/ETH3S leveraged tokens');
+
   return httpServer;
 }
