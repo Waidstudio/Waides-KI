@@ -12,7 +12,9 @@ import DivineCommandCenter from "@/components/DivineCommandCenter";
 import CandlestickChart from "@/components/CandlestickChart";
 import RealTimeTrading from "@/components/RealTimeTrading";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Wifi, WifiOff, Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertCircle, Wifi, WifiOff, Menu, Brain } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 interface EthData {
   price: number;
@@ -126,8 +128,8 @@ export default function Dashboard() {
                 <Menu className="w-5 h-5 waides-text-secondary" />
               </button>
               
-              {/* Header Title & Status */}
-              <div className="flex items-center space-x-4">
+              {/* Navigation & Header Title */}
+              <div className="flex items-center space-x-6">
                 <div className="hidden sm:block">
                   <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
                     Waides AI
@@ -135,8 +137,24 @@ export default function Dashboard() {
                   <p className="text-xs waides-text-secondary hidden lg:block">Next-Gen ETH Trading Intelligence</p>
                 </div>
                 
-                {/* Status Indicators */}
-                <div className="flex items-center space-x-3">
+                {/* Navigation Menu */}
+                <div className="hidden md:flex items-center space-x-2">
+                  <Link href="/">
+                    <Button variant="ghost" className="text-sm">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Link href="/waidbot">
+                    <Button variant="ghost" className="text-sm flex items-center space-x-2">
+                      <Brain className="w-4 h-4" />
+                      <span>WaidBot</span>
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+                
+              {/* Status Indicators */}
+              <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-500/20 rounded-full border border-green-500/30">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                     <span className="text-xs font-medium text-green-400 hidden sm:inline">KonsLang</span>
