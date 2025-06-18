@@ -39,12 +39,14 @@ interface CandlestickChartProps {
   symbol?: string;
   interval?: string;
   limit?: number;
+  candlesticks?: Candlestick[];
 }
 
 export default function CandlestickChart({ 
   symbol = "ETHUSDT", 
   interval = "1m", 
-  limit = 50 
+  limit = 50,
+  candlesticks 
 }: CandlestickChartProps) {
   const { data: candlestickData, isLoading } = useQuery<CandlestickResponse>({
     queryKey: [`/api/candlesticks/${symbol}/${interval}`, { limit }],

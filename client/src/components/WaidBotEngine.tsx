@@ -103,14 +103,14 @@ export default function WaidBotEngine() {
     );
   }
 
-  const konsAnalysis: KonsLangAnalysis = analysis?.konsAnalysis || {
+  const konsAnalysis: KonsLangAnalysis = (analysis as any)?.konsAnalysis || {
     marketMood: 'BALANCED',
     ethVibration: 'DORMANT',
     divineAlignment: 50,
     tradingWindow: 'NORMAL',
     konsMessage: 'KonsLang analysis initializing...'
   };
-  const currentDecision: WaidDecision = decision?.decision || {
+  const currentDecision: WaidDecision = (decision as any)?.decision || {
     action: 'OBSERVE',
     reasoning: 'Analyzing market conditions...',
     confidence: 0,

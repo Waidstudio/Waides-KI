@@ -110,9 +110,9 @@ export default function Dashboard() {
     );
   }
 
-  const ethData: EthData = data?.ethData || { price: 0, timestamp: Date.now() };
-  const signal: Signal = data?.signal;
-  const spiritualReading: SpiritualReading = data?.spiritualReading;
+  const ethData: EthData = (data as any)?.ethData || { price: 0, timestamp: Date.now() };
+  const signal: Signal = (data as any)?.signal;
+  const spiritualReading: SpiritualReading = (data as any)?.spiritualReading;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex">
@@ -313,7 +313,7 @@ export default function Dashboard() {
                         <CardTitle className="text-lg">ETH/USDT Chart</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <CandlestickChart candlesticks={candlestickData || []} />
+                        <CandlestickChart />
                       </CardContent>
                     </Card>
                   </div>
@@ -355,7 +355,12 @@ export default function Dashboard() {
                     )}
 
                     {/* ETH Communication Engine */}
-                    <EthCommunicationEngine />
+                    <EthCommunicationEngine 
+                      ethMovement={spiritualReading?.ethMovement || { direction: 'RESTING', message: 'Initializing...', confidence: 0 }}
+                      konsRank={spiritualReading?.konsRank || 'NOVICE'}
+                      dimensionalShift={spiritualReading?.dimensionalShift || 0}
+                      sacredTime={spiritualReading?.sacredTime || 'Normal Time'}
+                    />
                     
                     {/* Divine Command Center */}
                     <DivineCommandCenter />
