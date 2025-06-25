@@ -1,0 +1,137 @@
+🔥 STEP 17 — WAIDES KI SITUATIONAL INTELLIGENCE CORE
+🧠🕹️⏱️📊 “A wise trader knows: it’s not just what you trade — it’s when, how, and why you trade.”
+
+Now we elevate Waides KI into the realm of Situational Mastery — the same kind of instinct elite human traders develop through years of trial, failure, and success.
+Waides will learn context awareness: time-of-day, volume flows, volatility regimes, and live news conditions.
+
+⸻
+
+✅ What We’re Building in STEP 17:
+
+Module	Purpose
+⏱️ waides_situation_analyzer.py	Understands trading time windows, volatility zones, and sentiment
+📉 Dynamic Strategy Adjustments	Only deploys high-risk setups in high-volatility windows
+📡 Time-Based Sensitivity	Different behavior for Asian, London, and US market hours
+🧠 Intelligence Profile	Stores learned situational rules: “During US open, avoid RSI overbought entries” etc.
+
+
+⸻
+
+✅ 1️⃣ waides_situation_analyzer.py — KI’s Trading Environment Scanner
+
+# waides_situation_analyzer.py
+
+from datetime import datetime, time
+
+class WaidesSituationAnalyzer:
+    def __init__(self):
+        self.market_windows = {
+            "asia_open": (time(0, 0), time(6, 30)),
+            "london_open": (time(6, 30), time(12, 0)),
+            "us_open": (time(13, 30), time(16, 30))
+        }
+
+        self.learned_context_rules = []  # e.g. {"zone": "us_open", "rule": "avoid_high_rsi", "confidence": 0.88}
+
+    def get_market_zone(self):
+        now = datetime.utcnow().time()
+
+        for zone, (start, end) in self.market_windows.items():
+            if start <= now < end:
+                return zone
+        return "off_hours"
+
+    def is_high_volatility_window(self):
+        return self.get_market_zone() in ["london_open", "us_open"]
+
+    def should_adjust_strategy(self, indicators):
+        zone = self.get_market_zone()
+
+        if zone == "us_open" and indicators["rsi"] > 70:
+            return True, "US open with high RSI — avoid entry (volatile overreaction likely)"
+
+        if zone == "asia_open" and indicators["vwap_status"] != "ABOVE":
+            return True, "Asia hours, no VWAP confirmation — stand down"
+
+        return False, "Conditions stable"
+
+waides_situation_analyzer = WaidesSituationAnalyzer()
+
+
+⸻
+
+✅ 2️⃣ Hook into waides_trader_engine.py (Before executing trade)
+
+from waides_situation_analyzer import waides_situation_analyzer
+
+should_adjust, reason = waides_situation_analyzer.should_adjust_strategy(indicators)
+if should_adjust:
+    return {"status": "paused", "reason": reason}
+
+
+⸻
+
+✅ 3️⃣ Context-Aware Logging (Optional)
+
+zone = waides_situation_analyzer.get_market_zone()
+print(f"📡 Market Context: {zone.upper()} — Evaluating with Situational Awareness")
+
+
+⸻
+
+✅ 4️⃣ Learning Context Rules (Future AI Upgrades)
+
+You can later build a memory structure like:
+
+self.learned_context_rules = [
+    {"zone": "us_open", "dna": "x123", "outcome": "loss"},
+    {"zone": "us_open", "dna": "x123", "outcome": "loss"},
+    {"zone": "us_open", "dna": "x123", "outcome": "loss"}
+]
+
+…And then if same DNA fails in same zone 3+ times, Waides automatically avoids that strategy in that context.
+
+⸻
+
+✅ 5️⃣ Admin Viewer: Zone Awareness + Strategy Pause Log
+
+<h3>⏱️ Situational Strategy Decisions</h3>
+<ul id="zone-log"></ul>
+<script>
+async function loadZoneLog() {
+  const res = await fetch("/api/ki/context/zone");
+  const info = await res.json();
+  document.getElementById("zone-log").innerHTML = `<li><b>Zone:</b> ${info.zone.toUpperCase()} — ${info.comment}</li>`;
+}
+setInterval(loadZoneLog, 10000); loadZoneLog();
+</script>
+
+Add API:
+
+@waides_api_gateway.route("/api/ki/context/zone", methods=["GET"])
+def context_zone():
+    zone = waides_situation_analyzer.get_market_zone()
+    comment = "High Volatility Window" if waides_situation_analyzer.is_high_volatility_window() else "Low Activity Period"
+    return jsonify({"zone": zone, "comment": comment})
+
+
+⸻
+
+✅ Final Result of STEP 17:
+
+Feature	Impact
+🕹️ Time-Zone Smart	Trades differently during Asia, London, and US hours
+📉 Volatility Awareness	Avoids traps in high-risk hours
+🧠 Context Learning	Associates strategy DNA with time-based success/failure
+📡 Situational Precision	Waides behaves more like an elite discretionary trader
+
+
+⸻
+
+🔮 Coming in STEP 18 — WAIDES KI LIVE MARKET SENSOR:
+	•	📡 Real-time price & volume monitor
+	•	🧬 Feeds live data into strategy DNA
+	•	⚡ Instant alerts when sharp conditions change
+	•	🚨 Launches emergency overrides if sudden news or crashes are detected
+
+Say Next to activate Waides Live Market Sensor + Emergency Condition Intelligence 📈📡🛡️.

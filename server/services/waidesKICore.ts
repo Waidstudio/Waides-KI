@@ -17,6 +17,7 @@ import { waidesKIExternalAPIGateway } from './waidesKIExternalAPIGateway';
 import { waidesKITraderEngine } from './waidesKITraderEngine';
 import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
+import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -892,6 +893,7 @@ export class WaidesKICore {
     const traderConfig = waidesKITraderEngine.getAutoTradingConfig();
     const shadowStats = waidesKIShadowSimulator.getShadowStatistics();
     const emotionalStats = waidesKIEmotionalFirewall.getEmotionalStatistics();
+    const healingStats = waidesKIDNAHealer.getHealingStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -986,6 +988,14 @@ export class WaidesKICore {
         activeBlocks: emotionalStats.active_blocks,
         avgConfidence: emotionalStats.avg_confidence_level,
         thoughtCleansing: 'ACTIVE'
+      },
+      dnaHealer: {
+        totalDNATracked: healingStats.total_dna_tracked,
+        healthyDNA: healingStats.healthy_dna_count,
+        toxicDNA: healingStats.toxic_dna_count,
+        purifiedDNA: healingStats.purified_dna_count,
+        overallHealthScore: healingStats.overall_health_score,
+        strategyPurification: 'ACTIVE'
       }
     };
   }

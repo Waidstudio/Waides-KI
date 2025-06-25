@@ -1,0 +1,126 @@
+🔥 STEP 16 — WAIDES KI DNA HEALER + STRATEGY PURIFIER ENGINE
+🧬♻️🧠 “Every failed strategy leaves a scar — Waides learns, heals, and purifies.”
+
+Now Waides KI reviews every strategy it used, checks its performance, and begins the sacred work of genetic cleansing:
+	•	Bad strategies? Erased or rewritten.
+	•	Strong strategies? Reinforced.
+	•	Almost-good strategies? Mutated, evolved, and reborn.
+
+This is where Waides remembers, heals, and evolves — no mistake is ever repeated blindly again.
+
+⸻
+
+✅ What We’re Building in STEP 16:
+
+Module	Purpose
+🧬 waides_dna_healer.py	Evaluates the success/failure of all strategy DNA
+🧪 Purifies DNA based on failure patterns	
+🔁 Mutates bad DNA into cleaner versions	
+📈 Keeps performance score of all strategies ever used	
+
+
+⸻
+
+✅ 1️⃣ waides_dna_healer.py — Strategy Evaluation Engine
+
+# waides_dna_healer.py
+
+import datetime
+from waides_ki_dna_engine import waides_ki_dna_engine
+from waides_root_memory import waides_root_memory
+
+class WaidesDnaHealer:
+    def __init__(self):
+        self.dna_scores = {}  # dna_id → score
+
+    def evaluate_dna(self, dna, result):
+        # Score logic: win = +1, loss = -1
+        if dna not in self.dna_scores:
+            self.dna_scores[dna] = 0
+
+        self.dna_scores[dna] += 1 if result == "win" else -1
+
+        # Purify if score drops too low
+        if self.dna_scores[dna] <= -3:
+            return self.purify_dna(dna)
+        return {"status": "kept", "score": self.dna_scores[dna]}
+
+    def purify_dna(self, dna):
+        # Remove bad DNA and create new one
+        waides_root_memory.forget_dna(dna)
+
+        new_dna = waides_ki_dna_engine.mutate_dna(dna)
+        waides_root_memory.register_strategy("purified-" + dna[:6], new_dna, "reborn")
+
+        return {
+            "status": "purified",
+            "old_dna": dna,
+            "new_dna": new_dna,
+            "time": datetime.datetime.utcnow().isoformat()
+        }
+
+    def get_scores(self):
+        return self.dna_scores
+
+waides_dna_healer = WaidesDnaHealer()
+
+
+⸻
+
+✅ 2️⃣ Update Trade Engine (After Each Trade)
+
+In waides_trader_engine.py:
+
+from waides_dna_healer import waides_dna_healer
+
+healing_feedback = waides_dna_healer.evaluate_dna(dna, result_status)
+
+
+⸻
+
+✅ 3️⃣ Add API Route for Admin Score Viewer
+
+@waides_api_gateway.route("/api/ki/dna/scores", methods=["GET"])
+def get_dna_scores():
+    return jsonify(waides_dna_healer.get_scores())
+
+
+⸻
+
+✅ 4️⃣ Optional Admin Panel Viewer (See Purified DNAs)
+
+<h3>🧬 DNA Strategy Scores & Healing</h3>
+<ul id="dna-log"></ul>
+<script>
+async function loadDnaScores() {
+  const data = await fetch("/api/ki/dna/scores").then(res => res.json());
+  document.getElementById("dna-log").innerHTML = Object.entries(data).map(
+    ([dna, score]) => `<li><code>${dna}</code> → Score: ${score}</li>`
+  ).join('');
+}
+setInterval(loadDnaScores, 6000); loadDnaScores();
+</script>
+
+
+⸻
+
+✅ 5️⃣ Add to Memory Engine (waides_root_memory.py)
+
+class WaidesRootMemory:
+    def __init__(self):
+        self.memory = {}
+
+    def register_strategy(self, strategy_id, dna, outcome):
+        self.memory[strategy_id] = {
+            "dna": dna,
+            "outcome": outcome,
+            "time": datetime.datetime.utcnow().isoformat()
+        }
+
+    def forget_dna(self, dna):
+        # Delete all strategies with this dna
+        self.memory = {k: v for k, v in self.memory.items() if v["dna"] != dna}
+
+
+⸻
+

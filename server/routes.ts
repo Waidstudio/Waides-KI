@@ -30,6 +30,7 @@ import { waidesKIExternalAPIGateway } from './services/waidesKIExternalAPIGatewa
 import { waidesKITraderEngine } from './services/waidesKITraderEngine.js';
 import { waidesKIShadowSimulator } from './services/waidesKIShadowSimulator.js';
 import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
+import { waidesKIDNAHealer } from './services/waidesKIDNAHealer.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -3639,6 +3640,163 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting emotional data:', error);
       res.status(500).json({ error: 'Failed to export emotional data' });
+    }
+  });
+
+  // DNA Healer and Strategy Purifier endpoints
+  app.get("/api/waides-ki/dna-healer/statistics", (req, res) => {
+    try {
+      const stats = waidesKIDNAHealer.getHealingStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting DNA healer statistics:', error);
+      res.status(500).json({ error: 'Failed to get DNA healer statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna-healer/scores", (req, res) => {
+    try {
+      const scores = waidesKIDNAHealer.getDNAScores();
+      res.json({ dna_scores: scores });
+    } catch (error) {
+      console.error('Error getting DNA scores:', error);
+      res.status(500).json({ error: 'Failed to get DNA scores' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna-healer/purifications", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const purifications = waidesKIDNAHealer.getPurificationHistory(limit);
+      res.json({ purification_records: purifications });
+    } catch (error) {
+      console.error('Error getting purification history:', error);
+      res.status(500).json({ error: 'Failed to get purification history' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna-healer/evolutions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const evolutions = waidesKIDNAHealer.getEvolutionHistory(limit);
+      res.json({ evolution_history: evolutions });
+    } catch (error) {
+      console.error('Error getting evolution history:', error);
+      res.status(500).json({ error: 'Failed to get evolution history' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna-healer/sessions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const sessions = waidesKIDNAHealer.getHealingSessions(limit);
+      res.json({ healing_sessions: sessions });
+    } catch (error) {
+      console.error('Error getting healing sessions:', error);
+      res.status(500).json({ error: 'Failed to get healing sessions' });
+    }
+  });
+
+  app.post("/api/waides-ki/dna-healer/evaluate", (req, res) => {
+    try {
+      const { dna_id, result, profit_loss, confidence, market_conditions, strategy_category } = req.body;
+      
+      if (!dna_id || !result || profit_loss === undefined || !confidence) {
+        return res.status(400).json({ error: 'dna_id, result, profit_loss, and confidence are required' });
+      }
+      
+      const healingResult = waidesKIDNAHealer.evaluateDNA(
+        dna_id,
+        result,
+        profit_loss,
+        confidence,
+        market_conditions || {},
+        strategy_category || 'UNKNOWN'
+      );
+      
+      res.json({ 
+        success: true, 
+        healing_result: healingResult,
+        dna_id: dna_id
+      });
+    } catch (error) {
+      console.error('Error evaluating DNA:', error);
+      res.status(500).json({ error: 'Failed to evaluate DNA: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/dna-healer/enable", (req, res) => {
+    try {
+      waidesKIDNAHealer.enableHealing();
+      res.json({ success: true, message: 'DNA healing system enabled successfully' });
+    } catch (error) {
+      console.error('Error enabling DNA healer:', error);
+      res.status(500).json({ error: 'Failed to enable DNA healer' });
+    }
+  });
+
+  app.post("/api/waides-ki/dna-healer/disable", (req, res) => {
+    try {
+      waidesKIDNAHealer.disableHealing();
+      res.json({ success: true, message: 'DNA healing system disabled successfully' });
+    } catch (error) {
+      console.error('Error disabling DNA healer:', error);
+      res.status(500).json({ error: 'Failed to disable DNA healer' });
+    }
+  });
+
+  app.post("/api/waides-ki/dna-healer/thresholds", (req, res) => {
+    try {
+      const { purification_threshold, toxic_threshold } = req.body;
+      
+      if (purification_threshold !== undefined) {
+        waidesKIDNAHealer.updatePurificationThreshold(purification_threshold);
+      }
+      
+      if (toxic_threshold !== undefined) {
+        waidesKIDNAHealer.updateToxicThreshold(toxic_threshold);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'DNA healer thresholds updated successfully',
+        purification_threshold,
+        toxic_threshold
+      });
+    } catch (error) {
+      console.error('Error updating DNA healer thresholds:', error);
+      res.status(500).json({ error: 'Failed to update DNA healer thresholds' });
+    }
+  });
+
+  app.delete("/api/waides-ki/dna-healer/forget/:dna_id", (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      
+      if (!dna_id) {
+        return res.status(400).json({ error: 'DNA ID is required' });
+      }
+      
+      const success = waidesKIDNAHealer.forgetDNA(dna_id);
+      
+      if (success) {
+        res.json({ success: true, message: `DNA ${dna_id} forgotten successfully` });
+      } else {
+        res.status(404).json({ error: 'DNA not found' });
+      }
+    } catch (error) {
+      console.error('Error forgetting DNA:', error);
+      res.status(500).json({ error: 'Failed to forget DNA' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna-healer/export", (req, res) => {
+    try {
+      const healingData = waidesKIDNAHealer.exportHealingData();
+      res.json(healingData);
+    } catch (error) {
+      console.error('Error exporting DNA healer data:', error);
+      res.status(500).json({ error: 'Failed to export DNA healer data' });
     }
   });
 

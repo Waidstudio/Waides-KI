@@ -8,6 +8,7 @@ import { waidesKIGenomeEngine } from './waidesKIGenomeEngine';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
 import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
+import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { storage } from '../storage';
 
 interface MarketIndicators {
@@ -302,13 +303,34 @@ export class WaidesKITraderEngine {
         );
       }
       
-      // 8. Update learning systems
+      // 8. Evaluate DNA and heal if necessary
+      if (executionResult.outcome) {
+        const healingResult = waidesKIDNAHealer.evaluateDNA(
+          executionResult.dna_id,
+          executionResult.outcome.result,
+          executionResult.outcome.actual_profit_loss,
+          executionResult.risk_assessment.confidence_score,
+          params.indicators,
+          params.execution_engine
+        );
+        
+        if (healingResult.status === 'PURIFIED' || healingResult.status === 'EVOLVED') {
+          waidesKIDailyReporter.recordLesson(
+            `DNA ${healingResult.action}: ${healingResult.recommendation}`,
+            'HEALING',
+            'HIGH',
+            'DNA Healer'
+          );
+        }
+      }
+      
+      // 9. Update learning systems
       await this.updateLearningSystems(executionResult);
       
-      // 9. Run shadow simulation
+      // 10. Run shadow simulation
       await this.runShadowSimulation(executionResult, params.indicators);
       
-      // 10. Store in execution log
+      // 11. Store in execution log
       this.executionLog.push(executionResult);
       this.activeTrades.add(executionId);
       this.dailyTradeCount++;
