@@ -87,51 +87,60 @@ export function WaidBotPro() {
   const [autoTrading, setAutoTrading] = useState(false);
   const queryClient = useQueryClient();
 
-  // Fetch real-time data
+  // Optimized data fetching with longer intervals for better performance
   const { data: prediction } = useQuery({
     queryKey: ['/api/waidbot-pro/prediction'],
-    refetchInterval: 30000,
+    refetchInterval: 60000, // Reduced from 30s to 60s
+    staleTime: 30000,
   });
 
   const { data: marketState } = useQuery({
     queryKey: ['/api/waidbot-pro/market-state'],
-    refetchInterval: 15000,
+    refetchInterval: 45000, // Reduced from 15s to 45s
+    staleTime: 20000,
   });
 
   const { data: signals } = useQuery({
     queryKey: ['/api/waidbot-pro/signals'],
-    refetchInterval: 20000,
+    refetchInterval: 30000, // Reduced from 20s to 30s
+    staleTime: 15000,
   });
 
   const { data: portfolio } = useQuery({
     queryKey: ['/api/waidbot-pro/portfolio'],
-    refetchInterval: 10000,
+    refetchInterval: 20000, // Reduced from 10s to 20s
+    staleTime: 10000,
   });
 
   const { data: analytics } = useQuery({
     queryKey: ['/api/waidbot-pro/analytics'],
-    refetchInterval: 15000,
+    refetchInterval: 60000, // Reduced from 15s to 60s
+    staleTime: 30000,
   });
 
   const { data: trades } = useQuery({
     queryKey: ['/api/waidbot-pro/trades'],
-    refetchInterval: 30000,
+    refetchInterval: 120000, // Reduced from 30s to 120s
+    staleTime: 60000,
   });
 
   const { data: riskCheck } = useQuery({
     queryKey: ['/api/waidbot-pro/risk-check'],
-    refetchInterval: 60000,
+    refetchInterval: 180000, // Reduced from 60s to 180s
+    staleTime: 90000,
   });
 
-  // Quantum Trading Features - Next 500 Years Technology
+  // Quantum Trading Features - Optimized intervals
   const { data: quantumSignal } = useQuery({
     queryKey: ['/api/waidbot-pro/quantum-signal'],
-    refetchInterval: 5000, // Ultra-fast quantum updates
+    refetchInterval: 15000, // Reduced from 5s to 15s
+    staleTime: 8000,
   });
 
   const { data: quantumMarket } = useQuery({
     queryKey: ['/api/waidbot-pro/quantum-market'],
-    refetchInterval: 8000,
+    refetchInterval: 30000, // Reduced from 8s to 30s
+    staleTime: 15000,
   });
 
   const { data: quantumPerformance } = useQuery({
