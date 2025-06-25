@@ -254,11 +254,24 @@ export default function Dashboard() {
               </div>
             ) : (
               <>
-                {/* ETH Price & Signal Overview */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2 space-y-6">
-                    <TabsContent value="realtime" className="space-y-6">
-                    {/* Real-time ETH Price Card */}
+                {/* Tabs Container */}
+                <Tabs defaultValue="realtime" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
+                    <TabsTrigger value="realtime" className="data-[state=active]:bg-slate-700">Divine Trading</TabsTrigger>
+                    <TabsTrigger value="charts" className="data-[state=active]:bg-slate-700">Real-time Charts</TabsTrigger>
+                    <TabsTrigger value="waidbot" className="data-[state=active]:bg-slate-700">
+                      <Link href="/waidbot" className="w-full">WaidBot</Link>
+                    </TabsTrigger>
+                    <TabsTrigger value="pro" className="data-[state=active]:bg-slate-700">
+                      <Link href="/waidbot-pro" className="w-full">WaidBot Pro</Link>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="realtime" className="space-y-6">
+                    {/* ETH Price & Signal Overview */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      <div className="lg:col-span-2 space-y-6">
+                        {/* Real-time ETH Price Card */}
                     <Card className="bg-slate-900/50 border-slate-800">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
@@ -425,7 +438,6 @@ export default function Dashboard() {
                       </Card>
                     </TabsContent>
                   </Tabs>
-                </div>
 
                   {/* Right Sidebar */}
                   <div className="space-y-6">
