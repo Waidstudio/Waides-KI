@@ -6785,5 +6785,215 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== STEP 35: Vision Feedback Logger + Accuracy Evolution API Endpoints =====
+  
+  // Get accuracy metrics and learning statistics
+  app.get('/api/vision-feedback/accuracy-metrics', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const metrics = waidesKIVisionFeedbackLogger.getAccuracyMetrics();
+      res.json({
+        success: true,
+        metrics,
+        message: 'Accuracy metrics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting accuracy metrics:', error);
+      res.status(500).json({ error: 'Failed to get accuracy metrics' });
+    }
+  });
+
+  // Get all learned patterns with statistics
+  app.get('/api/vision-feedback/learning-patterns', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const patterns = waidesKIVisionFeedbackLogger.getLearningPatterns();
+      res.json({
+        success: true,
+        patterns,
+        total_patterns: patterns.length,
+        message: 'Learning patterns retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting learning patterns:', error);
+      res.status(500).json({ error: 'Failed to get learning patterns' });
+    }
+  });
+
+  // Get prediction and outcome history
+  app.get('/api/vision-feedback/prediction-history', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = waidesKIVisionFeedbackLogger.getPredictionHistory(limit);
+      res.json({
+        success: true,
+        history,
+        total_records: history.length,
+        message: 'Prediction history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting prediction history:', error);
+      res.status(500).json({ error: 'Failed to get prediction history' });
+    }
+  });
+
+  // Get evolved spiritual accuracy
+  app.get('/api/vision-feedback/evolved-accuracy', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const accuracy = waidesKIVisionFeedbackLogger.getEvolvedAccuracy();
+      res.json({
+        success: true,
+        evolved_accuracy: accuracy,
+        accuracy_percentage: (accuracy * 100).toFixed(2),
+        message: 'Evolved accuracy retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting evolved accuracy:', error);
+      res.status(500).json({ error: 'Failed to get evolved accuracy' });
+    }
+  });
+
+  // Record a vision outcome for learning
+  app.post('/api/vision-feedback/record-outcome', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const { vision_id, actual_direction, price_change_percent, market_conditions } = req.body;
+
+      if (!vision_id || !actual_direction || price_change_percent === undefined) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: vision_id, actual_direction, price_change_percent' 
+        });
+      }
+
+      const success = waidesKIVisionFeedbackLogger.recordVisionOutcome(
+        vision_id,
+        actual_direction,
+        price_change_percent,
+        market_conditions
+      );
+
+      if (success) {
+        res.json({
+          success: true,
+          message: 'Vision outcome recorded successfully - learning evolution updated'
+        });
+      } else {
+        res.status(404).json({ error: 'Vision prediction not found' });
+      }
+    } catch (error) {
+      console.error('Error recording vision outcome:', error);
+      res.status(500).json({ error: 'Failed to record vision outcome' });
+    }
+  });
+
+  // Get confidence modifier for a potential prediction
+  app.post('/api/vision-feedback/confidence-modifier', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const { vision, market_context, validation_strength } = req.body;
+
+      if (!vision || !market_context) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: vision, market_context' 
+        });
+      }
+
+      const modifier = waidesKIVisionFeedbackLogger.getConfidenceModifier(
+        vision,
+        market_context,
+        validation_strength || 0.7
+      );
+
+      res.json({
+        success: true,
+        confidence_modifier: modifier,
+        vision_type: vision,
+        learned_adjustment: modifier > 0 ? 'positive' : modifier < 0 ? 'negative' : 'neutral',
+        message: 'Confidence modifier calculated from learned patterns'
+      });
+    } catch (error) {
+      console.error('Error calculating confidence modifier:', error);
+      res.status(500).json({ error: 'Failed to calculate confidence modifier' });
+    }
+  });
+
+  // Force retrain accuracy from all historical data
+  app.post('/api/vision-feedback/retrain-accuracy', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      waidesKIVisionFeedbackLogger.retrainAccuracy();
+      const newAccuracy = waidesKIVisionFeedbackLogger.getEvolvedAccuracy();
+      
+      res.json({
+        success: true,
+        new_accuracy: newAccuracy,
+        accuracy_percentage: (newAccuracy * 100).toFixed(2),
+        message: 'Accuracy retrained from all historical data'
+      });
+    } catch (error) {
+      console.error('Error retraining accuracy:', error);
+      res.status(500).json({ error: 'Failed to retrain accuracy' });
+    }
+  });
+
+  // Clear all learning data for reset
+  app.post('/api/vision-feedback/clear-learning-data', (req, res) => {
+    try {
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      waidesKIVisionFeedbackLogger.clearLearningData();
+      
+      res.json({
+        success: true,
+        message: 'All learning data cleared - system reset to initial state'
+      });
+    } catch (error) {
+      console.error('Error clearing learning data:', error);
+      res.status(500).json({ error: 'Failed to clear learning data' });
+    }
+  });
+
+  // Enhanced Vision Spirit with learning integration workflow
+  app.post('/api/vision-spirit/complete-learning-workflow', async (req, res) => {
+    try {
+      const { waidesKIVisionSpirit } = require('./services/waidesKIVisionSpirit');
+      const ethMonitor = getEthMonitor();
+      
+      // Get live market data
+      const marketData = await ethMonitor.getCurrentData();
+      const { rsi, ema_50, ema_200, current_price } = marketData;
+
+      // Receive vision with evolved accuracy
+      const vision = waidesKIVisionSpirit.receiveVision();
+      
+      // Validate with learning integration
+      const validation = waidesKIVisionSpirit.verifyVision(rsi, ema_50, ema_200, current_price);
+      
+      // Get current learning metrics
+      const { waidesKIVisionFeedbackLogger } = require('./services/waidesKIVisionFeedbackLogger');
+      const accuracyMetrics = waidesKIVisionFeedbackLogger.getAccuracyMetrics();
+      const evolvedAccuracy = waidesKIVisionFeedbackLogger.getEvolvedAccuracy();
+
+      res.json({
+        success: true,
+        vision,
+        validation,
+        learning_metrics: {
+          evolved_accuracy: evolvedAccuracy,
+          accuracy_percentage: (evolvedAccuracy * 100).toFixed(2),
+          total_predictions: accuracyMetrics.total_predictions,
+          learning_progression: accuracyMetrics.learning_progression,
+          recent_trend: accuracyMetrics.recent_trend
+        },
+        market_data: { rsi, ema_50, ema_200, current_price },
+        message: `Complete learning workflow: ${vision.vision.toUpperCase()} vision ${validation.confirmed ? 'CONFIRMED' : 'REJECTED'} with evolved accuracy`
+      });
+    } catch (error) {
+      console.error('Error in complete learning workflow:', error);
+      res.status(500).json({ error: 'Failed to execute complete learning workflow' });
+    }
+  });
+
   return httpServer;
 }
