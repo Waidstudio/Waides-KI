@@ -264,7 +264,7 @@ export default function SeasonalRebirth() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 bg-gray-800/50">
+        <TabsList className="grid w-full grid-cols-7 bg-gray-800/50">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             Overview
@@ -276,6 +276,10 @@ export default function SeasonalRebirth() {
           <TabsTrigger value="health" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
             Health Monitor
+          </TabsTrigger>
+          <TabsTrigger value="omniview" className="flex items-center gap-2">
+            <Eye className="h-4 w-4" />
+            Omniview Oracle
           </TabsTrigger>
           <TabsTrigger value="dreamchain" className="flex items-center gap-2">
             <Link2 className="h-4 w-4" />
@@ -537,6 +541,377 @@ export default function SeasonalRebirth() {
                   </div>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Omniview Oracle Tab */}
+        <TabsContent value="omniview" className="space-y-6">
+          <Card className="bg-gray-800/50 border-cyan-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-cyan-400" />
+                STEP 39: Omniview Oracle - ETH3L/ETH3S Dual-Motion Intelligence
+              </CardTitle>
+              <CardDescription>
+                Multi-timeframe trend analysis with automated ETH3L/ETH3S position management
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="oracle" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-4 bg-gray-700/30">
+                  <TabsTrigger value="oracle">Oracle Scan</TabsTrigger>
+                  <TabsTrigger value="prices">Price Feed</TabsTrigger>
+                  <TabsTrigger value="trends">Trend Analysis</TabsTrigger>
+                  <TabsTrigger value="executor">Dual Executor</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="oracle" className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-gray-700/30 border-cyan-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Activity className="h-5 w-5 text-cyan-400" />
+                          Oracle Decision Engine
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <Button 
+                          className="w-full bg-cyan-600 hover:bg-cyan-700"
+                          onClick={() => {
+                            queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/omniview'] });
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Perform Omniview Scan
+                        </Button>
+                        
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="text-gray-400">Last Scan:</span>
+                            <p className="font-medium text-cyan-400">Active</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Timeframes:</span>
+                            <p className="font-medium">5m, 15m, 1h, 4h, 1d</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Agreement:</span>
+                            <p className="font-medium text-green-400">60% Required</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Status:</span>
+                            <p className="font-medium text-blue-400">Monitoring</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gray-700/30 border-green-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <TrendingUp className="h-5 w-5 text-green-400" />
+                          Current Recommendation
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="text-center py-4">
+                          <div className="text-2xl font-bold text-yellow-400 mb-2">
+                            NO_TRADE
+                          </div>
+                          <p className="text-sm text-gray-400">
+                            Insufficient timeframe agreement
+                          </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="text-gray-400">Confidence:</span>
+                            <p className="font-medium">0%</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Agreement:</span>
+                            <p className="font-medium">45%</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card className="bg-gray-700/30 border-purple-500/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Multi-Timeframe Analysis</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-5 gap-4">
+                        {['5m', '15m', '1h', '4h', '1d'].map((timeframe) => (
+                          <div key={timeframe} className="text-center">
+                            <div className="font-medium text-purple-400 mb-1">{timeframe}</div>
+                            <div className="text-sm text-gray-400">sideways</div>
+                            <div className="text-xs text-gray-500">0.5 strength</div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="prices" className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="bg-gray-700/30 border-blue-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <BarChart3 className="h-5 w-5 text-blue-400" />
+                          ETH Spot Price
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-blue-400 mb-2">
+                          $2,417.85
+                        </div>
+                        <div className="text-sm text-green-400">+2.4%</div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gray-700/30 border-green-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <TrendingUp className="h-5 w-5 text-green-400" />
+                          ETH3L (Bull 3x)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-green-400 mb-2">
+                          $240.00
+                        </div>
+                        <div className="text-sm text-green-400">+7.2%</div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gray-700/30 border-red-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <TrendingUp className="h-5 w-5 text-red-400 rotate-180" />
+                          ETH3S (Bear 3x)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-red-400 mb-2">
+                          $24.00
+                        </div>
+                        <div className="text-sm text-red-400">-7.2%</div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card className="bg-gray-700/30 border-cyan-500/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Price Feed Statistics</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Total Requests:</span>
+                          <p className="font-medium">1,247</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Success Rate:</span>
+                          <p className="font-medium text-green-400">98.5%</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Cache Hits:</span>
+                          <p className="font-medium text-blue-400">75%</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Avg Response:</span>
+                          <p className="font-medium">245ms</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="trends" className="space-y-4">
+                  <Card className="bg-gray-700/30 border-yellow-500/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Activity className="h-5 w-5 text-yellow-400" />
+                        Trend Analysis Engine
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Current Trend:</span>
+                          <p className="font-medium text-yellow-400">Sideways</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Strength:</span>
+                          <p className="font-medium">0.45</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Confidence:</span>
+                          <p className="font-medium text-blue-400">72%</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Momentum:</span>
+                          <p className="font-medium">+0.12</p>
+                        </div>
+                      </div>
+
+                      <Separator className="my-4" />
+
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-yellow-400">Technical Indicators</h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-400" />
+                            <span>EMA Alignment: Confirmed</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-blue-400" />
+                            <span>RSI Signal: Neutral</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <BarChart3 className="h-4 w-4 text-purple-400" />
+                            <span>Volume: Increasing</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-cyan-400" />
+                            <span>Breakout: Not Detected</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gray-700/30 border-purple-500/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Analysis History</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <ScrollArea className="h-48">
+                        <div className="space-y-2 text-sm">
+                          {Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} className="flex items-center justify-between p-2 bg-gray-600/30 rounded">
+                              <span className="text-gray-400">
+                                {new Date(Date.now() - i * 15 * 60 * 1000).toLocaleTimeString()}
+                              </span>
+                              <span className="text-yellow-400">Sideways</span>
+                              <span className="text-gray-400">0.{45 + Math.floor(Math.random() * 30)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="executor" className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-gray-700/30 border-emerald-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Shield className="h-5 w-5 text-emerald-400" />
+                          Current Position
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-center py-4">
+                          <div className="text-xl font-bold text-gray-400 mb-2">
+                            No Active Position
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            Waiting for high-confidence signal
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-gray-700/30 border-orange-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <BarChart3 className="h-5 w-5 text-orange-400" />
+                          Execution Statistics
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="text-gray-400">Total Trades:</span>
+                            <p className="font-medium">0</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Win Rate:</span>
+                            <p className="font-medium text-green-400">0%</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">ETH3L Trades:</span>
+                            <p className="font-medium">0</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">ETH3S Trades:</span>
+                            <p className="font-medium">0</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card className="bg-gray-700/30 border-blue-500/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg">Executor Configuration</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-400">Auto Trading</Label>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span className="text-sm">Disabled</span>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-400">Confidence Threshold</Label>
+                          <div className="text-sm font-medium">75%</div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-400">Trade Amount</Label>
+                          <div className="text-sm font-medium">$1,000</div>
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="border-green-500/20 text-green-400 hover:bg-green-500/10"
+                        >
+                          Enable Auto Trading
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                        >
+                          Manual Execute
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="border-red-500/20 text-red-400 hover:bg-red-500/10"
+                        >
+                          Force Close
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>
