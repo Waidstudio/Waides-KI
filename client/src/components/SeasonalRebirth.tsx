@@ -171,6 +171,50 @@ export default function SeasonalRebirth() {
     }
   });
 
+  // STEP 38: Dreamchain Queries
+  const { data: dreamchainStats, isLoading: dreamchainStatsLoading } = useQuery({
+    queryKey: ['/api/waides-ki/dreamchain/stats'],
+    refetchInterval: 30000,
+  });
+
+  const { data: recentTrades, isLoading: recentTradesLoading } = useQuery({
+    queryKey: ['/api/waides-ki/dreamchain/recent'],
+    refetchInterval: 20000,
+  });
+
+  const { data: emotionAnalysis, isLoading: emotionAnalysisLoading } = useQuery({
+    queryKey: ['/api/waides-ki/dreamchain/emotion-analysis'],
+    refetchInterval: 60000,
+  });
+
+  const { data: failurePatterns, isLoading: failurePatternsLoading } = useQuery({
+    queryKey: ['/api/waides-ki/dreamchain/failure-patterns'],
+    refetchInterval: 120000,
+  });
+
+  const { data: chainIntegrity, isLoading: chainIntegrityLoading } = useQuery({
+    queryKey: ['/api/waides-ki/dreamchain/verify'],
+    refetchInterval: 300000,
+  });
+
+  // Dreamchain mutations
+  const recordTradeMutation = useMutation({
+    mutationFn: (tradeData: any) => apiRequest('/api/waides-ki/dreamchain/record-trade', {
+      method: 'POST',
+      body: tradeData
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/dreamchain'] });
+    }
+  });
+
+  const clearDreamchainMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waides-ki/dreamchain/clear', { method: 'POST' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/dreamchain'] });
+    }
+  });
+
   const seasonalStats: SeasonalStats = stats?.stats || {};
   const seasonMemories: SeasonMemory[] = memories?.memories || [];
   const seasonHealth: SeasonHealth = health?.health || { status: 'UNKNOWN', issues: [], recommendations: [] };
@@ -220,7 +264,7 @@ export default function SeasonalRebirth() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-800/50">
+        <TabsList className="grid w-full grid-cols-6 bg-gray-800/50">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             Overview
@@ -232,6 +276,10 @@ export default function SeasonalRebirth() {
           <TabsTrigger value="health" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
             Health Monitor
+          </TabsTrigger>
+          <TabsTrigger value="dreamchain" className="flex items-center gap-2">
+            <Link2 className="h-4 w-4" />
+            Dreamchain
           </TabsTrigger>
           <TabsTrigger value="controls" className="flex items-center gap-2">
             <RotateCcw className="h-4 w-4" />
@@ -654,6 +702,311 @@ export default function SeasonalRebirth() {
                   }
                 </div>
                 <p className="text-sm text-gray-400 mt-1">Avg cycles per season</p>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* STEP 38: Dreamchain Symbolic Blockchain Tab */}
+        <TabsContent value="dreamchain" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Dreamchain Statistics */}
+            <Card className="bg-gray-800/50 border-purple-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="h-5 w-5 text-purple-400" />
+                  Blockchain Statistics
+                </CardTitle>
+                <CardDescription>
+                  Immutable chain of all trading decisions and spiritual context
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {dreamchainStatsLoading ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-400 mx-auto"></div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-purple-400">
+                          {dreamchainStats?.stats?.total_blocks || 0}
+                        </div>
+                        <p className="text-sm text-gray-400">Total Blocks</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-400">
+                          {dreamchainStats?.stats?.total_trades || 0}
+                        </div>
+                        <p className="text-sm text-gray-400">Trades Recorded</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-400">
+                          {((dreamchainStats?.stats?.win_rate || 0) * 100).toFixed(1)}%
+                        </div>
+                        <p className="text-sm text-gray-400">Win Rate</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-yellow-400">
+                          ${(dreamchainStats?.stats?.total_profit || 0).toFixed(2)}
+                        </div>
+                        <p className="text-sm text-gray-400">Total Profit</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 mt-4">
+                      <div className={`h-3 w-3 rounded-full ${dreamchainStats?.stats?.chain_integrity ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                      <span className="text-sm">
+                        Chain Integrity: {dreamchainStats?.stats?.chain_integrity ? 'VALID' : 'CORRUPTED'}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Trades */}
+            <Card className="bg-gray-800/50 border-blue-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-blue-400" />
+                  Recent Trade Blocks
+                </CardTitle>
+                <CardDescription>
+                  Latest trades recorded in the dreamchain
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-64">
+                  {recentTradesLoading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400 mx-auto"></div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {(recentTrades?.recent_trades || []).map((block: DreamBlock) => (
+                        <div key={block.index} className="p-3 bg-gray-700/30 rounded-lg border border-gray-600/30">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <Badge variant={block.data.result === 'PROFIT' ? 'default' : block.data.result === 'LOSS' ? 'destructive' : 'secondary'}>
+                                {block.data.type}
+                              </Badge>
+                              <span className="text-sm text-gray-400">#{block.index}</span>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {block.data.kons_symbol}
+                            </Badge>
+                          </div>
+                          <div className="text-sm space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Pair:</span>
+                              <span>{block.data.pair}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Profit:</span>
+                              <span className={block.data.profit >= 0 ? 'text-green-400' : 'text-red-400'}>
+                                ${block.data.profit.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Emotion:</span>
+                              <span className="text-purple-400">{block.data.emotion}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      {(!recentTrades?.recent_trades || recentTrades.recent_trades.length === 0) && (
+                        <div className="text-center py-8 text-gray-400">
+                          No recent trades in dreamchain
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Emotion Analysis */}
+          <Card className="bg-gray-800/50 border-green-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5 text-green-400" />
+                Emotional Performance Analysis
+              </CardTitle>
+              <CardDescription>
+                Trading performance breakdown by emotional states
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {emotionAnalysisLoading ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400 mx-auto"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Object.entries(emotionAnalysis?.emotion_analysis || {}).map(([emotion, stats]: [string, any]) => (
+                    <div key={emotion} className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
+                      <div className="text-center space-y-2">
+                        <h4 className="font-semibold text-purple-400">{emotion}</h4>
+                        <div className="text-2xl font-bold text-white">
+                          {(stats.win_rate * 100).toFixed(1)}%
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          {stats.trades} trades • ${stats.avg_profit.toFixed(2)} avg
+                        </div>
+                        <div className="w-full bg-gray-600 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full"
+                            style={{ width: `${stats.win_rate * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Failure Patterns */}
+          <Card className="bg-gray-800/50 border-red-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-400" />
+                Failure Pattern Analysis
+              </CardTitle>
+              <CardDescription>
+                Patterns identified in losing trades for improvement
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {failurePatternsLoading ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-400 mx-auto"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold mb-3 text-red-400">Common Failure Emotions</h4>
+                    <div className="space-y-2">
+                      {(failurePatterns?.failure_patterns?.common_emotions || []).map((emotion: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                          <span className="text-sm">{emotion}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold mb-3 text-yellow-400">Problematic Symbols</h4>
+                    <div className="space-y-2">
+                      {(failurePatterns?.failure_patterns?.common_symbols || []).map((symbol: string, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                          <Badge variant="outline" className="text-xs">{symbol}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="lg:col-span-2">
+                    <h4 className="font-semibold mb-3 text-blue-400">Recommendations</h4>
+                    <div className="space-y-2">
+                      {(failurePatterns?.failure_patterns?.recommendations || []).map((rec: string, index: number) => (
+                        <div key={index} className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                          <span>{rec}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Dreamchain Controls */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-gray-800/50 border-purple-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5 text-purple-400" />
+                  Dreamchain Management
+                </CardTitle>
+                <CardDescription>
+                  Controls for managing the symbolic blockchain
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button 
+                  onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/dreamchain'] })}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Refresh Dreamchain
+                </Button>
+                <Button 
+                  onClick={() => clearDreamchainMutation.mutate()}
+                  disabled={clearDreamchainMutation.isPending}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  {clearDreamchainMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Clearing...
+                    </>
+                  ) : (
+                    <>
+                      <Database className="h-4 w-4 mr-2" />
+                      Clear Dreamchain
+                    </>
+                  )}
+                </Button>
+                <p className="text-xs text-gray-400">
+                  Warning: Clearing will reset the entire symbolic blockchain to genesis
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-green-500/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-green-400" />
+                  Chain Integrity Status
+                </CardTitle>
+                <CardDescription>
+                  Blockchain verification and security status
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {chainIntegrityLoading ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400 mx-auto"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Chain Status:</span>
+                      <Badge variant={chainIntegrity?.chain_integrity ? 'default' : 'destructive'}>
+                        {chainIntegrity?.status || 'UNKNOWN'}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Integrity:</span>
+                      <div className="flex items-center gap-2">
+                        <div className={`h-2 w-2 rounded-full ${chainIntegrity?.chain_integrity ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                        <span className="text-sm">
+                          {chainIntegrity?.chain_integrity ? 'VERIFIED' : 'CORRUPTED'}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400 bg-gray-700/30 p-3 rounded">
+                      {chainIntegrity?.message || 'Checking blockchain integrity...'}
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
