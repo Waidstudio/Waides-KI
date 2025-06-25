@@ -241,25 +241,63 @@ export function WaidBotPro() {
     }).format(value);
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent animate-pulse">
-            WaidBot Pro
-          </h1>
-          <p className="text-gray-400">Advanced AI-Powered ETH Trading System</p>
-          <div className="flex items-center space-x-2 mt-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs text-green-400">Quantum Mode Ready</span>
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <span className="text-xs text-blue-400">ETH3L/ETH3S Active</span>
+    <div className="space-y-6">
+      {/* Navigation Header */}
+      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/dashboard">
+              <Button variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+            <div className="flex items-center space-x-2">
+              <Brain className="w-6 h-6 text-purple-500" />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                WaidBot Pro - Neural Quantum Singularity
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Link href="/waidbot">
+              <Button variant="outline" size="sm" className="border-blue-600 text-blue-400 hover:bg-blue-900/20">
+                <Bot className="w-4 h-4 mr-2" />
+                WaidBot
+              </Button>
+            </Link>
+            <Link href="/portfolio">
+              <Button variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Portfolio
+              </Button>
+            </Link>
+            <Button variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800">
+              <Settings className="w-4 h-4" />
+            </Button>
           </div>
         </div>
-        <Button
-          onClick={handleAutoTrade}
-          disabled={autoTradeMutation.isPending}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
+      </div>
+
+      <div className="space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              Advanced AI Trading System
+            </h2>
+            <p className="text-gray-400">Neural Quantum Singularity Strategy</p>
+            <div className="flex items-center space-x-2 mt-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-green-400">Neural Networks Active</span>
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-purple-400">Quantum LSTM Ready</span>
+            </div>
+          </div>
+          <Button
+            onClick={handleAutoTrade}
+            disabled={autoTradeMutation.isPending}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
           {autoTradeMutation.isPending ? (
             <>
               <Activity className="w-4 h-4 mr-2 animate-spin" />
@@ -992,6 +1030,7 @@ export function WaidBotPro() {
           </Card>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
