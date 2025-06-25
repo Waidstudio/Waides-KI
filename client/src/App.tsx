@@ -17,6 +17,7 @@ import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
 import DreamLayerVision from "@/components/DreamLayerVision";
 import VisionSpirit from "@/components/VisionSpirit";
 import { SpiritualRecall } from "@/components/SpiritualRecall";
+import SeasonalRebirth from "@/components/SeasonalRebirth";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/reincarnation", label: "Reincarnation" },
     { path: "/spiritual-recall", label: "Spiritual Recall" },
+    { path: "/seasonal-rebirth", label: "Seasonal Rebirth" },
     { path: "/sigil-layer", label: "Sigil Layer" },
     { path: "/shadow-defense", label: "Shadow Defense" },
     { path: "/dream-vision", label: "Dream Vision" },

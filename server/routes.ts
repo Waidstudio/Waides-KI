@@ -63,6 +63,7 @@ import { waidesKIClarityRecoveryNode } from './services/waidesKIClarityRecoveryN
 import { WaidesKIDreamLayerVision } from './services/waidesKIDreamLayerVision.js';
 import { waidesKIVisionSpirit } from './services/waidesKIVisionSpirit.js';
 import { waidesKISpiritualRecall } from './services/waidesKISpiritualRecall.js';
+import { waidesKISeasonalRebirthEngine } from './services/waidesKISeasonalRebirthEngine.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -7144,6 +7145,186 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error clearing recall data:', error);
       res.status(500).json({ error: 'Failed to clear recall data' });
+    }
+  });
+
+  // ===== STEP 37: WAIDES KI SEASONAL REBIRTH ENGINE + MEMORY CONTINUUM API ENDPOINTS =====
+
+  // Get current seasonal statistics
+  app.get('/api/waides-ki/seasonal/stats', (req, res) => {
+    try {
+      const stats = waidesKISeasonalRebirthEngine.getSeasonalStats();
+      res.json({
+        success: true,
+        stats,
+        message: 'Seasonal statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting seasonal stats:', error);
+      res.status(500).json({ error: 'Failed to get seasonal statistics' });
+    }
+  });
+
+  // Get current season information
+  app.get('/api/waides-ki/seasonal/current', (req, res) => {
+    try {
+      const currentSeason = waidesKISeasonalRebirthEngine.getCurrentSeason();
+      res.json({
+        success: true,
+        current_season: currentSeason,
+        message: 'Current season information retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting current season:', error);
+      res.status(500).json({ error: 'Failed to get current season information' });
+    }
+  });
+
+  // Check if 90-day cycle is complete
+  app.get('/api/waides-ki/seasonal/cycle-check', (req, res) => {
+    try {
+      const cycleComplete = waidesKISeasonalRebirthEngine.checkCycle();
+      res.json({
+        success: true,
+        cycle_complete: cycleComplete,
+        ready_for_rebirth: cycleComplete,
+        message: `Season cycle is ${cycleComplete ? 'complete and ready for rebirth' : 'in progress'}`
+      });
+    } catch (error) {
+      console.error('Error checking cycle:', error);
+      res.status(500).json({ error: 'Failed to check cycle status' });
+    }
+  });
+
+  // Force manual rebirth trigger
+  app.post('/api/waides-ki/seasonal/rebirth', (req, res) => {
+    try {
+      const rebirthResult = waidesKISeasonalRebirthEngine.forceRebirth();
+      res.json({
+        success: true,
+        rebirth: rebirthResult,
+        message: `Seasonal rebirth completed: ${rebirthResult.season_ended} → ${rebirthResult.season_started}`
+      });
+    } catch (error) {
+      console.error('Error triggering rebirth:', error);
+      res.status(500).json({ error: 'Failed to trigger seasonal rebirth' });
+    }
+  });
+
+  // Get all season memories from vault
+  app.get('/api/waides-ki/seasonal/memories', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const memories = waidesKISeasonalRebirthEngine.getSeasonMemories(limit);
+      res.json({
+        success: true,
+        memories,
+        total_memories: memories.length,
+        message: 'Season memories retrieved from vault'
+      });
+    } catch (error) {
+      console.error('Error getting season memories:', error);
+      res.status(500).json({ error: 'Failed to get season memories' });
+    }
+  });
+
+  // Get specific season memory
+  app.get('/api/waides-ki/seasonal/memory/:seasonName', (req, res) => {
+    try {
+      const { seasonName } = req.params;
+      const memory = waidesKISeasonalRebirthEngine.getSeasonMemory(seasonName);
+      
+      if (!memory) {
+        return res.status(404).json({
+          success: false,
+          error: `No memory found for season: ${seasonName}`
+        });
+      }
+
+      res.json({
+        success: true,
+        memory,
+        season_name: seasonName,
+        message: `Memory retrieved for season: ${seasonName}`
+      });
+    } catch (error) {
+      console.error('Error getting season memory:', error);
+      res.status(500).json({ error: 'Failed to get season memory' });
+    }
+  });
+
+  // Get season cycle health assessment
+  app.get('/api/waides-ki/seasonal/health', (req, res) => {
+    try {
+      const health = waidesKISeasonalRebirthEngine.getSeasonHealth();
+      res.json({
+        success: true,
+        health,
+        message: 'Season cycle health assessment completed'
+      });
+    } catch (error) {
+      console.error('Error getting season health:', error);
+      res.status(500).json({ error: 'Failed to get season health' });
+    }
+  });
+
+  // Add custom Konslang season name
+  app.post('/api/waides-ki/seasonal/add-season-name', (req, res) => {
+    try {
+      const { name } = req.body;
+      
+      if (!name || typeof name !== 'string') {
+        return res.status(400).json({
+          success: false,
+          error: 'Season name is required and must be a string'
+        });
+      }
+
+      waidesKISeasonalRebirthEngine.addSeasonName(name);
+      res.json({
+        success: true,
+        added_name: name,
+        message: `Custom Konslang season name added: ${name}`
+      });
+    } catch (error) {
+      console.error('Error adding season name:', error);
+      res.status(500).json({ error: 'Failed to add season name' });
+    }
+  });
+
+  // Clear memory vault (reset all memories)
+  app.post('/api/waides-ki/seasonal/clear-vault', (req, res) => {
+    try {
+      waidesKISeasonalRebirthEngine.clearMemoryVault();
+      res.json({
+        success: true,
+        message: 'Memory vault cleared - all season memories removed'
+      });
+    } catch (error) {
+      console.error('Error clearing memory vault:', error);
+      res.status(500).json({ error: 'Failed to clear memory vault' });
+    }
+  });
+
+  // Complete seasonal rebirth workflow with detailed response
+  app.post('/api/waides-ki/seasonal/complete-rebirth-workflow', (req, res) => {
+    try {
+      const preRebirthStats = waidesKISeasonalRebirthEngine.getSeasonalStats();
+      const rebirthResult = waidesKISeasonalRebirthEngine.beginNewSeason();
+      const postRebirthStats = waidesKISeasonalRebirthEngine.getSeasonalStats();
+      
+      res.json({
+        success: true,
+        workflow: {
+          pre_rebirth: preRebirthStats,
+          rebirth_result: rebirthResult,
+          post_rebirth: postRebirthStats
+        },
+        message: `Complete rebirth workflow: ${rebirthResult.season_ended} archived, ${rebirthResult.season_started} born`
+      });
+    } catch (error) {
+      console.error('Error in complete rebirth workflow:', error);
+      res.status(500).json({ error: 'Failed to execute complete rebirth workflow' });
     }
   });
 
