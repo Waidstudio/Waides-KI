@@ -217,16 +217,15 @@ Changelog:
   - Added performance optimizations: caching, reduced API call frequency, request timeouts, skeleton loading states
   - Optimized query intervals and implemented request deduplication for faster app loading
   - System now provides two separate advanced trading engines: WaidBot (Divine Quantum Flux) and WaidBot Pro (Neural Quantum Singularity)
-- June 25, 2025. Integrated TradingView and Enhanced Binance WebSocket for Real-time Candlestick Data
-  - Created TradingView WebSocket service (server/services/tradingViewWebSocket.ts) with real-time candlestick streaming
+- June 25, 2025. Integrated Binance WebSocket for Real-time Candlestick Data
   - Enhanced Binance WebSocket service with heartbeat monitoring and connection cleanup
-  - Built comprehensive RealTimeCandlestickChart component with dual data source support
-  - Added WebSocket status monitoring with connection indicators for both Binance and TradingView
-  - Integrated real-time OHLC data visualization with interactive candlestick timeline
-  - Created data source selector allowing users to switch between Binance Global and TradingView feeds
-  - Added comprehensive API endpoints for WebSocket status monitoring and candlestick data management
+  - Built comprehensive RealTimeCandlestickChart component with real-time OHLC data visualization
+  - Added WebSocket status monitoring with connection indicators for Binance Global
+  - Integrated real-time candlestick timeline with interactive hover tooltips for detailed OHLC data
+  - Created comprehensive API endpoints for WebSocket status monitoring and candlestick data management
   - Enhanced dashboard charts tab with both real-time and historical candlestick data views
-  - System now provides redundant real-time market data feeds for maximum reliability and data accuracy
+  - Added fallback polling system using Binance REST API when WebSocket connections fail
+  - System now provides reliable real-time market data feeds focused on Binance Global for maximum accuracy
 
 ## User Preferences
 

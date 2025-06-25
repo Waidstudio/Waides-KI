@@ -8,7 +8,7 @@ import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
-import { TradingViewWebSocketService } from "./services/tradingViewWebSocket.js";
+// TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
@@ -20,7 +20,7 @@ let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
 let waidTrader: WaidTrader;
 let binanceWS: BinanceWebSocketService;
-let tradingViewWS: TradingViewWebSocketService;
+// TradingView WebSocket removed per user request
 let waidBotEngine: WaidBotEngine;
 let waidBotPro: WaidBotPro;
 
@@ -39,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   divineCommLayer = new DivineCommLayer();
   waidTrader = new WaidTrader();
   binanceWS = new BinanceWebSocketService();
-  tradingViewWS = new TradingViewWebSocketService();
+  // Note: TradingView WebSocket removed per user request - using Binance only
   waidBotEngine = new WaidBotEngine();
   waidBotPro = new WaidBotPro(10000); // Initialize with $10,000 starting balance
 
@@ -66,6 +66,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error storing candlestick data:', error);
     }
   });
+
+  // Note: TradingView WebSocket integration removed - using Binance only
 
   // Get current ETH data and signals with spiritual layer
   app.get("/api/eth", async (req, res) => {
@@ -1453,6 +1455,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('KonsLang message generation error:', error);
       res.status(500).json({ error: 'Failed to generate enhanced message' });
     }
+  });
+
+  // WebSocket status endpoint
+  app.get("/api/websocket/status", (req, res) => {
+    res.json({
+      binance: {
+        connected: binanceWS?.getConnectionStatus() || false,
+        symbol: 'ETHUSDT',
+        interval: '1m'
+      }
+    });
   });
 
   console.log('🤖 Enhanced WaidBot Self-Learning System Initialized');

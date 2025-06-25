@@ -27,11 +27,6 @@ interface WebSocketStatus {
     symbol: string;
     interval: string;
   };
-  tradingView: {
-    connected: boolean;
-    symbol: string;
-    interval: string;
-  };
 }
 
 interface RealTimeCandlestickChartProps {
@@ -45,7 +40,6 @@ export default function RealTimeCandlestickChart({
   interval = "1m", 
   limit = 50
 }: RealTimeCandlestickChartProps) {
-  const [selectedSource, setSelectedSource] = useState<'binance' | 'tradingview'>('binance');
 
   // Fetch candlestick data
   const { data: candlestickData, isLoading: candlestickLoading, refetch: refetchCandlesticks } = useQuery({
@@ -75,8 +69,8 @@ export default function RealTimeCandlestickChart({
   const priceChange = latest && candlesticks.length > 1 ? 
     ((latest.close - candlesticks[0].open) / candlesticks[0].open) * 100 : 0;
 
-  // Get connection status for selected source
-  const connectionStatus = selectedSource === 'binance' ? wsStatus?.binance : wsStatus?.tradingView;
+  // Get Binance connection status
+  const connectionStatus = wsStatus?.binance;
 
   return (
     <div className="space-y-4">
@@ -89,15 +83,9 @@ export default function RealTimeCandlestickChart({
               Real-Time Candlestick Data
             </CardTitle>
             <div className="flex items-center space-x-3">
-              <Select value={selectedSource} onValueChange={(value: 'binance' | 'tradingview') => setSelectedSource(value)}>
-                <SelectTrigger className="w-40 bg-slate-800 border-slate-700">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
-                  <SelectItem value="binance">Binance WebSocket</SelectItem>
-                  <SelectItem value="tradingview">TradingView WebSocket</SelectItem>
-                </SelectContent>
-              </Select>
+              <Badge variant="outline" className="border-blue-500 text-blue-400">
+                Binance WebSocket
+              </Badge>
               <Button
                 onClick={() => refetchCandlesticks()}
                 variant="outline"
@@ -134,7 +122,7 @@ export default function RealTimeCandlestickChart({
             <div className="text-sm">
               <div className="text-slate-400">Source</div>
               <div className="text-white font-medium">
-                {selectedSource === 'binance' ? 'Binance Global' : 'TradingView'}
+                Binance Global
               </div>
             </div>
 

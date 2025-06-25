@@ -367,15 +367,22 @@ export default function Dashboard() {
                       </Card>
                     )}
 
-                    {/* Candlestick Chart */}
-                    <Card className="bg-slate-900/50 border-slate-800">
-                      <CardHeader>
-                        <CardTitle className="text-lg">ETH/USDT Chart</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <CandlestickChart />
-                      </CardContent>
-                    </Card>
+                    </TabsContent>
+
+                    <TabsContent value="charts" className="space-y-6">
+                      {/* Real-time Candlestick Chart */}
+                      <RealTimeCandlestickChart />
+                      
+                      {/* Historical Candlestick Chart */}
+                      <Card className="bg-slate-900/50 border-slate-800">
+                        <CardHeader>
+                          <CardTitle className="text-lg">Historical ETH/USDT Chart</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <CandlestickChart />
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
                   </div>
 
                   {/* Right Sidebar */}
