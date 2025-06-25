@@ -62,6 +62,7 @@ import { waidesKIOverrideLockdown } from './services/waidesKIOverrideLockdown.js
 import { waidesKIClarityRecoveryNode } from './services/waidesKIClarityRecoveryNode.js';
 import { WaidesKIDreamLayerVision } from './services/waidesKIDreamLayerVision.js';
 import { waidesKIVisionSpirit } from './services/waidesKIVisionSpirit.js';
+import { waidesKISpiritualRecall } from './services/waidesKISpiritualRecall.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -6992,6 +6993,191 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in complete learning workflow:', error);
       res.status(500).json({ error: 'Failed to execute complete learning workflow' });
+    }
+  });
+
+  // ===== STEP 36: WAIDES KI SPIRITUAL RECALL + BROKEN STRATEGY REWRITER API ENDPOINTS =====
+  
+  // Get comprehensive recall statistics
+  app.get('/api/waides-ki/spiritual-recall/stats', (req, res) => {
+    try {
+      const stats = waidesKISpiritualRecall.getRecallStats();
+      res.json({
+        success: true,
+        stats,
+        message: 'Spiritual recall statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting recall stats:', error);
+      res.status(500).json({ error: 'Failed to get recall statistics' });
+    }
+  });
+
+  // Get all failed strategies awaiting recall
+  app.get('/api/waides-ki/spiritual-recall/failed-strategies', (req, res) => {
+    try {
+      const failedStrategies = waidesKISpiritualRecall.getFailedStrategies();
+      res.json({
+        success: true,
+        failed_strategies: failedStrategies,
+        total_failures: failedStrategies.length,
+        message: 'Failed strategies retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting failed strategies:', error);
+      res.status(500).json({ error: 'Failed to get failed strategies' });
+    }
+  });
+
+  // Get rewrite history
+  app.get('/api/waides-ki/spiritual-recall/rewrite-history', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const rewriteHistory = waidesKISpiritualRecall.getRewriteHistory(limit);
+      res.json({
+        success: true,
+        rewrite_history: rewriteHistory,
+        total_records: rewriteHistory.length,
+        message: 'Rewrite history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting rewrite history:', error);
+      res.status(500).json({ error: 'Failed to get rewrite history' });
+    }
+  });
+
+  // Record a strategy result for failure tracking
+  app.post('/api/waides-ki/spiritual-recall/record-result', (req, res) => {
+    try {
+      const { strategy_id, success, reason } = req.body;
+      
+      if (!strategy_id || typeof success !== 'boolean') {
+        return res.status(400).json({ error: 'Strategy ID and success boolean are required' });
+      }
+
+      waidesKISpiritualRecall.recordStrategyResult(strategy_id, success, reason);
+      
+      res.json({
+        success: true,
+        message: `Strategy result recorded: ${strategy_id} - ${success ? 'SUCCESS' : 'FAILURE'}`
+      });
+    } catch (error) {
+      console.error('Error recording strategy result:', error);
+      res.status(500).json({ error: 'Failed to record strategy result' });
+    }
+  });
+
+  // Manually trigger spiritual recall for a strategy
+  app.post('/api/waides-ki/spiritual-recall/manual-recall', (req, res) => {
+    try {
+      const { strategy_id, reason } = req.body;
+      
+      if (!strategy_id) {
+        return res.status(400).json({ error: 'Strategy ID is required' });
+      }
+
+      const recalled = waidesKISpiritualRecall.manualRecall(strategy_id, reason);
+      
+      if (recalled) {
+        res.json({
+          success: true,
+          strategy_id,
+          message: `Strategy ${strategy_id} has been spiritually recalled and rewritten`
+        });
+      } else {
+        res.status(400).json({ error: 'Failed to recall strategy' });
+      }
+    } catch (error) {
+      console.error('Error manually recalling strategy:', error);
+      res.status(500).json({ error: 'Failed to manually recall strategy' });
+    }
+  });
+
+  // Get specific rewritten strategy by ID
+  app.get('/api/waides-ki/spiritual-recall/strategy/:strategyId', (req, res) => {
+    try {
+      const { strategyId } = req.params;
+      const rewrittenStrategy = waidesKISpiritualRecall.getRewrittenStrategy(strategyId);
+      
+      if (rewrittenStrategy) {
+        res.json({
+          success: true,
+          strategy: rewrittenStrategy,
+          message: `Rewritten strategy ${strategyId} retrieved successfully`
+        });
+      } else {
+        res.status(404).json({ error: 'Strategy not found in rewrite history' });
+      }
+    } catch (error) {
+      console.error('Error getting rewritten strategy:', error);
+      res.status(500).json({ error: 'Failed to get rewritten strategy' });
+    }
+  });
+
+  // Check if strategy is under spiritual protection
+  app.get('/api/waides-ki/spiritual-recall/protection-status/:strategyId', (req, res) => {
+    try {
+      const { strategyId } = req.params;
+      const isProtected = waidesKISpiritualRecall.isUnderSpiritualProtection(strategyId);
+      
+      res.json({
+        success: true,
+        strategy_id: strategyId,
+        is_protected: isProtected,
+        protection_status: isProtected ? 'SPIRITUALLY_PROTECTED' : 'UNPROTECTED',
+        message: `Strategy ${strategyId} protection status retrieved`
+      });
+    } catch (error) {
+      console.error('Error checking protection status:', error);
+      res.status(500).json({ error: 'Failed to check protection status' });
+    }
+  });
+
+  // Clear all recall data for reset
+  app.post('/api/waides-ki/spiritual-recall/clear-data', (req, res) => {
+    try {
+      waidesKISpiritualRecall.clearRecallData();
+      res.json({
+        success: true,
+        message: 'All spiritual recall data cleared successfully'
+      });
+    } catch (error) {
+      console.error('Error clearing recall data:', error);
+      res.status(500).json({ error: 'Failed to clear recall data' });
+    }
+  });
+
+  // Complete spiritual recall workflow: simulate failure and show rewrite process
+  app.post('/api/waides-ki/spiritual-recall/demo-workflow', (req, res) => {
+    try {
+      const demoStrategyId = `DEMO_STRATEGY_${Date.now()}`;
+      
+      // Simulate 3 failures to trigger recall
+      waidesKISpiritualRecall.recordStrategyResult(demoStrategyId, false, 'RSI oversold condition failed');
+      waidesKISpiritualRecall.recordStrategyResult(demoStrategyId, false, 'Volume threshold not met');
+      waidesKISpiritualRecall.recordStrategyResult(demoStrategyId, false, 'Price action divergence');
+      
+      // Get the rewritten strategy
+      const rewrittenStrategy = waidesKISpiritualRecall.getRewrittenStrategy(demoStrategyId);
+      const stats = waidesKISpiritualRecall.getRecallStats();
+      
+      res.json({
+        success: true,
+        demo_strategy_id: demoStrategyId,
+        rewritten_strategy: rewrittenStrategy,
+        current_stats: stats,
+        workflow_steps: [
+          '1. Recorded 3 consecutive failures',
+          '2. Triggered automatic spiritual recall',
+          '3. Applied Konslang symbolic rewriting',
+          '4. Generated new strategy DNA with protection',
+          '5. Strategy now under spiritual protection'
+        ],
+        message: 'Demo spiritual recall workflow completed successfully'
+      });
+    } catch (error) {
+      console.error('Error in demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute demo workflow' });
     }
   });
 

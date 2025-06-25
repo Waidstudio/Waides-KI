@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Skull, ArrowUp, Brain, Flame, Phoenix, Eye, Timer, Target } from 'lucide-react';
+import { Skull, ArrowUp, Brain, Flame, Eye, Timer, Target, Zap } from 'lucide-react';
 
 export function ReincarnationLoop() {
   const queryClient = useQueryClient();
@@ -72,7 +72,7 @@ export function ReincarnationLoop() {
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-bold text-slate-100 flex items-center justify-center gap-2">
-          <Phoenix className="w-8 h-8 text-orange-500" />
+          <Zap className="w-8 h-8 text-orange-500" />
           Waides KI Reincarnation Loop
         </h2>
         <p className="text-slate-400">
@@ -544,7 +544,7 @@ export function ReincarnationLoop() {
                   disabled={triggerCycleMutation.isPending || phoenixStats?.current_session?.completion_status === 'ACTIVE'}
                   className="bg-orange-600 hover:bg-orange-700"
                 >
-                  <Phoenix className="w-4 h-4 mr-2" />
+                  <Zap className="w-4 h-4 mr-2" />
                   {triggerCycleMutation.isPending ? 'Triggering...' : 'Begin Reincarnation Cycle'}
                 </Button>
 
