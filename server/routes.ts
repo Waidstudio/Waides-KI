@@ -49,6 +49,12 @@ import { waidesKIStrategyUpdater } from './services/waidesKIStrategyUpdater.js';
 import { waidesKIKonsigilEngine } from './services/waidesKIKonsigilEngine.js';
 import { waidesKIGlyphMemoryTree } from './services/waidesKIGlyphMemoryTree.js';
 import { waidesKISigilOracle } from './services/waidesKISigilOracle.js';
+import { waidesKISacredPositioningEngine } from './services/waidesKISacredPositioningEngine.js';
+import { waidesKISacredEntryLocator } from './services/waidesKISacredEntryLocator.js';
+import { waidesKIPositionHaloTracker } from './services/waidesKIPositionHaloTracker.js';
+import { waidesKIScalingLogic } from './services/waidesKIScalingLogic.js';
+import { waidesKISacredExitNode } from './services/waidesKISacredExitNode.js';
+import { waidesKIRotationController } from './services/waidesKIRotationController.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -5717,6 +5723,322 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in demo workflow:', error);
       res.status(500).json({ error: 'Failed to execute demo workflow' });
+    }
+  });
+
+  // 🧭 STEP 30 - SACRED POSITIONING ENGINE ENDPOINTS
+
+  // Sacred Positioning Engine main endpoint
+  app.post("/api/waides-ki/positioning/process-lifecycle", async (req, res) => {
+    try {
+      const { market_context, current_positions, available_capital } = req.body;
+      
+      const lifecycle_result = await waidesKISacredPositioningEngine.processTradeLifecycle(
+        market_context || {},
+        current_positions || [],
+        available_capital || 10000
+      );
+      
+      res.json(lifecycle_result);
+    } catch (error) {
+      console.error('Error processing trade lifecycle:', error);
+      res.status(500).json({ error: 'Failed to process trade lifecycle' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/stats", (req, res) => {
+    try {
+      const stats = waidesKISacredPositioningEngine.getPositioningStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting positioning stats:', error);
+      res.status(500).json({ error: 'Failed to get positioning statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/status", (req, res) => {
+    try {
+      const status = waidesKISacredPositioningEngine.getSacredPositioningStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting positioning status:', error);
+      res.status(500).json({ error: 'Failed to get positioning status' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/active-cycles", (req, res) => {
+    try {
+      const cycles = waidesKISacredPositioningEngine.getActiveCycles();
+      res.json(cycles);
+    } catch (error) {
+      console.error('Error getting active cycles:', error);
+      res.status(500).json({ error: 'Failed to get active cycles' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/completed-cycles", (req, res) => {
+    try {
+      const count = parseInt(req.query.count as string) || 20;
+      const cycles = waidesKISacredPositioningEngine.getRecentCompletedCycles(count);
+      res.json(cycles);
+    } catch (error) {
+      console.error('Error getting completed cycles:', error);
+      res.status(500).json({ error: 'Failed to get completed cycles' });
+    }
+  });
+
+  // Sacred Entry Locator endpoints
+  app.post("/api/waides-ki/positioning/entry/align", async (req, res) => {
+    try {
+      const { indicators } = req.body;
+      
+      if (!indicators) {
+        return res.status(400).json({ error: 'Market indicators required' });
+      }
+
+      const sacred_entry = await waidesKISacredEntryLocator.alignEntry(indicators);
+      res.json(sacred_entry);
+    } catch (error) {
+      console.error('Error aligning sacred entry:', error);
+      res.status(500).json({ error: 'Failed to align sacred entry' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/entry/stats", (req, res) => {
+    try {
+      const stats = waidesKISacredEntryLocator.getEntryStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting entry stats:', error);
+      res.status(500).json({ error: 'Failed to get entry statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/positioning/entry/quick-check", (req, res) => {
+    try {
+      const { indicators } = req.body;
+      
+      if (!indicators) {
+        return res.status(400).json({ error: 'Market indicators required' });
+      }
+
+      const harmony_check = waidesKISacredEntryLocator.quickHarmonyCheck(indicators);
+      res.json(harmony_check);
+    } catch (error) {
+      console.error('Error in quick harmony check:', error);
+      res.status(500).json({ error: 'Failed to perform quick harmony check' });
+    }
+  });
+
+  // Position Halo Tracker endpoints
+  app.get("/api/waides-ki/positioning/halos/stats", (req, res) => {
+    try {
+      const stats = waidesKIPositionHaloTracker.getHaloStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting halo stats:', error);
+      res.status(500).json({ error: 'Failed to get halo statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/halos/active", (req, res) => {
+    try {
+      const halos = waidesKIPositionHaloTracker.getAllActiveHalos();
+      res.json(halos);
+    } catch (error) {
+      console.error('Error getting active halos:', error);
+      res.status(500).json({ error: 'Failed to get active halos' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/halos/visualization", (req, res) => {
+    try {
+      const visualization = waidesKIPositionHaloTracker.getHaloVisualization();
+      res.json(visualization);
+    } catch (error) {
+      console.error('Error getting halo visualization:', error);
+      res.status(500).json({ error: 'Failed to get halo visualization' });
+    }
+  });
+
+  // Scaling Logic endpoints
+  app.post("/api/waides-ki/positioning/scaling/decide", (req, res) => {
+    try {
+      const { scaling_context } = req.body;
+      
+      if (!scaling_context) {
+        return res.status(400).json({ error: 'Scaling context required' });
+      }
+
+      const decision = waidesKIScalingLogic.decideScale(scaling_context);
+      res.json(decision);
+    } catch (error) {
+      console.error('Error making scaling decision:', error);
+      res.status(500).json({ error: 'Failed to make scaling decision' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/scaling/stats", (req, res) => {
+    try {
+      const stats = waidesKIScalingLogic.getScalingStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting scaling stats:', error);
+      res.status(500).json({ error: 'Failed to get scaling statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/scaling/breathing-pattern", (req, res) => {
+    try {
+      const pattern = waidesKIScalingLogic.getCurrentBreathingPattern();
+      res.json(pattern);
+    } catch (error) {
+      console.error('Error getting breathing pattern:', error);
+      res.status(500).json({ error: 'Failed to get breathing pattern' });
+    }
+  });
+
+  // Sacred Exit Node endpoints
+  app.post("/api/waides-ki/positioning/exit/evaluate", (req, res) => {
+    try {
+      const { exit_context } = req.body;
+      
+      if (!exit_context) {
+        return res.status(400).json({ error: 'Exit context required' });
+      }
+
+      const decision = waidesKISacredExitNode.shouldExit(exit_context);
+      res.json(decision);
+    } catch (error) {
+      console.error('Error evaluating exit:', error);
+      res.status(500).json({ error: 'Failed to evaluate exit' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/exit/stats", (req, res) => {
+    try {
+      const stats = waidesKISacredExitNode.getExitStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting exit stats:', error);
+      res.status(500).json({ error: 'Failed to get exit statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/positioning/exit/quick-check", (req, res) => {
+    try {
+      const { halo_energy, time_in_position, unrealized_pct } = req.body;
+      
+      if (halo_energy === undefined || !time_in_position || unrealized_pct === undefined) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+      }
+
+      const quick_check = waidesKISacredExitNode.quickExitCheck(halo_energy, time_in_position, unrealized_pct);
+      res.json(quick_check);
+    } catch (error) {
+      console.error('Error in quick exit check:', error);
+      res.status(500).json({ error: 'Failed to perform quick exit check' });
+    }
+  });
+
+  // Rotation Controller endpoints
+  app.post("/api/waides-ki/positioning/rotation/evaluate", (req, res) => {
+    try {
+      const { current_timeframe, timeframe_strengths, current_energy, market_context } = req.body;
+      
+      if (!current_timeframe || !timeframe_strengths) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+      }
+
+      const decision = waidesKIRotationController.rotatePosition(
+        current_timeframe, 
+        timeframe_strengths, 
+        current_energy || 0.8, 
+        market_context
+      );
+      res.json(decision);
+    } catch (error) {
+      console.error('Error evaluating rotation:', error);
+      res.status(500).json({ error: 'Failed to evaluate rotation' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/rotation/stats", (req, res) => {
+    try {
+      const stats = waidesKIRotationController.getRotationStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting rotation stats:', error);
+      res.status(500).json({ error: 'Failed to get rotation statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/positioning/rotation/flow", (req, res) => {
+    try {
+      const flow = waidesKIRotationController.getCurrentRotationFlow();
+      res.json(flow);
+    } catch (error) {
+      console.error('Error getting rotation flow:', error);
+      res.status(500).json({ error: 'Failed to get rotation flow' });
+    }
+  });
+
+  app.post("/api/waides-ki/positioning/rotation/forecast", (req, res) => {
+    try {
+      const { current_timeframe, current_energy, market_conditions } = req.body;
+      
+      if (!current_timeframe) {
+        return res.status(400).json({ error: 'Current timeframe required' });
+      }
+
+      const forecast = waidesKIRotationController.forecastNextRotation(
+        current_timeframe,
+        current_energy || 0.8,
+        market_conditions || {}
+      );
+      res.json(forecast);
+    } catch (error) {
+      console.error('Error forecasting rotation:', error);
+      res.status(500).json({ error: 'Failed to forecast rotation' });
+    }
+  });
+
+  // Demo endpoint for complete positioning workflow
+  app.post("/api/waides-ki/positioning/demo-lifecycle", async (req, res) => {
+    try {
+      const demo_market_context = {
+        current_price: 2420,
+        rsi: 45,
+        vwap_alignment: 0.8,
+        ema_convergence: 0.75,
+        volume_harmony: 0.7,
+        price_momentum: 0.65,
+        spiritual_phase: 0.85,
+        harmony: 0.78,
+        momentum_consistency: 0.72,
+        volume_stability: 0.68,
+        trend_alignment: 0.8,
+        volatility: 0.6
+      };
+
+      const lifecycle_result = await waidesKISacredPositioningEngine.processTradeLifecycle(
+        demo_market_context,
+        [],
+        10000
+      );
+
+      const positioning_status = waidesKISacredPositioningEngine.getSacredPositioningStatus();
+      const active_cycles = waidesKISacredPositioningEngine.getActiveCycles();
+
+      res.json({
+        lifecycle_result,
+        positioning_status,
+        active_cycles_count: active_cycles.length,
+        message: 'Complete positioning lifecycle executed successfully'
+      });
+    } catch (error) {
+      console.error('Error in demo lifecycle:', error);
+      res.status(500).json({ error: 'Failed to execute demo lifecycle' });
     }
   });
 
