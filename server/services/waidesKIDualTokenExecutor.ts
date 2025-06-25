@@ -102,7 +102,7 @@ export class WaidesKIDualTokenExecutor {
       // Get current market prices
       const dual_prices = await waidesKIPriceFeed.getDualTokenPrices();
       
-      if (!dual_prices.eth3l || !dual_prices.eth3s) {
+      if (!dual_prices.eth3l_price || !dual_prices.eth3s_price) {
         return this.createExecutionResult(
           'NO_ACTION',
           'NONE',

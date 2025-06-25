@@ -5,7 +5,7 @@
  * with sophisticated technical indicators and momentum analysis.
  */
 
-import { CandleData } from './waidesKIPriceFeed';
+import { CandleData } from './waidesKIPriceFeed.js';
 
 export interface TrendAnalysis {
   trend: 'up' | 'down' | 'sideways';
@@ -42,13 +42,17 @@ export class WaidesKITrendProfiler {
 
   constructor() {
     this.analysis_history = [];
-    this.max_history = 100;
+    this.max_history = 200;
     this.stats = {
       total_analyses: 0,
-      trend_distribution: { up: 0, down: 0, sideways: 0 },
+      trend_distribution: {
+        up: 0,
+        down: 0,
+        sideways: 0
+      },
       average_strength: 0,
       average_confidence: 0,
-      recent_accuracy: 0.5
+      recent_accuracy: 0
     };
   }
 
@@ -56,135 +60,66 @@ export class WaidesKITrendProfiler {
    * Detect trend from candlestick data with comprehensive analysis
    */
   detectTrend(candles: CandleData[]): TrendAnalysis {
-    if (!candles || candles.length < 10) {
-      return this.getDefaultAnalysis('Insufficient data for analysis');
-    }
-
     try {
-      const reasoning: string[] = [];
-      
-      // Extract price data
-      const closes = candles.map(c => c.close);
-      const volumes = candles.map(c => c.volume);
-      const highs = candles.map(c => c.high);
-      const lows = candles.map(c => c.low);
-
-      // 1. Basic price change analysis
-      const price_change = (closes[closes.length - 1] - closes[0]) / closes[0];
-      const abs_change = Math.abs(price_change);
-      reasoning.push(`Price change: ${(price_change * 100).toFixed(2)}%`);
-
-      // 2. EMA alignment analysis
-      const ema_alignment = this.calculateEMAAlignment(closes);
-      reasoning.push(`EMA alignment: ${ema_alignment ? 'aligned' : 'conflicted'}`);
-
-      // 3. RSI analysis
-      const rsi_signal = this.calculateRSI(closes);
-      reasoning.push(`RSI signal: ${rsi_signal}`);
-
-      // 4. Volume analysis
-      const volume_confirmation = this.analyzeVolume(volumes, closes);
-      reasoning.push(`Volume confirmation: ${volume_confirmation ? 'confirmed' : 'weak'}`);
-
-      // 5. Breakout detection
-      const breakout_detected = this.detectBreakout(highs, lows, closes);
-      reasoning.push(`Breakout: ${breakout_detected ? 'detected' : 'none'}`);
-
-      // 6. Momentum calculation
-      const momentum = this.calculateMomentum(closes);
-      reasoning.push(`Momentum: ${momentum.toFixed(3)}`);
-
-      // 7. Volume profile
-      const volume_profile = this.getVolumeProfile(volumes);
-      reasoning.push(`Volume profile: ${volume_profile}`);
-
-      // Determine trend based on multiple factors
-      let trend: 'up' | 'down' | 'sideways';
-      let strength: number;
-      let confidence: number;
-
-      // Sideways threshold
-      const sideways_threshold = 0.005; // 0.5%
-
-      if (abs_change < sideways_threshold) {
-        trend = 'sideways';
-        strength = 1 - (abs_change / sideways_threshold);
-        confidence = 0.6 + (strength * 0.3);
-        reasoning.push('Trend: sideways - low price movement');
-      } else {
-        // Determine direction
-        trend = price_change > 0 ? 'up' : 'down';
-        
-        // Calculate strength based on multiple factors
-        let strength_factors = 0;
-        let factor_count = 0;
-
-        // Price change factor
-        strength_factors += Math.min(abs_change * 50, 1); // Cap at 1
-        factor_count++;
-
-        // EMA alignment factor
-        if (ema_alignment) {
-          strength_factors += 0.8;
-        } else {
-          strength_factors += 0.2;
-        }
-        factor_count++;
-
-        // Volume confirmation factor
-        if (volume_confirmation) {
-          strength_factors += 0.7;
-        } else {
-          strength_factors += 0.3;
-        }
-        factor_count++;
-
-        // Momentum factor
-        const momentum_strength = Math.abs(momentum);
-        strength_factors += momentum_strength;
-        factor_count++;
-
-        // Breakout factor
-        if (breakout_detected) {
-          strength_factors += 0.9;
-        } else {
-          strength_factors += 0.1;
-        }
-        factor_count++;
-
-        strength = Math.min(strength_factors / factor_count, 1);
-
-        // Calculate confidence
-        let confidence_factors = 0;
-        let conf_count = 0;
-
-        // RSI confirmation
-        if ((trend === 'up' && rsi_signal !== 'overbought') || 
-            (trend === 'down' && rsi_signal !== 'oversold')) {
-          confidence_factors += 0.8;
-        } else {
-          confidence_factors += 0.4;
-        }
-        conf_count++;
-
-        // Volume confirmation
-        confidence_factors += volume_confirmation ? 0.9 : 0.3;
-        conf_count++;
-
-        // EMA alignment
-        confidence_factors += ema_alignment ? 0.8 : 0.2;
-        conf_count++;
-
-        // Strength factor
-        confidence_factors += strength;
-        conf_count++;
-
-        confidence = Math.min(confidence_factors / conf_count, 0.95);
-        
-        reasoning.push(`Trend: ${trend} - strength: ${(strength * 100).toFixed(1)}%`);
+      if (!candles || candles.length < 20) {
+        return this.getDefaultAnalysis('Insufficient data for analysis');
       }
 
-      // Create analysis result
+      const closes = candles.map(c => c.close);
+      const highs = candles.map(c => c.high);
+      const lows = candles.map(c => c.low);
+      const volumes = candles.map(c => c.volume);
+
+      // Calculate price change
+      const price_change = ((closes[closes.length - 1] - closes[0]) / closes[0]) * 100;
+
+      // Determine basic trend
+      let trend: 'up' | 'down' | 'sideways' = 'sideways';
+      if (price_change > 1) {
+        trend = 'up';
+      } else if (price_change < -1) {
+        trend = 'down';
+      }
+
+      // Calculate indicators
+      const ema_alignment = this.calculateEMAAlignment(closes);
+      const rsi_signal = this.calculateRSI(closes);
+      const volume_confirmation = this.analyzeVolume(volumes, closes);
+      const breakout_detected = this.detectBreakout(highs, lows, closes);
+
+      // Calculate momentum
+      const momentum = this.calculateMomentum(closes);
+
+      // Calculate strength (0-1 scale)
+      const strength = Math.min(Math.abs(price_change) / 5, 1);
+
+      // Get volume profile
+      const volume_profile = this.getVolumeProfile(volumes);
+
+      // Build reasoning
+      const reasoning: string[] = [];
+      reasoning.push(`Price change: ${price_change.toFixed(2)}%`);
+      reasoning.push(`EMA alignment: ${ema_alignment ? 'aligned' : 'mixed'}`);
+      reasoning.push(`RSI signal: ${rsi_signal}`);
+      reasoning.push(`Volume: ${volume_profile}`);
+      reasoning.push(`Momentum: ${momentum.toFixed(3)}`);
+
+      if (breakout_detected) {
+        reasoning.push('Breakout pattern detected');
+      }
+
+      // Calculate confidence based on indicator agreement
+      let confidence = 0.5; // base confidence
+      
+      if (ema_alignment) confidence += 0.2;
+      if (volume_confirmation) confidence += 0.2;
+      if (breakout_detected) confidence += 0.1;
+      
+      // Adjust confidence based on strength
+      confidence += strength * 0.1;
+      
+      confidence = Math.min(confidence, 1);
+
       const analysis: TrendAnalysis = {
         trend,
         strength,
@@ -201,18 +136,18 @@ export class WaidesKITrendProfiler {
         reasoning
       };
 
-      // Update statistics and history
-      this.updateStats(analysis);
+      // Store analysis and update stats
       this.analysis_history.push(analysis);
       if (this.analysis_history.length > this.max_history) {
         this.analysis_history.shift();
       }
-
+      
+      this.updateStats(analysis);
+      
       return analysis;
-
     } catch (error) {
-      console.error('Error in trend detection:', error);
-      return this.getDefaultAnalysis(`Analysis error: ${error}`);
+      console.error('Error in trend analysis:', error);
+      return this.getDefaultAnalysis('Analysis error occurred');
     }
   }
 
@@ -226,11 +161,8 @@ export class WaidesKITrendProfiler {
     const ema21 = this.calculateEMA(closes, 21);
     const ema50 = this.calculateEMA(closes, 50);
 
-    // Check if EMAs are aligned (all increasing or all decreasing)
-    const trend_up = ema9 > ema21 && ema21 > ema50;
-    const trend_down = ema9 < ema21 && ema21 < ema50;
-
-    return trend_up || trend_down;
+    // Check if EMAs are in alignment (bullish: 9 > 21 > 50, bearish: 9 < 21 < 50)
+    return (ema9 > ema21 && ema21 > ema50) || (ema9 < ema21 && ema21 < ema50);
   }
 
   /**
@@ -258,7 +190,7 @@ export class WaidesKITrendProfiler {
     let gains = 0;
     let losses = 0;
 
-    // Calculate initial average gains/losses
+    // Calculate initial average gain and loss
     for (let i = 1; i <= period; i++) {
       const change = closes[i] - closes[i - 1];
       if (change > 0) {
@@ -268,24 +200,24 @@ export class WaidesKITrendProfiler {
       }
     }
 
-    let avg_gain = gains / period;
-    let avg_loss = losses / period;
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
 
-    // Calculate RSI for remaining periods
+    // Calculate RSI using smoothed averages
     for (let i = period + 1; i < closes.length; i++) {
       const change = closes[i] - closes[i - 1];
       const gain = change > 0 ? change : 0;
       const loss = change < 0 ? Math.abs(change) : 0;
 
-      avg_gain = ((avg_gain * (period - 1)) + gain) / period;
-      avg_loss = ((avg_loss * (period - 1)) + loss) / period;
+      avgGain = (avgGain * (period - 1) + gain) / period;
+      avgLoss = (avgLoss * (period - 1) + loss) / period;
     }
 
-    const rs = avg_gain / avg_loss;
+    const rs = avgGain / avgLoss;
     const rsi = 100 - (100 / (1 + rs));
 
-    if (rsi > 70) return 'overbought';
     if (rsi < 30) return 'oversold';
+    if (rsi > 70) return 'overbought';
     return 'neutral';
   }
 
@@ -295,18 +227,19 @@ export class WaidesKITrendProfiler {
   private analyzeVolume(volumes: number[], closes: number[]): boolean {
     if (volumes.length < 10 || closes.length < 10) return false;
 
-    const recent_volumes = volumes.slice(-5);
-    const earlier_volumes = volumes.slice(-10, -5);
-    const recent_closes = closes.slice(-5);
+    const recentVolumes = volumes.slice(-5);
+    const previousVolumes = volumes.slice(-10, -5);
+    const recentPrices = closes.slice(-5);
+    const previousPrices = closes.slice(-10, -5);
 
-    const avg_recent_volume = recent_volumes.reduce((sum, v) => sum + v, 0) / recent_volumes.length;
-    const avg_earlier_volume = earlier_volumes.reduce((sum, v) => sum + v, 0) / earlier_volumes.length;
+    const avgRecentVolume = recentVolumes.reduce((sum, vol) => sum + vol, 0) / recentVolumes.length;
+    const avgPreviousVolume = previousVolumes.reduce((sum, vol) => sum + vol, 0) / previousVolumes.length;
 
-    const price_change = recent_closes[recent_closes.length - 1] - recent_closes[0];
-    const volume_increase = avg_recent_volume > avg_earlier_volume;
+    const recentPriceChange = recentPrices[recentPrices.length - 1] - recentPrices[0];
+    const volumeIncrease = avgRecentVolume > avgPreviousVolume * 1.2;
 
-    // Volume should increase with price movement for confirmation
-    return Math.abs(price_change) > 0.001 && volume_increase;
+    // Volume confirmation: higher volume with price movement
+    return Math.abs(recentPriceChange) > 0 && volumeIncrease;
   }
 
   /**
@@ -315,19 +248,28 @@ export class WaidesKITrendProfiler {
   private detectBreakout(highs: number[], lows: number[], closes: number[]): boolean {
     if (highs.length < 20) return false;
 
-    const recent_high = Math.max(...highs.slice(-5));
-    const recent_low = Math.min(...lows.slice(-5));
-    const previous_high = Math.max(...highs.slice(-20, -5));
-    const previous_low = Math.min(...lows.slice(-20, -5));
-    const current_price = closes[closes.length - 1];
+    const recent = 5;
+    const lookback = 15;
 
-    // Upward breakout
-    const upward_breakout = current_price > previous_high && recent_high > previous_high;
-    
-    // Downward breakout
-    const downward_breakout = current_price < previous_low && recent_low < previous_low;
+    const recentHighs = highs.slice(-recent);
+    const recentLows = lows.slice(-recent);
+    const recentCloses = closes.slice(-recent);
 
-    return upward_breakout || downward_breakout;
+    const priorHighs = highs.slice(-lookback, -recent);
+    const priorLows = lows.slice(-lookback, -recent);
+
+    const maxPriorHigh = Math.max(...priorHighs);
+    const minPriorLow = Math.min(...priorLows);
+
+    const currentHigh = Math.max(...recentHighs);
+    const currentLow = Math.min(...recentLows);
+    const currentClose = recentCloses[recentCloses.length - 1];
+
+    // Breakout above resistance or below support
+    const bullishBreakout = currentHigh > maxPriorHigh && currentClose > maxPriorHigh * 0.99;
+    const bearishBreakout = currentLow < minPriorLow && currentClose < minPriorLow * 1.01;
+
+    return bullishBreakout || bearishBreakout;
   }
 
   /**
@@ -336,10 +278,16 @@ export class WaidesKITrendProfiler {
   private calculateMomentum(closes: number[]): number {
     if (closes.length < 10) return 0;
 
-    const short_ma = closes.slice(-5).reduce((sum, price) => sum + price, 0) / 5;
-    const long_ma = closes.slice(-10).reduce((sum, price) => sum + price, 0) / 10;
+    const recent = closes.slice(-5);
+    const previous = closes.slice(-10, -5);
 
-    return (short_ma - long_ma) / long_ma;
+    const recentAvg = recent.reduce((sum, price) => sum + price, 0) / recent.length;
+    const previousAvg = previous.reduce((sum, price) => sum + price, 0) / previous.length;
+
+    const momentum = (recentAvg - previousAvg) / previousAvg;
+    
+    // Normalize to -1 to 1 range
+    return Math.max(-1, Math.min(1, momentum * 10));
   }
 
   /**
@@ -348,13 +296,16 @@ export class WaidesKITrendProfiler {
   private getVolumeProfile(volumes: number[]): 'increasing' | 'decreasing' | 'stable' {
     if (volumes.length < 10) return 'stable';
 
-    const recent_avg = volumes.slice(-5).reduce((sum, v) => sum + v, 0) / 5;
-    const earlier_avg = volumes.slice(-10, -5).reduce((sum, v) => sum + v, 0) / 5;
+    const recent = volumes.slice(-5);
+    const previous = volumes.slice(-10, -5);
 
-    const change = (recent_avg - earlier_avg) / earlier_avg;
+    const recentAvg = recent.reduce((sum, vol) => sum + vol, 0) / recent.length;
+    const previousAvg = previous.reduce((sum, vol) => sum + vol, 0) / previous.length;
 
-    if (change > 0.1) return 'increasing';
-    if (change < -0.1) return 'decreasing';
+    const change = (recentAvg - previousAvg) / previousAvg;
+
+    if (change > 0.2) return 'increasing';
+    if (change < -0.2) return 'decreasing';
     return 'stable';
   }
 
@@ -385,13 +336,18 @@ export class WaidesKITrendProfiler {
   private updateStats(analysis: TrendAnalysis): void {
     this.stats.total_analyses++;
     this.stats.trend_distribution[analysis.trend]++;
-
-    // Update averages
-    const total = this.analysis_history.length + 1;
-    this.stats.average_strength = 
-      ((this.stats.average_strength * (total - 1)) + analysis.strength) / total;
-    this.stats.average_confidence = 
-      ((this.stats.average_confidence * (total - 1)) + analysis.confidence) / total;
+    
+    // Update running averages
+    const total = this.stats.total_analyses;
+    this.stats.average_strength = ((this.stats.average_strength * (total - 1)) + analysis.strength) / total;
+    this.stats.average_confidence = ((this.stats.average_confidence * (total - 1)) + analysis.confidence) / total;
+    
+    // Calculate recent accuracy (simplified)
+    if (this.analysis_history.length >= 10) {
+      const recentAnalyses = this.analysis_history.slice(-10);
+      const accurateCount = recentAnalyses.filter(a => a.confidence > 0.7).length;
+      this.stats.recent_accuracy = accurateCount / recentAnalyses.length;
+    }
   }
 
   /**
@@ -412,37 +368,45 @@ export class WaidesKITrendProfiler {
    * Get trend summary for timeframe
    */
   getTrendSummary(): {
-    current_trend: 'up' | 'down' | 'sideways' | 'unknown';
+    current_trend: 'up' | 'down' | 'sideways';
     trend_strength: number;
-    trend_duration: number;
-    confidence: number;
+    confidence_level: number;
+    dominant_trend: 'up' | 'down' | 'sideways';
+    trend_consistency: number;
   } {
     if (this.analysis_history.length === 0) {
       return {
-        current_trend: 'unknown',
+        current_trend: 'sideways',
         trend_strength: 0,
-        trend_duration: 0,
-        confidence: 0
+        confidence_level: 0,
+        dominant_trend: 'sideways',
+        trend_consistency: 0
       };
     }
 
     const latest = this.analysis_history[this.analysis_history.length - 1];
-    
-    // Calculate trend duration (consecutive same trend)
-    let duration = 1;
-    for (let i = this.analysis_history.length - 2; i >= 0; i--) {
-      if (this.analysis_history[i].trend === latest.trend) {
-        duration++;
-      } else {
-        break;
-      }
-    }
+    const recent = this.analysis_history.slice(-10);
+
+    // Calculate dominant trend from recent analyses
+    const trendCounts = recent.reduce((counts, analysis) => {
+      counts[analysis.trend]++;
+      return counts;
+    }, { up: 0, down: 0, sideways: 0 } as { [key: string]: number });
+
+    const dominant_trend = Object.keys(trendCounts).reduce((a, b) => 
+      trendCounts[a] > trendCounts[b] ? a : b
+    ) as 'up' | 'down' | 'sideways';
+
+    // Calculate consistency (how often the trend matches the dominant trend)
+    const consistency_count = recent.filter(a => a.trend === dominant_trend).length;
+    const trend_consistency = consistency_count / recent.length;
 
     return {
       current_trend: latest.trend,
       trend_strength: latest.strength,
-      trend_duration: duration,
-      confidence: latest.confidence
+      confidence_level: latest.confidence,
+      dominant_trend,
+      trend_consistency
     };
   }
 
@@ -453,10 +417,14 @@ export class WaidesKITrendProfiler {
     this.analysis_history = [];
     this.stats = {
       total_analyses: 0,
-      trend_distribution: { up: 0, down: 0, sideways: 0 },
+      trend_distribution: {
+        up: 0,
+        down: 0,
+        sideways: 0
+      },
       average_strength: 0,
       average_confidence: 0,
-      recent_accuracy: 0.5
+      recent_accuracy: 0
     };
   }
 }
