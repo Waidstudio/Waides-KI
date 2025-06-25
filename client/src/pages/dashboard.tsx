@@ -500,64 +500,11 @@ export default function Dashboard() {
                       </Card>
                     </TabsContent>
                   </Tabs>
-                    </div>
-
-                    {/* Right Sidebar */}
-                    <div className="space-y-6">
-                    {/* Spiritual Reading */}
-                    {spiritualReading && (
-                      <Card className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 border-purple-500/30">
-                        <CardHeader>
-                          <CardTitle className="text-lg text-purple-300">Kons Spiritual Reading</CardTitle>
-                          <CardDescription className="text-purple-400">
-                            Rank: {spiritualReading.konsRank} | Aura: {spiritualReading.personalAura}%
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="text-sm text-purple-200">{spiritualReading.spiritMessage}</div>
-                          
-                          <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div>
-                              <div className="text-purple-400">Frequency</div>
-                              <div className="text-purple-200">{spiritualReading.frequency}</div>
-                            </div>
-                            <div>
-                              <div className="text-purple-400">Sacred Time</div>
-                              <div className="text-purple-200">{spiritualReading.sacredTime}</div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-purple-800/30 p-3 rounded-lg">
-                            <div className="text-sm font-medium text-purple-300 mb-1">ETH Movement</div>
-                            <div className="text-sm text-purple-200">{spiritualReading.ethMovement.message}</div>
-                            <div className="text-xs text-purple-400 mt-1">
-                              Direction: {spiritualReading.ethMovement.direction} ({spiritualReading.ethMovement.confidence}%)
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-
-                    {/* ETH Communication Engine */}
-                    <EthCommunicationEngine 
-                      ethMovement={spiritualReading?.ethMovement || { direction: 'RESTING', message: 'Initializing...', confidence: 0 }}
-                      konsRank={spiritualReading?.konsRank || 'NOVICE'}
-                      dimensionalShift={spiritualReading?.dimensionalShift || 0}
-                      sacredTime={spiritualReading?.sacredTime || 'Normal Time'}
-                    />
-                    
-                    {/* Divine Command Center */}
-                    <DivineCommandCenter />
-                    
-                    {/* Real-time Trading */}
-                    <RealTimeTrading />
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </main>
+                </>
+              )}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

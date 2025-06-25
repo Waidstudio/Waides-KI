@@ -225,6 +225,7 @@ Changelog:
   - Created comprehensive API endpoints for WebSocket status monitoring and candlestick data management
   - Enhanced dashboard charts tab with both real-time and historical candlestick data views
   - Added fallback polling system using Binance REST API when WebSocket connections fail
+  - Updated branding from "Waides AI" to "Waides KI" throughout entire application
   - System now provides reliable real-time market data feeds focused on Binance Global for maximum accuracy
 
 ## User Preferences
