@@ -17,6 +17,7 @@ import { waidesKISignalLogger } from './services/waidesKISignalLogger.js';
 import { waidesKIRiskManager } from './services/waidesKIRiskManager.js';
 import { waidesKILiveFeed } from './services/waidesKILiveFeed.js';
 import { waidesKIAdmin } from './services/waidesKIAdmin.js';
+import { waidesKIWebSocketTracker } from './services/waidesKIWebSocketTracker.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1829,6 +1830,250 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error executing emergency stop:', error);
       res.status(500).json({ error: 'Failed to execute emergency stop' });
+    }
+  });
+
+  // External API endpoints for third-party access
+  app.get("/api/eth/price", (req, res) => {
+    try {
+      const currentPrice = waidesKIWebSocketTracker.getCurrentPrice();
+      const connectionStatus = waidesKIWebSocketTracker.getConnectionStatus();
+      
+      res.json({
+        price: currentPrice,
+        timestamp: connectionStatus.lastUpdate,
+        isLive: connectionStatus.isConnected,
+        symbol: "ETHUSDT"
+      });
+    } catch (error) {
+      console.error('Error getting ETH price:', error);
+      res.status(500).json({ error: 'Failed to get ETH price' });
+    }
+  });
+
+  app.get("/api/eth/market-summary", (req, res) => {
+    try {
+      const marketSummary = waidesKIWebSocketTracker.getMarketSummary();
+      res.json(marketSummary);
+    } catch (error) {
+      console.error('Error getting market summary:', error);
+      res.status(500).json({ error: 'Failed to get market summary' });
+    }
+  });
+
+  app.get("/api/eth/trading-activity", (req, res) => {
+    try {
+      const activity = waidesKIWebSocketTracker.getTradingActivity();
+      res.json(activity);
+    } catch (error) {
+      console.error('Error getting trading activity:', error);
+      res.status(500).json({ error: 'Failed to get trading activity' });
+    }
+  });
+
+  app.get("/api/eth/price-history", (req, res) => {
+    try {
+      const count = parseInt(req.query.count as string) || 50;
+      const priceHistory = waidesKIWebSocketTracker.getRecentPrices(count);
+      res.json(priceHistory);
+    } catch (error) {
+      console.error('Error getting price history:', error);
+      res.status(500).json({ error: 'Failed to get price history' });
+    }
+  });
+
+  app.get("/api/signal-strength", async (req, res) => {
+    try {
+      const currentAssessment = waidesKIObserver.getCurrentAssessment();
+      const liveData = await waidesKILiveFeed.getCurrentMarketData();
+      const currentPrice = waidesKIWebSocketTracker.getCurrentPrice();
+      
+      if (!currentAssessment.signalStrength) {
+        return res.json({
+          error: "No signal data available",
+          currentPrice
+        });
+      }
+
+      res.json({
+        trend: liveData?.trend || 'UNKNOWN',
+        rsi: liveData?.rsi || 50,
+        vwap_status: liveData?.vwap_status || 'UNKNOWN',
+        signal_strength: currentAssessment.signalStrength.confidence,
+        signal_score: currentAssessment.signalStrength.score,
+        recommendation: currentAssessment.recommendation,
+        should_trade: currentAssessment.signalStrength.shouldTrade,
+        reasoning: currentAssessment.signalStrength.reasoning,
+        current_price: currentPrice,
+        data_source: liveData?.source || 'OBSERVER'
+      });
+    } catch (error) {
+      console.error('Error getting signal strength:', error);
+      res.status(500).json({ error: 'Failed to get signal strength' });
+    }
+  });
+
+  // Waides KI external status endpoint
+  app.get("/api/status", async (req, res) => {
+    try {
+      const kiStatus = waidesKI.getPublicInterface();
+      const wsStatus = waidesKIWebSocketTracker.getConnectionStatus();
+      const streamStatus = waidesKILiveFeed.getDataStreamStatus();
+      
+      res.json({
+        waides_ki: {
+          autonomous_mode: kiStatus.isActive,
+          trading_status: kiStatus.performance.status,
+          evolution_stage: kiStatus.performance.evolutionStage,
+          win_rate: kiStatus.performance.winRate,
+          total_trades: kiStatus.performance.totalTrades,
+          current_capital: kiStatus.performance.currentCapital,
+          total_return: kiStatus.performance.totalReturn
+        },
+        data_feeds: {
+          websocket_tracker: {
+            connected: wsStatus.isConnected,
+            last_price: wsStatus.lastPrice,
+            last_update: wsStatus.lastUpdate
+          },
+          live_feed: {
+            is_live: streamStatus.isLive,
+            source: streamStatus.source,
+            quality: streamStatus.quality
+          },
+          observer: {
+            observing: kiStatus.observation.isObserving,
+            observations: kiStatus.observation.totalObservations,
+            signal_quality: kiStatus.observation.signalQuality
+          }
+        },
+        risk_management: {
+          current_risk_level: kiStatus.riskManagement.currentRiskLevel,
+          blocked_strategies: kiStatus.riskManagement.blockedStrategies,
+          risk_adjustment: kiStatus.riskManagement.riskAdjustment
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error getting system status:', error);
+      res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  // External strategy analysis endpoint
+  app.get("/api/strategy", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.strategies();
+      
+      if (result.success) {
+        res.json({
+          top_strategies: result.data.topStrategies,
+          signal_patterns: result.data.patterns,
+          quality_metrics: result.data.quality,
+          blocked_strategies: result.data.blocked,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({ error: result.message });
+      }
+    } catch (error) {
+      console.error('Error getting strategy analysis:', error);
+      res.status(500).json({ error: 'Failed to get strategy analysis' });
+    }
+  });
+
+  // External memory analysis endpoint
+  app.get("/api/memory", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.memory();
+      
+      if (result.success) {
+        res.json({
+          learning_stats: result.data.learning,
+          signal_analytics: result.data.signals,
+          trading_performance: result.data.trading,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({ error: result.message });
+      }
+    } catch (error) {
+      console.error('Error getting memory analysis:', error);
+      res.status(500).json({ error: 'Failed to get memory analysis' });
+    }
+  });
+
+  // External trade simulation endpoint
+  app.post("/api/trade/simulate", async (req, res) => {
+    try {
+      const { strategy_id, action, amount } = req.body;
+      
+      if (!strategy_id || !action) {
+        return res.status(400).json({ error: 'strategy_id and action are required' });
+      }
+
+      const currentPrice = waidesKIWebSocketTracker.getCurrentPrice();
+      const marketSummary = waidesKIWebSocketTracker.getMarketSummary();
+      const signalAssessment = waidesKIObserver.getCurrentAssessment();
+      
+      // Risk assessment for the simulated trade
+      const riskAssessment = waidesKIRiskManager.calculateTradeAmount(
+        signalAssessment.signalStrength?.score || 0,
+        signalAssessment.signalStrength?.confidence || 0,
+        strategy_id,
+        { trend: 'NEUTRAL', volatility: 0.02, session: 'NORMAL', volume_profile: 'NORMAL' }
+      );
+
+      const simulatedTrade = {
+        trade_id: `sim_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        strategy_id,
+        action: action.toUpperCase(),
+        entry_price: currentPrice,
+        amount: amount || riskAssessment.recommendedAmount,
+        stop_loss: action.toLowerCase() === 'buy' ? currentPrice * 0.98 : currentPrice * 1.02,
+        take_profit: action.toLowerCase() === 'buy' ? currentPrice * 1.04 : currentPrice * 0.96,
+        risk_assessment: {
+          approved: riskAssessment.approved,
+          confidence_weight: riskAssessment.confidenceWeight,
+          risk_percent: riskAssessment.riskPercent,
+          reasoning: riskAssessment.reasoning
+        },
+        market_conditions: {
+          trend: signalAssessment.indicators?.trend || 'UNKNOWN',
+          signal_strength: signalAssessment.signalStrength?.confidence || 0,
+          recommendation: signalAssessment.recommendation,
+          price_change_24h: marketSummary.priceChangePercent24h
+        },
+        status: 'SIMULATED',
+        timestamp: new Date().toISOString()
+      };
+
+      res.json(simulatedTrade);
+    } catch (error) {
+      console.error('Error simulating trade:', error);
+      res.status(500).json({ error: 'Failed to simulate trade' });
+    }
+  });
+
+  // WebSocket connection status endpoint
+  app.get("/api/websocket/status", (req, res) => {
+    try {
+      const status = waidesKIWebSocketTracker.getConnectionStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting WebSocket status:', error);
+      res.status(500).json({ error: 'Failed to get WebSocket status' });
+    }
+  });
+
+  // Force WebSocket reconnection endpoint
+  app.post("/api/websocket/reconnect", (req, res) => {
+    try {
+      waidesKIWebSocketTracker.forceReconnect();
+      res.json({ success: true, message: 'WebSocket reconnection initiated' });
+    } catch (error) {
+      console.error('Error forcing WebSocket reconnection:', error);
+      res.status(500).json({ error: 'Failed to force WebSocket reconnection' });
     }
   });
 

@@ -115,6 +115,26 @@ export default function TradingBrainPanel() {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
+  const { data: ethPriceData } = useQuery<{
+    price: number;
+    timestamp: number;
+    isLive: boolean;
+    symbol: string;
+  }>({
+    queryKey: ['/api/eth/price'],
+    refetchInterval: 5000, // Refresh every 5 seconds
+  });
+
+  const { data: marketSummary } = useQuery<{
+    currentPrice: number;
+    priceChangePercent24h: number;
+    volume24h: number;
+    isLive: boolean;
+  }>({
+    queryKey: ['/api/eth/market-summary'],
+    refetchInterval: 10000, // Refresh every 10 seconds
+  });
+
   const { data: learningStats } = useQuery<{
     total_strategies: number;
     best_strategy: string;
@@ -240,6 +260,19 @@ export default function TradingBrainPanel() {
                 <span className="text-xs text-blue-400">{waidesKIStatus.observation?.signalQuality || 0}%</span>
               </div>
               <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">ETH Price</span>
+                <span className="text-xs text-blue-400">
+                  ${ethPriceData?.price?.toFixed(2) || '2,414'}
+                  {ethPriceData?.isLive && <span className="ml-1 text-green-400">●</span>}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">24h Change</span>
+                <span className={`text-xs ${(marketSummary?.priceChangePercent24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {(marketSummary?.priceChangePercent24h || 0).toFixed(2)}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Capital</span>
                 <span className="text-xs text-green-400">${capitalStats?.currentCapital?.toFixed(0) || '10,000'}</span>
               </div>
@@ -249,12 +282,8 @@ export default function TradingBrainPanel() {
                   {(capitalStats?.totalReturnPercent || 0).toFixed(1)}%
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Risk Level</span>
-                <span className="text-xs text-yellow-400">{waidesKIStatus.riskManagement?.currentRiskLevel?.toFixed(1) || 1.0}%</span>
-              </div>
               <div className="text-xs text-slate-500 text-center mt-2">
-                Smart Risk Management Active
+                Live WebSocket Data Feed
               </div>
             </CardContent>
           </Card>
