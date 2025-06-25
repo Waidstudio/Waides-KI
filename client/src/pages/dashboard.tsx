@@ -257,6 +257,7 @@ export default function Dashboard() {
                 {/* ETH Price & Signal Overview */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 space-y-6">
+                    <TabsContent value="realtime" className="space-y-6">
                     {/* Real-time ETH Price Card */}
                     <Card className="bg-slate-900/50 border-slate-800">
                       <CardHeader className="pb-3">
