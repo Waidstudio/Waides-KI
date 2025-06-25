@@ -13,7 +13,7 @@ import CandlestickChart from "@/components/CandlestickChart";
 import RealTimeCandlestickChart from "@/components/RealTimeCandlestickChart";
 import RealTimeTrading from "@/components/RealTimeTrading";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Wifi, WifiOff, Menu, Brain } from "lucide-react";
+import { AlertCircle, Wifi, WifiOff, Menu, Brain, Bot } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 interface EthData {
@@ -367,8 +367,6 @@ export default function Dashboard() {
                       </Card>
                     )}
 
-                    </TabsContent>
-
                     <TabsContent value="charts" className="space-y-6">
                       {/* Real-time Candlestick Chart */}
                       <RealTimeCandlestickChart />
@@ -383,7 +381,50 @@ export default function Dashboard() {
                         </CardContent>
                       </Card>
                     </TabsContent>
-                  </div>
+
+                    <TabsContent value="waidbot" className="space-y-6">
+                      <Card className="bg-slate-900/50 border-slate-800">
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span>WaidBot - Divine Quantum Flux Strategy</span>
+                            <Link href="/waidbot">
+                              <Button variant="outline" size="sm" className="border-purple-600 text-purple-400 hover:bg-purple-900/20">
+                                <Bot className="w-4 h-4 mr-2" />
+                                Open WaidBot
+                              </Button>
+                            </Link>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-slate-400">
+                            Advanced quantum trading system with 8-dimensional market analysis and never-lose guarantee.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                    
+                    <TabsContent value="pro" className="space-y-6">
+                      <Card className="bg-slate-900/50 border-slate-800">
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span>WaidBot Pro - Neural Quantum Singularity</span>
+                            <Link href="/waidbot-pro">
+                              <Button variant="outline" size="sm" className="border-cyan-600 text-cyan-400 hover:bg-cyan-900/20">
+                                <Brain className="w-4 h-4 mr-2" />
+                                Open WaidBot Pro
+                              </Button>
+                            </Link>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-slate-400">
+                            Professional-grade neural network trading with quantum LSTM and harmonic balance calculations.
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </Tabs>
+                </div>
 
                   {/* Right Sidebar */}
                   <div className="space-y-6">
