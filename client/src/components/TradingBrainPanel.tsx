@@ -79,6 +79,15 @@ export default function TradingBrainPanel() {
       status: string;
       evolutionStage: string;
       learningConfidence: number;
+      activeTrades: number;
+      tradingMode: string;
+    };
+    observation: {
+      totalObservations: number;
+      signalQuality: number;
+      strongSignals: number;
+      marketPhase: string;
+      isObserving: boolean;
     };
   }>({
     queryKey: ['/api/waides-ki/status'],
@@ -201,8 +210,16 @@ export default function TradingBrainPanel() {
                   {new Date(waidesKIStatus.lastScan).toLocaleTimeString()}
                 </span>
               </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Observations</span>
+                <span className="text-xs text-slate-300">{waidesKIStatus.observation?.totalObservations || 0}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Signal Quality</span>
+                <span className="text-xs text-blue-400">{waidesKIStatus.observation?.signalQuality || 0}%</span>
+              </div>
               <div className="text-xs text-slate-500 text-center mt-2">
-                Autonomous AI Trader Active
+                Real-time Observer Active
               </div>
             </CardContent>
           </Card>

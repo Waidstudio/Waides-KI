@@ -2,6 +2,8 @@ import { storage } from '../storage';
 import { weeklyScheduler } from './weeklyTradingScheduler';
 import { tradingBrain } from './tradingBrainEngine';
 import { waidesKILearning } from './waidesKILearningEngine';
+import { waidesKIObserver } from './waidesKIObserver';
+import { waidesKISignalLogger } from './waidesKISignalLogger';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -175,34 +177,87 @@ export class WaidesKICore {
     return riskRewardRatio >= 2.0; // Minimum 1:2 risk-reward
   }
 
-  // 5. AUTONOMOUS TRADING DECISION ENGINE (Uses WaidBot engines internally)
+  // 5. AUTONOMOUS TRADING DECISION ENGINE (Enhanced with Real-time Observation)
   async makeAutonomousDecision(marketData: any): Promise<TradingDecision | null> {
-    // Waides KI consults multiple engines and makes the final decision
-    const decisions = await this.consultAllTradingEngines(marketData);
+    // Step 1: Get real-time market assessment from observer
+    const currentAssessment = waidesKIObserver.getCurrentAssessment();
     
-    // Filter out invalid decisions
+    if (!currentAssessment.indicators || !currentAssessment.signalStrength) {
+      return null; // No market data available
+    }
+    
+    // Step 2: Check signal strength threshold
+    if (!currentAssessment.signalStrength.shouldTrade) {
+      // Log weak signal for learning
+      const strategyId = this.generateStrategyId(currentAssessment.indicators);
+      waidesKISignalLogger.logSignal(
+        strategyId,
+        currentAssessment.signalStrength.score,
+        currentAssessment.signalStrength.confidence,
+        currentAssessment.indicators,
+        currentAssessment.signalStrength.reasoning,
+        currentAssessment.recommendation,
+        false
+      );
+      return null; // Signal too weak
+    }
+    
+    // Step 3: Consult trading engines for strong signals
+    const decisions = await this.consultAllTradingEngines(marketData);
     const validDecisions = decisions.filter(d => d && d.confidence > 0.6);
     
     if (validDecisions.length === 0) {
-      return null; // No valid signals from any engine
+      return null; // No valid signals from engines
     }
     
-    // Select best decision based on consensus and confidence
+    // Step 4: Select best decision with observation data
     const bestDecision = this.selectBestDecision(validDecisions);
     
-    // Final validation by Waides KI learning engine
+    // Step 5: Final validation by learning engine
     const marketConditions = this.extractMarketConditions(marketData);
     const strategyValidation = waidesKILearning.validateTradeSignal(marketConditions);
     
     if (!strategyValidation.isValid) {
-      return null; // Learning engine blocked this strategy
+      // Log blocked signal
+      const strategyId = this.generateStrategyId(currentAssessment.indicators);
+      const signalId = waidesKISignalLogger.logSignal(
+        strategyId,
+        currentAssessment.signalStrength.score,
+        currentAssessment.signalStrength.confidence,
+        currentAssessment.indicators,
+        currentAssessment.signalStrength.reasoning,
+        currentAssessment.recommendation,
+        true
+      );
+      waidesKISignalLogger.updateSignalOutcome(signalId, 'BLOCKED', strategyValidation.reason);
+      return null;
     }
     
-    // Record the decision for learning
+    // Step 6: Log successful signal and prepare decision
     if (bestDecision) {
+      const strategyId = this.generateStrategyId(currentAssessment.indicators);
+      const signalId = waidesKISignalLogger.logSignal(
+        strategyId,
+        currentAssessment.signalStrength.score,
+        Math.min(currentAssessment.signalStrength.confidence, bestDecision.confidence),
+        currentAssessment.indicators,
+        currentAssessment.signalStrength.reasoning,
+        currentAssessment.recommendation,
+        true
+      );
+      
+      // Enhance decision with observation data
+      bestDecision.confidence = Math.min(
+        bestDecision.confidence, 
+        currentAssessment.signalStrength.confidence / 100
+      );
+      bestDecision.reasoning = `${bestDecision.reasoning} | Observer: ${currentAssessment.recommendation}`;
+      
       await this.recordTradeWithLearning(bestDecision, marketConditions);
-      // Store active decision for monitoring
       this.activeDecisions.set(`decision_${Date.now()}`, bestDecision);
+      
+      // Update signal outcome
+      waidesKISignalLogger.updateSignalOutcome(signalId, 'EXECUTED', `${bestDecision.engine} signal executed`);
     }
     
     return bestDecision;
@@ -536,6 +591,8 @@ export class WaidesKICore {
   getPublicInterface(): any {
     // Only expose safe, non-revealing data to frontend
     const learningStats = waidesKILearning.getLearningStats();
+    const observationStats = waidesKIObserver.getObservationStats();
+    const signalAnalytics = waidesKISignalLogger.getSignalAnalytics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -548,6 +605,13 @@ export class WaidesKICore {
         learningConfidence: learningStats.learning_confidence,
         activeTrades: this.activeDecisions.size,
         tradingMode: 'AUTONOMOUS'
+      },
+      observation: {
+        totalObservations: observationStats.totalObservations,
+        signalQuality: signalAnalytics.averageStrength,
+        strongSignals: signalAnalytics.strongSignals,
+        marketPhase: observationStats.patterns.marketPhase,
+        isObserving: observationStats.isObserving
       }
     };
   }
@@ -846,7 +910,19 @@ export class WaidesKICore {
     if (!enabled) {
       // Emergency stop - close all active decisions
       this.activeDecisions.clear();
+      waidesKIObserver.stopObservation();
+    } else {
+      waidesKIObserver.resumeObservation();
     }
+  }
+
+  private generateStrategyId(indicators: any): string {
+    const rsi_zone = indicators.rsi > 70 ? 'OB' : indicators.rsi < 30 ? 'OS' : indicators.rsi > 50 ? 'BUL' : 'BER';
+    const volume_tag = indicators.volume > 1000000 ? 'HV' : 'NV';
+    const trend_tag = indicators.trend;
+    const vwap_tag = indicators.vwap_status;
+    
+    return `${trend_tag}_${vwap_tag}_${rsi_zone}_${volume_tag}`;
   }
 }
 

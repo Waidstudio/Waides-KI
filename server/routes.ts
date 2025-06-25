@@ -12,6 +12,8 @@ import { weeklyScheduler, type WeeklyTradingPlan } from './services/weeklyTradin
 import { tradingBrain } from './services/tradingBrainEngine.js';
 import { waidesKI } from './services/waidesKICore.js';
 import { waidesKILearning } from './services/waidesKILearningEngine.js';
+import { waidesKIObserver } from './services/waidesKIObserver.js';
+import { waidesKISignalLogger } from './services/waidesKISignalLogger.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1634,6 +1636,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error resuming autonomous trading:', error);
       res.status(500).json({ error: 'Failed to resume autonomous trading' });
+    }
+  });
+
+  // Real-time observation endpoints (minimal exposure)
+  app.get("/api/waides-ki/market-assessment", (req, res) => {
+    try {
+      const assessment = waidesKIObserver.getCurrentAssessment();
+      // Only expose safe data
+      const safeAssessment = {
+        recommendation: assessment.recommendation,
+        signalStrength: assessment.signalStrength?.confidence || 0,
+        marketPhase: waidesKIObserver.getObservationStats().patterns.marketPhase,
+        isObserving: waidesKIObserver.getObservationStats().isObserving
+      };
+      res.json(safeAssessment);
+    } catch (error) {
+      console.error('Error getting market assessment:', error);
+      res.status(500).json({ error: 'Failed to get market assessment' });
+    }
+  });
+
+  app.get("/api/waides-ki/signal-analytics", (req, res) => {
+    try {
+      const analytics = waidesKISignalLogger.getSignalAnalytics();
+      res.json(analytics);
+    } catch (error) {
+      console.error('Error getting signal analytics:', error);
+      res.status(500).json({ error: 'Failed to get signal analytics' });
+    }
+  });
+
+  app.get("/api/waides-ki/recent-signals", (req, res) => {
+    try {
+      const signals = waidesKISignalLogger.getRecentSignals(10);
+      res.json(signals);
+    } catch (error) {
+      console.error('Error getting recent signals:', error);
+      res.status(500).json({ error: 'Failed to get recent signals' });
     }
   });
 
