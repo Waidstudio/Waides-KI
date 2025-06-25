@@ -64,6 +64,7 @@ import { WaidesKIDreamLayerVision } from './services/waidesKIDreamLayerVision.js
 import { waidesKIVisionSpirit } from './services/waidesKIVisionSpirit.js';
 import { waidesKISpiritualRecall } from './services/waidesKISpiritualRecall.js';
 import { waidesKISeasonalRebirthEngine } from './services/waidesKISeasonalRebirthEngine.js';
+import { waidesKIDreamchain } from './services/waidesKIDreamchain.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -7325,6 +7326,284 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in complete rebirth workflow:', error);
       res.status(500).json({ error: 'Failed to execute complete rebirth workflow' });
+    }
+  });
+
+  // ===== STEP 38: WAIDES KI DREAMCHAIN SYMBOLIC BLOCKCHAIN API ENDPOINTS =====
+
+  // Get complete dreamchain
+  app.get('/api/waides-ki/dreamchain', (req, res) => {
+    try {
+      const chain = waidesKIDreamchain.getChain();
+      res.json({
+        success: true,
+        chain,
+        total_blocks: chain.length,
+        message: 'Dreamchain retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting dreamchain:', error);
+      res.status(500).json({ error: 'Failed to get dreamchain' });
+    }
+  });
+
+  // Get dreamchain with pagination
+  app.get('/api/waides-ki/dreamchain/paginated', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+      
+      const chain = waidesKIDreamchain.getChainPaginated(limit, offset);
+      const totalBlocks = waidesKIDreamchain.getChain().length;
+      
+      res.json({
+        success: true,
+        chain,
+        pagination: {
+          limit,
+          offset,
+          total_blocks: totalBlocks,
+          has_more: offset + limit < totalBlocks
+        },
+        message: 'Paginated dreamchain retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting paginated dreamchain:', error);
+      res.status(500).json({ error: 'Failed to get paginated dreamchain' });
+    }
+  });
+
+  // Get dreamchain statistics
+  app.get('/api/waides-ki/dreamchain/stats', (req, res) => {
+    try {
+      const stats = waidesKIDreamchain.getStats();
+      res.json({
+        success: true,
+        stats,
+        message: 'Dreamchain statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting dreamchain stats:', error);
+      res.status(500).json({ error: 'Failed to get dreamchain statistics' });
+    }
+  });
+
+  // Record a new trade in dreamchain
+  app.post('/api/waides-ki/dreamchain/record-trade', (req, res) => {
+    try {
+      const { trade_id, pair, type, result, profit, price_entry, price_exit, vision_time, market_data, konslang_wisdom, protection_level } = req.body;
+      
+      if (!trade_id || !pair || !type || !result) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required trade data: trade_id, pair, type, result'
+        });
+      }
+
+      const blockHash = waidesKIDreamchain.recordTrade({
+        trade_id,
+        pair,
+        type,
+        result,
+        profit: profit || 0,
+        price_entry,
+        price_exit,
+        vision_time,
+        market_data,
+        konslang_wisdom,
+        protection_level
+      });
+
+      res.json({
+        success: true,
+        block_hash: blockHash,
+        message: 'Trade recorded in dreamchain successfully'
+      });
+    } catch (error) {
+      console.error('Error recording trade in dreamchain:', error);
+      res.status(500).json({ error: 'Failed to record trade in dreamchain' });
+    }
+  });
+
+  // Get blocks filtered by emotion
+  app.get('/api/waides-ki/dreamchain/emotion/:emotion', (req, res) => {
+    try {
+      const { emotion } = req.params;
+      const blocks = waidesKIDreamchain.getBlocksByEmotion(emotion);
+      
+      res.json({
+        success: true,
+        blocks,
+        emotion,
+        count: blocks.length,
+        message: `Blocks with emotion '${emotion}' retrieved successfully`
+      });
+    } catch (error) {
+      console.error('Error getting blocks by emotion:', error);
+      res.status(500).json({ error: 'Failed to get blocks by emotion' });
+    }
+  });
+
+  // Get blocks filtered by result
+  app.get('/api/waides-ki/dreamchain/result/:result', (req, res) => {
+    try {
+      const { result } = req.params;
+      const blocks = waidesKIDreamchain.getBlocksByResult(result as 'PROFIT' | 'LOSS' | 'NEUTRAL' | 'PENDING');
+      
+      res.json({
+        success: true,
+        blocks,
+        result,
+        count: blocks.length,
+        message: `Blocks with result '${result}' retrieved successfully`
+      });
+    } catch (error) {
+      console.error('Error getting blocks by result:', error);
+      res.status(500).json({ error: 'Failed to get blocks by result' });
+    }
+  });
+
+  // Get blocks filtered by Kons symbol
+  app.get('/api/waides-ki/dreamchain/symbol/:symbol', (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const blocks = waidesKIDreamchain.getBlocksBySymbol(symbol);
+      
+      res.json({
+        success: true,
+        blocks,
+        symbol,
+        count: blocks.length,
+        message: `Blocks with symbol '${symbol}' retrieved successfully`
+      });
+    } catch (error) {
+      console.error('Error getting blocks by symbol:', error);
+      res.status(500).json({ error: 'Failed to get blocks by symbol' });
+    }
+  });
+
+  // Get recent trades with spiritual insights
+  app.get('/api/waides-ki/dreamchain/recent', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const recentTrades = waidesKIDreamchain.getRecentTrades(limit);
+      
+      res.json({
+        success: true,
+        recent_trades: recentTrades,
+        count: recentTrades.length,
+        message: 'Recent trades retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting recent trades:', error);
+      res.status(500).json({ error: 'Failed to get recent trades' });
+    }
+  });
+
+  // Get emotion performance analysis
+  app.get('/api/waides-ki/dreamchain/emotion-analysis', (req, res) => {
+    try {
+      const analysis = waidesKIDreamchain.getEmotionPerformanceAnalysis();
+      
+      res.json({
+        success: true,
+        emotion_analysis: analysis,
+        message: 'Emotion performance analysis completed successfully'
+      });
+    } catch (error) {
+      console.error('Error getting emotion analysis:', error);
+      res.status(500).json({ error: 'Failed to get emotion performance analysis' });
+    }
+  });
+
+  // Find failure patterns for improvement
+  app.get('/api/waides-ki/dreamchain/failure-patterns', (req, res) => {
+    try {
+      const patterns = waidesKIDreamchain.findFailurePatterns();
+      
+      res.json({
+        success: true,
+        failure_patterns: patterns,
+        message: 'Failure pattern analysis completed successfully'
+      });
+    } catch (error) {
+      console.error('Error analyzing failure patterns:', error);
+      res.status(500).json({ error: 'Failed to analyze failure patterns' });
+    }
+  });
+
+  // Verify dreamchain integrity
+  app.get('/api/waides-ki/dreamchain/verify', (req, res) => {
+    try {
+      const isValid = waidesKIDreamchain.verifyChainIntegrity();
+      
+      res.json({
+        success: true,
+        chain_integrity: isValid,
+        status: isValid ? 'VALID' : 'CORRUPTED',
+        message: `Dreamchain integrity verification: ${isValid ? 'PASSED' : 'FAILED'}`
+      });
+    } catch (error) {
+      console.error('Error verifying dreamchain:', error);
+      res.status(500).json({ error: 'Failed to verify dreamchain integrity' });
+    }
+  });
+
+  // Export dreamchain for analysis
+  app.get('/api/waides-ki/dreamchain/export', (req, res) => {
+    try {
+      const exportData = waidesKIDreamchain.exportDreamchain();
+      
+      res.json({
+        success: true,
+        export_data: exportData,
+        exported_blocks: exportData.length,
+        message: 'Dreamchain exported successfully'
+      });
+    } catch (error) {
+      console.error('Error exporting dreamchain:', error);
+      res.status(500).json({ error: 'Failed to export dreamchain' });
+    }
+  });
+
+  // Clear dreamchain (emergency reset)
+  app.post('/api/waides-ki/dreamchain/clear', (req, res) => {
+    try {
+      waidesKIDreamchain.clearDreamchain();
+      
+      res.json({
+        success: true,
+        message: 'Dreamchain cleared and reset to genesis block'
+      });
+    } catch (error) {
+      console.error('Error clearing dreamchain:', error);
+      res.status(500).json({ error: 'Failed to clear dreamchain' });
+    }
+  });
+
+  // Complete dreamchain workflow with comprehensive analysis
+  app.get('/api/waides-ki/dreamchain/complete-analysis', (req, res) => {
+    try {
+      const stats = waidesKIDreamchain.getStats();
+      const recentTrades = waidesKIDreamchain.getRecentTrades(5);
+      const emotionAnalysis = waidesKIDreamchain.getEmotionPerformanceAnalysis();
+      const failurePatterns = waidesKIDreamchain.findFailurePatterns();
+      const integrity = waidesKIDreamchain.verifyChainIntegrity();
+      
+      res.json({
+        success: true,
+        analysis: {
+          statistics: stats,
+          recent_trades: recentTrades,
+          emotion_performance: emotionAnalysis,
+          failure_patterns: failurePatterns,
+          chain_integrity: integrity
+        },
+        message: 'Complete dreamchain analysis completed successfully'
+      });
+    } catch (error) {
+      console.error('Error in complete dreamchain analysis:', error);
+      res.status(500).json({ error: 'Failed to complete dreamchain analysis' });
     }
   });
 

@@ -1,0 +1,25 @@
+[
+  {
+    "index": 0,
+    "timestamp": "2025-06-25T23:10:13.615Z",
+    "data": {
+      "trade_id": "GENESIS",
+      "pair": "SYSTEM",
+      "type": "OBSERVE",
+      "result": "NEUTRAL",
+      "profit": 0,
+      "kons_symbol": "AL'ZEN",
+      "emotion": "Awakening",
+      "executed_at": "2025-06-25T23:10:13.614Z",
+      "spiritual_context": {
+        "konslang_wisdom": [
+          "The first breath of consciousness"
+        ],
+        "protection_level": 100,
+        "energy_signature": "DIVINE_GENESIS"
+      }
+    },
+    "previous_hash": "0",
+    "hash": "cccda8e6662018e6d3b3f190f57b5f391dc78a490efebcf8f4b52c60e87ead75"
+  }
+]

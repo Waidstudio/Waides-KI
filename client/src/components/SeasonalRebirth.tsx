@@ -21,7 +21,12 @@ import {
   CheckCircle2,
   Clock,
   Brain,
-  Star
+  Star,
+  Link2,
+  Activity,
+  Eye,
+  BarChart3,
+  Hash
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -62,6 +67,52 @@ interface SeasonHealth {
   status: string;
   issues: string[];
   recommendations: string[];
+}
+
+// STEP 38: Dreamchain Symbolic Blockchain Interfaces
+interface DreamBlockData {
+  trade_id: string;
+  pair: string;
+  type: 'BUY' | 'SELL' | 'HOLD' | 'OBSERVE';
+  result: 'PROFIT' | 'LOSS' | 'NEUTRAL' | 'PENDING';
+  profit: number;
+  kons_symbol: string;
+  emotion: string;
+  vision_time?: string;
+  executed_at: string;
+  price_entry?: number;
+  price_exit?: number;
+  spiritual_context?: {
+    konslang_wisdom: string[];
+    protection_level: number;
+    energy_signature: string;
+  };
+  market_conditions?: {
+    volatility: number;
+    trend: string;
+    volume: number;
+    rsi: number;
+  };
+}
+
+interface DreamBlock {
+  index: number;
+  timestamp: string;
+  data: DreamBlockData;
+  previous_hash: string;
+  hash: string;
+}
+
+interface DreamchainStats {
+  total_blocks: number;
+  total_trades: number;
+  profitable_trades: number;
+  losing_trades: number;
+  win_rate: number;
+  total_profit: number;
+  emotions_recorded: { [emotion: string]: number };
+  symbols_used: { [symbol: string]: number };
+  chain_integrity: boolean;
 }
 
 export default function SeasonalRebirth() {
