@@ -19,6 +19,7 @@ let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
 let waidTrader: WaidTrader;
 let binanceWS: BinanceWebSocketService;
+let tradingViewWS: TradingViewWebSocketService;
 let waidBotEngine: WaidBotEngine;
 let waidBotPro: WaidBotPro;
 

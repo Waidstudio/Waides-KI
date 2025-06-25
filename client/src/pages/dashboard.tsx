@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import DivineCommandCenter from "@/components/DivineCommandCenter";
 import CandlestickChart from "@/components/CandlestickChart";
+import RealTimeCandlestickChart from "@/components/RealTimeCandlestickChart";
 import RealTimeTrading from "@/components/RealTimeTrading";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff, Menu, Brain } from "lucide-react";

@@ -46,10 +46,11 @@ export class BinanceWebSocketService {
   private reconnectDelay: number = 5000; // 5 seconds
   private isConnected: boolean = false;
   private candlestickListeners: ((data: CandlestickData) => void)[] = [];
-  private baseUrl: string = 'wss://stream.binance.us:9443/ws/';
+  private baseUrl: string = 'wss://stream.binance.com:9443/ws/'; // Use global Binance
   private symbol: string = 'ethusdt'; // ETH/USDT pair
   private interval: string = '1m'; // 1-minute candlesticks
   private fallbackMode: boolean = false;
+  private heartbeatInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     this.connect();
