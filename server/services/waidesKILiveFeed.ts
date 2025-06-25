@@ -340,6 +340,11 @@ export class WaidesKILiveFeed {
   }
 
   // PUBLIC INTERFACE
+  async getCurrentPrice(): Promise<number> {
+    const marketData = await this.fetchLiveETHData();
+    return marketData?.price || 0;
+  }
+
   async getCurrentMarketData(): Promise<LiveETHData | null> {
     return await this.fetchLiveETHData();
   }

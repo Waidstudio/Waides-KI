@@ -37,15 +37,11 @@ import { waidesKIShadowLab } from './services/waidesKIShadowLab.js';
 import { waidesKIStrategyVault } from './services/waidesKIStrategyVault.js';
 import { waidesKISelfHealing } from './services/waidesKISelfHealing.js';
 import { waidesKIVirtualEyeScanner } from './services/waidesKIVirtualEyeScanner.js';
-import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
 import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeCore.js';
 import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
 import { waidesKIRiskAlertEngine } from './services/waidesKIRiskAlertEngine.js';
 import { waidesKIGuardianAdjuster } from './services/waidesKIGuardianAdjuster.js';
 import { waidesKIKonsPulseOracle } from './services/waidesKIKonsPulseOracle.js';
-import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
-import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeCore.js';
-import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
