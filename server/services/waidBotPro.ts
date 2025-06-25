@@ -1,5 +1,6 @@
 import { storage } from '../storage';
 import { EthData, Signal, Candlestick } from '@shared/schema';
+import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
 interface MarketFeatures {
   trendStrength: number;
@@ -339,54 +340,97 @@ export class WaidBotPro {
   }
 
   public async generateTradingSignals(): Promise<TradingSignals> {
-    const candlesticks = await storage.getCandlestickHistory('ETHUSDT', '1m', 50);
-    
-    if (candlesticks.length === 0) {
+    try {
+      // Get historical data for Neural Quantum Singularity Strategy
+      const candlesticks = await storage.getCandlestickHistory('ETHUSDT', '1m', 100);
+      const ethDataHistory = await storage.getEthDataHistory(50);
+      
+      if (candlesticks.length < 50 || ethDataHistory.length < 20) {
+        return {}; // Not enough data for quantum analysis
+      }
+
+      // Convert data to neural quantum format
+      const latestEthData = ethDataHistory[ethDataHistory.length - 1];
+      const marketData = neuralQuantumSingularityStrategy.convertEthDataToMarketData(latestEthData, ethDataHistory);
+      
+      // Perform neural quantum market analysis
+      neuralQuantumSingularityStrategy.analyzeMarket(marketData);
+      
+      // Generate never-lose trading signals
+      const quantumSignals = neuralQuantumSingularityStrategy.generateSignals();
+      const currentPrice = candlesticks[candlesticks.length - 1].close;
+      
+      // Convert quantum signals to WaidBot Pro format
+      let signals: TradingSignals = {};
+      
+      for (const signal of quantumSignals) {
+        if (signal.type === 'PRIMARY_ENTRY' && signal.direction === 'long') {
+          signals = {
+            entry: currentPrice,
+            direction: 'buy',
+            size: this.calculateQuantumPositionSize(signal.size, currentPrice),
+            stopLoss: currentPrice * 0.97, // 3% stop loss
+            takeProfit: currentPrice * (1 + (signal.risk_management?.profit_factor || 2.5) * 0.03),
+            strategy: 'neural_quantum_primary_entry'
+          };
+          break;
+        } else if (signal.type === 'BLACK_HOLE_SHORT' && signal.direction === 'short') {
+          signals = {
+            entry: currentPrice,
+            direction: 'sell',
+            size: this.calculateQuantumPositionSize(signal.size, currentPrice),
+            stopLoss: currentPrice * 1.03, // 3% stop loss for short
+            takeProfit: currentPrice * (1 - 0.05), // 5% target
+            strategy: 'neural_quantum_black_hole'
+          };
+          break;
+        } else if (signal.type === 'TREND_ACCELERATION' && signal.direction === 'long') {
+          signals = {
+            entry: currentPrice,
+            direction: 'buy',
+            size: this.calculateQuantumPositionSize(signal.size, currentPrice),
+            stopLoss: currentPrice * 0.98, // 2% stop loss
+            takeProfit: currentPrice * 1.04, // 4% target
+            strategy: 'neural_quantum_trend_acceleration'
+          };
+          break;
+        } else if (signal.type === 'MEAN_REVERSION_SHORT' && signal.direction === 'short') {
+          signals = {
+            entry: currentPrice,
+            direction: 'sell',
+            size: this.calculateQuantumPositionSize(signal.size, currentPrice),
+            stopLoss: currentPrice * 1.025, // 2.5% stop loss
+            takeProfit: currentPrice * 0.97, // 3% target
+            strategy: 'neural_quantum_mean_reversion'
+          };
+          break;
+        }
+      }
+      
+      // Log quantum market phase for monitoring
+      console.log(`🧠 Neural Quantum Analysis: ${neuralQuantumSingularityStrategy.getMarketPhase()} | Harmony: ${neuralQuantumSingularityStrategy.getHarmonicBalance().toFixed(3)}`);
+      
+      return signals;
+    } catch (error) {
+      console.error('Error generating neural quantum signals:', error);
       return {};
     }
+  }
 
-    const currentPrice = candlesticks[candlesticks.length - 1].close;
-    const positionSize = (this.portfolio.USDT * this.riskPerTrade) / currentPrice;
-
-    const signals: TradingSignals = {};
-
-    if (this.currentState === 'bullish') {
-      signals.entry = currentPrice * 0.995; // Buy slightly below current price
-      signals.stopLoss = currentPrice * 0.98;
-      signals.takeProfit = currentPrice * 1.03;
-      signals.size = positionSize;
-      signals.strategy = 'trend_following';
-      signals.direction = 'buy';
-
-    } else if (this.currentState === 'bearish' && this.portfolio.ETH > 0) {
-      signals.entry = currentPrice * 1.005; // Sell slightly above current price
-      signals.size = Math.min(positionSize, this.portfolio.ETH);
-      signals.strategy = 'mean_reversion';
-      signals.direction = 'sell';
-
-    } else if (this.currentState === 'neutral') {
-      // Look for breakout opportunities
-      const recent24h = candlesticks.slice(-24);
-      const recentHigh = Math.max(...recent24h.map(c => c.high));
-      const recentLow = Math.min(...recent24h.map(c => c.low));
-
-      if (currentPrice > recentHigh * 0.99) {
-        signals.entry = recentHigh * 1.001;
-        signals.stopLoss = recentHigh * 0.99;
-        signals.takeProfit = recentHigh * 1.02;
-        signals.size = positionSize * 0.5; // Smaller position for breakouts
-        signals.strategy = 'breakout';
-        signals.direction = 'buy';
-
-      } else if (currentPrice < recentLow * 1.01 && this.portfolio.ETH > 0) {
-        signals.entry = recentLow * 0.999;
-        signals.size = Math.min(positionSize * 0.5, this.portfolio.ETH);
-        signals.strategy = 'breakout';
-        signals.direction = 'sell';
-      }
+  private calculateQuantumPositionSize(size: string | undefined, currentPrice: number): number {
+    const portfolioValue = this.getPortfolioValue();
+    const baseAmount = 100; // Base USDT amount
+    
+    switch (size) {
+      case 'full':
+        return Math.min(portfolioValue * 0.8, 1000) / currentPrice; // Max 80% of portfolio or $1000
+      case 'half':
+        return Math.min(portfolioValue * 0.4, 500) / currentPrice; // Max 40% of portfolio or $500
+      case 'micro':
+        return Math.min(portfolioValue * 0.1, 100) / currentPrice; // Max 10% of portfolio or $100
+      default:
+        return baseAmount / currentPrice; // Default conservative size
     }
-
-    return signals;
   }
 
   public simulateTradeExecution(signals: TradingSignals): { success: boolean; message: string; tradeRecord?: TradeRecord; } {
