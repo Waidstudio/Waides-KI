@@ -16,6 +16,7 @@ import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
 import DreamLayerVision from "@/components/DreamLayerVision";
 import VisionSpirit from "@/components/VisionSpirit";
+import { SpiritualRecall } from "@/components/SpiritualRecall";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/reincarnation", label: "Reincarnation" },
+    { path: "/spiritual-recall", label: "Spiritual Recall" },
     { path: "/sigil-layer", label: "Sigil Layer" },
     { path: "/shadow-defense", label: "Shadow Defense" },
     { path: "/dream-vision", label: "Dream Vision" },
@@ -86,6 +88,7 @@ function Router() {
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
           <Route path="/reincarnation" component={ReincarnationLoop} />
+          <Route path="/spiritual-recall" component={SpiritualRecall} />
           <Route path="/sigil-layer" component={SigilLayer} />
           <Route path="/shadow-defense" component={ShadowOverrideDefense} />
           <Route path="/dream-vision" component={DreamLayerVision} />
