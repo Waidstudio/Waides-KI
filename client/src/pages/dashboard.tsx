@@ -210,7 +210,7 @@ export default function Dashboard() {
               {/* Header Title */}
               <div className="lg:hidden">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                  Waides AI
+                  Waides KI
                 </h1>
               </div>
             </div>
@@ -380,6 +380,68 @@ export default function Dashboard() {
                         </CardContent>
                       </Card>
                     )}
+                      </div>
+
+                      {/* Right Sidebar */}
+                      <div className="space-y-6">
+                        {/* Spiritual Reading */}
+                        {spiritualReading && (
+                          <Card className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 border-purple-500/30">
+                            <CardHeader>
+                              <CardTitle className="text-lg text-purple-300">Kons Spiritual Reading</CardTitle>
+                              <CardDescription className="text-purple-400">
+                                Rank: {spiritualReading.konsRank} | Aura: {spiritualReading.personalAura}%
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                              <div className="space-y-2">
+                                <div className="text-sm font-medium text-purple-300">Spirit Message</div>
+                                <div className="text-xs text-purple-400 bg-purple-950/30 p-3 rounded-lg">
+                                  {spiritualReading.spiritMessage}
+                                </div>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-4 text-xs">
+                                <div>
+                                  <div className="text-purple-400">Frequency</div>
+                                  <div className="text-purple-300 font-medium">{spiritualReading.frequency}</div>
+                                </div>
+                                <div>
+                                  <div className="text-purple-400">Sacred Time</div>
+                                  <div className="text-purple-300 font-medium">{spiritualReading.sacredTime}</div>
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="text-sm font-medium text-purple-300">ETH Movement</div>
+                                <div className={`text-xs p-2 rounded ${
+                                  spiritualReading.ethMovement.direction === 'HOME' ? 'bg-green-950/30 text-green-400' :
+                                  spiritualReading.ethMovement.direction === 'OUT' ? 'bg-red-950/30 text-red-400' :
+                                  'bg-blue-950/30 text-blue-400'
+                                }`}>
+                                  {spiritualReading.ethMovement.direction}: {spiritualReading.ethMovement.message}
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+
+                        {/* ETH Communication Engine */}
+                        <EthCommunicationEngine 
+                          ethMovement={spiritualReading?.ethMovement || { direction: 'RESTING', message: 'Initializing...', confidence: 0 }}
+                          konsRank={spiritualReading?.konsRank || 'NOVICE'}
+                          dimensionalShift={spiritualReading?.dimensionalShift || 0}
+                          sacredTime={spiritualReading?.sacredTime || 'Normal Time'}
+                        />
+                        
+                        {/* Divine Command Center */}
+                        <DivineCommandCenter />
+                        
+                        {/* Real-time Trading */}
+                        <RealTimeTrading />
+                      </div>
+                    </div>
+                    </TabsContent>
 
                     <TabsContent value="charts" className="space-y-6">
                       {/* Real-time Candlestick Chart */}
@@ -438,9 +500,10 @@ export default function Dashboard() {
                       </Card>
                     </TabsContent>
                   </Tabs>
+                    </div>
 
-                  {/* Right Sidebar */}
-                  <div className="space-y-6">
+                    {/* Right Sidebar */}
+                    <div className="space-y-6">
                     {/* Spiritual Reading */}
                     {spiritualReading && (
                       <Card className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 border-purple-500/30">

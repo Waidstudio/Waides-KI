@@ -67,7 +67,7 @@ export default function Sidebar({ onAdminClick, isCollapsed, onToggle, onNavigat
               </div>
               <div className={`transition-all duration-300 ${isCollapsed ? 'lg:hidden' : ''}`}>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                  Waides AI
+                  Waides KI
                 </h1>
                 <p className="text-xs waides-text-secondary">ETH Trading Assistant</p>
               </div>

@@ -1,8 +1,8 @@
-# Waides AI - ETH Trading Assistant
+# Waides KI - ETH Trading Assistant
 
 ## Overview
 
-Waides AI is a next-generation intelligent ETH trading assistant that provides real-time signal analysis with KonsLang AI injection for enhanced trading insights. The application combines modern web technologies with sophisticated trading algorithms to deliver actionable cryptocurrency trading signals and market analysis.
+Waides KI is a next-generation intelligent ETH trading assistant that provides real-time signal analysis with KonsLang AI injection for enhanced trading insights. The application combines modern web technologies with sophisticated trading algorithms to deliver actionable cryptocurrency trading signals and market analysis.
 
 ## System Architecture
 
