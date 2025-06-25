@@ -6,6 +6,8 @@ import { waidesKIObserver } from './waidesKIObserver';
 import { waidesKISignalLogger } from './waidesKISignalLogger';
 import { waidesKIRiskManager } from './waidesKIRiskManager';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
+import { waidesKISignalShield } from './waidesKISignalShield';
+import { waidesKIDailyReporter } from './waidesKIDailyReporter';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -250,10 +252,56 @@ export class WaidesKICore {
       return null;
     }
     
-    // Step 6: Risk assessment and position sizing
-    if (bestDecision) {
-      const strategyId = this.generateStrategyId(indicators);
+    // Step 6: Signal Shield Analysis - Advanced Trap Detection
+    const strategyId = this.generateStrategyId(indicators);
+    const signalData = {
+      strategy_id: strategyId,
+      price: indicators.price,
+      rsi: indicators.rsi,
+      vwap_status: indicators.vwap_status,
+      volume: indicators.volume,
+      ema50: indicators.ema50,
+      ema200: indicators.ema200,
+      trend: indicators.trend,
+      timestamp: Date.now()
+    };
+    
+    const shieldAnalysis = waidesKISignalShield.analyzeAndFilter(signalData);
+    
+    if (!shieldAnalysis.approved) {
+      // Log emotional state for blocked signal
+      waidesKIDailyReporter.logEmotionalState(
+        'CAUTIOUS',
+        `Signal blocked: ${shieldAnalysis.shield_reasoning[0]}`,
+        indicators.trend,
+        signalStrength.confidence
+      );
       
+      // Record lesson about trap detection
+      if (shieldAnalysis.traps_detected.length > 0) {
+        waidesKIDailyReporter.recordLesson(
+          `Avoided ${shieldAnalysis.traps_detected[0].type} trap with ${shieldAnalysis.traps_detected[0].confidence}% confidence`,
+          'RISK',
+          'MEDIUM',
+          'Signal Shield System'
+        );
+      }
+      
+      const signalId = waidesKISignalLogger.logSignal(
+        strategyId,
+        signalStrength.score,
+        signalStrength.confidence,
+        indicators,
+        signalStrength.reasoning,
+        currentAssessment.recommendation,
+        true
+      );
+      waidesKISignalLogger.updateSignalOutcome(signalId, 'BLOCKED', `Shield: ${shieldAnalysis.shield_reasoning[0]}`);
+      return null;
+    }
+    
+    // Step 7: Risk assessment and position sizing
+    if (bestDecision) {
       // Calculate optimal trade amount with risk management
       const riskAssessment = waidesKIRiskManager.calculateTradeAmount(
         signalStrength.score,
@@ -288,13 +336,23 @@ export class WaidesKICore {
         true
       );
       
-      // Enhance decision with live data, observation data and risk assessment
+      // Log emotional state for approved signal
+      waidesKIDailyReporter.logEmotionalState(
+        signalStrength.confidence > 80 ? 'CONFIDENT' : 'FOCUSED',
+        `High-quality signal approved: ${bestDecision.engine}`,
+        indicators.trend,
+        signalStrength.confidence
+      );
+      
+      // Enhance decision with live data, observation data, shield analysis and risk assessment
       bestDecision.confidence = Math.min(
         bestDecision.confidence, 
         signalStrength.confidence / 100
       );
       const dataSource = liveData ? `Live:${liveData.source}` : 'Observer';
-      bestDecision.reasoning = `${bestDecision.reasoning} | ${dataSource}: ${currentAssessment.recommendation} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
+      const shieldInfo = shieldAnalysis.traps_detected.length > 0 ? 
+        `Shield:${shieldAnalysis.traps_detected.length}traps` : 'Shield:Clear';
+      bestDecision.reasoning = `${bestDecision.reasoning} | ${dataSource}: ${currentAssessment.recommendation} | ${shieldInfo} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
       bestDecision.tradeAmount = riskAssessment.recommendedAmount;
       bestDecision.riskAssessment = riskAssessment;
       
@@ -655,6 +713,31 @@ export class WaidesKICore {
         riskReward: trade.riskReward,
         strategy: trade.engine
       });
+      
+      // Log emotional response to trade outcome
+      waidesKIDailyReporter.logEmotionalState(
+        result === 'WIN' ? 'CONFIDENT' : 'PATIENT',
+        `Trade ${result}: ${pnl > 0 ? '+' : ''}${pnl.toFixed(2)}`,
+        'Trade Completion',
+        result === 'WIN' ? 85 : 65
+      );
+      
+      // Record lesson from trade outcome
+      if (result === 'LOSS' && Math.abs(pnl) > trade.tradeAmount * 0.05) {
+        waidesKIDailyReporter.recordLesson(
+          `Significant loss on ${trade.engine} strategy - review entry conditions and risk management`,
+          'STRATEGY',
+          'HIGH',
+          'Trade Outcome Analysis'
+        );
+      } else if (result === 'WIN' && pnl > trade.tradeAmount * 0.03) {
+        waidesKIDailyReporter.recordLesson(
+          `Excellent performance on ${trade.engine} strategy - conditions were optimal for this approach`,
+          'STRATEGY',
+          'MEDIUM',
+          'Trade Outcome Analysis'
+        );
+      }
     }
     
     return result;
@@ -668,6 +751,8 @@ export class WaidesKICore {
     const signalAnalytics = waidesKISignalLogger.getSignalAnalytics();
     const capitalStats = waidesKIRiskManager.getCapitalStats();
     const riskProfile = waidesKIRiskManager.getRiskProfile();
+    const shieldStats = waidesKISignalShield.getShieldStats();
+    const currentEmotion = waidesKIDailyReporter.getCurrentEmotionalState();
     
     return {
       isActive: this.isAutonomousMode,
@@ -695,6 +780,17 @@ export class WaidesKICore {
         currentRiskLevel: riskProfile.maxRiskPercent,
         blockedStrategies: capitalStats.blockedStrategies,
         riskAdjustment: 'DYNAMIC'
+      },
+      signalShield: {
+        effectiveness: shieldStats.shield_effectiveness,
+        trapsDetected: shieldStats.recent_traps,
+        activeBans: shieldStats.active_bans,
+        protection: 'ACTIVE'
+      },
+      emotionalState: {
+        current: currentEmotion?.emotion || 'FOCUSED',
+        confidence: currentEmotion?.confidence_level || 75,
+        stability: 'DISCIPLINED'
       }
     };
   }

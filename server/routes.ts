@@ -19,6 +19,8 @@ import { waidesKILiveFeed } from './services/waidesKILiveFeed.js';
 import { waidesKIAdmin } from './services/waidesKIAdmin.js';
 import { waidesKIWebSocketTracker } from './services/waidesKIWebSocketTracker.js';
 import { waidesKIGateway } from './services/waidesKIGateway.js';
+import { waidesKISignalShield } from './services/waidesKISignalShield.js';
+import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2247,6 +2249,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error revoking API key:', error);
       res.status(500).json({ error: 'Failed to revoke API key' });
+    }
+  });
+
+  // Signal Shield and Daily Reporting endpoints
+  app.get("/api/waides-ki/shield-stats", (req, res) => {
+    try {
+      const stats = waidesKISignalShield.getShieldStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting shield stats:', error);
+      res.status(500).json({ error: 'Failed to get shield statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/trap-analytics", (req, res) => {
+    try {
+      const analytics = waidesKISignalShield.getTrapAnalytics();
+      res.json(analytics);
+    } catch (error) {
+      console.error('Error getting trap analytics:', error);
+      res.status(500).json({ error: 'Failed to get trap analytics' });
+    }
+  });
+
+  app.get("/api/waides-ki/daily-report", async (req, res) => {
+    try {
+      const report = await waidesKIDailyReporter.generateManualReport();
+      res.json(report);
+    } catch (error) {
+      console.error('Error generating daily report:', error);
+      res.status(500).json({ error: 'Failed to generate daily report' });
+    }
+  });
+
+  app.get("/api/waides-ki/emotional-state", (req, res) => {
+    try {
+      const currentState = waidesKIDailyReporter.getCurrentEmotionalState();
+      const recentLessons = waidesKIDailyReporter.getRecentLessons(5);
+      res.json({
+        current_emotional_state: currentState,
+        recent_lessons: recentLessons
+      });
+    } catch (error) {
+      console.error('Error getting emotional state:', error);
+      res.status(500).json({ error: 'Failed to get emotional state' });
+    }
+  });
+
+  app.get("/api/waides-ki/journal-export", (req, res) => {
+    try {
+      const reportData = waidesKIDailyReporter.exportReportData();
+      const shieldData = waidesKISignalShield.exportShieldData();
+      
+      res.json({
+        daily_journal: reportData,
+        signal_shield: shieldData,
+        export_timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error exporting journal data:', error);
+      res.status(500).json({ error: 'Failed to export journal data' });
+    }
+  });
+
+  app.get("/api/waides-ki/console-report", (req, res) => {
+    try {
+      const consoleOutput = waidesKIDailyReporter.printDailyReport();
+      res.json({ console_output: consoleOutput });
+    } catch (error) {
+      console.error('Error generating console report:', error);
+      res.status(500).json({ error: 'Failed to generate console report' });
+    }
+  });
+
+  // Shield control endpoints
+  app.post("/api/waides-ki/shield-reset", (req, res) => {
+    try {
+      waidesKISignalShield.resetShield();
+      res.json({ success: true, message: 'Signal shield reset successfully' });
+    } catch (error) {
+      console.error('Error resetting shield:', error);
+      res.status(500).json({ error: 'Failed to reset signal shield' });
+    }
+  });
+
+  app.post("/api/waides-ki/unban-strategy", (req, res) => {
+    try {
+      const { strategy_id } = req.body;
+      if (!strategy_id) {
+        return res.status(400).json({ error: 'strategy_id required' });
+      }
+      
+      const unbanned = waidesKISignalShield.unbanStrategy(strategy_id);
+      if (unbanned) {
+        res.json({ success: true, message: 'Strategy unbanned successfully' });
+      } else {
+        res.status(404).json({ error: 'Strategy not found or not banned' });
+      }
+    } catch (error) {
+      console.error('Error unbanning strategy:', error);
+      res.status(500).json({ error: 'Failed to unban strategy' });
     }
   });
 
