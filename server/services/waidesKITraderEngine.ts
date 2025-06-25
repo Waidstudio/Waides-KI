@@ -11,6 +11,7 @@ import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
 import { waidesKIHiddenVision } from './waidesKIHiddenVision';
+import { waidesKISelfHealing } from './waidesKISelfHealing';
 import { storage } from '../storage';
 
 interface MarketIndicators {
@@ -339,6 +340,35 @@ export class WaidesKITraderEngine {
             recentDecision.decision_id,
             executionResult.outcome.result
           );
+        }
+      }
+      
+      // 10. Update self-healing performance tracking
+      if (executionResult.outcome && executionResult.dna_id) {
+        const healingCheck = waidesKISelfHealing.updateStrategyPerformance(
+          executionResult.strategy_id,
+          executionResult.dna_id,
+          {
+            success: executionResult.outcome.result === 'WIN',
+            profit_loss: executionResult.outcome.actual_profit_loss,
+            execution_time: Date.now(),
+            market_conditions: {
+              market_phase: situationalContext?.market_phase || 'UNKNOWN',
+              indicators: params.indicators
+            }
+          }
+        );
+        
+        // Auto-trigger healing if needed
+        if (healingCheck.shouldHeal) {
+          try {
+            await waidesKISelfHealing.triggerHealingSession(
+              executionResult.strategy_id, 
+              healingCheck.failureType || 'UNKNOWN'
+            );
+          } catch (error) {
+            console.error('Error triggering healing session:', error);
+          }
         }
       }
       

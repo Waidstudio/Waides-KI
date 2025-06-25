@@ -35,6 +35,7 @@ import { waidesKISituationalIntelligence } from './services/waidesKISituationalI
 import { waidesKIHiddenVision } from './services/waidesKIHiddenVision.js';
 import { waidesKIShadowLab } from './services/waidesKIShadowLab.js';
 import { waidesKIStrategyVault } from './services/waidesKIStrategyVault.js';
+import { waidesKISelfHealing } from './services/waidesKISelfHealing.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -4654,6 +4655,154 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting strategy vault data:', error);
       res.status(500).json({ error: 'Failed to export strategy vault data' });
+    }
+  });
+
+  // Self-Healing Strategy Core endpoints
+  app.get("/api/waides-ki/self-healing/statistics", (req, res) => {
+    try {
+      const stats = waidesKISelfHealing.getSelfHealingStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting self-healing statistics:', error);
+      res.status(500).json({ error: 'Failed to get self-healing statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-healing/performance/:strategy_id?", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const performanceData = waidesKISelfHealing.getPerformanceData(strategy_id);
+      res.json({ performance_data: performanceData });
+    } catch (error) {
+      console.error('Error getting performance data:', error);
+      res.status(500).json({ error: 'Failed to get performance data' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-healing/mistakes", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const mistakes = waidesKISelfHealing.getMistakeMemory(limit);
+      res.json({ mistakes: mistakes });
+    } catch (error) {
+      console.error('Error getting mistake memory:', error);
+      res.status(500).json({ error: 'Failed to get mistake memory' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-healing/sessions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const sessions = waidesKISelfHealing.getHealingSessions(limit);
+      res.json({ healing_sessions: sessions });
+    } catch (error) {
+      console.error('Error getting healing sessions:', error);
+      res.status(500).json({ error: 'Failed to get healing sessions' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-healing/thresholds", (req, res) => {
+    try {
+      const thresholds = waidesKISelfHealing.getFailureThresholds();
+      res.json({ failure_thresholds: thresholds });
+    } catch (error) {
+      console.error('Error getting failure thresholds:', error);
+      res.status(500).json({ error: 'Failed to get failure thresholds' });
+    }
+  });
+
+  app.post("/api/waides-ki/self-healing/update-performance", (req, res) => {
+    try {
+      const { strategy_id, dna_id, trade_result } = req.body;
+      
+      if (!strategy_id || !dna_id || !trade_result) {
+        return res.status(400).json({ error: 'strategy_id, dna_id, and trade_result are required' });
+      }
+      
+      const result = waidesKISelfHealing.updateStrategyPerformance(strategy_id, dna_id, trade_result);
+      
+      res.json({ 
+        success: true, 
+        should_heal: result.shouldHeal,
+        failure_type: result.failureType,
+        message: result.shouldHeal ? 'Healing triggered due to performance failure' : 'Performance updated successfully'
+      });
+    } catch (error) {
+      console.error('Error updating strategy performance:', error);
+      res.status(500).json({ error: 'Failed to update strategy performance: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/self-healing/trigger-healing", async (req, res) => {
+    try {
+      const { strategy_id, failure_type } = req.body;
+      
+      if (!strategy_id || !failure_type) {
+        return res.status(400).json({ error: 'strategy_id and failure_type are required' });
+      }
+      
+      const session = await waidesKISelfHealing.triggerHealingSession(strategy_id, failure_type);
+      
+      res.json({ 
+        success: true, 
+        healing_session: session,
+        message: `Healing session completed: ${session.healing_outcome.new_strategies_generated} new strategies generated`
+      });
+    } catch (error) {
+      console.error('Error triggering healing session:', error);
+      res.status(500).json({ error: 'Failed to trigger healing session: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/self-healing/update-thresholds", (req, res) => {
+    try {
+      const thresholds = req.body;
+      
+      if (!thresholds || typeof thresholds !== 'object') {
+        return res.status(400).json({ error: 'Valid threshold object is required' });
+      }
+      
+      waidesKISelfHealing.updateFailureThresholds(thresholds);
+      
+      res.json({ 
+        success: true, 
+        message: 'Failure thresholds updated successfully',
+        updated_thresholds: thresholds
+      });
+    } catch (error) {
+      console.error('Error updating failure thresholds:', error);
+      res.status(500).json({ error: 'Failed to update failure thresholds' });
+    }
+  });
+
+  app.post("/api/waides-ki/self-healing/enable", (req, res) => {
+    try {
+      waidesKISelfHealing.enableHealing();
+      res.json({ success: true, message: 'Self-healing core activated - strategies will auto-adapt and evolve' });
+    } catch (error) {
+      console.error('Error enabling self-healing:', error);
+      res.status(500).json({ error: 'Failed to enable self-healing' });
+    }
+  });
+
+  app.post("/api/waides-ki/self-healing/disable", (req, res) => {
+    try {
+      waidesKISelfHealing.disableHealing();
+      res.json({ success: true, message: 'Self-healing core deactivated - manual intervention required' });
+    } catch (error) {
+      console.error('Error disabling self-healing:', error);
+      res.status(500).json({ error: 'Failed to disable self-healing' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-healing/export", (req, res) => {
+    try {
+      const healingData = waidesKISelfHealing.exportSelfHealingData();
+      res.json(healingData);
+    } catch (error) {
+      console.error('Error exporting self-healing data:', error);
+      res.status(500).json({ error: 'Failed to export self-healing data' });
     }
   });
 

@@ -22,6 +22,7 @@ import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligen
 import { waidesKIHiddenVision } from './waidesKIHiddenVision';
 import { waidesKIShadowLab } from './waidesKIShadowLab';
 import { waidesKIStrategyVault } from './waidesKIStrategyVault';
+import { waidesKISelfHealing } from './waidesKISelfHealing';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -906,6 +907,7 @@ export class WaidesKICore {
     const eliteStrategies = waidesKIShadowLab.getTopEliteStrategies(5);
     const vaultStats = waidesKIStrategyVault.getVaultStatistics();
     const liveStrategies = waidesKIStrategyVault.getLiveStrategies();
+    const selfHealingStats = waidesKISelfHealing.getSelfHealingStatistics();
     
     return {
       isActive: this.isAutonomousMode,
