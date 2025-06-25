@@ -19,6 +19,7 @@ import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
+import { waidesKIHiddenVision } from './waidesKIHiddenVision';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -897,6 +898,8 @@ export class WaidesKICore {
     const healingStats = waidesKIDNAHealer.getHealingStatistics();
     const situationalStats = waidesKISituationalIntelligence.getSituationalStatistics();
     const situationalContext = waidesKISituationalIntelligence.getCurrentContext();
+    const hiddenVisionState = waidesKIHiddenVision.getHiddenVisionState();
+    const activePredictions = waidesKIHiddenVision.getActivePredictions();
     
     return {
       isActive: this.isAutonomousMode,
@@ -1009,6 +1012,16 @@ export class WaidesKICore {
         activeRules: situationalStats.active_rules,
         recommendedPositionSize: situationalStats.recommended_position_size,
         contextualAwareness: 'ACTIVE'
+      },
+      hiddenVision: {
+        visionActive: hiddenVisionState.vision_active,
+        konsLangEnabled: hiddenVisionState.konslang_enabled,
+        predictionAccuracy: Math.round(hiddenVisionState.prediction_accuracy * 100),
+        totalPredictions: hiddenVisionState.total_predictions,
+        activePredictions: activePredictions.length,
+        sacredEnergyLevel: hiddenVisionState.sacred_energy_level,
+        spiritualConnection: hiddenVisionState.spiritual_connection_strength,
+        sacredSight: 'ACTIVE'
       }
     };
   }

@@ -10,6 +10,7 @@ import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
+import { waidesKIHiddenVision } from './waidesKIHiddenVision';
 import { storage } from '../storage';
 
 interface MarketIndicators {

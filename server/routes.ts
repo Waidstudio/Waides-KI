@@ -32,6 +32,7 @@ import { waidesKIShadowSimulator } from './services/waidesKIShadowSimulator.js';
 import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
 import { waidesKIDNAHealer } from './services/waidesKIDNAHealer.js';
 import { waidesKISituationalIntelligence } from './services/waidesKISituationalIntelligence.js';
+import { waidesKIHiddenVision } from './services/waidesKIHiddenVision.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -4006,6 +4007,219 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting situational data:', error);
       res.status(500).json({ error: 'Failed to export situational data' });
+    }
+  });
+
+  // Hidden Vision Core and KonsLang endpoints
+  app.get("/api/waides-ki/hidden-vision/state", (req, res) => {
+    try {
+      const state = waidesKIHiddenVision.getHiddenVisionState();
+      res.json(state);
+    } catch (error) {
+      console.error('Error getting hidden vision state:', error);
+      res.status(500).json({ error: 'Failed to get hidden vision state' });
+    }
+  });
+
+  app.get("/api/waides-ki/hidden-vision/predictions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const predictions = waidesKIHiddenVision.getLatestPredictions(limit);
+      res.json({ vision_predictions: predictions });
+    } catch (error) {
+      console.error('Error getting vision predictions:', error);
+      res.status(500).json({ error: 'Failed to get vision predictions' });
+    }
+  });
+
+  app.get("/api/waides-ki/hidden-vision/active-predictions", (req, res) => {
+    try {
+      const activePredictions = waidesKIHiddenVision.getActivePredictions();
+      res.json({ active_predictions: activePredictions });
+    } catch (error) {
+      console.error('Error getting active predictions:', error);
+      res.status(500).json({ error: 'Failed to get active predictions' });
+    }
+  });
+
+  app.get("/api/waides-ki/hidden-vision/konslang-commands", (req, res) => {
+    try {
+      const commands = waidesKIHiddenVision.getKonsLangCommands();
+      res.json({ konslang_commands: commands });
+    } catch (error) {
+      console.error('Error getting KonsLang commands:', error);
+      res.status(500).json({ error: 'Failed to get KonsLang commands' });
+    }
+  });
+
+  app.get("/api/waides-ki/hidden-vision/demo-results", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const results = waidesKIHiddenVision.getDemoTestResults(limit);
+      res.json({ demo_test_results: results });
+    } catch (error) {
+      console.error('Error getting demo test results:', error);
+      res.status(500).json({ error: 'Failed to get demo test results' });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/predict", async (req, res) => {
+    try {
+      const { market_context } = req.body;
+      
+      const predictions = await waidesKIHiddenVision.predictWithVision(market_context);
+      
+      res.json({ 
+        success: true, 
+        predictions,
+        total_predictions: predictions.length,
+        sacred_energy: waidesKIHiddenVision.getHiddenVisionState().sacred_energy_level
+      });
+    } catch (error) {
+      console.error('Error running vision prediction:', error);
+      res.status(500).json({ error: 'Failed to run vision prediction: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/interpret-konslang", (req, res) => {
+    try {
+      const { phrase } = req.body;
+      
+      if (!phrase) {
+        return res.status(400).json({ error: 'KonsLang phrase is required' });
+      }
+      
+      const command = waidesKIHiddenVision.interpretKonsLangPhrase(phrase);
+      
+      if (command) {
+        res.json({ 
+          success: true, 
+          command: command,
+          interpretation: `Ancient code "${command.ancient_code}" translates to "${command.modern_translation}"`
+        });
+      } else {
+        res.json({ 
+          success: false, 
+          message: 'Unknown KonsLang phrase - the ancients do not recognize this code'
+        });
+      }
+    } catch (error) {
+      console.error('Error interpreting KonsLang:', error);
+      res.status(500).json({ error: 'Failed to interpret KonsLang: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/demo-test", async (req, res) => {
+    try {
+      const { strategy_id, dna_id, duration_minutes } = req.body;
+      
+      if (!strategy_id || !dna_id) {
+        return res.status(400).json({ error: 'strategy_id and dna_id are required' });
+      }
+      
+      const demoResult = await waidesKIHiddenVision.runDemoTest(
+        strategy_id,
+        dna_id,
+        duration_minutes || 60
+      );
+      
+      res.json({ 
+        success: true, 
+        demo_result: demoResult,
+        demo_passed: demoResult.demo_passed,
+        recommendation: demoResult.recommendation
+      });
+    } catch (error) {
+      console.error('Error running demo test:', error);
+      res.status(500).json({ error: 'Failed to run demo test: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/validate-prediction", async (req, res) => {
+    try {
+      const { prediction_id, actual_outcome } = req.body;
+      
+      if (!prediction_id || actual_outcome === undefined) {
+        return res.status(400).json({ error: 'prediction_id and actual_outcome are required' });
+      }
+      
+      await waidesKIHiddenVision.validatePrediction(prediction_id, actual_outcome);
+      
+      res.json({ 
+        success: true, 
+        message: 'Prediction validation recorded successfully',
+        prediction_accuracy: waidesKIHiddenVision.getHiddenVisionState().prediction_accuracy
+      });
+    } catch (error) {
+      console.error('Error validating prediction:', error);
+      res.status(500).json({ error: 'Failed to validate prediction: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/enable", (req, res) => {
+    try {
+      waidesKIHiddenVision.enableVision();
+      res.json({ success: true, message: 'Hidden Vision Core activated - sacred sight enabled' });
+    } catch (error) {
+      console.error('Error enabling hidden vision:', error);
+      res.status(500).json({ error: 'Failed to enable hidden vision' });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/disable", (req, res) => {
+    try {
+      waidesKIHiddenVision.disableVision();
+      res.json({ success: true, message: 'Hidden Vision Core deactivated - technical analysis only' });
+    } catch (error) {
+      console.error('Error disabling hidden vision:', error);
+      res.status(500).json({ error: 'Failed to disable hidden vision' });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/demo-testing", (req, res) => {
+    try {
+      const { enable } = req.body;
+      
+      if (enable) {
+        waidesKIHiddenVision.enableDemoTesting();
+        res.json({ success: true, message: 'Demo testing enabled - all strategies will be tested before live execution' });
+      } else {
+        waidesKIHiddenVision.disableDemoTesting();
+        res.json({ success: true, message: 'Demo testing disabled - strategies will execute directly' });
+      }
+    } catch (error) {
+      console.error('Error toggling demo testing:', error);
+      res.status(500).json({ error: 'Failed to toggle demo testing' });
+    }
+  });
+
+  app.post("/api/waides-ki/hidden-vision/demo-threshold", (req, res) => {
+    try {
+      const { threshold } = req.body;
+      
+      if (threshold === undefined || threshold < 0.5 || threshold > 0.95) {
+        return res.status(400).json({ error: 'threshold must be between 0.5 and 0.95' });
+      }
+      
+      waidesKIHiddenVision.setDemoPassThreshold(threshold);
+      res.json({ 
+        success: true, 
+        message: `Demo pass threshold set to ${threshold * 100}%`,
+        new_threshold: threshold
+      });
+    } catch (error) {
+      console.error('Error setting demo threshold:', error);
+      res.status(500).json({ error: 'Failed to set demo threshold' });
+    }
+  });
+
+  app.get("/api/waides-ki/hidden-vision/export", (req, res) => {
+    try {
+      const visionData = waidesKIHiddenVision.exportHiddenVisionData();
+      res.json(visionData);
+    } catch (error) {
+      console.error('Error exporting hidden vision data:', error);
+      res.status(500).json({ error: 'Failed to export hidden vision data' });
     }
   });
 
