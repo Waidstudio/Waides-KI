@@ -917,10 +917,6 @@ export class WaidesKICore {
     const autonomousStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
     const sentinelStats = waidesKISentinelWatchdog.getSentinelStatistics();
     const guardianStats = waidesKIGuardianAdjuster.getGuardianStatistics();
-    const virtualEyeStats = waidesKIVirtualEyeScanner.getVirtualEyeStatistics();
-    const emotionalFirewallStats = waidesKIEmotionalFirewall.getEmotionalFirewallStatistics();
-    const autonomousStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
-    const sentinelStats = waidesKISentinelWatchdog.getSentinelStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -1065,6 +1061,61 @@ export class WaidesKICore {
         chamberEnergyLevel: vaultStats.chamber_energy_level,
         protectionLevel: vaultStats.protection_level,
         birthChamber: 'ACTIVE'
+      },
+      selfHealing: {
+        totalFailuresProcessed: selfHealingStats.total_failures_processed,
+        totalHealingSessions: selfHealingStats.total_healing_sessions,
+        healingSuccessRate: selfHealingStats.healing_success_rate,
+        strategiesAutoRetired: selfHealingStats.strategies_auto_retired,
+        strategiesAutoCreated: selfHealingStats.strategies_auto_created,
+        learningEffectiveness: selfHealingStats.learning_effectiveness,
+        mostCommonFailure: selfHealingStats.most_common_failure,
+        healingCore: 'ACTIVE'
+      },
+      virtualEyeScanner: {
+        totalScans: virtualEyeStats.total_scans,
+        successfulScans: virtualEyeStats.successful_scans,
+        trendAccuracy: virtualEyeStats.trend_accuracy,
+        safeZonesIdentified: virtualEyeStats.safe_zones_identified,
+        highConfidenceSignals: virtualEyeStats.high_confidence_signals,
+        dataQualityScore: virtualEyeStats.data_quality_score,
+        virtualEyes: 'ACTIVE'
+      },
+      emotionalFirewall: {
+        totalInterventions: emotionalFirewallStats.total_interventions,
+        panicExitsPrevented: emotionalFirewallStats.panic_exits_prevented,
+        revengeTradesBlocked: emotionalFirewallStats.revenge_trades_blocked,
+        greedHoldsCorrected: emotionalFirewallStats.greed_holds_corrected,
+        firewallSuccessRate: emotionalFirewallStats.firewall_success_rate,
+        averageEmotionalHealth: emotionalFirewallStats.average_emotional_health,
+        emotionFirewall: 'ACTIVE'
+      },
+      autonomousTradeCore: {
+        totalTradesExecuted: autonomousStats.total_trades_executed,
+        autonomousWinRate: autonomousStats.autonomous_win_rate,
+        totalAutonomousProfit: autonomousStats.total_autonomous_profit,
+        averageTradesPerHour: autonomousStats.average_trades_per_hour,
+        mostSuccessfulDuration: autonomousStats.most_successful_duration,
+        autonomyEffectiveness: autonomousStats.autonomy_effectiveness,
+        autonomousCore: 'ACTIVE'
+      },
+      sentinelWatchdog: {
+        totalRegisteredBots: sentinelStats.total_registered_bots,
+        activeMonitoringSessions: sentinelStats.active_monitoring_sessions,
+        totalAlertsSent: sentinelStats.total_alerts_sent,
+        emergencyInterventions: sentinelStats.emergency_interventions,
+        botsSavedFromLoss: sentinelStats.bots_saved_from_loss,
+        protectionSuccessRate: sentinelStats.protection_success_rate,
+        sentinelMode: 'ACTIVE'
+      },
+      guardianAdjuster: {
+        totalActionsExecuted: guardianStats.total_actions_executed,
+        preventionSuccessRate: guardianStats.prevention_success_rate,
+        botsCurrentlyProtected: guardianStats.bots_currently_protected,
+        emergencyInterventions: guardianStats.emergency_interventions,
+        autoRecoveries: guardianStats.auto_recoveries,
+        averageActionEffectiveness: guardianStats.average_action_effectiveness,
+        guardianProtection: 'ACTIVE'
       }
     };
   }

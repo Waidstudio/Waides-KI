@@ -40,6 +40,11 @@ import { waidesKIVirtualEyeScanner } from './services/waidesKIVirtualEyeScanner.
 import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
 import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeCore.js';
 import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
+import { waidesKIRiskAlertEngine } from './services/waidesKIRiskAlertEngine.js';
+import { waidesKIGuardianAdjuster } from './services/waidesKIGuardianAdjuster.js';
+import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
+import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeCore.js';
+import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -4807,6 +4812,296 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting self-healing data:', error);
       res.status(500).json({ error: 'Failed to export self-healing data' });
+    }
+  });
+
+  // Autonomous Trade Core + Emotion Firewall endpoints
+  app.get("/api/waides-ki/autonomous/status", (req, res) => {
+    try {
+      const status = waidesKIAutonomousTradeCore.getAutonomousStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting autonomous status:', error);
+      res.status(500).json({ error: 'Failed to get autonomous status' });
+    }
+  });
+
+  app.get("/api/waides-ki/autonomous/trades", (req, res) => {
+    try {
+      const activeTrades = waidesKIAutonomousTradeCore.getActiveTrades();
+      const tradeHistory = waidesKIAutonomousTradeCore.getTradeHistory(100);
+      res.json({ active_trades: activeTrades, trade_history: tradeHistory });
+    } catch (error) {
+      console.error('Error getting autonomous trades:', error);
+      res.status(500).json({ error: 'Failed to get autonomous trades' });
+    }
+  });
+
+  app.get("/api/waides-ki/autonomous/statistics", (req, res) => {
+    try {
+      const stats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting autonomous statistics:', error);
+      res.status(500).json({ error: 'Failed to get autonomous statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/autonomous/enable", (req, res) => {
+    try {
+      waidesKIAutonomousTradeCore.enableAutonomousTrading();
+      res.json({ success: true, message: 'Autonomous trading enabled - fully automated trading active' });
+    } catch (error) {
+      console.error('Error enabling autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to enable autonomous trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/autonomous/disable", (req, res) => {
+    try {
+      waidesKIAutonomousTradeCore.disableAutonomousTrading();
+      res.json({ success: true, message: 'Autonomous trading disabled - manual trading mode' });
+    } catch (error) {
+      console.error('Error disabling autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to disable autonomous trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/autonomous/close-all-trades", async (req, res) => {
+    try {
+      const closedCount = await waidesKIAutonomousTradeCore.forceCloseAllTrades();
+      res.json({ success: true, message: `${closedCount} trades closed`, closed_trades: closedCount });
+    } catch (error) {
+      console.error('Error closing all trades:', error);
+      res.status(500).json({ error: 'Failed to close all trades' });
+    }
+  });
+
+  // Virtual Eye Scanner endpoints
+  app.get("/api/waides-ki/virtual-eye/status", (req, res) => {
+    try {
+      const lastScan = waidesKIVirtualEyeScanner.getLastScanResult();
+      const trends = waidesKIVirtualEyeScanner.getCurrentTrends();
+      const safety = waidesKIVirtualEyeScanner.getTradingSafety();
+      res.json({ last_scan: lastScan, current_trends: trends, trading_safety: safety });
+    } catch (error) {
+      console.error('Error getting virtual eye status:', error);
+      res.status(500).json({ error: 'Failed to get virtual eye status' });
+    }
+  });
+
+  app.get("/api/waides-ki/virtual-eye/statistics", (req, res) => {
+    try {
+      const stats = waidesKIVirtualEyeScanner.getVirtualEyeStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting virtual eye statistics:', error);
+      res.status(500).json({ error: 'Failed to get virtual eye statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/virtual-eye/force-scan", async (req, res) => {
+    try {
+      const scanResult = await waidesKIVirtualEyeScanner.forceScan();
+      res.json({ success: true, scan_result: scanResult });
+    } catch (error) {
+      console.error('Error forcing virtual eye scan:', error);
+      res.status(500).json({ error: 'Failed to force virtual eye scan' });
+    }
+  });
+
+  // Emotional Firewall endpoints
+  app.get("/api/waides-ki/emotional-firewall/status", (req, res) => {
+    try {
+      const emotionalState = waidesKIEmotionalFirewall.getCurrentEmotionalState();
+      const stats = waidesKIEmotionalFirewall.getEmotionalFirewallStatistics();
+      res.json({ emotional_state: emotionalState, statistics: stats });
+    } catch (error) {
+      console.error('Error getting emotional firewall status:', error);
+      res.status(500).json({ error: 'Failed to get emotional firewall status' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional-firewall/evaluate-exit", (req, res) => {
+    try {
+      const { trade_id, current_pnl, time_held_minutes } = req.body;
+      const evaluation = waidesKIEmotionalFirewall.evaluateTradeExit(trade_id, current_pnl, time_held_minutes);
+      res.json(evaluation);
+    } catch (error) {
+      console.error('Error evaluating trade exit:', error);
+      res.status(500).json({ error: 'Failed to evaluate trade exit' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional-firewall/evaluate-entry", (req, res) => {
+    try {
+      const evaluation = waidesKIEmotionalFirewall.evaluateTradeEntry();
+      res.json(evaluation);
+    } catch (error) {
+      console.error('Error evaluating trade entry:', error);
+      res.status(500).json({ error: 'Failed to evaluate trade entry' });
+    }
+  });
+
+  // Sentinel Watchdog endpoints  
+  app.post("/api/waides-ki/sentinel/register-bot", (req, res) => {
+    try {
+      const { bot_id, bot_type, platform_name, api_key, permissions, risk_profile } = req.body;
+      
+      if (!bot_id || !bot_type || !platform_name || !api_key) {
+        return res.status(400).json({ error: 'bot_id, bot_type, platform_name, and api_key are required' });
+      }
+      
+      const registration = waidesKISentinelWatchdog.registerBot({
+        bot_id,
+        bot_type,
+        platform_name,
+        api_key,
+        permissions,
+        risk_profile
+      });
+      
+      res.json({ success: true, registration: registration, message: `Bot ${bot_id} registered for protection` });
+    } catch (error) {
+      console.error('Error registering bot:', error);
+      res.status(500).json({ error: 'Failed to register bot' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/statistics", (req, res) => {
+    try {
+      const stats = waidesKISentinelWatchdog.getSentinelStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting sentinel statistics:', error);
+      res.status(500).json({ error: 'Failed to get sentinel statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/registered-bots", (req, res) => {
+    try {
+      const bots = waidesKISentinelWatchdog.getAllRegisteredBots();
+      res.json({ registered_bots: bots });
+    } catch (error) {
+      console.error('Error getting registered bots:', error);
+      res.status(500).json({ error: 'Failed to get registered bots' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/risky-bots", (req, res) => {
+    try {
+      const riskyBots = waidesKISentinelWatchdog.getRiskyBots();
+      res.json({ risky_bots: riskyBots });
+    } catch (error) {
+      console.error('Error getting risky bots:', error);
+      res.status(500).json({ error: 'Failed to get risky bots' });
+    }
+  });
+
+  app.post("/api/waides-ki/sentinel/update-bot-data", (req, res) => {
+    try {
+      const { bot_id, trading_data } = req.body;
+      
+      if (!bot_id || !trading_data) {
+        return res.status(400).json({ error: 'bot_id and trading_data are required' });
+      }
+      
+      waidesKISentinelWatchdog.updateBotTradingData(bot_id, trading_data);
+      res.json({ success: true, message: 'Bot trading data updated successfully' });
+    } catch (error) {
+      console.error('Error updating bot trading data:', error);
+      res.status(500).json({ error: 'Failed to update bot trading data' });
+    }
+  });
+
+  app.post("/api/waides-ki/sentinel/heartbeat", (req, res) => {
+    try {
+      const { bot_id } = req.body;
+      
+      if (!bot_id) {
+        return res.status(400).json({ error: 'bot_id is required' });
+      }
+      
+      const success = waidesKISentinelWatchdog.updateBotHeartbeat(bot_id);
+      res.json({ success: success, message: success ? 'Heartbeat updated' : 'Bot not found' });
+    } catch (error) {
+      console.error('Error updating heartbeat:', error);
+      res.status(500).json({ error: 'Failed to update heartbeat' });
+    }
+  });
+
+  // Guardian Adjuster endpoints
+  app.get("/api/waides-ki/guardian/statistics", (req, res) => {
+    try {
+      const stats = waidesKIGuardianAdjuster.getGuardianStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting guardian statistics:', error);
+      res.status(500).json({ error: 'Failed to get guardian statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/guardian/actions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const actions = waidesKIGuardianAdjuster.getGuardianActions(limit);
+      res.json({ guardian_actions: actions });
+    } catch (error) {
+      console.error('Error getting guardian actions:', error);
+      res.status(500).json({ error: 'Failed to get guardian actions' });
+    }
+  });
+
+  app.get("/api/waides-ki/guardian/cooldowns", (req, res) => {
+    try {
+      const cooldowns = waidesKIGuardianAdjuster.getActiveCooldowns();
+      res.json({ active_cooldowns: cooldowns });
+    } catch (error) {
+      console.error('Error getting active cooldowns:', error);
+      res.status(500).json({ error: 'Failed to get active cooldowns' });
+    }
+  });
+
+  app.post("/api/waides-ki/guardian/pause-bot", async (req, res) => {
+    try {
+      const { bot_id, reason, duration_minutes, severity } = req.body;
+      
+      if (!bot_id || !reason) {
+        return res.status(400).json({ error: 'bot_id and reason are required' });
+      }
+      
+      const action = await waidesKIGuardianAdjuster.pauseBot(bot_id, reason, duration_minutes, severity);
+      res.json({ success: true, guardian_action: action });
+    } catch (error) {
+      console.error('Error pausing bot:', error);
+      res.status(500).json({ error: 'Failed to pause bot' });
+    }
+  });
+
+  app.post("/api/waides-ki/guardian/resume-bot", async (req, res) => {
+    try {
+      const { bot_id, reason } = req.body;
+      
+      if (!bot_id || !reason) {
+        return res.status(400).json({ error: 'bot_id and reason are required' });
+      }
+      
+      const success = await waidesKIGuardianAdjuster.resumeBot(bot_id, reason);
+      res.json({ success: success, message: success ? 'Bot resumed successfully' : 'Failed to resume bot' });
+    } catch (error) {
+      console.error('Error resuming bot:', error);
+      res.status(500).json({ error: 'Failed to resume bot' });
+    }
+  });
+
+  app.get("/api/waides-ki/guardian/can-bot-trade/:bot_id", (req, res) => {
+    try {
+      const { bot_id } = req.params;
+      const tradingStatus = waidesKIGuardianAdjuster.canBotTrade(bot_id);
+      res.json(tradingStatus);
+    } catch (error) {
+      console.error('Error checking bot trading status:', error);
+      res.status(500).json({ error: 'Failed to check bot trading status' });
     }
   });
 
