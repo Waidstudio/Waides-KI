@@ -36,16 +36,16 @@ function Router() {
               <div className="hidden lg:flex space-x-6">
                 {navItems.map((item) => (
                   <Link key={item.path} href={item.path}>
-                    <a
+                    <span
                       className={cn(
-                        "inline-flex items-center px-2 pt-1 text-sm font-medium border-b-2 transition-colors",
+                        "inline-flex items-center px-2 pt-1 text-sm font-medium border-b-2 transition-colors cursor-pointer",
                         location === item.path
                           ? "border-blue-500 text-slate-100"
                           : "border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-300"
                       )}
                     >
                       {item.label}
-                    </a>
+                    </span>
                   </Link>
                 ))}
               </div>
