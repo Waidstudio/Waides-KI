@@ -5,6 +5,7 @@ import { waidesKILearning } from './waidesKILearningEngine';
 import { waidesKIObserver } from './waidesKIObserver';
 import { waidesKISignalLogger } from './waidesKISignalLogger';
 import { waidesKIRiskManager } from './waidesKIRiskManager';
+import { waidesKILiveFeed } from './waidesKILiveFeed';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -180,25 +181,38 @@ export class WaidesKICore {
     return riskRewardRatio >= 2.0; // Minimum 1:2 risk-reward
   }
 
-  // 5. AUTONOMOUS TRADING DECISION ENGINE (Enhanced with Real-time Observation)
+  // 5. AUTONOMOUS TRADING DECISION ENGINE (Enhanced with Live Feed Integration)
   async makeAutonomousDecision(marketData: any): Promise<TradingDecision | null> {
-    // Step 1: Get real-time market assessment from observer
+    // Step 1: Get live market data with fallback chain
+    const liveData = await waidesKILiveFeed.getCurrentMarketData();
     const currentAssessment = waidesKIObserver.getCurrentAssessment();
     
-    if (!currentAssessment.indicators || !currentAssessment.signalStrength) {
+    // Prefer live feed data, fallback to observer
+    const indicators = liveData || currentAssessment.indicators;
+    const signalStrength = currentAssessment.signalStrength;
+    
+    if (!indicators || !signalStrength) {
       return null; // No market data available
     }
     
+    // Validate data quality
+    if (liveData) {
+      const dataQuality = await waidesKILiveFeed.validateDataQuality(liveData);
+      if (!dataQuality.isValid) {
+        return null; // Data quality too poor for trading
+      }
+    }
+    
     // Step 2: Check signal strength threshold
-    if (!currentAssessment.signalStrength.shouldTrade) {
+    if (!signalStrength.shouldTrade) {
       // Log weak signal for learning
-      const strategyId = this.generateStrategyId(currentAssessment.indicators);
+      const strategyId = this.generateStrategyId(indicators);
       waidesKISignalLogger.logSignal(
         strategyId,
-        currentAssessment.signalStrength.score,
-        currentAssessment.signalStrength.confidence,
-        currentAssessment.indicators,
-        currentAssessment.signalStrength.reasoning,
+        signalStrength.score,
+        signalStrength.confidence,
+        indicators,
+        signalStrength.reasoning,
         currentAssessment.recommendation,
         false
       );
@@ -238,12 +252,12 @@ export class WaidesKICore {
     
     // Step 6: Risk assessment and position sizing
     if (bestDecision) {
-      const strategyId = this.generateStrategyId(currentAssessment.indicators);
+      const strategyId = this.generateStrategyId(indicators);
       
       // Calculate optimal trade amount with risk management
       const riskAssessment = waidesKIRiskManager.calculateTradeAmount(
-        currentAssessment.signalStrength.score,
-        currentAssessment.signalStrength.confidence,
+        signalStrength.score,
+        signalStrength.confidence,
         strategyId,
         marketConditions
       );
@@ -252,10 +266,10 @@ export class WaidesKICore {
         // Log blocked signal due to risk management
         const signalId = waidesKISignalLogger.logSignal(
           strategyId,
-          currentAssessment.signalStrength.score,
-          currentAssessment.signalStrength.confidence,
-          currentAssessment.indicators,
-          currentAssessment.signalStrength.reasoning,
+          signalStrength.score,
+          signalStrength.confidence,
+          indicators,
+          signalStrength.reasoning,
           currentAssessment.recommendation,
           true
         );
@@ -266,20 +280,21 @@ export class WaidesKICore {
       // Log successful signal and prepare enhanced decision
       const signalId = waidesKISignalLogger.logSignal(
         strategyId,
-        currentAssessment.signalStrength.score,
-        Math.min(currentAssessment.signalStrength.confidence, bestDecision.confidence),
-        currentAssessment.indicators,
-        currentAssessment.signalStrength.reasoning,
+        signalStrength.score,
+        Math.min(signalStrength.confidence, bestDecision.confidence),
+        indicators,
+        signalStrength.reasoning,
         currentAssessment.recommendation,
         true
       );
       
-      // Enhance decision with observation data and risk assessment
+      // Enhance decision with live data, observation data and risk assessment
       bestDecision.confidence = Math.min(
         bestDecision.confidence, 
-        currentAssessment.signalStrength.confidence / 100
+        signalStrength.confidence / 100
       );
-      bestDecision.reasoning = `${bestDecision.reasoning} | Observer: ${currentAssessment.recommendation} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
+      const dataSource = liveData ? `Live:${liveData.source}` : 'Observer';
+      bestDecision.reasoning = `${bestDecision.reasoning} | ${dataSource}: ${currentAssessment.recommendation} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
       bestDecision.tradeAmount = riskAssessment.recommendedAmount;
       bestDecision.riskAssessment = riskAssessment;
       

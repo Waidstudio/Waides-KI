@@ -15,6 +15,8 @@ import { waidesKILearning } from './services/waidesKILearningEngine.js';
 import { waidesKIObserver } from './services/waidesKIObserver.js';
 import { waidesKISignalLogger } from './services/waidesKISignalLogger.js';
 import { waidesKIRiskManager } from './services/waidesKIRiskManager.js';
+import { waidesKILiveFeed } from './services/waidesKILiveFeed.js';
+import { waidesKIAdmin } from './services/waidesKIAdmin.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1718,6 +1720,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error resetting risk profile:', error);
       res.status(500).json({ error: 'Failed to reset risk profile' });
+    }
+  });
+
+  // Live data feed endpoints
+  app.get("/api/waides-ki/live-data", async (req, res) => {
+    try {
+      const data = await waidesKILiveFeed.getCurrentMarketData();
+      res.json(data);
+    } catch (error) {
+      console.error('Error getting live data:', error);
+      res.status(500).json({ error: 'Failed to get live market data' });
+    }
+  });
+
+  app.get("/api/waides-ki/detailed-market", async (req, res) => {
+    try {
+      const data = await waidesKILiveFeed.getDetailedMarketData();
+      res.json(data);
+    } catch (error) {
+      console.error('Error getting detailed market data:', error);
+      res.status(500).json({ error: 'Failed to get detailed market data' });
+    }
+  });
+
+  app.get("/api/waides-ki/data-stream-status", (req, res) => {
+    try {
+      const status = waidesKILiveFeed.getDataStreamStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting data stream status:', error);
+      res.status(500).json({ error: 'Failed to get data stream status' });
+    }
+  });
+
+  // Admin command interface endpoints
+  app.post("/api/waides-ki/admin-command", async (req, res) => {
+    try {
+      const { command, params } = req.body;
+      
+      if (!command) {
+        return res.status(400).json({ error: 'Command required' });
+      }
+      
+      const result = await waidesKIAdmin.executeCommand(command, params);
+      res.json(result);
+    } catch (error) {
+      console.error('Error executing admin command:', error);
+      res.status(500).json({ error: 'Failed to execute admin command' });
+    }
+  });
+
+  // Quick admin endpoints for common commands
+  app.get("/api/waides-ki/admin/status", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.status();
+      res.json(result);
+    } catch (error) {
+      console.error('Error getting admin status:', error);
+      res.status(500).json({ error: 'Failed to get admin status' });
+    }
+  });
+
+  app.get("/api/waides-ki/admin/memory", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.memory();
+      res.json(result);
+    } catch (error) {
+      console.error('Error getting memory analysis:', error);
+      res.status(500).json({ error: 'Failed to get memory analysis' });
+    }
+  });
+
+  app.get("/api/waides-ki/admin/strategies", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.strategies();
+      res.json(result);
+    } catch (error) {
+      console.error('Error getting strategy analysis:', error);
+      res.status(500).json({ error: 'Failed to get strategy analysis' });
+    }
+  });
+
+  app.get("/api/waides-ki/admin/config", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.config();
+      res.json(result);
+    } catch (error) {
+      console.error('Error getting configuration:', error);
+      res.status(500).json({ error: 'Failed to get configuration' });
+    }
+  });
+
+  app.post("/api/waides-ki/admin/config", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.config(req.body);
+      res.json(result);
+    } catch (error) {
+      console.error('Error updating configuration:', error);
+      res.status(500).json({ error: 'Failed to update configuration' });
+    }
+  });
+
+  app.post("/api/waides-ki/admin/emergency-stop", async (req, res) => {
+    try {
+      const result = await waidesKIAdmin.emergencyStop();
+      res.json(result);
+    } catch (error) {
+      console.error('Error executing emergency stop:', error);
+      res.status(500).json({ error: 'Failed to execute emergency stop' });
     }
   });
 
