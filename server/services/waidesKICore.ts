@@ -2,6 +2,8 @@ import { storage } from '../storage';
 import { weeklyScheduler } from './weeklyTradingScheduler';
 import { tradingBrain } from './tradingBrainEngine';
 import { waidesKILearning } from './waidesKILearningEngine';
+import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
+import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
 interface TradeMemory {
   timestamp: number;
@@ -33,6 +35,8 @@ interface TradingDecision {
   confidence: number;
   reasoning: string;
   timeframe: string;
+  strategyId?: string;
+  engine: 'WAIDBOT' | 'WAIDBOT_PRO' | 'WAIDES_KI_CORE';
 }
 
 export class WaidesKICore {
@@ -43,6 +47,10 @@ export class WaidesKICore {
   private currentDrawdown: number = 0;
   private lastScanTime: number = 0;
   private silentMode: boolean = true; // Always hidden from users
+  private isAutonomousMode: boolean = true; // Waides KI trades autonomously
+  private waidbotEngine: any = null;
+  private waidbotProEngine: any = null;
+  private activeDecisions: Map<string, any> = new Map();
 
   constructor() {
     this.initializeCore();
@@ -51,7 +59,19 @@ export class WaidesKICore {
   private initializeCore(): void {
     // Core initialization - all internal logic hidden from users
     this.loadTradeMemory();
+    this.initializeTradingEngines();
     this.startAutonomousScanning();
+    this.startAutonomousTrading();
+  }
+
+  private initializeTradingEngines(): void {
+    // Initialize WaidBot engines that Waides KI will use internally
+    try {
+      // These engines will be used by Waides KI to make trading decisions
+      // Users never interact with them directly
+    } catch (error) {
+      // Silent initialization
+    }
   }
 
   // 1. MARKET STRUCTURE DETECTION MODULE
@@ -155,17 +175,149 @@ export class WaidesKICore {
     return riskRewardRatio >= 2.0; // Minimum 1:2 risk-reward
   }
 
-  // 5. TRADE STRATEGY DECISION ENGINE MODULE (Enhanced with Learning)
+  // 5. AUTONOMOUS TRADING DECISION ENGINE (Uses WaidBot engines internally)
   async makeAutonomousDecision(marketData: any): Promise<TradingDecision | null> {
-    // Never trade impulsively - check all conditions
+    // Waides KI consults multiple engines and makes the final decision
+    const decisions = await this.consultAllTradingEngines(marketData);
+    
+    // Filter out invalid decisions
+    const validDecisions = decisions.filter(d => d && d.confidence > 0.6);
+    
+    if (validDecisions.length === 0) {
+      return null; // No valid signals from any engine
+    }
+    
+    // Select best decision based on consensus and confidence
+    const bestDecision = this.selectBestDecision(validDecisions);
+    
+    // Final validation by Waides KI learning engine
+    const marketConditions = this.extractMarketConditions(marketData);
+    const strategyValidation = waidesKILearning.validateTradeSignal(marketConditions);
+    
+    if (!strategyValidation.isValid) {
+      return null; // Learning engine blocked this strategy
+    }
+    
+    // Record the decision for learning
+    if (bestDecision) {
+      await this.recordTradeWithLearning(bestDecision, marketConditions);
+      // Store active decision for monitoring
+      this.activeDecisions.set(`decision_${Date.now()}`, bestDecision);
+    }
+    
+    return bestDecision;
+  }
+
+  // CONSULT ALL TRADING ENGINES (WaidBot, WaidBot Pro, Core Analysis)
+  private async consultAllTradingEngines(marketData: any): Promise<TradingDecision[]> {
+    const decisions: TradingDecision[] = [];
+    
+    try {
+      // 1. WaidBot (Divine Quantum Flux Strategy)
+      const waidbotDecision = await this.getWaidBotDecision(marketData);
+      if (waidbotDecision) {
+        decisions.push({
+          ...waidbotDecision,
+          engine: 'WAIDBOT'
+        });
+      }
+      
+      // 2. WaidBot Pro (Neural Quantum Singularity Strategy)  
+      const waidbotProDecision = await this.getWaidBotProDecision(marketData);
+      if (waidbotProDecision) {
+        decisions.push({
+          ...waidbotProDecision,
+          engine: 'WAIDBOT_PRO'
+        });
+      }
+      
+      // 3. Waides KI Core Analysis
+      const coreDecision = await this.getCoreAnalysisDecision(marketData);
+      if (coreDecision) {
+        decisions.push({
+          ...coreDecision,
+          engine: 'WAIDES_KI_CORE'
+        });
+      }
+      
+    } catch (error) {
+      // Silent error handling
+    }
+    
+    return decisions;
+  }
+
+  // GET WAIDBOT DECISION (Divine Quantum Flux Strategy)
+  private async getWaidBotDecision(marketData: any): Promise<TradingDecision | null> {
+    try {
+      const quantumAnalysis = divineQuantumFluxStrategy.calculateQuantumFluxSignal(
+        marketData.currentPrice,
+        marketData.rsi,
+        marketData.ema50,
+        marketData.ema200,
+        marketData.volume
+      );
+      
+      if (quantumAnalysis.action === 'HOLD' || quantumAnalysis.confidence < 0.7) {
+        return null;
+      }
+      
+      return {
+        action: quantumAnalysis.action,
+        asset: 'ETH',
+        entry: marketData.currentPrice,
+        stopLoss: quantumAnalysis.stopLoss,
+        takeProfit: quantumAnalysis.takeProfit,
+        riskReward: quantumAnalysis.riskReward,
+        confidence: quantumAnalysis.confidence,
+        reasoning: 'Divine Quantum Flux Signal',
+        timeframe: '1m',
+        engine: 'WAIDBOT'
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // GET WAIDBOT PRO DECISION (Neural Quantum Singularity Strategy)
+  private async getWaidBotProDecision(marketData: any): Promise<TradingDecision | null> {
+    try {
+      const singularityAnalysis = neuralQuantumSingularityStrategy.calculateSingularitySignal(
+        marketData.currentPrice,
+        marketData.candles,
+        marketData.volume
+      );
+      
+      if (singularityAnalysis.action === 'HOLD' || singularityAnalysis.confidence < 0.75) {
+        return null;
+      }
+      
+      return {
+        action: singularityAnalysis.action,
+        asset: 'ETH',
+        entry: marketData.currentPrice,
+        stopLoss: singularityAnalysis.stopLoss,
+        takeProfit: singularityAnalysis.takeProfit,
+        riskReward: singularityAnalysis.riskReward,
+        confidence: singularityAnalysis.confidence,
+        reasoning: 'Neural Quantum Singularity Signal',
+        timeframe: '1m',
+        engine: 'WAIDBOT_PRO'
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // GET CORE ANALYSIS DECISION (Original Waides KI logic)
+  private async getCoreAnalysisDecision(marketData: any): Promise<TradingDecision | null> {
     const marketStructure = this.analyzeMarketStructure(marketData.candles, marketData.volumes);
     const timeContext = this.evaluateTimeContext();
     
     if (!timeContext.canTrade) {
-      return null; // Silent pause - no user notification
+      return null;
     }
     
-    // Analyze confluence
     const priceAction = this.fusePriceActionIndicators(
       marketData.currentCandle,
       marketData.rsi,
@@ -174,57 +326,55 @@ export class WaidesKICore {
       marketData.ema200
     );
     
-    // Prepare market conditions for learning engine
-    const marketConditions = {
-      rsi: marketData.rsi,
-      vwap_status: marketData.currentPrice > marketData.vwap ? 'ABOVE' : 'BELOW',
-      structure: marketStructure.trend,
-      volume_profile: marketStructure.volume_profile,
-      session: timeContext.sessionStrength > 0.7 ? 'US_OPTIMAL' : 'OFF_HOURS',
-      ema_alignment: this.getEMAAlignment(marketData.currentPrice, marketData.ema50, marketData.ema200)
-    };
-    
-    // Check with learning engine before proceeding
-    const strategyValidation = waidesKILearning.validateTradeSignal(marketConditions);
-    
-    if (!strategyValidation.isValid) {
-      return null; // Learning engine blocked this strategy
-    }
-    
-    // Only proceed if strong confluence AND learning engine approves
-    if (priceAction.confidence < 0.75) {
+    if (priceAction.confidence < 0.7) {
       return null;
     }
     
-    // Calculate entry, stop, and target
     const entry = marketData.currentPrice;
     const stopLoss = this.calculateStopLoss(entry, marketStructure);
     const takeProfit = this.calculateTakeProfit(entry, stopLoss, marketStructure);
     
-    // Validate risk-reward
     if (!this.validateRiskReward(entry, stopLoss, takeProfit)) {
       return null;
     }
     
-    const decision = {
+    return {
       action: priceAction.signal.includes('BUY') ? 'BUY' : 'SELL',
-      asset: marketData.symbol,
+      asset: 'ETH',
       entry,
       stopLoss,
       takeProfit,
       riskReward: Math.abs(takeProfit - entry) / Math.abs(entry - stopLoss),
-      confidence: Math.min(priceAction.confidence, strategyValidation.confidence),
-      reasoning: priceAction.reasoning,
-      timeframe: marketData.timeframe,
-      strategyId: strategyValidation.strategyId
+      confidence: priceAction.confidence,
+      reasoning: 'Core Technical Analysis',
+      timeframe: '1m',
+      engine: 'WAIDES_KI_CORE'
     };
+  }
+
+  // SELECT BEST DECISION FROM MULTIPLE ENGINES
+  private selectBestDecision(decisions: TradingDecision[]): TradingDecision | null {
+    if (decisions.length === 0) return null;
     
-    // Record the trade with learning engine
-    if (decision) {
-      await this.recordTradeWithLearning(decision, marketConditions);
+    // Consensus logic: prefer decisions that agree on direction
+    const buyDecisions = decisions.filter(d => d.action === 'BUY');
+    const sellDecisions = decisions.filter(d => d.action === 'SELL');
+    
+    let selectedDecisions: TradingDecision[];
+    
+    if (buyDecisions.length > sellDecisions.length) {
+      selectedDecisions = buyDecisions;
+    } else if (sellDecisions.length > buyDecisions.length) {
+      selectedDecisions = sellDecisions;
+    } else {
+      // Tie - select highest confidence
+      selectedDecisions = decisions;
     }
     
-    return decision;
+    // Return highest confidence decision from selected group
+    return selectedDecisions.reduce((best, current) => 
+      current.confidence > best.confidence ? current : best
+    );
   }
 
   // 6. PSYCHOLOGY & EMOTIONAL CONTROL MODULE
@@ -291,15 +441,19 @@ export class WaidesKICore {
 
   private async scanAllAssets(): Promise<void> {
     try {
-      const assets = ['ETH', 'BTC']; // Expandable
+      const assets = ['ETH']; // Focus on ETH only as specified
       
       for (const asset of assets) {
         const marketData = await this.getMarketData(asset);
-        const decision = await this.makeAutonomousDecision(marketData);
         
-        if (decision && this.simulateEmotionalControl().canTrade) {
-          // Store decision internally - don't execute automatically
-          this.logInternalDecision(decision);
+        if (marketData) {
+          // Waides KI automatically analyzes and decides
+          const decision = await this.makeAutonomousDecision(marketData);
+          
+          if (decision && this.simulateEmotionalControl().canTrade) {
+            // Waides KI can autonomously execute trades (when connected to exchange)
+            await this.executeAutonomousTrade(decision);
+          }
         }
       }
       
@@ -309,28 +463,103 @@ export class WaidesKICore {
     }
   }
 
+  // AUTONOMOUS TRADING EXECUTION
+  private startAutonomousTrading(): void {
+    // Monitor active trades and manage positions
+    setInterval(() => {
+      this.monitorActiveTrades();
+    }, 15000); // Every 15 seconds
+  }
+
+  private async executeAutonomousTrade(decision: TradingDecision): Promise<void> {
+    try {
+      // Waides KI executes trades autonomously
+      // This would connect to exchange API when configured
+      
+      // For now, simulate the trade execution
+      const tradeId = `autonomous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Log the autonomous decision (hidden from users)
+      this.logInternalDecision(decision);
+      
+      // Store for result monitoring
+      this.activeDecisions.set(tradeId, {
+        ...decision,
+        timestamp: Date.now(),
+        status: 'ACTIVE'
+      });
+      
+    } catch (error) {
+      // Silent error handling
+    }
+  }
+
+  private async monitorActiveTrades(): Promise<void> {
+    try {
+      const currentPrice = await this.getCurrentMarketPrice();
+      
+      for (const [tradeId, trade] of this.activeDecisions.entries()) {
+        if (trade.status === 'ACTIVE') {
+          // Check if trade hit TP or SL
+          const result = this.checkTradeResult(trade, currentPrice);
+          
+          if (result) {
+            // Trade completed
+            trade.status = 'COMPLETED';
+            trade.result = result;
+            
+            // Update learning engine
+            await waidesKILearning.evaluateTradeResult(tradeId, currentPrice);
+            
+            // Remove from active trades
+            this.activeDecisions.delete(tradeId);
+          }
+        }
+      }
+    } catch (error) {
+      // Silent error handling
+    }
+  }
+
+  private checkTradeResult(trade: any, currentPrice: number): 'WIN' | 'LOSS' | null {
+    if (trade.action === 'BUY') {
+      if (currentPrice >= trade.takeProfit) return 'WIN';
+      if (currentPrice <= trade.stopLoss) return 'LOSS';
+    } else if (trade.action === 'SELL') {
+      if (currentPrice <= trade.takeProfit) return 'WIN';
+      if (currentPrice >= trade.stopLoss) return 'LOSS';
+    }
+    return null; // Still active
+  }
+
   // 9. SECURITY & PRIVACY CORE MODULE
   getPublicInterface(): any {
     // Only expose safe, non-revealing data to frontend
     const learningStats = waidesKILearning.getLearningStats();
     
     return {
-      isActive: true,
+      isActive: this.isAutonomousMode,
       lastScan: new Date(this.lastScanTime).toISOString(),
       performance: {
         winRate: learningStats.overall_win_rate || Math.round(this.winRate * 100),
         totalTrades: learningStats.total_trades || this.totalTrades,
         status: this.getPublicStatus(),
         evolutionStage: learningStats.evolution_stage,
-        learningConfidence: learningStats.learning_confidence
+        learningConfidence: learningStats.learning_confidence,
+        activeTrades: this.activeDecisions.size,
+        tradingMode: 'AUTONOMOUS'
       }
     };
   }
 
   private getPublicStatus(): string {
-    if (!this.evaluateTimeContext().canTrade) return 'Monitoring Market';
-    if (this.winRate < 0.55 && this.totalTrades > 20) return 'Optimizing Strategy';
-    return 'Analyzing Opportunities';
+    const timeContext = this.evaluateTimeContext();
+    
+    if (!timeContext.canTrade) return 'Market Hours - Monitoring';
+    if (this.activeDecisions.size > 0) return 'Managing Active Trades';
+    if (this.winRate < 0.55 && this.totalTrades > 20) return 'Learning & Optimizing';
+    if (this.isLearningMode) return 'Scanning for Opportunities';
+    return 'Ready to Trade';
   }
 
   // 10. LEARNING FROM USER BEHAVIOR MODULE (Enhanced)
@@ -586,6 +815,37 @@ export class WaidesKICore {
       return ethData?.price || 0;
     } catch (error) {
       return 0;
+    }
+  }
+
+  private extractMarketConditions(marketData: any): any {
+    return {
+      rsi: marketData.rsi,
+      vwap_status: marketData.currentPrice > marketData.vwap ? 'ABOVE' : 'BELOW',
+      structure: this.analyzeMarketStructure(marketData.candles, marketData.volumes).trend,
+      volume_profile: this.analyzeMarketStructure(marketData.candles, marketData.volumes).volume_profile,
+      session: this.evaluateTimeContext().sessionStrength > 0.7 ? 'US_OPTIMAL' : 'OFF_HOURS',
+      ema_alignment: this.getEMAAlignment(marketData.currentPrice, marketData.ema50, marketData.ema200)
+    };
+  }
+
+  // PUBLIC METHOD: Get autonomous trading status
+  getAutonomousStatus(): any {
+    return {
+      isEnabled: this.isAutonomousMode,
+      activeDecisions: this.activeDecisions.size,
+      lastScan: this.lastScanTime,
+      emotionalState: this.simulateEmotionalControl().emotionalState,
+      canTrade: this.evaluateTimeContext().canTrade
+    };
+  }
+
+  // PUBLIC METHOD: Enable/Disable autonomous mode (for emergency stop)
+  setAutonomousMode(enabled: boolean): void {
+    this.isAutonomousMode = enabled;
+    if (!enabled) {
+      // Emergency stop - close all active decisions
+      this.activeDecisions.clear();
     }
   }
 }

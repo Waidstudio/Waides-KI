@@ -188,13 +188,21 @@ export default function TradingBrainPanel() {
                 <span className="text-xs text-green-400">{waidesKIStatus.performance.learningConfidence}%</span>
               </div>
               <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Trading Mode</span>
+                <span className="text-xs text-purple-400">{waidesKIStatus.performance.tradingMode}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Active Trades</span>
+                <span className="text-xs text-orange-400">{waidesKIStatus.performance.activeTrades || 0}</span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Last Scan</span>
                 <span className="text-xs text-slate-300">
                   {new Date(waidesKIStatus.lastScan).toLocaleTimeString()}
                 </span>
               </div>
               <div className="text-xs text-slate-500 text-center mt-2">
-                {waidesKIStatus.performance.totalTrades} decisions analyzed
+                Autonomous AI Trader Active
               </div>
             </CardContent>
           </Card>

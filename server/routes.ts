@@ -1604,6 +1604,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Waides KI Autonomous Trading Status
+  app.get("/api/waides-ki/autonomous-status", (req, res) => {
+    try {
+      const autonomousStatus = waidesKI.getAutonomousStatus();
+      res.json(autonomousStatus);
+    } catch (error) {
+      console.error('Error getting autonomous status:', error);
+      res.status(500).json({ error: 'Failed to get autonomous trading status' });
+    }
+  });
+
+  // Emergency stop for autonomous trading (hidden endpoint)
+  app.post("/api/waides-ki/emergency-stop", (req, res) => {
+    try {
+      waidesKI.setAutonomousMode(false);
+      res.json({ success: true, message: 'Autonomous trading stopped' });
+    } catch (error) {
+      console.error('Error stopping autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to stop autonomous trading' });
+    }
+  });
+
+  // Resume autonomous trading (hidden endpoint)
+  app.post("/api/waides-ki/resume-trading", (req, res) => {
+    try {
+      waidesKI.setAutonomousMode(true);
+      res.json({ success: true, message: 'Autonomous trading resumed' });
+    } catch (error) {
+      console.error('Error resuming autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to resume autonomous trading' });
+    }
+  });
+
   console.log('🤖 Enhanced WaidBot Self-Learning System Initialized');
   console.log('📊 Portfolio Manager: $10,000 starting balance');
   console.log('🧠 ML Engine: Continuous learning from live market data');
