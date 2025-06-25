@@ -13,6 +13,7 @@ import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
+import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/reincarnation", label: "Reincarnation" },
     { path: "/sigil-layer", label: "Sigil Layer" },
+    { path: "/shadow-defense", label: "Shadow Defense" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },

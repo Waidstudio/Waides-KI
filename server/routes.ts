@@ -55,6 +55,11 @@ import { waidesKIPositionHaloTracker } from './services/waidesKIPositionHaloTrac
 import { waidesKIScalingLogic } from './services/waidesKIScalingLogic.js';
 import { waidesKISacredExitNode } from './services/waidesKISacredExitNode.js';
 import { waidesKIRotationController } from './services/waidesKIRotationController.js';
+import { waidesKIShadowOverrideDefense } from './services/waidesKIShadowOverrideDefense.js';
+import { waidesKIShadowDetector } from './services/waidesKIShadowDetector.js';
+import { waidesKIInstinctSwitch } from './services/waidesKIInstinctSwitch.js';
+import { waidesKIOverrideLockdown } from './services/waidesKIOverrideLockdown.js';
+import { waidesKIClarityRecoveryNode } from './services/waidesKIClarityRecoveryNode.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -6039,6 +6044,331 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in demo lifecycle:', error);
       res.status(500).json({ error: 'Failed to execute demo lifecycle' });
+    }
+  });
+
+  // 🌑 STEP 31 - SHADOW OVERRIDE DEFENSE ENDPOINTS
+
+  // Shadow Override Defense main endpoints
+  app.get("/api/waides-ki/shadow/status", (req, res) => {
+    try {
+      const status = waidesKIShadowOverrideDefense.getDefenseStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting shadow defense status:', error);
+      res.status(500).json({ error: 'Failed to get shadow defense status' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/quick-status", (req, res) => {
+    try {
+      const status = waidesKIShadowOverrideDefense.getQuickStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting quick shadow status:', error);
+      res.status(500).json({ error: 'Failed to get quick shadow status' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/stats", (req, res) => {
+    try {
+      const stats = waidesKIShadowOverrideDefense.getDefenseStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting shadow defense stats:', error);
+      res.status(500).json({ error: 'Failed to get shadow defense statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/trade-permission", (req, res) => {
+    try {
+      const { trade_data } = req.body;
+      const permission = waidesKIShadowOverrideDefense.preTradePermissionCheck(trade_data || {});
+      res.json(permission);
+    } catch (error) {
+      console.error('Error checking trade permission:', error);
+      res.status(500).json({ error: 'Failed to check trade permission' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/force-activate", (req, res) => {
+    try {
+      const { reason, duration } = req.body;
+      
+      if (!reason) {
+        return res.status(400).json({ error: 'Activation reason is required' });
+      }
+
+      const activation = waidesKIShadowOverrideDefense.forceActivateDefense(
+        reason,
+        duration || 60 * 60 * 1000 // Default 1 hour
+      );
+      res.json(activation);
+    } catch (error) {
+      console.error('Error force activating shadow defense:', error);
+      res.status(500).json({ error: 'Failed to force activate shadow defense' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/force-deactivate", (req, res) => {
+    try {
+      const { reason } = req.body;
+      
+      if (!reason) {
+        return res.status(400).json({ error: 'Deactivation reason is required' });
+      }
+
+      const deactivation = waidesKIShadowOverrideDefense.forceDeactivateDefense(reason);
+      res.json(deactivation);
+    } catch (error) {
+      console.error('Error force deactivating shadow defense:', error);
+      res.status(500).json({ error: 'Failed to force deactivate shadow defense' });
+    }
+  });
+
+  // Shadow Detector endpoints
+  app.post("/api/waides-ki/shadow/detector/scan", (req, res) => {
+    try {
+      const { market_data, recent_trades } = req.body;
+      
+      if (!market_data) {
+        return res.status(400).json({ error: 'Market data is required' });
+      }
+
+      const threat = waidesKIShadowDetector.scanMarket(market_data, recent_trades);
+      res.json(threat);
+    } catch (error) {
+      console.error('Error scanning for shadow threats:', error);
+      res.status(500).json({ error: 'Failed to scan for shadow threats' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/detector/stats", (req, res) => {
+    try {
+      const stats = waidesKIShadowDetector.getDetectionStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting detector stats:', error);
+      res.status(500).json({ error: 'Failed to get detector statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/detector/quick-check", (req, res) => {
+    try {
+      const { volatility, volume_spike, price_manipulation } = req.body;
+      
+      if (volatility === undefined || volume_spike === undefined || price_manipulation === undefined) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+      }
+
+      const check = waidesKIShadowDetector.quickChaosCheck(volatility, volume_spike, price_manipulation);
+      res.json(check);
+    } catch (error) {
+      console.error('Error in quick chaos check:', error);
+      res.status(500).json({ error: 'Failed to perform quick chaos check' });
+    }
+  });
+
+  // Instinct Switch endpoints
+  app.get("/api/waides-ki/shadow/instinct/status", (req, res) => {
+    try {
+      const status = waidesKIInstinctSwitch.getOverrideStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting instinct status:', error);
+      res.status(500).json({ error: 'Failed to get instinct status' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/instinct/stats", (req, res) => {
+    try {
+      const stats = waidesKIInstinctSwitch.getInstinctStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting instinct stats:', error);
+      res.status(500).json({ error: 'Failed to get instinct statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/instinct/history", (req, res) => {
+    try {
+      const count = parseInt(req.query.count as string) || 20;
+      const history = waidesKIInstinctSwitch.getActivationHistory(count);
+      res.json(history);
+    } catch (error) {
+      console.error('Error getting instinct history:', error);
+      res.status(500).json({ error: 'Failed to get instinct history' });
+    }
+  });
+
+  // Override Lockdown endpoints
+  app.get("/api/waides-ki/shadow/lockdown/status", (req, res) => {
+    try {
+      const status = waidesKIOverrideLockdown.getLockdownStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting lockdown status:', error);
+      res.status(500).json({ error: 'Failed to get lockdown status' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/lockdown/stats", (req, res) => {
+    try {
+      const stats = waidesKIOverrideLockdown.getLockdownStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting lockdown stats:', error);
+      res.status(500).json({ error: 'Failed to get lockdown statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/lockdown/protection-summary", (req, res) => {
+    try {
+      const summary = waidesKIOverrideLockdown.getProtectionSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error('Error getting protection summary:', error);
+      res.status(500).json({ error: 'Failed to get protection summary' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/lockdown/emergency-activate", (req, res) => {
+    try {
+      const { reason, duration, emergency_level, manual_override_required } = req.body;
+      
+      if (!reason) {
+        return res.status(400).json({ error: 'Emergency reason is required' });
+      }
+
+      const result = waidesKIOverrideLockdown.activateEmergencyLockdown(
+        reason,
+        duration || 60 * 60 * 1000, // Default 1 hour
+        emergency_level || 'HIGH',
+        manual_override_required || false
+      );
+      res.json(result);
+    } catch (error) {
+      console.error('Error activating emergency lockdown:', error);
+      res.status(500).json({ error: 'Failed to activate emergency lockdown' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/lockdown/emergency-deactivate", (req, res) => {
+    try {
+      const { reason } = req.body;
+      const result = waidesKIOverrideLockdown.deactivateEmergencyLockdown(reason || 'Manual deactivation');
+      res.json(result);
+    } catch (error) {
+      console.error('Error deactivating emergency lockdown:', error);
+      res.status(500).json({ error: 'Failed to deactivate emergency lockdown' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/lockdown/attempt-bypass", (req, res) => {
+    try {
+      const { authorization_code, bypass_reason, trade_data } = req.body;
+      
+      if (!authorization_code || !bypass_reason) {
+        return res.status(400).json({ error: 'Authorization code and bypass reason are required' });
+      }
+
+      const result = waidesKIOverrideLockdown.attemptBypass(authorization_code, bypass_reason, trade_data || {});
+      res.json(result);
+    } catch (error) {
+      console.error('Error attempting bypass:', error);
+      res.status(500).json({ error: 'Failed to attempt bypass' });
+    }
+  });
+
+  // Clarity Recovery Node endpoints
+  app.post("/api/waides-ki/shadow/recovery/scan", (req, res) => {
+    try {
+      const { market_data, shadow_duration } = req.body;
+      
+      if (!market_data) {
+        return res.status(400).json({ error: 'Market data is required' });
+      }
+
+      const assessment = waidesKIClarityRecoveryNode.scanForRecovery(market_data, shadow_duration || 0);
+      res.json(assessment);
+    } catch (error) {
+      console.error('Error scanning for recovery:', error);
+      res.status(500).json({ error: 'Failed to scan for recovery' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/recovery/stats", (req, res) => {
+    try {
+      const stats = waidesKIClarityRecoveryNode.getRecoveryStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting recovery stats:', error);
+      res.status(500).json({ error: 'Failed to get recovery statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/recovery/quick-check", (req, res) => {
+    try {
+      const { volatility, volume_stable, time_in_shadow } = req.body;
+      
+      if (volatility === undefined || volume_stable === undefined || time_in_shadow === undefined) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+      }
+
+      const check = waidesKIClarityRecoveryNode.quickRecoveryCheck(volatility, volume_stable, time_in_shadow);
+      res.json(check);
+    } catch (error) {
+      console.error('Error in quick recovery check:', error);
+      res.status(500).json({ error: 'Failed to perform quick recovery check' });
+    }
+  });
+
+  // Demo endpoint for complete shadow defense workflow
+  app.post("/api/waides-ki/shadow/demo-chaos-defense", async (req, res) => {
+    try {
+      // Simulate a chaos event
+      const demo_market_data = {
+        current_price: 2420,
+        volatility: 0.95, // Very high volatility
+        volume: 2000000, // 2x normal volume
+        average_volume: 1000000,
+        manipulation_score: 0.85, // High manipulation
+        bid_ask_spread: 0.005, // Wide spread
+        average_spread: 0.001,
+        order_book_imbalance: 0.9, // Severe imbalance
+        recent_candles: [],
+        konslang_resonance: 0.3, // Low resonance
+        spiritual_phase: 0.2 // Low spiritual alignment
+      };
+
+      // Scan for chaos
+      const threat = waidesKIShadowDetector.scanMarket(demo_market_data);
+
+      let defense_response = null;
+      if (threat && threat.protection_needed) {
+        // Force activate defense for demo
+        defense_response = waidesKIShadowOverrideDefense.forceActivateDefense(
+          `Demo chaos event: ${threat.threat_type}`,
+          15 * 60 * 1000 // 15 minutes for demo
+        );
+      }
+
+      // Check trade permission
+      const trade_permission = waidesKIShadowOverrideDefense.preTradePermissionCheck(demo_market_data);
+
+      // Get current status
+      const defense_status = waidesKIShadowOverrideDefense.getDefenseStatus();
+
+      res.json({
+        chaos_threat: threat,
+        defense_activation: defense_response,
+        trade_permission,
+        defense_status,
+        message: threat ? 'Chaos detected - Shadow Override Defense activated' : 'No significant chaos detected'
+      });
+    } catch (error) {
+      console.error('Error in demo chaos defense:', error);
+      res.status(500).json({ error: 'Failed to execute demo chaos defense' });
     }
   });
 
