@@ -27,6 +27,7 @@ import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
 import { waidesKIExternalAPIGateway } from './services/waidesKIExternalAPIGateway.js';
+import { waidesKITraderEngine } from './services/waidesKITraderEngine.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -3167,6 +3168,221 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting external API data:', error);
       res.status(500).json({ error: 'Failed to export external API data' });
+    }
+  });
+
+  // Auto-Trader Execution Engine endpoints
+  app.get("/api/waides-ki/trader/statistics", (req, res) => {
+    try {
+      const stats = waidesKITraderEngine.getExecutionStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting trader statistics:', error);
+      res.status(500).json({ error: 'Failed to get trader statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/trader/logs", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const logs = waidesKITraderEngine.getExecutionLogs(limit);
+      res.json({ execution_logs: logs });
+    } catch (error) {
+      console.error('Error getting trader logs:', error);
+      res.status(500).json({ error: 'Failed to get trader logs' });
+    }
+  });
+
+  app.get("/api/waides-ki/trader/config", (req, res) => {
+    try {
+      const config = waidesKITraderEngine.getAutoTradingConfig();
+      res.json(config);
+    } catch (error) {
+      console.error('Error getting trader config:', error);
+      res.status(500).json({ error: 'Failed to get trader configuration' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/config", (req, res) => {
+    try {
+      const config = req.body;
+      
+      if (!config) {
+        return res.status(400).json({ error: 'Configuration object is required' });
+      }
+      
+      waidesKITraderEngine.updateAutoTradingConfig(config);
+      res.json({ success: true, message: 'Auto-trading configuration updated successfully' });
+    } catch (error) {
+      console.error('Error updating trader config:', error);
+      res.status(500).json({ error: 'Failed to update trader configuration' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/enable", (req, res) => {
+    try {
+      waidesKITraderEngine.enableAutoTrading();
+      res.json({ success: true, message: 'Auto-trading enabled successfully' });
+    } catch (error) {
+      console.error('Error enabling auto-trading:', error);
+      res.status(500).json({ error: 'Failed to enable auto-trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/disable", (req, res) => {
+    try {
+      waidesKITraderEngine.disableAutoTrading();
+      res.json({ success: true, message: 'Auto-trading disabled successfully' });
+    } catch (error) {
+      console.error('Error disabling auto-trading:', error);
+      res.status(500).json({ error: 'Failed to disable auto-trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/emergency-stop", (req, res) => {
+    try {
+      waidesKITraderEngine.activateEmergencyStop();
+      res.json({ success: true, message: 'Emergency stop activated successfully' });
+    } catch (error) {
+      console.error('Error activating emergency stop:', error);
+      res.status(500).json({ error: 'Failed to activate emergency stop' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/emergency-stop/deactivate", (req, res) => {
+    try {
+      waidesKITraderEngine.deactivateEmergencyStop();
+      res.json({ success: true, message: 'Emergency stop deactivated successfully' });
+    } catch (error) {
+      console.error('Error deactivating emergency stop:', error);
+      res.status(500).json({ error: 'Failed to deactivate emergency stop' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/execute", async (req, res) => {
+    try {
+      const { strategy_id, strategy_code, indicators, confidence_level, execution_engine } = req.body;
+      
+      if (!strategy_id || !strategy_code || !indicators) {
+        return res.status(400).json({ error: 'strategy_id, strategy_code, and indicators are required' });
+      }
+      
+      const executionParams = {
+        strategy_id,
+        strategy_code,
+        indicators,
+        confidence_level: confidence_level || 70,
+        execution_engine: execution_engine || 'MANUAL'
+      };
+      
+      const result = await waidesKITraderEngine.evaluateAndExecute(executionParams);
+      
+      res.json({ 
+        success: true, 
+        execution_result: result,
+        execution_id: result.execution_id
+      });
+    } catch (error) {
+      console.error('Error executing trade:', error);
+      res.status(500).json({ error: 'Failed to execute trade: ' + error.message });
+    }
+  });
+
+  app.get("/api/waides-ki/trader/balance", async (req, res) => {
+    try {
+      const balance = await waidesKITraderEngine.getAccountBalance();
+      res.json(balance);
+    } catch (error) {
+      console.error('Error getting account balance:', error);
+      res.status(500).json({ error: 'Failed to get account balance' });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/execute/waidbot", async (req, res) => {
+    try {
+      const { strategy_id, strategy_code, indicators, confidence } = req.body;
+      
+      if (!strategy_id || !strategy_code || !indicators) {
+        return res.status(400).json({ error: 'strategy_id, strategy_code, and indicators are required' });
+      }
+      
+      const result = await waidesKITraderEngine.executeFromWaidBot(
+        strategy_id,
+        strategy_code,
+        indicators,
+        confidence || 70
+      );
+      
+      res.json({ 
+        success: true, 
+        execution_result: result,
+        source_engine: 'WaidBot'
+      });
+    } catch (error) {
+      console.error('Error executing WaidBot trade:', error);
+      res.status(500).json({ error: 'Failed to execute WaidBot trade: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/execute/waidbot-pro", async (req, res) => {
+    try {
+      const { strategy_id, strategy_code, indicators, confidence } = req.body;
+      
+      if (!strategy_id || !strategy_code || !indicators) {
+        return res.status(400).json({ error: 'strategy_id, strategy_code, and indicators are required' });
+      }
+      
+      const result = await waidesKITraderEngine.executeFromWaidBotPro(
+        strategy_id,
+        strategy_code,
+        indicators,
+        confidence || 75
+      );
+      
+      res.json({ 
+        success: true, 
+        execution_result: result,
+        source_engine: 'WaidBot Pro'
+      });
+    } catch (error) {
+      console.error('Error executing WaidBot Pro trade:', error);
+      res.status(500).json({ error: 'Failed to execute WaidBot Pro trade: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/trader/execute/genome", async (req, res) => {
+    try {
+      const { strategy_id } = req.body;
+      
+      if (!strategy_id) {
+        return res.status(400).json({ error: 'strategy_id is required' });
+      }
+      
+      const generatedStrategy = waidesKIGenomeEngine.getStrategy(strategy_id);
+      if (!generatedStrategy) {
+        return res.status(404).json({ error: 'Generated strategy not found' });
+      }
+      
+      const result = await waidesKITraderEngine.executeFromGenomeEngine(generatedStrategy);
+      
+      res.json({ 
+        success: true, 
+        execution_result: result,
+        source_engine: 'Genome Engine'
+      });
+    } catch (error) {
+      console.error('Error executing Genome Engine trade:', error);
+      res.status(500).json({ error: 'Failed to execute Genome Engine trade: ' + error.message });
+    }
+  });
+
+  app.get("/api/waides-ki/trader/export", (req, res) => {
+    try {
+      const traderData = waidesKITraderEngine.exportExecutionData();
+      res.json(traderData);
+    } catch (error) {
+      console.error('Error exporting trader data:', error);
+      res.status(500).json({ error: 'Failed to export trader data' });
     }
   });
 
