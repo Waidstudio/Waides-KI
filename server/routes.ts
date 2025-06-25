@@ -8,6 +8,7 @@ import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
+import { TradingViewWebSocketService } from "./services/tradingViewWebSocket.js";
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
 
@@ -38,6 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   divineCommLayer = new DivineCommLayer();
   waidTrader = new WaidTrader();
   binanceWS = new BinanceWebSocketService();
+  tradingViewWS = new TradingViewWebSocketService();
   waidBotEngine = new WaidBotEngine();
   waidBotPro = new WaidBotPro(10000); // Initialize with $10,000 starting balance
 
