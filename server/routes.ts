@@ -65,6 +65,10 @@ import { waidesKIVisionSpirit } from './services/waidesKIVisionSpirit.js';
 import { waidesKISpiritualRecall } from './services/waidesKISpiritualRecall.js';
 import { waidesKISeasonalRebirthEngine } from './services/waidesKISeasonalRebirthEngine.js';
 import { waidesKIDreamchain } from './services/waidesKIDreamchain.js';
+import { waidesKIOmniviewOracle } from './services/waidesKIOmniviewOracle.js';
+import { waidesKIPriceFeed } from './services/waidesKIPriceFeed.js';
+import { waidesKITrendProfiler } from './services/waidesKITrendProfiler.js';
+import { waidesKIDualTokenExecutor } from './services/waidesKIDualTokenExecutor.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -7638,6 +7642,428 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in demo workflow:', error);
       res.status(500).json({ error: 'Failed to execute demo workflow' });
+    }
+  });
+
+  // ===== STEP 39: WAIDES KI OMNIVIEW ORACLE - ETH3L/ETH3S DUAL-MOTION API ENDPOINTS =====
+
+  // Get comprehensive omniview scan across all timeframes
+  app.get('/api/waides-ki/omniview/scan', async (req, res) => {
+    try {
+      const decision = await waidesKIOmniviewOracle.scanAllTimeframes();
+      res.json({
+        success: true,
+        decision,
+        message: 'Omniview scan completed successfully'
+      });
+    } catch (error) {
+      console.error('Error in omniview scan:', error);
+      res.status(500).json({ error: 'Failed to perform omniview scan' });
+    }
+  });
+
+  // Get omniview oracle statistics
+  app.get('/api/waides-ki/omniview/stats', (req, res) => {
+    try {
+      const stats = waidesKIOmniviewOracle.getStats();
+      res.json({
+        success: true,
+        stats,
+        message: 'Omniview statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting omniview stats:', error);
+      res.status(500).json({ error: 'Failed to get omniview statistics' });
+    }
+  });
+
+  // Get omniview scan history
+  app.get('/api/waides-ki/omniview/history', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKIOmniviewOracle.getScanHistory(limit);
+      res.json({
+        success: true,
+        history,
+        total_scans: history.length,
+        message: 'Omniview scan history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting omniview history:', error);
+      res.status(500).json({ error: 'Failed to get omniview history' });
+    }
+  });
+
+  // Get timeframe performance analysis
+  app.get('/api/waides-ki/omniview/timeframe-analysis', (req, res) => {
+    try {
+      const analysis = waidesKIOmniviewOracle.getTimeframeAnalysis();
+      res.json({
+        success: true,
+        timeframe_analysis: analysis,
+        message: 'Timeframe performance analysis completed'
+      });
+    } catch (error) {
+      console.error('Error getting timeframe analysis:', error);
+      res.status(500).json({ error: 'Failed to get timeframe analysis' });
+    }
+  });
+
+  // Get quick omniview status
+  app.get('/api/waides-ki/omniview/status', (req, res) => {
+    try {
+      const status = waidesKIOmniviewOracle.getQuickStatus();
+      res.json({
+        success: true,
+        status,
+        message: 'Omniview status retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting omniview status:', error);
+      res.status(500).json({ error: 'Failed to get omniview status' });
+    }
+  });
+
+  // Update omniview configuration
+  app.post('/api/waides-ki/omniview/config', (req, res) => {
+    try {
+      const { required_agreement } = req.body;
+      
+      if (required_agreement && typeof required_agreement === 'number') {
+        waidesKIOmniviewOracle.setRequiredAgreement(required_agreement);
+      }
+      
+      const config = waidesKIOmniviewOracle.getConfiguration();
+      res.json({
+        success: true,
+        configuration: config,
+        message: 'Omniview configuration updated successfully'
+      });
+    } catch (error) {
+      console.error('Error updating omniview config:', error);
+      res.status(500).json({ error: 'Failed to update omniview configuration' });
+    }
+  });
+
+  // Clear omniview history
+  app.post('/api/waides-ki/omniview/clear-history', (req, res) => {
+    try {
+      waidesKIOmniviewOracle.clearHistory();
+      res.json({
+        success: true,
+        message: 'Omniview scan history cleared successfully'
+      });
+    } catch (error) {
+      console.error('Error clearing omniview history:', error);
+      res.status(500).json({ error: 'Failed to clear omniview history' });
+    }
+  });
+
+  // Get current dual token prices
+  app.get('/api/waides-ki/price-feed/dual-tokens', async (req, res) => {
+    try {
+      const prices = await waidesKIPriceFeed.getDualTokenPrices();
+      res.json({
+        success: true,
+        dual_token_prices: prices,
+        message: 'Dual token prices retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting dual token prices:', error);
+      res.status(500).json({ error: 'Failed to get dual token prices' });
+    }
+  });
+
+  // Get price feed statistics
+  app.get('/api/waides-ki/price-feed/stats', (req, res) => {
+    try {
+      const stats = waidesKIPriceFeed.getStats();
+      res.json({
+        success: true,
+        price_feed_stats: stats,
+        message: 'Price feed statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting price feed stats:', error);
+      res.status(500).json({ error: 'Failed to get price feed statistics' });
+    }
+  });
+
+  // Test price feed connection
+  app.get('/api/waides-ki/price-feed/test-connection', async (req, res) => {
+    try {
+      const connectionTest = await waidesKIPriceFeed.testConnection();
+      res.json({
+        success: true,
+        connection_test: connectionTest,
+        message: 'Price feed connection test completed'
+      });
+    } catch (error) {
+      console.error('Error testing price feed connection:', error);
+      res.status(500).json({ error: 'Failed to test price feed connection' });
+    }
+  });
+
+  // Get cache status
+  app.get('/api/waides-ki/price-feed/cache-status', (req, res) => {
+    try {
+      const cacheStatus = waidesKIPriceFeed.getCacheStatus();
+      res.json({
+        success: true,
+        cache_status: cacheStatus,
+        message: 'Cache status retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting cache status:', error);
+      res.status(500).json({ error: 'Failed to get cache status' });
+    }
+  });
+
+  // Clear price feed cache
+  app.post('/api/waides-ki/price-feed/clear-cache', (req, res) => {
+    try {
+      waidesKIPriceFeed.clearCache();
+      res.json({
+        success: true,
+        message: 'Price feed cache cleared successfully'
+      });
+    } catch (error) {
+      console.error('Error clearing price feed cache:', error);
+      res.status(500).json({ error: 'Failed to clear price feed cache' });
+    }
+  });
+
+  // Get trend analysis for specific symbol
+  app.get('/api/waides-ki/trend-profiler/analyze/:symbol', async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const interval = req.query.interval as string || '15m';
+      const limit = parseInt(req.query.limit as string) || 50;
+      
+      const candles = await waidesKIPriceFeed.getBinanceData(symbol, interval, limit);
+      const trendAnalysis = waidesKITrendProfiler.detectTrend(candles);
+      
+      res.json({
+        success: true,
+        symbol,
+        interval,
+        trend_analysis: trendAnalysis,
+        message: `Trend analysis completed for ${symbol}`
+      });
+    } catch (error) {
+      console.error('Error analyzing trend:', error);
+      res.status(500).json({ error: 'Failed to analyze trend' });
+    }
+  });
+
+  // Get trend profiler statistics
+  app.get('/api/waides-ki/trend-profiler/stats', (req, res) => {
+    try {
+      const stats = waidesKITrendProfiler.getStats();
+      res.json({
+        success: true,
+        trend_stats: stats,
+        message: 'Trend profiler statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting trend stats:', error);
+      res.status(500).json({ error: 'Failed to get trend statistics' });
+    }
+  });
+
+  // Get trend analysis history
+  app.get('/api/waides-ki/trend-profiler/history', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKITrendProfiler.getHistory(limit);
+      res.json({
+        success: true,
+        trend_history: history,
+        total_analyses: history.length,
+        message: 'Trend analysis history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting trend history:', error);
+      res.status(500).json({ error: 'Failed to get trend history' });
+    }
+  });
+
+  // Get trend summary
+  app.get('/api/waides-ki/trend-profiler/summary', (req, res) => {
+    try {
+      const summary = waidesKITrendProfiler.getTrendSummary();
+      res.json({
+        success: true,
+        trend_summary: summary,
+        message: 'Trend summary retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting trend summary:', error);
+      res.status(500).json({ error: 'Failed to get trend summary' });
+    }
+  });
+
+  // Execute dual token trade based on omniview
+  app.post('/api/waides-ki/dual-executor/execute-trade', async (req, res) => {
+    try {
+      const executionResult = await waidesKIDualTokenExecutor.executeTrade();
+      res.json({
+        success: true,
+        execution_result: executionResult,
+        message: `Trade execution completed: ${executionResult.action} ${executionResult.symbol}`
+      });
+    } catch (error) {
+      console.error('Error executing trade:', error);
+      res.status(500).json({ error: 'Failed to execute trade' });
+    }
+  });
+
+  // Get current position
+  app.get('/api/waides-ki/dual-executor/position', (req, res) => {
+    try {
+      const position = waidesKIDualTokenExecutor.getCurrentPosition();
+      res.json({
+        success: true,
+        current_position: position,
+        has_position: position !== null,
+        message: position ? `Current position: ${position.symbol}` : 'No active position'
+      });
+    } catch (error) {
+      console.error('Error getting current position:', error);
+      res.status(500).json({ error: 'Failed to get current position' });
+    }
+  });
+
+  // Get executor statistics
+  app.get('/api/waides-ki/dual-executor/stats', (req, res) => {
+    try {
+      const stats = waidesKIDualTokenExecutor.getStats();
+      res.json({
+        success: true,
+        executor_stats: stats,
+        message: 'Dual token executor statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting executor stats:', error);
+      res.status(500).json({ error: 'Failed to get executor statistics' });
+    }
+  });
+
+  // Get execution history
+  app.get('/api/waides-ki/dual-executor/history', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = waidesKIDualTokenExecutor.getExecutionHistory(limit);
+      res.json({
+        success: true,
+        execution_history: history,
+        total_executions: history.length,
+        message: 'Execution history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting execution history:', error);
+      res.status(500).json({ error: 'Failed to get execution history' });
+    }
+  });
+
+  // Update executor configuration
+  app.post('/api/waides-ki/dual-executor/config', (req, res) => {
+    try {
+      const { auto_trading_enabled, confidence_threshold, trade_amount } = req.body;
+      
+      if (typeof auto_trading_enabled === 'boolean') {
+        waidesKIDualTokenExecutor.setAutoTrading(auto_trading_enabled);
+      }
+      
+      if (typeof confidence_threshold === 'number') {
+        waidesKIDualTokenExecutor.setConfidenceThreshold(confidence_threshold);
+      }
+      
+      if (typeof trade_amount === 'number') {
+        waidesKIDualTokenExecutor.setTradeAmount(trade_amount);
+      }
+      
+      const config = waidesKIDualTokenExecutor.getConfiguration();
+      res.json({
+        success: true,
+        configuration: config,
+        message: 'Dual token executor configuration updated successfully'
+      });
+    } catch (error) {
+      console.error('Error updating executor config:', error);
+      res.status(500).json({ error: 'Failed to update executor configuration' });
+    }
+  });
+
+  // Force close current position
+  app.post('/api/waides-ki/dual-executor/force-close', async (req, res) => {
+    try {
+      const { reason } = req.body;
+      const result = await waidesKIDualTokenExecutor.forceClosePosition(reason || 'Manual force close');
+      
+      if (result) {
+        res.json({
+          success: true,
+          close_result: result,
+          message: `Position force closed: ${result.symbol}`
+        });
+      } else {
+        res.json({
+          success: true,
+          close_result: null,
+          message: 'No position to close'
+        });
+      }
+    } catch (error) {
+      console.error('Error force closing position:', error);
+      res.status(500).json({ error: 'Failed to force close position' });
+    }
+  });
+
+  // Clear executor history
+  app.post('/api/waides-ki/dual-executor/clear-history', (req, res) => {
+    try {
+      waidesKIDualTokenExecutor.clearHistory();
+      res.json({
+        success: true,
+        message: 'Dual token executor history cleared successfully'
+      });
+    } catch (error) {
+      console.error('Error clearing executor history:', error);
+      res.status(500).json({ error: 'Failed to clear executor history' });
+    }
+  });
+
+  // Complete omniview workflow with all components
+  app.get('/api/waides-ki/omniview/complete-workflow', async (req, res) => {
+    try {
+      // Get comprehensive analysis from all components
+      const omniviewDecision = await waidesKIOmniviewOracle.scanAllTimeframes();
+      const dualTokenPrices = await waidesKIPriceFeed.getDualTokenPrices();
+      const currentPosition = waidesKIDualTokenExecutor.getCurrentPosition();
+      const executorStats = waidesKIDualTokenExecutor.getStats();
+      const omniviewStats = waidesKIOmniviewOracle.getStats();
+      
+      // Execute trade if conditions are met
+      const executionResult = await waidesKIDualTokenExecutor.executeTrade();
+      
+      res.json({
+        success: true,
+        complete_workflow: {
+          omniview_decision: omniviewDecision,
+          dual_token_prices: dualTokenPrices,
+          current_position: currentPosition,
+          execution_result: executionResult,
+          executor_stats: executorStats,
+          omniview_stats: omniviewStats
+        },
+        recommended_action: omniviewDecision.decision,
+        confidence_level: omniviewDecision.confidence,
+        message: 'Complete omniview workflow executed successfully'
+      });
+    } catch (error) {
+      console.error('Error in complete omniview workflow:', error);
+      res.status(500).json({ error: 'Failed to execute complete omniview workflow' });
     }
   });
 
