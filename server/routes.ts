@@ -60,6 +60,7 @@ import { waidesKIShadowDetector } from './services/waidesKIShadowDetector.js';
 import { waidesKIInstinctSwitch } from './services/waidesKIInstinctSwitch.js';
 import { waidesKIOverrideLockdown } from './services/waidesKIOverrideLockdown.js';
 import { waidesKIClarityRecoveryNode } from './services/waidesKIClarityRecoveryNode.js';
+import { WaidesKIDreamLayerVision } from './services/waidesKIDreamLayerVision.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -75,6 +76,7 @@ let binanceWS: BinanceWebSocketService;
 // TradingView WebSocket removed per user request
 let waidBotEngine: WaidBotEngine;
 let waidBotPro: WaidBotPro;
+let waidesKIDreamLayerVision: WaidesKIDreamLayerVision;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -94,6 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Note: TradingView WebSocket removed per user request - using Binance only
   waidBotEngine = new WaidBotEngine();
   waidBotPro = new WaidBotPro(10000); // Initialize with $10,000 starting balance
+  waidesKIDreamLayerVision = new WaidesKIDreamLayerVision();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
