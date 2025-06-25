@@ -16,6 +16,7 @@ import { waidesKIGenomeEngine } from './waidesKIGenomeEngine';
 import { waidesKIExternalAPIGateway } from './waidesKIExternalAPIGateway';
 import { waidesKITraderEngine } from './waidesKITraderEngine';
 import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
+import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -890,6 +891,7 @@ export class WaidesKICore {
     const traderStats = waidesKITraderEngine.getExecutionStatistics();
     const traderConfig = waidesKITraderEngine.getAutoTradingConfig();
     const shadowStats = waidesKIShadowSimulator.getShadowStatistics();
+    const emotionalStats = waidesKIEmotionalFirewall.getEmotionalStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -977,6 +979,13 @@ export class WaidesKICore {
         avgMissedOpportunity: shadowStats.avg_missed_opportunity,
         judgmentAccuracy: shadowStats.avg_judgment_accuracy,
         parallelConsciousness: 'ACTIVE'
+      },
+      emotionalFirewall: {
+        firewallActive: emotionalStats.firewall_active,
+        tradesRecorded: emotionalStats.total_trades_recorded,
+        activeBlocks: emotionalStats.active_blocks,
+        avgConfidence: emotionalStats.avg_confidence_level,
+        thoughtCleansing: 'ACTIVE'
       }
     };
   }

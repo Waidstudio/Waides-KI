@@ -7,6 +7,7 @@ import { waidesKISignalShield } from './waidesKISignalShield';
 import { waidesKIGenomeEngine } from './waidesKIGenomeEngine';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
 import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
+import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { storage } from '../storage';
 
 interface MarketIndicators {
@@ -290,13 +291,24 @@ export class WaidesKITraderEngine {
         startTime
       );
       
-      // 7. Update learning systems
+      // 7. Record trade in emotional firewall
+      if (executionResult.outcome) {
+        waidesKIEmotionalFirewall.recordTrade(
+          executionResult.outcome.result,
+          executionResult.outcome.actual_profit_loss,
+          executionResult.risk_assessment.confidence_score,
+          params.indicators,
+          params.execution_engine
+        );
+      }
+      
+      // 8. Update learning systems
       await this.updateLearningSystems(executionResult);
       
-      // 8. Run shadow simulation
+      // 9. Run shadow simulation
       await this.runShadowSimulation(executionResult, params.indicators);
       
-      // 9. Store in execution log
+      // 10. Store in execution log
       this.executionLog.push(executionResult);
       this.activeTrades.add(executionId);
       this.dailyTradeCount++;
@@ -319,6 +331,16 @@ export class WaidesKITraderEngine {
     // Check emergency stop
     if (this.emergencyStopActive) {
       reasons.push('Emergency stop is active');
+    }
+    
+    // Check emotional firewall
+    const emotionalCheck = waidesKIEmotionalFirewall.shouldBlockTrade(
+      params.confidence_level,
+      params.indicators,
+      params.execution_engine
+    );
+    if (emotionalCheck.shouldBlock) {
+      reasons.push(`Emotional firewall: ${emotionalCheck.reason}`);
     }
     
     // Check trading hours

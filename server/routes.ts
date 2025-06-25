@@ -29,6 +29,7 @@ import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
 import { waidesKIExternalAPIGateway } from './services/waidesKIExternalAPIGateway.js';
 import { waidesKITraderEngine } from './services/waidesKITraderEngine.js';
 import { waidesKIShadowSimulator } from './services/waidesKIShadowSimulator.js';
+import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -3489,6 +3490,155 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting shadow data:', error);
       res.status(500).json({ error: 'Failed to export shadow data' });
+    }
+  });
+
+  // Emotional Firewall and Thought Cleanser endpoints
+  app.get("/api/waides-ki/emotional/statistics", (req, res) => {
+    try {
+      const stats = waidesKIEmotionalFirewall.getEmotionalStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting emotional statistics:', error);
+      res.status(500).json({ error: 'Failed to get emotional statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/emotional/reflections", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const reflections = waidesKIEmotionalFirewall.getReflectionLog(limit);
+      res.json({ reflection_entries: reflections });
+    } catch (error) {
+      console.error('Error getting reflection log:', error);
+      res.status(500).json({ error: 'Failed to get reflection log' });
+    }
+  });
+
+  app.get("/api/waides-ki/emotional/blocks", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const blocks = waidesKIEmotionalFirewall.getEmotionalBlocks(limit);
+      res.json({ emotional_blocks: blocks });
+    } catch (error) {
+      console.error('Error getting emotional blocks:', error);
+      res.status(500).json({ error: 'Failed to get emotional blocks' });
+    }
+  });
+
+  app.get("/api/waides-ki/emotional/trades", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const trades = waidesKIEmotionalFirewall.getRecentTrades(limit);
+      res.json({ recent_trades: trades });
+    } catch (error) {
+      console.error('Error getting recent trades:', error);
+      res.status(500).json({ error: 'Failed to get recent trades' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional/record-trade", (req, res) => {
+    try {
+      const { result, profit_loss, confidence, market_conditions, strategy_type } = req.body;
+      
+      if (!result || profit_loss === undefined || !confidence) {
+        return res.status(400).json({ error: 'result, profit_loss, and confidence are required' });
+      }
+      
+      waidesKIEmotionalFirewall.recordTrade(
+        result,
+        profit_loss,
+        confidence,
+        market_conditions || {},
+        strategy_type || 'MANUAL'
+      );
+      
+      res.json({ success: true, message: 'Trade recorded in emotional firewall' });
+    } catch (error) {
+      console.error('Error recording trade:', error);
+      res.status(500).json({ error: 'Failed to record trade: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional/check-block", (req, res) => {
+    try {
+      const { confidence, market_conditions, strategy_type } = req.body;
+      
+      if (!confidence) {
+        return res.status(400).json({ error: 'confidence is required' });
+      }
+      
+      const blockResult = waidesKIEmotionalFirewall.shouldBlockTrade(
+        confidence,
+        market_conditions || {},
+        strategy_type || 'MANUAL'
+      );
+      
+      res.json(blockResult);
+    } catch (error) {
+      console.error('Error checking emotional block:', error);
+      res.status(500).json({ error: 'Failed to check emotional block: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional/enable", (req, res) => {
+    try {
+      waidesKIEmotionalFirewall.enableFirewall();
+      res.json({ success: true, message: 'Emotional firewall enabled successfully' });
+    } catch (error) {
+      console.error('Error enabling emotional firewall:', error);
+      res.status(500).json({ error: 'Failed to enable emotional firewall' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional/disable", (req, res) => {
+    try {
+      waidesKIEmotionalFirewall.disableFirewall();
+      res.json({ success: true, message: 'Emotional firewall disabled successfully' });
+    } catch (error) {
+      console.error('Error disabling emotional firewall:', error);
+      res.status(500).json({ error: 'Failed to disable emotional firewall' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional/clear-blocks", (req, res) => {
+    try {
+      waidesKIEmotionalFirewall.clearActiveBlocks();
+      res.json({ success: true, message: 'All active emotional blocks cleared successfully' });
+    } catch (error) {
+      console.error('Error clearing emotional blocks:', error);
+      res.status(500).json({ error: 'Failed to clear emotional blocks' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional/update-pattern", (req, res) => {
+    try {
+      const { pattern_name, threshold } = req.body;
+      
+      if (!pattern_name || threshold === undefined) {
+        return res.status(400).json({ error: 'pattern_name and threshold are required' });
+      }
+      
+      const success = waidesKIEmotionalFirewall.updatePatternThreshold(pattern_name, threshold);
+      
+      if (success) {
+        res.json({ success: true, message: `Pattern ${pattern_name} threshold updated to ${threshold}` });
+      } else {
+        res.status(404).json({ error: 'Pattern not found' });
+      }
+    } catch (error) {
+      console.error('Error updating pattern threshold:', error);
+      res.status(500).json({ error: 'Failed to update pattern threshold' });
+    }
+  });
+
+  app.get("/api/waides-ki/emotional/export", (req, res) => {
+    try {
+      const emotionalData = waidesKIEmotionalFirewall.exportEmotionalData();
+      res.json(emotionalData);
+    } catch (error) {
+      console.error('Error exporting emotional data:', error);
+      res.status(500).json({ error: 'Failed to export emotional data' });
     }
   });
 
