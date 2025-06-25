@@ -12,6 +12,7 @@ import { waidesKISelfRepair } from './waidesKISelfRepair';
 import { waidesKIDNAEngine } from './waidesKIDNAEngine';
 import { waidesKISignatureTracker } from './waidesKISignatureTracker';
 import { waidesKIRootMemory } from './waidesKIRootMemory';
+import { waidesKIGenomeEngine } from './waidesKIGenomeEngine';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -881,6 +882,7 @@ export class WaidesKICore {
     const dnaStats = waidesKIDNAEngine.getDNAStatistics();
     const signatureStats = waidesKISignatureTracker.getDNAStatistics();
     const memoryStats = waidesKIRootMemory.getTreeStatistics();
+    const genomeStats = waidesKIGenomeEngine.getGenerationStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -938,6 +940,13 @@ export class WaidesKICore {
         evolvingNodes: memoryStats.evolving_nodes,
         memoryHealth: memoryStats.memory_health,
         visualization: 'ACTIVE'
+      },
+      genomeEngine: {
+        generatedStrategies: genomeStats.total_generated,
+        activeStrategies: genomeStats.active_strategies,
+        vaultStrategies: genomeStats.vault_strategies,
+        generationHealth: genomeStats.generation_health,
+        autogeneration: 'ACTIVE'
       }
     };
   }

@@ -25,6 +25,7 @@ import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
+import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2820,6 +2821,167 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting memory data:', error);
       res.status(500).json({ error: 'Failed to export memory data' });
+    }
+  });
+
+  // Strategy Genome Engine and Autogeneration endpoints
+  app.get("/api/waides-ki/genome/statistics", (req, res) => {
+    try {
+      const stats = waidesKIGenomeEngine.getGenerationStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting genome statistics:', error);
+      res.status(500).json({ error: 'Failed to get genome statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/genome/strategies", (req, res) => {
+    try {
+      const strategies = waidesKIGenomeEngine.getAllGeneratedStrategies();
+      res.json({ generated_strategies: strategies });
+    } catch (error) {
+      console.error('Error getting generated strategies:', error);
+      res.status(500).json({ error: 'Failed to get generated strategies' });
+    }
+  });
+
+  app.get("/api/waides-ki/genome/vault", (req, res) => {
+    try {
+      const vault = waidesKIGenomeEngine.getStrategyVault();
+      res.json({ strategy_vault: vault });
+    } catch (error) {
+      console.error('Error getting strategy vault:', error);
+      res.status(500).json({ error: 'Failed to get strategy vault' });
+    }
+  });
+
+  app.get("/api/waides-ki/genome/strategy/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const strategy = waidesKIGenomeEngine.getStrategy(strategy_id);
+      
+      if (!strategy) {
+        return res.status(404).json({ error: 'Generated strategy not found' });
+      }
+      
+      res.json({ strategy });
+    } catch (error) {
+      console.error('Error getting generated strategy:', error);
+      res.status(500).json({ error: 'Failed to get generated strategy' });
+    }
+  });
+
+  app.post("/api/waides-ki/genome/generate", async (req, res) => {
+    try {
+      const { base_strategy_ids, count } = req.body;
+      
+      if (!base_strategy_ids || !Array.isArray(base_strategy_ids)) {
+        return res.status(400).json({ error: 'base_strategy_ids array is required' });
+      }
+      
+      const generationCount = count || 5;
+      const newStrategies = await waidesKIGenomeEngine.forceGenerateBatch(base_strategy_ids, generationCount);
+      
+      res.json({ 
+        success: true, 
+        generated_strategies: newStrategies,
+        count: newStrategies.length
+      });
+    } catch (error) {
+      console.error('Error generating strategies:', error);
+      res.status(500).json({ error: 'Failed to generate strategies: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/genome/test/:strategy_id", async (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const { test_data } = req.body;
+      
+      // Use provided test data or generate default
+      let dataToUse = test_data;
+      if (!dataToUse) {
+        dataToUse = waidesKISelfRepair.generateTestData(50); // Generate 50 test points
+      }
+      
+      const testResult = await waidesKIGenomeEngine.testGeneratedStrategy(strategy_id, dataToUse);
+      
+      res.json({ 
+        success: true, 
+        test_result: testResult,
+        strategy_id: strategy_id
+      });
+    } catch (error) {
+      console.error('Error testing generated strategy:', error);
+      res.status(500).json({ error: 'Failed to test strategy: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/genome/deactivate/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const success = waidesKIGenomeEngine.deactivateStrategy(strategy_id);
+      
+      if (success) {
+        res.json({ success: true, message: 'Strategy deactivated successfully' });
+      } else {
+        res.status(404).json({ error: 'Strategy not found' });
+      }
+    } catch (error) {
+      console.error('Error deactivating strategy:', error);
+      res.status(500).json({ error: 'Failed to deactivate strategy' });
+    }
+  });
+
+  app.post("/api/waides-ki/genome/reactivate/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const success = waidesKIGenomeEngine.reactivateStrategy(strategy_id);
+      
+      if (success) {
+        res.json({ success: true, message: 'Strategy reactivated successfully' });
+      } else {
+        res.status(404).json({ error: 'Strategy not found' });
+      }
+    } catch (error) {
+      console.error('Error reactivating strategy:', error);
+      res.status(500).json({ error: 'Failed to reactivate strategy' });
+    }
+  });
+
+  app.post("/api/waides-ki/genome/mutation-config", (req, res) => {
+    try {
+      const { mutation_config } = req.body;
+      
+      if (!mutation_config) {
+        return res.status(400).json({ error: 'mutation_config is required' });
+      }
+      
+      waidesKIGenomeEngine.updateMutationConfig(mutation_config);
+      res.json({ success: true, message: 'Mutation configuration updated successfully' });
+    } catch (error) {
+      console.error('Error updating mutation config:', error);
+      res.status(500).json({ error: 'Failed to update mutation configuration' });
+    }
+  });
+
+  app.post("/api/waides-ki/genome/reset", (req, res) => {
+    try {
+      waidesKIGenomeEngine.resetGenomeEngine();
+      res.json({ success: true, message: 'Genome engine reset successfully' });
+    } catch (error) {
+      console.error('Error resetting genome engine:', error);
+      res.status(500).json({ error: 'Failed to reset genome engine' });
+    }
+  });
+
+  app.get("/api/waides-ki/genome/export", (req, res) => {
+    try {
+      const genomeData = waidesKIGenomeEngine.exportGenomeData();
+      res.json(genomeData);
+    } catch (error) {
+      console.error('Error exporting genome data:', error);
+      res.status(500).json({ error: 'Failed to export genome data' });
     }
   });
 
