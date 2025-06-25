@@ -26,6 +26,7 @@ import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
+import { waidesKIExternalAPIGateway } from './services/waidesKIExternalAPIGateway.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2982,6 +2983,190 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting genome data:', error);
       res.status(500).json({ error: 'Failed to export genome data' });
+    }
+  });
+
+  // External API Gateway endpoints (PUBLIC - for external platforms)
+  app.post("/api/external/strategy", async (req, res) => {
+    try {
+      const apiKey = req.headers['x-api-key'] as string;
+      if (!apiKey) {
+        return res.status(401).json({ error: 'API key required in X-API-Key header' });
+      }
+      
+      const result = await waidesKIExternalAPIGateway.generateStrategy(apiKey, req.body);
+      
+      if ('error' in result) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error in external strategy endpoint:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post("/api/external/dna/analyze", async (req, res) => {
+    try {
+      const apiKey = req.headers['x-api-key'] as string;
+      if (!apiKey) {
+        return res.status(401).json({ error: 'API key required in X-API-Key header' });
+      }
+      
+      const { dna_id } = req.body;
+      if (!dna_id) {
+        return res.status(400).json({ error: 'dna_id is required' });
+      }
+      
+      const result = await waidesKIExternalAPIGateway.analyzeDNA(apiKey, dna_id);
+      
+      if ('error' in result) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error in external DNA analysis endpoint:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get("/api/external/market/insights", async (req, res) => {
+    try {
+      const apiKey = req.headers['x-api-key'] as string;
+      if (!apiKey) {
+        return res.status(401).json({ error: 'API key required in X-API-Key header' });
+      }
+      
+      const result = await waidesKIExternalAPIGateway.getMarketInsights(apiKey);
+      
+      if ('error' in result) {
+        return res.status(result.status).json({ error: result.error });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error in external market insights endpoint:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // External API Gateway Management endpoints (INTERNAL - for admin use)
+  app.get("/api/waides-ki/external-api/statistics", (req, res) => {
+    try {
+      const stats = waidesKIExternalAPIGateway.getAPIStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting external API statistics:', error);
+      res.status(500).json({ error: 'Failed to get external API statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/external-api/clients", (req, res) => {
+    try {
+      const clients = waidesKIExternalAPIGateway.getAllTrustedClients();
+      res.json({ trusted_clients: clients });
+    } catch (error) {
+      console.error('Error getting trusted clients:', error);
+      res.status(500).json({ error: 'Failed to get trusted clients' });
+    }
+  });
+
+  app.get("/api/waides-ki/external-api/requests", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const requests = waidesKIExternalAPIGateway.getRecentRequests(limit);
+      res.json({ recent_requests: requests });
+    } catch (error) {
+      console.error('Error getting recent requests:', error);
+      res.status(500).json({ error: 'Failed to get recent requests' });
+    }
+  });
+
+  app.post("/api/waides-ki/external-api/clients", (req, res) => {
+    try {
+      const { client_name, access_level, permissions } = req.body;
+      
+      if (!client_name || !access_level || !permissions) {
+        return res.status(400).json({ error: 'client_name, access_level, and permissions are required' });
+      }
+      
+      const apiKey = waidesKIExternalAPIGateway.addTrustedClient(client_name, access_level, permissions);
+      
+      res.json({ 
+        success: true, 
+        message: 'Trusted client added successfully',
+        api_key: apiKey,
+        client_name: client_name
+      });
+    } catch (error) {
+      console.error('Error adding trusted client:', error);
+      res.status(500).json({ error: 'Failed to add trusted client' });
+    }
+  });
+
+  app.post("/api/waides-ki/external-api/clients/:api_key/deactivate", (req, res) => {
+    try {
+      const { api_key } = req.params;
+      const success = waidesKIExternalAPIGateway.deactivateClient(api_key);
+      
+      if (success) {
+        res.json({ success: true, message: 'Client deactivated successfully' });
+      } else {
+        res.status(404).json({ error: 'Client not found' });
+      }
+    } catch (error) {
+      console.error('Error deactivating client:', error);
+      res.status(500).json({ error: 'Failed to deactivate client' });
+    }
+  });
+
+  app.post("/api/waides-ki/external-api/clients/:api_key/reactivate", (req, res) => {
+    try {
+      const { api_key } = req.params;
+      const success = waidesKIExternalAPIGateway.reactivateClient(api_key);
+      
+      if (success) {
+        res.json({ success: true, message: 'Client reactivated successfully' });
+      } else {
+        res.status(404).json({ error: 'Client not found' });
+      }
+    } catch (error) {
+      console.error('Error reactivating client:', error);
+      res.status(500).json({ error: 'Failed to reactivate client' });
+    }
+  });
+
+  app.post("/api/waides-ki/external-api/clients/:api_key/permissions", (req, res) => {
+    try {
+      const { api_key } = req.params;
+      const { permissions } = req.body;
+      
+      if (!permissions || !Array.isArray(permissions)) {
+        return res.status(400).json({ error: 'permissions array is required' });
+      }
+      
+      const success = waidesKIExternalAPIGateway.updateClientPermissions(api_key, permissions);
+      
+      if (success) {
+        res.json({ success: true, message: 'Client permissions updated successfully' });
+      } else {
+        res.status(404).json({ error: 'Client not found' });
+      }
+    } catch (error) {
+      console.error('Error updating client permissions:', error);
+      res.status(500).json({ error: 'Failed to update client permissions' });
+    }
+  });
+
+  app.get("/api/waides-ki/external-api/export", (req, res) => {
+    try {
+      const apiData = waidesKIExternalAPIGateway.exportAPIData();
+      res.json(apiData);
+    } catch (error) {
+      console.error('Error exporting external API data:', error);
+      res.status(500).json({ error: 'Failed to export external API data' });
     }
   });
 
