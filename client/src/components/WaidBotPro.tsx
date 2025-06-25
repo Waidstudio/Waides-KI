@@ -26,9 +26,13 @@ import {
   Lock,
   Sparkles,
   Eye,
-  Cpu
+  Cpu,
+  ArrowLeft,
+  Settings,
+  Bot
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+import { Link } from 'wouter';
 
 interface PredictionData {
   prediction: number;

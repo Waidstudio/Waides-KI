@@ -68,12 +68,16 @@ export default function Dashboard() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/divine-reading'],
-    refetchInterval: 10000,
+    refetchInterval: 30000, // Reduced from 10s to 30s
+    staleTime: 20000,
+    gcTime: 60000,
   });
 
   const { data: candlestickData } = useQuery({
     queryKey: ['/api/candlesticks', 'ETHUSDT', '1m'],
-    refetchInterval: 5000,
+    refetchInterval: 15000, // Reduced from 5s to 15s
+    staleTime: 10000,
+    gcTime: 30000,
   });
 
   useEffect(() => {

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Brain, TrendingUp, TrendingDown, Eye, Zap, Activity, Play, Square, RefreshCw } from "lucide-react";
+import { Brain, TrendingUp, TrendingDown, Eye, Zap, Activity, Play, Square, RefreshCw, ArrowLeft, Settings, BarChart3, Bot } from "lucide-react";
+import { Link } from "wouter";
 
 interface WaidDecision {
   action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
@@ -163,6 +164,43 @@ export default function WaidBotEngine() {
 
   return (
     <div className="space-y-6">
+      {/* Navigation Header */}
+      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/dashboard">
+              <Button variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+            <div className="flex items-center space-x-2">
+              <Bot className="w-6 h-6 text-purple-500" />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                WaidBot - Divine Quantum Flux Strategy
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Link href="/waidbot-pro">
+              <Button variant="outline" size="sm" className="border-purple-600 text-purple-400 hover:bg-purple-900/20">
+                <Brain className="w-4 h-4 mr-2" />
+                WaidBot Pro
+              </Button>
+            </Link>
+            <Link href="/portfolio">
+              <Button variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Portfolio
+              </Button>
+            </Link>
+            <Button variant="outline" size="sm" className="border-slate-700 hover:bg-slate-800">
+              <Settings className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* WaidBot Status Header */}
       <Card className="waides-card waides-border border bg-gradient-to-br from-purple-900/20 to-blue-900/10">
         <CardHeader>

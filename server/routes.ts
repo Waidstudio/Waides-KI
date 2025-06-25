@@ -285,12 +285,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Divine Reading - Complete dashboard data for spiritual interface
   app.get("/api/divine-reading", async (req, res) => {
     try {
-      // Try to get latest stored ETH data, but don't wait too long
+      // Get ETH data with faster timeout and caching
       let ethData;
       try {
         const latestStoredData = await Promise.race([
           storage.getLatestEthData(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1000))
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 500)) // Reduced to 500ms
         ]) as any;
         
         ethData = latestStoredData ? {
@@ -304,15 +304,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ethData = null;
       }
 
-      // Fallback to reasonable default if database is slow
+      // Use cached ETH data from monitor if database is slow
       if (!ethData) {
-        ethData = {
-          price: 3500,
-          volume: 20000000000,
-          marketCap: 420000000000,
-          priceChange24h: 2.5,
-          timestamp: Date.now()
-        };
+        try {
+          const cachedData = await ethMonitor.fetchEthData();
+          ethData = {
+            price: cachedData.price,
+            volume: cachedData.volume || 20000000000,
+            marketCap: cachedData.marketCap || 420000000000,
+            priceChange24h: cachedData.priceChange24h || 2.5,
+            timestamp: Date.now()
+          };
+        } catch {
+          ethData = {
+            price: 3500,
+            volume: 20000000000,
+            marketCap: 420000000000,
+            priceChange24h: 2.5,
+            timestamp: Date.now()
+          };
+        }
       }
       
       // Create safe spiritual reading response
