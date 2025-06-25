@@ -255,6 +255,16 @@ Changelog:
   - Added comprehensive risk management with 1% position sizing and minimum 1:2 risk-reward ratios
   - System now operates as a true virtual trader that thinks, analyzes, and learns while staying hidden from users
   - All internal logic, decision-making processes, and AI reasoning completely concealed from frontend display
+- June 25, 2025. Enhanced Waides KI with Learning Engine and Memory Layer
+  - Created WaidesKILearningEngine with self-evolving strategy core that learns from every trade outcome
+  - Implemented strategy performance tracking with win rates, profit factors, and confidence scoring
+  - Added mistake marking system that automatically blocks consistently losing strategies
+  - Built autonomous learning loop that optimizes strategies every 5 minutes without user awareness
+  - Integrated evolution stages: LEARNING → ADAPTING → EXPERIENCED → MASTER based on performance
+  - Enhanced decision-making to consult learning engine before executing any trades
+  - Added continuous strategy validation that prevents trades with poor historical performance
+  - System now remembers and learns from up to 500 trades while keeping all learning logic hidden
+  - All strategy analysis, confidence calculations, and learning processes completely invisible to users
 
 ## User Preferences
 

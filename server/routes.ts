@@ -11,6 +11,7 @@ import { BinanceWebSocketService, type CandlestickData } from "./services/binanc
 import { weeklyScheduler, type WeeklyTradingPlan } from './services/weeklyTradingScheduler.js';
 import { tradingBrain } from './services/tradingBrainEngine.js';
 import { waidesKI } from './services/waidesKICore.js';
+import { waidesKILearning } from './services/waidesKILearningEngine.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1589,6 +1590,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting Waides KI status:', error);
       res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  // Waides KI Learning endpoints (very minimal exposure)
+  app.get("/api/waides-ki/learning-stats", (req, res) => {
+    try {
+      const learningStats = waidesKILearning.getLearningStats();
+      res.json(learningStats);
+    } catch (error) {
+      console.error('Error getting learning stats:', error);
+      res.status(500).json({ error: 'Failed to get learning statistics' });
     }
   });
 

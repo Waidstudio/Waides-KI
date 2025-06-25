@@ -77,10 +77,25 @@ export default function TradingBrainPanel() {
       winRate: number;
       totalTrades: number;
       status: string;
+      evolutionStage: string;
+      learningConfidence: number;
     };
   }>({
     queryKey: ['/api/waides-ki/status'],
     refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const { data: learningStats } = useQuery<{
+    total_strategies: number;
+    best_strategy: string;
+    worst_strategy: string;
+    overall_win_rate: number;
+    total_trades: number;
+    evolution_stage: string;
+    learning_confidence: number;
+  }>({
+    queryKey: ['/api/waides-ki/learning-stats'],
+    refetchInterval: 60000, // Refresh every minute
   });
 
   const getCategoryIcon = (category: string) => {
@@ -165,13 +180,21 @@ export default function TradingBrainPanel() {
                 <span className="text-xs text-slate-300">{waidesKIStatus.performance.winRate}%</span>
               </div>
               <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Evolution</span>
+                <span className="text-xs text-blue-400">{waidesKIStatus.performance.evolutionStage}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Learning</span>
+                <span className="text-xs text-green-400">{waidesKIStatus.performance.learningConfidence}%</span>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Last Scan</span>
                 <span className="text-xs text-slate-300">
                   {new Date(waidesKIStatus.lastScan).toLocaleTimeString()}
                 </span>
               </div>
               <div className="text-xs text-slate-500 text-center mt-2">
-                {waidesKIStatus.performance.totalTrades} total decisions
+                {waidesKIStatus.performance.totalTrades} decisions analyzed
               </div>
             </CardContent>
           </Card>

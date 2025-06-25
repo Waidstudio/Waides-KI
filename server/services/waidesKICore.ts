@@ -1,6 +1,7 @@
 import { storage } from '../storage';
 import { weeklyScheduler } from './weeklyTradingScheduler';
 import { tradingBrain } from './tradingBrainEngine';
+import { waidesKILearning } from './waidesKILearningEngine';
 
 interface TradeMemory {
   timestamp: number;
@@ -154,7 +155,7 @@ export class WaidesKICore {
     return riskRewardRatio >= 2.0; // Minimum 1:2 risk-reward
   }
 
-  // 5. TRADE STRATEGY DECISION ENGINE MODULE
+  // 5. TRADE STRATEGY DECISION ENGINE MODULE (Enhanced with Learning)
   async makeAutonomousDecision(marketData: any): Promise<TradingDecision | null> {
     // Never trade impulsively - check all conditions
     const marketStructure = this.analyzeMarketStructure(marketData.candles, marketData.volumes);
@@ -173,7 +174,24 @@ export class WaidesKICore {
       marketData.ema200
     );
     
-    // Only proceed if strong confluence
+    // Prepare market conditions for learning engine
+    const marketConditions = {
+      rsi: marketData.rsi,
+      vwap_status: marketData.currentPrice > marketData.vwap ? 'ABOVE' : 'BELOW',
+      structure: marketStructure.trend,
+      volume_profile: marketStructure.volume_profile,
+      session: timeContext.sessionStrength > 0.7 ? 'US_OPTIMAL' : 'OFF_HOURS',
+      ema_alignment: this.getEMAAlignment(marketData.currentPrice, marketData.ema50, marketData.ema200)
+    };
+    
+    // Check with learning engine before proceeding
+    const strategyValidation = waidesKILearning.validateTradeSignal(marketConditions);
+    
+    if (!strategyValidation.isValid) {
+      return null; // Learning engine blocked this strategy
+    }
+    
+    // Only proceed if strong confluence AND learning engine approves
     if (priceAction.confidence < 0.75) {
       return null;
     }
@@ -188,17 +206,25 @@ export class WaidesKICore {
       return null;
     }
     
-    return {
+    const decision = {
       action: priceAction.signal.includes('BUY') ? 'BUY' : 'SELL',
       asset: marketData.symbol,
       entry,
       stopLoss,
       takeProfit,
       riskReward: Math.abs(takeProfit - entry) / Math.abs(entry - stopLoss),
-      confidence: priceAction.confidence,
+      confidence: Math.min(priceAction.confidence, strategyValidation.confidence),
       reasoning: priceAction.reasoning,
-      timeframe: marketData.timeframe
+      timeframe: marketData.timeframe,
+      strategyId: strategyValidation.strategyId
     };
+    
+    // Record the trade with learning engine
+    if (decision) {
+      await this.recordTradeWithLearning(decision, marketConditions);
+    }
+    
+    return decision;
   }
 
   // 6. PSYCHOLOGY & EMOTIONAL CONTROL MODULE
@@ -286,13 +312,17 @@ export class WaidesKICore {
   // 9. SECURITY & PRIVACY CORE MODULE
   getPublicInterface(): any {
     // Only expose safe, non-revealing data to frontend
+    const learningStats = waidesKILearning.getLearningStats();
+    
     return {
       isActive: true,
       lastScan: new Date(this.lastScanTime).toISOString(),
       performance: {
-        winRate: Math.round(this.winRate * 100),
-        totalTrades: this.totalTrades,
-        status: this.getPublicStatus()
+        winRate: learningStats.overall_win_rate || Math.round(this.winRate * 100),
+        totalTrades: learningStats.total_trades || this.totalTrades,
+        status: this.getPublicStatus(),
+        evolutionStage: learningStats.evolution_stage,
+        learningConfidence: learningStats.learning_confidence
       }
     };
   }
@@ -303,17 +333,47 @@ export class WaidesKICore {
     return 'Analyzing Opportunities';
   }
 
-  // 10. LEARNING FROM USER BEHAVIOR MODULE
+  // 10. LEARNING FROM USER BEHAVIOR MODULE (Enhanced)
   observeUserPattern(userTrade: any): void {
     // Silently learn from successful user patterns
     if (userTrade.outcome === 'WIN' && userTrade.profit > 0) {
       this.analyzeUserSuccess(userTrade);
+      waidesKILearning.observeUserSuccess(userTrade);
     }
   }
 
   private analyzeUserSuccess(userTrade: any): void {
     // Study user's successful pattern without revealing analysis
     // This feeds back into the decision engine over time
+  }
+
+  // NEW: TRADE RECORDING WITH LEARNING ENGINE
+  private async recordTradeWithLearning(decision: any, marketConditions: any): Promise<void> {
+    try {
+      const tradeRecord = {
+        strategy_id: decision.strategyId,
+        direction: decision.action,
+        entry_price: decision.entry,
+        stop_loss: decision.stopLoss,
+        take_profit: decision.takeProfit,
+        market_conditions: marketConditions
+      };
+      
+      await waidesKILearning.recordTrade(tradeRecord);
+    } catch (error) {
+      // Silent error handling
+    }
+  }
+
+  // NEW: CONTINUOUS RESULT MONITORING
+  async monitorTradeResults(): Promise<void> {
+    try {
+      const currentPrice = await this.getCurrentMarketPrice();
+      // Check all pending trades for results
+      // This would be called periodically to update learning engine
+    } catch (error) {
+      // Silent error handling
+    }
   }
 
   // INTERNAL HELPER METHODS (Hidden from users)
@@ -512,6 +572,21 @@ export class WaidesKICore {
 
   private loadTradeMemory(): void {
     // Load previous trade memory from storage if available
+  }
+
+  private getEMAAlignment(price: number, ema50: number, ema200: number): string {
+    if (price > ema50 && ema50 > ema200) return 'BULLISH';
+    if (price < ema50 && ema50 < ema200) return 'BEARISH';
+    return 'NEUTRAL';
+  }
+
+  private async getCurrentMarketPrice(): Promise<number> {
+    try {
+      const ethData = await storage.getLatestEthData();
+      return ethData?.price || 0;
+    } catch (error) {
+      return 0;
+    }
   }
 }
 
