@@ -22,6 +22,8 @@ import { waidesKIGateway } from './services/waidesKIGateway.js';
 import { waidesKISignalShield } from './services/waidesKISignalShield.js';
 import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
 import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
+import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
+import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2492,6 +2494,172 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error generating test data:', error);
       res.status(500).json({ error: 'Failed to generate test data' });
+    }
+  });
+
+  // DNA Engine and Signature Tracking endpoints
+  app.get("/api/waides-ki/dna/statistics", (req, res) => {
+    try {
+      const dnaStats = waidesKIDNAEngine.getDNAStatistics();
+      const signatureStats = waidesKISignatureTracker.getDNAStatistics();
+      res.json({
+        dna_engine: dnaStats,
+        signature_tracker: signatureStats
+      });
+    } catch (error) {
+      console.error('Error getting DNA statistics:', error);
+      res.status(500).json({ error: 'Failed to get DNA statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna/registered", (req, res) => {
+    try {
+      const registeredDNA = waidesKIDNAEngine.getAllRegisteredDNA();
+      res.json({ registered_dna: registeredDNA });
+    } catch (error) {
+      console.error('Error getting registered DNA:', error);
+      res.status(500).json({ error: 'Failed to get registered DNA' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna/info/:dna_id", (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      const dnaInfo = waidesKIDNAEngine.getDNAInfo(dna_id);
+      const performance = waidesKISignatureTracker.getDNAPerformance(dna_id);
+      const history = waidesKISignatureTracker.getHistory(dna_id);
+      
+      if (!dnaInfo) {
+        return res.status(404).json({ error: 'DNA not found' });
+      }
+      
+      res.json({
+        dna_info: dnaInfo,
+        performance: performance,
+        history: history
+      });
+    } catch (error) {
+      console.error('Error getting DNA info:', error);
+      res.status(500).json({ error: 'Failed to get DNA information' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna/evolution", (req, res) => {
+    try {
+      const evolution = waidesKIDNAEngine.analyzeDNAEvolution();
+      const mutationHistory = waidesKIDNAEngine.getMutationHistory();
+      res.json({
+        evolution_analysis: evolution,
+        mutation_history: mutationHistory
+      });
+    } catch (error) {
+      console.error('Error getting DNA evolution:', error);
+      res.status(500).json({ error: 'Failed to get DNA evolution data' });
+    }
+  });
+
+  app.get("/api/waides-ki/signature/anomalies", (req, res) => {
+    try {
+      const anomalies = waidesKISignatureTracker.getDetectedAnomalies();
+      res.json({ detected_anomalies: anomalies });
+    } catch (error) {
+      console.error('Error getting signature anomalies:', error);
+      res.status(500).json({ error: 'Failed to get signature anomalies' });
+    }
+  });
+
+  app.get("/api/waides-ki/signature/firewall", (req, res) => {
+    try {
+      const firewallRules = waidesKISignatureTracker.getFirewallRules();
+      res.json({ firewall_rules: firewallRules });
+    } catch (error) {
+      console.error('Error getting firewall rules:', error);
+      res.status(500).json({ error: 'Failed to get firewall rules' });
+    }
+  });
+
+  app.get("/api/waides-ki/signature/performance/top", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const topPerforming = waidesKISignatureTracker.getTopPerformingDNA(limit);
+      res.json({ top_performing_dna: topPerforming });
+    } catch (error) {
+      console.error('Error getting top performing DNA:', error);
+      res.status(500).json({ error: 'Failed to get top performing DNA' });
+    }
+  });
+
+  app.get("/api/waides-ki/signature/performance/worst", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const worstPerforming = waidesKISignatureTracker.getWorstPerformingDNA(limit);
+      res.json({ worst_performing_dna: worstPerforming });
+    } catch (error) {
+      console.error('Error getting worst performing DNA:', error);
+      res.status(500).json({ error: 'Failed to get worst performing DNA' });
+    }
+  });
+
+  app.post("/api/waides-ki/signature/firewall/rule", (req, res) => {
+    try {
+      const { pattern, action, reason } = req.body;
+      
+      if (!pattern || !action || !reason) {
+        return res.status(400).json({ error: 'pattern, action, and reason are required' });
+      }
+      
+      const ruleId = waidesKISignatureTracker.addFirewallRule(pattern, action, reason);
+      res.json({ 
+        success: true, 
+        rule_id: ruleId,
+        message: 'Firewall rule added successfully' 
+      });
+    } catch (error) {
+      console.error('Error adding firewall rule:', error);
+      res.status(500).json({ error: 'Failed to add firewall rule' });
+    }
+  });
+
+  app.post("/api/waides-ki/signature/unblock/:dna_id", (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      const unblocked = waidesKISignatureTracker.unblockDNA(dna_id);
+      
+      if (unblocked) {
+        res.json({ success: true, message: 'DNA unblocked successfully' });
+      } else {
+        res.status(404).json({ error: 'DNA not found or not blocked' });
+      }
+    } catch (error) {
+      console.error('Error unblocking DNA:', error);
+      res.status(500).json({ error: 'Failed to unblock DNA' });
+    }
+  });
+
+  app.post("/api/waides-ki/dna/reset", (req, res) => {
+    try {
+      waidesKIDNAEngine.resetDNAEngine();
+      waidesKISignatureTracker.resetSignatureTracker();
+      res.json({ success: true, message: 'DNA engine and signature tracker reset successfully' });
+    } catch (error) {
+      console.error('Error resetting DNA systems:', error);
+      res.status(500).json({ error: 'Failed to reset DNA systems' });
+    }
+  });
+
+  app.get("/api/waides-ki/dna/export", (req, res) => {
+    try {
+      const dnaData = waidesKIDNAEngine.exportDNADatabase();
+      const signatureData = waidesKISignatureTracker.exportSignatureData();
+      
+      res.json({
+        dna_database: dnaData,
+        signature_database: signatureData,
+        export_timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error exporting DNA data:', error);
+      res.status(500).json({ error: 'Failed to export DNA data' });
     }
   });
 

@@ -9,6 +9,8 @@ import { waidesKILiveFeed } from './waidesKILiveFeed';
 import { waidesKISignalShield } from './waidesKISignalShield';
 import { waidesKIDailyReporter } from './waidesKIDailyReporter';
 import { waidesKISelfRepair } from './waidesKISelfRepair';
+import { waidesKIDNAEngine } from './waidesKIDNAEngine';
+import { waidesKISignatureTracker } from './waidesKISignatureTracker';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -253,8 +255,72 @@ export class WaidesKICore {
       return null;
     }
     
-    // Step 6: Signal Shield Analysis - Advanced Trap Detection
+    // Step 6: DNA Generation and Signature Analysis
     const strategyId = this.generateStrategyId(indicators);
+    
+    // Generate DNA fingerprint for this signal
+    const dnaId = waidesKIDNAEngine.generateDNA({
+      trend: indicators.trend,
+      rsi: indicators.rsi,
+      vwap_status: indicators.vwap_status,
+      ema50: indicators.ema50,
+      ema200: indicators.ema200,
+      volume: indicators.volume,
+      price: indicators.price,
+      timestamp: Date.now()
+    });
+    
+    // Check DNA signature for instability or blocks
+    if (waidesKISignatureTracker.isBlocked(dnaId)) {
+      waidesKIDailyReporter.logEmotionalState(
+        'CAUTIOUS',
+        `DNA blocked: ${dnaId} has dangerous signature`,
+        indicators.trend,
+        40
+      );
+      
+      const signalId = waidesKISignalLogger.logSignal(
+        strategyId,
+        signalStrength.score,
+        signalStrength.confidence,
+        indicators,
+        signalStrength.reasoning,
+        currentAssessment.recommendation,
+        true
+      );
+      waidesKISignalLogger.updateSignalOutcome(signalId, 'BLOCKED', `DNA ${dnaId} blocked by signature firewall`);
+      return null;
+    }
+    
+    if (waidesKISignatureTracker.isUnstable(dnaId)) {
+      waidesKIDailyReporter.logEmotionalState(
+        'UNCERTAIN',
+        `DNA unstable: ${dnaId} has failing pattern`,
+        indicators.trend,
+        30
+      );
+      
+      waidesKIDailyReporter.recordLesson(
+        `Avoided unstable DNA pattern ${dnaId} with recent failure history`,
+        'PATTERN',
+        'HIGH',
+        'DNA Signature System'
+      );
+      
+      const signalId = waidesKISignalLogger.logSignal(
+        strategyId,
+        signalStrength.score,
+        signalStrength.confidence,
+        indicators,
+        signalStrength.reasoning,
+        currentAssessment.recommendation,
+        true
+      );
+      waidesKISignalLogger.updateSignalOutcome(signalId, 'BLOCKED', `DNA ${dnaId} unstable pattern detected`);
+      return null;
+    }
+    
+    // Step 7: Signal Shield Analysis - Advanced Trap Detection
     const signalData = {
       strategy_id: strategyId,
       price: indicators.price,
@@ -301,7 +367,7 @@ export class WaidesKICore {
       return null;
     }
     
-    // Step 7: Risk assessment and position sizing
+    // Step 8: Risk assessment and position sizing
     if (bestDecision) {
       // Calculate optimal trade amount with risk management
       const riskAssessment = waidesKIRiskManager.calculateTradeAmount(
@@ -353,9 +419,11 @@ export class WaidesKICore {
       const dataSource = liveData ? `Live:${liveData.source}` : 'Observer';
       const shieldInfo = shieldAnalysis.traps_detected.length > 0 ? 
         `Shield:${shieldAnalysis.traps_detected.length}traps` : 'Shield:Clear';
-      bestDecision.reasoning = `${bestDecision.reasoning} | ${dataSource}: ${currentAssessment.recommendation} | ${shieldInfo} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
+      bestDecision.reasoning = `${bestDecision.reasoning} | DNA:${dnaId.substring(0,8)} | ${dataSource}: ${currentAssessment.recommendation} | ${shieldInfo} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
       bestDecision.tradeAmount = riskAssessment.recommendedAmount;
       bestDecision.riskAssessment = riskAssessment;
+      bestDecision.strategyId = strategyId;
+      bestDecision.dnaId = dnaId;
       
       await this.recordTradeWithLearning(bestDecision, marketConditions);
       this.activeDecisions.set(`decision_${Date.now()}`, bestDecision);
@@ -723,6 +791,18 @@ export class WaidesKICore {
         result === 'WIN' ? 85 : 65
       );
       
+      // Record DNA signature result
+      if (trade.dnaId) {
+        waidesKISignatureTracker.recordResult(
+          trade.dnaId,
+          result,
+          pnl,
+          trade.confidence,
+          { phase: 'completion', volatility: 'normal' },
+          trade.engine
+        );
+      }
+      
       // Record lesson from trade outcome
       if (result === 'LOSS' && Math.abs(pnl) > trade.tradeAmount * 0.05) {
         waidesKIDailyReporter.recordLesson(
@@ -780,6 +860,8 @@ export class WaidesKICore {
     const shieldStats = waidesKISignalShield.getShieldStats();
     const currentEmotion = waidesKIDailyReporter.getCurrentEmotionalState();
     const selfRepairStats = waidesKISelfRepair.getSelfRepairStats();
+    const dnaStats = waidesKIDNAEngine.getDNAStatistics();
+    const signatureStats = waidesKISignatureTracker.getDNAStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -824,6 +906,12 @@ export class WaidesKICore {
         learningCycles: selfRepairStats.learning_cycles,
         successRate: selfRepairStats.success_rate,
         healing: 'ACTIVE'
+      },
+      dnaSignature: {
+        registeredPatterns: dnaStats.total_dna_registered,
+        blockedDNA: signatureStats.blocked_dna_count,
+        stablePatterns: signatureStats.stable_dna_count,
+        protection: 'ACTIVE'
       }
     };
   }
