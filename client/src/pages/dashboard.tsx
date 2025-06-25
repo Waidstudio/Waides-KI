@@ -256,8 +256,9 @@ export default function Dashboard() {
               <>
                 {/* Tabs Container */}
                 <Tabs defaultValue="realtime" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
+                  <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
                     <TabsTrigger value="realtime" className="data-[state=active]:bg-slate-700">Divine Trading</TabsTrigger>
+                    <TabsTrigger value="schedule" className="data-[state=active]:bg-slate-700">Weekly Schedule</TabsTrigger>
                     <TabsTrigger value="charts" className="data-[state=active]:bg-slate-700">Real-time Charts</TabsTrigger>
                     <TabsTrigger value="waidbot" className="data-[state=active]:bg-slate-700">
                       <Link href="/waidbot" className="w-full">WaidBot</Link>
@@ -441,6 +442,10 @@ export default function Dashboard() {
                         <RealTimeTrading />
                       </div>
                     </div>
+                    </TabsContent>
+
+                    <TabsContent value="schedule" className="space-y-6">
+                      <WeeklyTradingSchedule />
                     </TabsContent>
 
                     <TabsContent value="charts" className="space-y-6">
