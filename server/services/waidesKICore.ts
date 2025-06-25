@@ -21,6 +21,7 @@ import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
 import { waidesKIHiddenVision } from './waidesKIHiddenVision';
 import { waidesKIShadowLab } from './waidesKIShadowLab';
+import { waidesKIStrategyVault } from './waidesKIStrategyVault';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -903,6 +904,8 @@ export class WaidesKICore {
     const activePredictions = waidesKIHiddenVision.getActivePredictions();
     const shadowLabStats = waidesKIShadowLab.getShadowLabStatistics();
     const eliteStrategies = waidesKIShadowLab.getTopEliteStrategies(5);
+    const vaultStats = waidesKIStrategyVault.getVaultStatistics();
+    const liveStrategies = waidesKIStrategyVault.getLiveStrategies();
     
     return {
       isActive: this.isAutonomousMode,
@@ -1036,6 +1039,17 @@ export class WaidesKICore {
         darknessLevel: shadowLabStats.darkness_level,
         bestEliteScore: shadowLabStats.best_elite_score,
         strategyCreation: 'ACTIVE'
+      },
+      strategyVault: {
+        vaultActive: vaultStats.vault_active,
+        totalStrategies: vaultStats.total_strategies,
+        storedStrategies: vaultStats.stored_strategies,
+        activatedStrategies: vaultStats.activated_strategies,
+        liveStrategies: vaultStats.live_strategies,
+        retiredStrategies: vaultStats.retired_strategies,
+        chamberEnergyLevel: vaultStats.chamber_energy_level,
+        protectionLevel: vaultStats.protection_level,
+        birthChamber: 'ACTIVE'
       }
     };
   }

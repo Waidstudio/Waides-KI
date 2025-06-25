@@ -34,6 +34,7 @@ import { waidesKIDNAHealer } from './services/waidesKIDNAHealer.js';
 import { waidesKISituationalIntelligence } from './services/waidesKISituationalIntelligence.js';
 import { waidesKIHiddenVision } from './services/waidesKIHiddenVision.js';
 import { waidesKIShadowLab } from './services/waidesKIShadowLab.js';
+import { waidesKIStrategyVault } from './services/waidesKIStrategyVault.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -4383,6 +4384,276 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting shadow lab data:', error);
       res.status(500).json({ error: 'Failed to export shadow lab data' });
+    }
+  });
+
+  // Strategy Vault Birth Chamber endpoints
+  app.get("/api/waides-ki/strategy-vault/statistics", (req, res) => {
+    try {
+      const stats = waidesKIStrategyVault.getVaultStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting vault statistics:', error);
+      res.status(500).json({ error: 'Failed to get vault statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/strategy-vault/vaulted-strategies", (req, res) => {
+    try {
+      const vaultedStrategies = waidesKIStrategyVault.getVaultedStrategies();
+      res.json({ vaulted_strategies: vaultedStrategies });
+    } catch (error) {
+      console.error('Error getting vaulted strategies:', error);
+      res.status(500).json({ error: 'Failed to get vaulted strategies' });
+    }
+  });
+
+  app.get("/api/waides-ki/strategy-vault/live-strategies", (req, res) => {
+    try {
+      const liveStrategies = waidesKIStrategyVault.getLiveStrategies();
+      res.json({ live_strategies: liveStrategies });
+    } catch (error) {
+      console.error('Error getting live strategies:', error);
+      res.status(500).json({ error: 'Failed to get live strategies' });
+    }
+  });
+
+  app.get("/api/waides-ki/strategy-vault/by-status/:status", (req, res) => {
+    try {
+      const { status } = req.params;
+      
+      const validStatuses = ['VAULTED', 'ACTIVATED', 'LIVE', 'RETIRED', 'TERMINATED'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') });
+      }
+      
+      const strategies = waidesKIStrategyVault.getStrategyByStatus(status as any);
+      res.json({ 
+        strategies: strategies,
+        status: status,
+        count: strategies.length 
+      });
+    } catch (error) {
+      console.error('Error getting strategies by status:', error);
+      res.status(500).json({ error: 'Failed to get strategies by status' });
+    }
+  });
+
+  app.get("/api/waides-ki/strategy-vault/lifecycle-events", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const events = waidesKIStrategyVault.getLifecycleEvents(limit);
+      res.json({ lifecycle_events: events });
+    } catch (error) {
+      console.error('Error getting lifecycle events:', error);
+      res.status(500).json({ error: 'Failed to get lifecycle events' });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/store-elite", async (req, res) => {
+    try {
+      const { strategy_id, elite_strategy, konslang_blessing } = req.body;
+      
+      if (!strategy_id || !elite_strategy) {
+        return res.status(400).json({ error: 'strategy_id and elite_strategy are required' });
+      }
+      
+      const dnaId = await waidesKIStrategyVault.storeEliteDNA(
+        strategy_id,
+        elite_strategy,
+        konslang_blessing || []
+      );
+      
+      res.json({ 
+        success: true, 
+        dna_id: dnaId,
+        message: `Elite strategy vaulted successfully with KonsLang protection`
+      });
+    } catch (error) {
+      console.error('Error storing elite strategy:', error);
+      res.status(500).json({ error: 'Failed to store elite strategy: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/activate/:dna_id", async (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      const { force_activation } = req.body;
+      
+      if (!dna_id) {
+        return res.status(400).json({ error: 'DNA ID is required' });
+      }
+      
+      const activated = await waidesKIStrategyVault.activateStrategy(dna_id, force_activation || false);
+      
+      if (activated) {
+        res.json({ 
+          success: true, 
+          message: `Strategy ${dna_id} activated and moved to live trading pool`
+        });
+      } else {
+        res.json({ 
+          success: false, 
+          message: `Strategy ${dna_id} activation blocked - conditions not met`
+        });
+      }
+    } catch (error) {
+      console.error('Error activating strategy:', error);
+      res.status(500).json({ error: 'Failed to activate strategy: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/deploy/:dna_id", async (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      
+      if (!dna_id) {
+        return res.status(400).json({ error: 'DNA ID is required' });
+      }
+      
+      const deployed = await waidesKIStrategyVault.deployToLive(dna_id);
+      
+      if (deployed) {
+        res.json({ 
+          success: true, 
+          message: `Strategy ${dna_id} deployed to live trading with KonsLang protection`
+        });
+      } else {
+        res.json({ 
+          success: false, 
+          message: `Strategy ${dna_id} deployment blocked - KonsLang blessing failed`
+        });
+      }
+    } catch (error) {
+      console.error('Error deploying strategy:', error);
+      res.status(500).json({ error: 'Failed to deploy strategy: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/update-performance/:dna_id", async (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      const { success, profit_loss, execution_time } = req.body;
+      
+      if (!dna_id || success === undefined || profit_loss === undefined) {
+        return res.status(400).json({ error: 'dna_id, success, and profit_loss are required' });
+      }
+      
+      await waidesKIStrategyVault.updateStrategyPerformance(dna_id, {
+        success,
+        profit_loss,
+        execution_time: execution_time || Date.now()
+      });
+      
+      res.json({ 
+        success: true, 
+        message: `Performance updated for strategy ${dna_id}`
+      });
+    } catch (error) {
+      console.error('Error updating strategy performance:', error);
+      res.status(500).json({ error: 'Failed to update strategy performance: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/retire/:dna_id", async (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      const { reason } = req.body;
+      
+      if (!dna_id) {
+        return res.status(400).json({ error: 'DNA ID is required' });
+      }
+      
+      const retired = await waidesKIStrategyVault.retireStrategy(dna_id, reason || 'Manual retirement');
+      
+      if (retired) {
+        res.json({ 
+          success: true, 
+          message: `Strategy ${dna_id} retired successfully`
+        });
+      } else {
+        res.status(404).json({ error: 'Strategy not found or cannot be retired' });
+      }
+    } catch (error) {
+      console.error('Error retiring strategy:', error);
+      res.status(500).json({ error: 'Failed to retire strategy: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/terminate/:dna_id", async (req, res) => {
+    try {
+      const { dna_id } = req.params;
+      const { reason } = req.body;
+      
+      if (!dna_id) {
+        return res.status(400).json({ error: 'DNA ID is required' });
+      }
+      
+      const terminated = await waidesKIStrategyVault.terminateStrategy(dna_id, reason || 'Performance failure');
+      
+      if (terminated) {
+        res.json({ 
+          success: true, 
+          message: `Strategy ${dna_id} terminated successfully`
+        });
+      } else {
+        res.status(404).json({ error: 'Strategy not found or cannot be terminated' });
+      }
+    } catch (error) {
+      console.error('Error terminating strategy:', error);
+      res.status(500).json({ error: 'Failed to terminate strategy: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/activate", (req, res) => {
+    try {
+      waidesKIStrategyVault.activateVault();
+      res.json({ success: true, message: 'Strategy Vault activated - birth chamber ready for elite DNA' });
+    } catch (error) {
+      console.error('Error activating strategy vault:', error);
+      res.status(500).json({ error: 'Failed to activate strategy vault' });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/deactivate", (req, res) => {
+    try {
+      waidesKIStrategyVault.deactivateVault();
+      res.json({ success: true, message: 'Strategy Vault deactivated - elite promotion paused' });
+    } catch (error) {
+      console.error('Error deactivating strategy vault:', error);
+      res.status(500).json({ error: 'Failed to deactivate strategy vault' });
+    }
+  });
+
+  app.post("/api/waides-ki/strategy-vault/configure", (req, res) => {
+    try {
+      const { max_live_strategies, auto_promotion, vault_security } = req.body;
+      
+      const config: any = {};
+      if (max_live_strategies !== undefined) config.maxLiveStrategies = max_live_strategies;
+      if (auto_promotion !== undefined) config.autoPromotion = auto_promotion;
+      if (vault_security !== undefined) config.vaultSecurity = vault_security;
+      
+      waidesKIStrategyVault.configureVault(config);
+      
+      res.json({ 
+        success: true, 
+        message: 'Strategy Vault configuration updated successfully',
+        updated_config: config
+      });
+    } catch (error) {
+      console.error('Error configuring strategy vault:', error);
+      res.status(500).json({ error: 'Failed to configure strategy vault' });
+    }
+  });
+
+  app.get("/api/waides-ki/strategy-vault/export", (req, res) => {
+    try {
+      const vaultData = waidesKIStrategyVault.exportVaultData();
+      res.json(vaultData);
+    } catch (error) {
+      console.error('Error exporting strategy vault data:', error);
+      res.status(500).json({ error: 'Failed to export strategy vault data' });
     }
   });
 
