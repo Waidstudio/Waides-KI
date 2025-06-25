@@ -61,6 +61,7 @@ import { waidesKIInstinctSwitch } from './services/waidesKIInstinctSwitch.js';
 import { waidesKIOverrideLockdown } from './services/waidesKIOverrideLockdown.js';
 import { waidesKIClarityRecoveryNode } from './services/waidesKIClarityRecoveryNode.js';
 import { WaidesKIDreamLayerVision } from './services/waidesKIDreamLayerVision.js';
+import { waidesKIVisionSpirit } from './services/waidesKIVisionSpirit.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -6586,6 +6587,201 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in dream demo:', error);
       res.status(500).json({ error: 'Failed to execute dream demo' });
+    }
+  });
+
+  // 🔮 STEP 33 - VISION SPIRIT + REAL-TIME VALIDATION ENGINE ENDPOINTS
+
+  // Receive a new vision from the spirit
+  app.post("/api/waides-ki/vision-spirit/receive", (req, res) => {
+    try {
+      const vision = waidesKIVisionSpirit.receiveVision();
+      res.json({
+        success: true,
+        vision,
+        message: `Vision received: ${vision.vision.toUpperCase()} with ${(vision.confidence * 100).toFixed(1)}% confidence`
+      });
+    } catch (error) {
+      console.error('Error receiving vision:', error);
+      res.status(500).json({ error: 'Failed to receive vision from spirit' });
+    }
+  });
+
+  // Verify current vision against market indicators
+  app.post("/api/waides-ki/vision-spirit/verify", async (req, res) => {
+    try {
+      const { rsi, ema_50, ema_200, current_price } = req.body;
+      
+      // If no indicators provided, get real market data
+      let indicators = { rsi, ema_50, ema_200, current_price };
+      
+      if (!rsi || !ema_50 || !ema_200 || !current_price) {
+        // Get real market data from live feed
+        const liveData = await waidesKILiveFeed.getUnifiedMarketData();
+        indicators = {
+          rsi: rsi || liveData.rsi || 50,
+          ema_50: ema_50 || liveData.ema_50 || liveData.price,
+          ema_200: ema_200 || liveData.ema_200 || liveData.price,
+          current_price: current_price || liveData.price
+        };
+      }
+
+      const validation = waidesKIVisionSpirit.verifyVision(
+        indicators.rsi,
+        indicators.ema_50,
+        indicators.ema_200,
+        indicators.current_price
+      );
+
+      res.json({
+        success: true,
+        validation,
+        indicators_used: indicators,
+        message: `Vision ${validation.confirmed ? 'CONFIRMED' : 'REJECTED'} with ${(validation.confirmation_strength * 100).toFixed(1)}% strength`
+      });
+    } catch (error) {
+      console.error('Error verifying vision:', error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to verify vision' });
+    }
+  });
+
+  // Get current vision without receiving new one
+  app.get("/api/waides-ki/vision-spirit/current", (req, res) => {
+    try {
+      const currentVision = waidesKIVisionSpirit.getCurrentVision();
+      res.json({
+        success: true,
+        currentVision,
+        message: currentVision ? `Current vision: ${currentVision.vision.toUpperCase()}` : 'No current vision'
+      });
+    } catch (error) {
+      console.error('Error getting current vision:', error);
+      res.status(500).json({ error: 'Failed to get current vision' });
+    }
+  });
+
+  // Record vision outcome for learning
+  app.post("/api/waides-ki/vision-spirit/outcome", (req, res) => {
+    try {
+      const { visionId, outcome } = req.body;
+      
+      if (!visionId || !outcome || !['correct', 'incorrect'].includes(outcome)) {
+        return res.status(400).json({ error: 'Vision ID and outcome (correct/incorrect) required' });
+      }
+
+      waidesKIVisionSpirit.recordVisionOutcome(visionId, outcome);
+      res.json({
+        success: true,
+        message: `Vision outcome recorded as ${outcome.toUpperCase()}`
+      });
+    } catch (error) {
+      console.error('Error recording vision outcome:', error);
+      res.status(500).json({ error: 'Failed to record vision outcome' });
+    }
+  });
+
+  // Get vision statistics and performance
+  app.get("/api/waides-ki/vision-spirit/stats", (req, res) => {
+    try {
+      const stats = waidesKIVisionSpirit.getVisionStats();
+      res.json({
+        success: true,
+        stats,
+        message: `Vision accuracy: ${(stats.accuracy_rate * 100).toFixed(1)}% from ${stats.total_visions} visions`
+      });
+    } catch (error) {
+      console.error('Error getting vision stats:', error);
+      res.status(500).json({ error: 'Failed to get vision statistics' });
+    }
+  });
+
+  // Get vision history for analysis
+  app.get("/api/waides-ki/vision-spirit/history", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = waidesKIVisionSpirit.getVisionHistory(limit);
+      res.json({
+        success: true,
+        history,
+        count: history.length,
+        message: `Retrieved ${history.length} vision records`
+      });
+    } catch (error) {
+      console.error('Error getting vision history:', error);
+      res.status(500).json({ error: 'Failed to get vision history' });
+    }
+  });
+
+  // Force specific vision for testing
+  app.post("/api/waides-ki/vision-spirit/force", (req, res) => {
+    try {
+      const { vision, energy_level } = req.body;
+      
+      if (!vision || !['rise', 'fall', 'choppy'].includes(vision)) {
+        return res.status(400).json({ error: 'Vision must be rise, fall, or choppy' });
+      }
+
+      const forcedVision = waidesKIVisionSpirit.forceVision(vision, energy_level);
+      res.json({
+        success: true,
+        vision: forcedVision,
+        message: `Forced vision: ${vision.toUpperCase()}`
+      });
+    } catch (error) {
+      console.error('Error forcing vision:', error);
+      res.status(500).json({ error: 'Failed to force vision' });
+    }
+  });
+
+  // Clear vision history for reset
+  app.post("/api/waides-ki/vision-spirit/clear", (req, res) => {
+    try {
+      waidesKIVisionSpirit.clearVisionHistory();
+      res.json({
+        success: true,
+        message: 'Vision history cleared successfully'
+      });
+    } catch (error) {
+      console.error('Error clearing vision history:', error);
+      res.status(500).json({ error: 'Failed to clear vision history' });
+    }
+  });
+
+  // Complete vision workflow: receive + verify in one call
+  app.post("/api/waides-ki/vision-spirit/complete-workflow", async (req, res) => {
+    try {
+      // Step 1: Receive vision
+      const vision = waidesKIVisionSpirit.receiveVision();
+      
+      // Step 2: Get real market data
+      const liveData = await waidesKILiveFeed.getUnifiedMarketData();
+      const indicators = {
+        rsi: liveData.rsi || 50,
+        ema_50: liveData.ema_50 || liveData.price,
+        ema_200: liveData.ema_200 || liveData.price,
+        current_price: liveData.price
+      };
+
+      // Step 3: Verify vision
+      const validation = waidesKIVisionSpirit.verifyVision(
+        indicators.rsi,
+        indicators.ema_50,
+        indicators.ema_200,
+        indicators.current_price
+      );
+
+      res.json({
+        success: true,
+        workflow: {
+          vision,
+          validation,
+          indicators_used: indicators
+        },
+        message: `Complete workflow: ${vision.vision.toUpperCase()} vision ${validation.confirmed ? 'CONFIRMED' : 'REJECTED'}`
+      });
+    } catch (error) {
+      console.error('Error in complete vision workflow:', error);
+      res.status(500).json({ error: 'Failed to execute complete vision workflow' });
     }
   });
 

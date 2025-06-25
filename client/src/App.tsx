@@ -15,6 +15,7 @@ import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
 import DreamLayerVision from "@/components/DreamLayerVision";
+import VisionSpirit from "@/components/VisionSpirit";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -29,6 +30,7 @@ function Router() {
     { path: "/sigil-layer", label: "Sigil Layer" },
     { path: "/shadow-defense", label: "Shadow Defense" },
     { path: "/dream-vision", label: "Dream Vision" },
+    { path: "/vision-spirit", label: "Vision Spirit" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },
@@ -87,6 +89,7 @@ function Router() {
           <Route path="/sigil-layer" component={SigilLayer} />
           <Route path="/shadow-defense" component={ShadowOverrideDefense} />
           <Route path="/dream-vision" component={DreamLayerVision} />
+          <Route path="/vision-spirit" component={VisionSpirit} />
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/api-docs" component={APIDocsPage} />
