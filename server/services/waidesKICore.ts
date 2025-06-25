@@ -18,6 +18,7 @@ import { waidesKITraderEngine } from './waidesKITraderEngine';
 import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { waidesKIDNAHealer } from './waidesKIDNAHealer';
+import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -894,6 +895,8 @@ export class WaidesKICore {
     const shadowStats = waidesKIShadowSimulator.getShadowStatistics();
     const emotionalStats = waidesKIEmotionalFirewall.getEmotionalStatistics();
     const healingStats = waidesKIDNAHealer.getHealingStatistics();
+    const situationalStats = waidesKISituationalIntelligence.getSituationalStatistics();
+    const situationalContext = waidesKISituationalIntelligence.getCurrentContext();
     
     return {
       isActive: this.isAutonomousMode,
@@ -996,6 +999,16 @@ export class WaidesKICore {
         purifiedDNA: healingStats.purified_dna_count,
         overallHealthScore: healingStats.overall_health_score,
         strategyPurification: 'ACTIVE'
+      },
+      situationalIntelligence: {
+        currentZone: situationalStats.current_zone,
+        zoneConfidence: situationalStats.zone_confidence,
+        volatilityRegime: situationalStats.volatility_regime,
+        totalAdjustments: situationalStats.total_adjustments,
+        adjustmentSuccessRate: situationalStats.adjustment_success_rate,
+        activeRules: situationalStats.active_rules,
+        recommendedPositionSize: situationalStats.recommended_position_size,
+        contextualAwareness: 'ACTIVE'
       }
     };
   }

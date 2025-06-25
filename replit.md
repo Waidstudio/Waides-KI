@@ -463,6 +463,18 @@ Changelog:
   - Integrated performance trend analysis identifying improving, declining, stable, and unknown DNA trajectories
   - System now remembers, heals, and evolves ensuring no mistake is repeated blindly with genetic strategy cleansing
   - All DNA evaluation, purification, evolution, and healing processes remain completely invisible to users
+- June 25, 2025. Implemented Situational Intelligence Core for Context-Aware Trading and Market Window Analysis
+  - Created WaidesKISituationalIntelligence with comprehensive market window analysis for Asia, London, US, and off-hours trading
+  - Built situational rule engine automatically adjusting strategies based on time zones, volatility regimes, and market conditions
+  - Implemented contextual decision making system pausing, blocking, or enhancing trades based on situational factors
+  - Added volatility regime analysis identifying low, normal, high, and extreme volatility periods with appropriate strategy adjustments
+  - Created learning system automatically generating new rules from repeated failures in specific market contexts
+  - Enhanced trader engine integration with automatic situational validation and position size adjustments before trade execution
+  - Built comprehensive context tracking including zone confidence, time until changes, and recommended position sizing
+  - Added market phase detection distinguishing pre-market, opening, active, closing, and post-market trading conditions
+  - Integrated rule success rate tracking with automatic deactivation of consistently poor-performing situational rules
+  - System now trades with elite discretionary trader instincts understanding when, how, and why to trade in different contexts
+  - All situational analysis, context evaluation, and time-based adjustments remain completely invisible to users
 
 ## User Preferences
 

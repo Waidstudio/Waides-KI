@@ -31,6 +31,7 @@ import { waidesKITraderEngine } from './services/waidesKITraderEngine.js';
 import { waidesKIShadowSimulator } from './services/waidesKIShadowSimulator.js';
 import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
 import { waidesKIDNAHealer } from './services/waidesKIDNAHealer.js';
+import { waidesKISituationalIntelligence } from './services/waidesKISituationalIntelligence.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -3797,6 +3798,214 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting DNA healer data:', error);
       res.status(500).json({ error: 'Failed to export DNA healer data' });
+    }
+  });
+
+  // Situational Intelligence Core endpoints
+  app.get("/api/waides-ki/situational/statistics", (req, res) => {
+    try {
+      const stats = waidesKISituationalIntelligence.getSituationalStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting situational statistics:', error);
+      res.status(500).json({ error: 'Failed to get situational statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/situational/context", (req, res) => {
+    try {
+      const context = waidesKISituationalIntelligence.getCurrentContext();
+      res.json(context);
+    } catch (error) {
+      console.error('Error getting current context:', error);
+      res.status(500).json({ error: 'Failed to get current context' });
+    }
+  });
+
+  app.get("/api/waides-ki/situational/rules", (req, res) => {
+    try {
+      const rules = waidesKISituationalIntelligence.getSituationalRules();
+      res.json({ situational_rules: rules });
+    } catch (error) {
+      console.error('Error getting situational rules:', error);
+      res.status(500).json({ error: 'Failed to get situational rules' });
+    }
+  });
+
+  app.get("/api/waides-ki/situational/decisions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const decisions = waidesKISituationalIntelligence.getContextualDecisions(limit);
+      res.json({ contextual_decisions: decisions });
+    } catch (error) {
+      console.error('Error getting contextual decisions:', error);
+      res.status(500).json({ error: 'Failed to get contextual decisions' });
+    }
+  });
+
+  app.get("/api/waides-ki/situational/windows", (req, res) => {
+    try {
+      const windows = waidesKISituationalIntelligence.getMarketWindows();
+      res.json({ market_windows: windows });
+    } catch (error) {
+      console.error('Error getting market windows:', error);
+      res.status(500).json({ error: 'Failed to get market windows' });
+    }
+  });
+
+  app.get("/api/waides-ki/situational/volatility", (req, res) => {
+    try {
+      const regime = waidesKISituationalIntelligence.getVolatilityRegime();
+      res.json(regime);
+    } catch (error) {
+      console.error('Error getting volatility regime:', error);
+      res.status(500).json({ error: 'Failed to get volatility regime' });
+    }
+  });
+
+  app.post("/api/waides-ki/situational/check-adjustment", (req, res) => {
+    try {
+      const { indicators, original_decision, confidence } = req.body;
+      
+      if (!indicators || !original_decision || !confidence) {
+        return res.status(400).json({ error: 'indicators, original_decision, and confidence are required' });
+      }
+      
+      const adjustmentResult = waidesKISituationalIntelligence.shouldAdjustStrategy(
+        indicators,
+        original_decision,
+        confidence
+      );
+      
+      res.json({ 
+        success: true, 
+        adjustment_result: adjustmentResult
+      });
+    } catch (error) {
+      console.error('Error checking situational adjustment:', error);
+      res.status(500).json({ error: 'Failed to check situational adjustment: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/situational/record-outcome", (req, res) => {
+    try {
+      const { decision_id, outcome } = req.body;
+      
+      if (!decision_id || !outcome) {
+        return res.status(400).json({ error: 'decision_id and outcome are required' });
+      }
+      
+      if (!['WIN', 'LOSS', 'NEUTRAL'].includes(outcome)) {
+        return res.status(400).json({ error: 'outcome must be WIN, LOSS, or NEUTRAL' });
+      }
+      
+      waidesKISituationalIntelligence.recordDecisionOutcome(decision_id, outcome);
+      
+      res.json({ 
+        success: true, 
+        message: `Decision outcome recorded: ${outcome}` 
+      });
+    } catch (error) {
+      console.error('Error recording decision outcome:', error);
+      res.status(500).json({ error: 'Failed to record decision outcome: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/situational/enable", (req, res) => {
+    try {
+      waidesKISituationalIntelligence.enableIntelligence();
+      res.json({ success: true, message: 'Situational intelligence enabled successfully' });
+    } catch (error) {
+      console.error('Error enabling situational intelligence:', error);
+      res.status(500).json({ error: 'Failed to enable situational intelligence' });
+    }
+  });
+
+  app.post("/api/waides-ki/situational/disable", (req, res) => {
+    try {
+      waidesKISituationalIntelligence.disableIntelligence();
+      res.json({ success: true, message: 'Situational intelligence disabled successfully' });
+    } catch (error) {
+      console.error('Error disabling situational intelligence:', error);
+      res.status(500).json({ error: 'Failed to disable situational intelligence' });
+    }
+  });
+
+  app.post("/api/waides-ki/situational/learning", (req, res) => {
+    try {
+      const { enable } = req.body;
+      
+      if (enable) {
+        waidesKISituationalIntelligence.enableLearning();
+        res.json({ success: true, message: 'Situational learning enabled successfully' });
+      } else {
+        waidesKISituationalIntelligence.disableLearning();
+        res.json({ success: true, message: 'Situational learning disabled successfully' });
+      }
+    } catch (error) {
+      console.error('Error toggling situational learning:', error);
+      res.status(500).json({ error: 'Failed to toggle situational learning' });
+    }
+  });
+
+  app.post("/api/waides-ki/situational/add-rule", (req, res) => {
+    try {
+      const { zone, condition, action, reason, confidence, learned_from, success_rate, is_active } = req.body;
+      
+      if (!zone || !condition || !action || !reason) {
+        return res.status(400).json({ error: 'zone, condition, action, and reason are required' });
+      }
+      
+      const ruleId = waidesKISituationalIntelligence.addCustomRule({
+        zone,
+        condition,
+        action,
+        reason,
+        confidence: confidence || 70,
+        learned_from: learned_from || 'MANUAL',
+        success_rate: success_rate || 50,
+        is_active: is_active !== false
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Custom situational rule added successfully',
+        rule_id: ruleId 
+      });
+    } catch (error) {
+      console.error('Error adding custom rule:', error);
+      res.status(500).json({ error: 'Failed to add custom rule: ' + error.message });
+    }
+  });
+
+  app.delete("/api/waides-ki/situational/remove-rule/:rule_id", (req, res) => {
+    try {
+      const { rule_id } = req.params;
+      
+      if (!rule_id) {
+        return res.status(400).json({ error: 'Rule ID is required' });
+      }
+      
+      const success = waidesKISituationalIntelligence.removeRule(rule_id);
+      
+      if (success) {
+        res.json({ success: true, message: `Rule ${rule_id} removed successfully` });
+      } else {
+        res.status(404).json({ error: 'Rule not found' });
+      }
+    } catch (error) {
+      console.error('Error removing rule:', error);
+      res.status(500).json({ error: 'Failed to remove rule' });
+    }
+  });
+
+  app.get("/api/waides-ki/situational/export", (req, res) => {
+    try {
+      const situationalData = waidesKISituationalIntelligence.exportSituationalData();
+      res.json(situationalData);
+    } catch (error) {
+      console.error('Error exporting situational data:', error);
+      res.status(500).json({ error: 'Failed to export situational data' });
     }
   });
 

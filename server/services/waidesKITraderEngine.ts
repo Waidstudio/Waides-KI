@@ -9,6 +9,7 @@ import { waidesKILiveFeed } from './waidesKILiveFeed';
 import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { waidesKIDNAHealer } from './waidesKIDNAHealer';
+import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
 import { storage } from '../storage';
 
 interface MarketIndicators {
@@ -324,6 +325,22 @@ export class WaidesKITraderEngine {
         }
       }
       
+      // 9. Record situational decision outcome
+      if (situationalCheck.shouldAdjust && executionResult.outcome) {
+        // Find the situational decision that was made
+        const contextualDecisions = waidesKISituationalIntelligence.getContextualDecisions(10);
+        const recentDecision = contextualDecisions.find(d => 
+          Math.abs(d.timestamp - Date.now()) < 60000 // Within last minute
+        );
+        
+        if (recentDecision) {
+          waidesKISituationalIntelligence.recordDecisionOutcome(
+            recentDecision.decision_id,
+            executionResult.outcome.result
+          );
+        }
+      }
+      
       // 9. Update learning systems
       await this.updateLearningSystems(executionResult);
       
@@ -363,6 +380,16 @@ export class WaidesKITraderEngine {
     );
     if (emotionalCheck.shouldBlock) {
       reasons.push(`Emotional firewall: ${emotionalCheck.reason}`);
+    }
+    
+    // Check situational intelligence
+    const situationalCheck = waidesKISituationalIntelligence.shouldAdjustStrategy(
+      params.indicators,
+      params.action,
+      params.confidence_level
+    );
+    if (situationalCheck.shouldAdjust && ['BLOCK', 'PAUSE'].includes(situationalCheck.adjustment)) {
+      reasons.push(`Situational adjustment: ${situationalCheck.reason}`);
     }
     
     // Check trading hours
