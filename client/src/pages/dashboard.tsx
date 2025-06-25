@@ -12,6 +12,7 @@ import DivineCommandCenter from "@/components/DivineCommandCenter";
 import CandlestickChart from "@/components/CandlestickChart";
 import RealTimeCandlestickChart from "@/components/RealTimeCandlestickChart";
 import WeeklyTradingSchedule from "@/components/WeeklyTradingSchedule";
+import TradingBrainPanel from "@/components/TradingBrainPanel";
 import RealTimeTrading from "@/components/RealTimeTrading";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff, Menu, Brain, Bot } from "lucide-react";
@@ -257,8 +258,9 @@ export default function Dashboard() {
               <>
                 {/* Tabs Container */}
                 <Tabs defaultValue="realtime" className="w-full">
-                  <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
+                  <TabsList className="grid w-full grid-cols-6 bg-slate-800 border-slate-700">
                     <TabsTrigger value="realtime" className="data-[state=active]:bg-slate-700">Divine Trading</TabsTrigger>
+                    <TabsTrigger value="brain" className="data-[state=active]:bg-slate-700">Trading Brain</TabsTrigger>
                     <TabsTrigger value="schedule" className="data-[state=active]:bg-slate-700">Weekly Schedule</TabsTrigger>
                     <TabsTrigger value="charts" className="data-[state=active]:bg-slate-700">Real-time Charts</TabsTrigger>
                     <TabsTrigger value="waidbot" className="data-[state=active]:bg-slate-700">
@@ -443,6 +445,10 @@ export default function Dashboard() {
                         <RealTimeTrading />
                       </div>
                     </div>
+                    </TabsContent>
+
+                    <TabsContent value="brain" className="space-y-6">
+                      <TradingBrainPanel />
                     </TabsContent>
 
                     <TabsContent value="schedule" className="space-y-6">

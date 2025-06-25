@@ -9,6 +9,7 @@ import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
 import { weeklyScheduler, type WeeklyTradingPlan } from './services/weeklyTradingScheduler.js';
+import { tradingBrain } from './services/tradingBrainEngine.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1503,6 +1504,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error checking trading allowance:', error);
       res.status(500).json({ error: 'Failed to check trading status' });
+    }
+  });
+
+  // Trading Brain Engine endpoints
+  app.get("/api/trading-brain/daily-wisdom", (req, res) => {
+    try {
+      const wisdom = tradingBrain.generateDailyTradingWisdom();
+      res.json({ wisdom });
+    } catch (error) {
+      console.error('Error getting daily wisdom:', error);
+      res.status(500).json({ error: 'Failed to get daily wisdom' });
+    }
+  });
+
+  app.get("/api/trading-brain/search", (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.length < 3) {
+        return res.json([]);
+      }
+      const results = tradingBrain.searchKnowledge(query);
+      res.json(results);
+    } catch (error) {
+      console.error('Error searching knowledge:', error);
+      res.status(500).json({ error: 'Failed to search knowledge' });
+    }
+  });
+
+  app.get("/api/trading-brain/category", (req, res) => {
+    try {
+      const category = req.query.cat as string;
+      if (!category || category === 'ALL') {
+        return res.json([]);
+      }
+      const results = tradingBrain.getKnowledgeByCategory(category);
+      res.json(results);
+    } catch (error) {
+      console.error('Error getting category knowledge:', error);
+      res.status(500).json({ error: 'Failed to get category knowledge' });
+    }
+  });
+
+  app.get("/api/trading-brain/advice", (req, res) => {
+    try {
+      const situation = req.query.situation as string;
+      if (!situation || situation.length < 3) {
+        return res.json(null);
+      }
+      const advice = tradingBrain.getAdviceForSituation(situation, 'Current Market');
+      res.json(advice);
+    } catch (error) {
+      console.error('Error getting trading advice:', error);
+      res.status(500).json({ error: 'Failed to get trading advice' });
+    }
+  });
+
+  app.get("/api/trading-brain/scorecard", (req, res) => {
+    try {
+      const scorecard = tradingBrain.getTradingScorecard();
+      res.json(scorecard);
+    } catch (error) {
+      console.error('Error getting trading scorecard:', error);
+      res.status(500).json({ error: 'Failed to get trading scorecard' });
+    }
+  });
+
+  app.get("/api/trading-brain/psychology", (req, res) => {
+    try {
+      const psychology = tradingBrain.analyzeMarketPsychology('Current Market Conditions');
+      res.json(psychology);
+    } catch (error) {
+      console.error('Error analyzing market psychology:', error);
+      res.status(500).json({ error: 'Failed to analyze market psychology' });
     }
   });
 
