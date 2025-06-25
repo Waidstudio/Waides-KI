@@ -5548,5 +5548,177 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log('🚀 WaidBot Pro: Advanced AI-powered ETH trading with professional analytics');
   console.log('🌌 Quantum Trading Engine: Next 500 years technology activated');
 
+  // 🔮 STEP 28 - WAIDES KI SIGIL LAYER ENDPOINTS
+
+  // Konsigil Engine endpoints
+  app.post("/api/waides-ki/sigils/generate", (req, res) => {
+    try {
+      const { trade_context } = req.body;
+      
+      if (!trade_context || !trade_context.pattern || !trade_context.emotion) {
+        return res.status(400).json({ error: 'Missing required fields: pattern, emotion' });
+      }
+
+      const konsigil = waidesKIKonsigilEngine.generateKonsigil(trade_context);
+      res.json(konsigil);
+    } catch (error) {
+      console.error('Error generating konsigil:', error);
+      res.status(500).json({ error: 'Failed to generate konsigil' });
+    }
+  });
+
+  app.get("/api/waides-ki/sigils/stats", (req, res) => {
+    try {
+      const stats = waidesKIKonsigilEngine.getSigilStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting sigil statistics:', error);
+      res.status(500).json({ error: 'Failed to get sigil statistics' });
+    }
+  });
+
+  app.post("/api/waides-ki/sigils/analyze", (req, res) => {
+    try {
+      const { konsigil_data } = req.body;
+      
+      if (!konsigil_data || !konsigil_data.konsigil) {
+        return res.status(400).json({ error: 'Missing konsigil data' });
+      }
+
+      const analysis = waidesKIKonsigilEngine.analyzeKonsigil(konsigil_data);
+      res.json(analysis);
+    } catch (error) {
+      console.error('Error analyzing konsigil:', error);
+      res.status(500).json({ error: 'Failed to analyze konsigil' });
+    }
+  });
+
+  // Glyph Memory Tree endpoints
+  app.get("/api/waides-ki/sigils/memory-tree/stats", (req, res) => {
+    try {
+      const stats = waidesKIGlyphMemoryTree.getMemoryTreeStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting memory tree stats:', error);
+      res.status(500).json({ error: 'Failed to get memory tree statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/sigils/memory-tree/glyphs", (req, res) => {
+    try {
+      const count = parseInt(req.query.count as string) || 50;
+      const all_glyphs = waidesKIGlyphMemoryTree.getAllGlyphs();
+      const recent_glyphs = all_glyphs
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, count);
+      
+      res.json(recent_glyphs);
+    } catch (error) {
+      console.error('Error getting glyphs:', error);
+      res.status(500).json({ error: 'Failed to get glyphs' });
+    }
+  });
+
+  app.get("/api/waides-ki/sigils/memory-tree/clusters", (req, res) => {
+    try {
+      const clusters = waidesKIGlyphMemoryTree.getGlyphClusters();
+      res.json(clusters);
+    } catch (error) {
+      console.error('Error getting glyph clusters:', error);
+      res.status(500).json({ error: 'Failed to get glyph clusters' });
+    }
+  });
+
+  // Sigil Oracle endpoints
+  app.post("/api/waides-ki/sigils/oracle/scan", async (req, res) => {
+    try {
+      const { pattern, emotion, additional_context } = req.body;
+      
+      if (!pattern || !emotion) {
+        return res.status(400).json({ error: 'Missing required fields: pattern, emotion' });
+      }
+
+      const reading = await waidesKISigilOracle.scanPattern(pattern, emotion, additional_context);
+      res.json(reading);
+    } catch (error) {
+      console.error('Error performing oracle scan:', error);
+      res.status(500).json({ error: 'Failed to perform oracle scan' });
+    }
+  });
+
+  app.post("/api/waides-ki/sigils/oracle/consultation", async (req, res) => {
+    try {
+      const { pattern, emotion } = req.body;
+      
+      if (!pattern || !emotion) {
+        return res.status(400).json({ error: 'Missing required fields: pattern, emotion' });
+      }
+
+      const consultation = await waidesKISigilOracle.quickConsultation(pattern, emotion);
+      res.json(consultation);
+    } catch (error) {
+      console.error('Error performing oracle consultation:', error);
+      res.status(500).json({ error: 'Failed to perform oracle consultation' });
+    }
+  });
+
+  // Demo endpoint for complete sigil workflow
+  app.post("/api/waides-ki/sigils/demo-workflow", async (req, res) => {
+    try {
+      const { pattern, emotion, strategy, confidence } = req.body;
+      
+      if (!pattern || !emotion || !strategy) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: pattern, emotion, strategy' 
+        });
+      }
+
+      // 1. Generate konsigil
+      const trade_context = {
+        pattern,
+        emotion,
+        strategy,
+        confidence: confidence || 75,
+        risk_level: 'MODERATE',
+        market_phase: 'TRENDING',
+        spiritual_alignment: 'ALIGNED'
+      };
+
+      const konsigil = waidesKIKonsigilEngine.generateKonsigil(trade_context);
+
+      // 2. Get oracle reading
+      const oracle_reading = await waidesKISigilOracle.scanPattern(pattern, emotion);
+
+      // 3. Simulate trade result and stamp glyph
+      const simulated_result = Math.random() > 0.6 ? 
+        Math.random() * 100 : -Math.random() * 50; // 60% success rate
+      const success = simulated_result > 0;
+      const duration = Math.random() * 24 * 60 * 60 * 1000; // Up to 24 hours
+
+      waidesKIGlyphMemoryTree.stampGlyph(
+        konsigil,
+        simulated_result,
+        success,
+        duration,
+        success ? 'PROFIT_TARGET' : 'STOP_LOSS',
+        'Demo workflow execution'
+      );
+
+      res.json({
+        konsigil,
+        oracle_reading,
+        trade_simulation: {
+          result: simulated_result,
+          success,
+          duration_hours: duration / (60 * 60 * 1000)
+        },
+        message: 'Complete sigil workflow executed successfully'
+      });
+    } catch (error) {
+      console.error('Error in demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute demo workflow' });
+    }
+  });
+
   return httpServer;
 }

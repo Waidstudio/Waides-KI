@@ -11,6 +11,8 @@ import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
 import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
+import { ReincarnationLoop } from "@/components/ReincarnationLoop";
+import { SigilLayer } from "@/components/SigilLayer";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -21,6 +23,8 @@ function Router() {
     { path: "/live-data", label: "Live Data" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/reincarnation", label: "Reincarnation" },
+    { path: "/sigil-layer", label: "Sigil Layer" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },
