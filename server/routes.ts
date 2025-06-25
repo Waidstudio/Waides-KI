@@ -8,6 +8,7 @@ import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
 import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
+import { weeklyScheduler, type WeeklyTradingPlan } from './services/weeklyTradingScheduler.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
