@@ -1469,6 +1469,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Weekly Trading Schedule endpoints
+  app.get("/api/weekly-schedule", (req, res) => {
+    try {
+      const weeklyPlan: WeeklyTradingPlan = weeklyScheduler.getWeeklyTradingPlan();
+      res.json(weeklyPlan);
+    } catch (error) {
+      console.error('Error getting weekly schedule:', error);
+      res.status(500).json({ error: 'Failed to get weekly trading schedule' });
+    }
+  });
+
+  app.get("/api/weekly-schedule/current-day", (req, res) => {
+    try {
+      const currentDay = weeklyScheduler.getCurrentDayInfo();
+      res.json(currentDay);
+    } catch (error) {
+      console.error('Error getting current day info:', error);
+      res.status(500).json({ error: 'Failed to get current day information' });
+    }
+  });
+
+  app.get("/api/weekly-schedule/should-trade", (req, res) => {
+    try {
+      const shouldTrade = weeklyScheduler.shouldAllowTrading();
+      const positionMultiplier = weeklyScheduler.getPositionSizeMultiplier();
+      res.json({
+        shouldAllowTrading: shouldTrade,
+        positionSizeMultiplier: positionMultiplier,
+        recommendation: weeklyScheduler.calculateOverallRecommendation(),
+        activeStrategy: weeklyScheduler.getActiveStrategy()
+      });
+    } catch (error) {
+      console.error('Error checking trading allowance:', error);
+      res.status(500).json({ error: 'Failed to check trading status' });
+    }
+  });
+
   console.log('🤖 Enhanced WaidBot Self-Learning System Initialized');
   console.log('📊 Portfolio Manager: $10,000 starting balance');
   console.log('🧠 ML Engine: Continuous learning from live market data');

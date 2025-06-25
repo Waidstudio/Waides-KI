@@ -11,6 +11,7 @@ import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import DivineCommandCenter from "@/components/DivineCommandCenter";
 import CandlestickChart from "@/components/CandlestickChart";
 import RealTimeCandlestickChart from "@/components/RealTimeCandlestickChart";
+import WeeklyTradingSchedule from "@/components/WeeklyTradingSchedule";
 import RealTimeTrading from "@/components/RealTimeTrading";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff, Menu, Brain, Bot } from "lucide-react";
