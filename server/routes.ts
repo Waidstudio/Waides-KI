@@ -6375,5 +6375,219 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ================================
+  // STEP 32: Dream Layer Vision + Temporal Firewall + Konseal Symbols API Routes
+  // ================================
+
+  // Dream Layer Vision state endpoint
+  app.get("/api/waides-ki/dream/state", (req, res) => {
+    try {
+      const state = waidesKIDreamLayerVision.getDreamLayerState();
+      res.json(state);
+    } catch (error) {
+      console.error('Error getting dream layer state:', error);
+      res.status(500).json({ error: 'Failed to get dream layer state' });
+    }
+  });
+
+  // Get active precognitive visions
+  app.get("/api/waides-ki/dream/visions", (req, res) => {
+    try {
+      const visions = waidesKIDreamLayerVision.getActivePrecognitiveVisions();
+      res.json(visions);
+    } catch (error) {
+      console.error('Error getting precognitive visions:', error);
+      res.status(500).json({ error: 'Failed to get precognitive visions' });
+    }
+  });
+
+  // Get symbol lifecycles
+  app.get("/api/waides-ki/dream/symbols", (req, res) => {
+    try {
+      const phase = req.query.phase as string;
+      const lifecycles = waidesKIDreamLayerVision.getSymbolLifecyclesByPhase(phase as any);
+      res.json(lifecycles);
+    } catch (error) {
+      console.error('Error getting symbol lifecycles:', error);
+      res.status(500).json({ error: 'Failed to get symbol lifecycles' });
+    }
+  });
+
+  // Get dream vision statistics
+  app.get("/api/waides-ki/dream/stats", (req, res) => {
+    try {
+      const stats = waidesKIDreamLayerVision.getDreamVisionStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting dream vision stats:', error);
+      res.status(500).json({ error: 'Failed to get dream vision statistics' });
+    }
+  });
+
+  // Force trigger dream cycle
+  app.post("/api/waides-ki/dream/trigger", async (req, res) => {
+    try {
+      const success = await waidesKIDreamLayerVision.forceDreamCycle();
+      res.json({ success, message: success ? 'Dream cycle triggered successfully' : 'Failed to trigger dream cycle' });
+    } catch (error) {
+      console.error('Error triggering dream cycle:', error);
+      res.status(500).json({ error: 'Failed to trigger dream cycle' });
+    }
+  });
+
+  // Konseal Symbol Tree endpoints
+  app.get("/api/waides-ki/dream/konseal/symbols", (req, res) => {
+    try {
+      const konsealTree = waidesKIDreamLayerVision.getKonsealSymbolTree();
+      const symbols = konsealTree.getActiveSymbols();
+      res.json(symbols);
+    } catch (error) {
+      console.error('Error getting konseal symbols:', error);
+      res.status(500).json({ error: 'Failed to get konseal symbols' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/konseal/stats", (req, res) => {
+    try {
+      const konsealTree = waidesKIDreamLayerVision.getKonsealSymbolTree();
+      const stats = konsealTree.getSymbolStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting konseal stats:', error);
+      res.status(500).json({ error: 'Failed to get konseal statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/konseal/powerful", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const konsealTree = waidesKIDreamLayerVision.getKonsealSymbolTree();
+      const symbols = konsealTree.getMostPowerfulSymbols(limit);
+      res.json(symbols);
+    } catch (error) {
+      console.error('Error getting powerful symbols:', error);
+      res.status(500).json({ error: 'Failed to get powerful symbols' });
+    }
+  });
+
+  // Temporal Firewall endpoints
+  app.get("/api/waides-ki/dream/temporal/status", (req, res) => {
+    try {
+      const temporalFirewall = waidesKIDreamLayerVision.getTemporalFirewall();
+      const context = temporalFirewall.getCurrentTemporalContext();
+      const isAllowed = temporalFirewall.isActivationAllowed();
+      res.json({ context, isAllowed });
+    } catch (error) {
+      console.error('Error getting temporal status:', error);
+      res.status(500).json({ error: 'Failed to get temporal status' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/temporal/stats", (req, res) => {
+    try {
+      const temporalFirewall = waidesKIDreamLayerVision.getTemporalFirewall();
+      const stats = temporalFirewall.getTemporalStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting temporal stats:', error);
+      res.status(500).json({ error: 'Failed to get temporal statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/temporal/windows", (req, res) => {
+    try {
+      const temporalFirewall = waidesKIDreamLayerVision.getTemporalFirewall();
+      const windows = temporalFirewall.getAllWindows();
+      res.json(windows);
+    } catch (error) {
+      console.error('Error getting temporal windows:', error);
+      res.status(500).json({ error: 'Failed to get temporal windows' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/temporal/next-sacred", (req, res) => {
+    try {
+      const temporalFirewall = waidesKIDreamLayerVision.getTemporalFirewall();
+      const nextWindow = temporalFirewall.getNextSacredWindow();
+      res.json(nextWindow);
+    } catch (error) {
+      console.error('Error getting next sacred window:', error);
+      res.status(500).json({ error: 'Failed to get next sacred window' });
+    }
+  });
+
+  // Symbol Activation Engine endpoints
+  app.get("/api/waides-ki/dream/activation/history", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const activationEngine = waidesKIDreamLayerVision.getSymbolActivationEngine();
+      const history = activationEngine.getInjectionHistory(limit);
+      res.json(history);
+    } catch (error) {
+      console.error('Error getting activation history:', error);
+      res.status(500).json({ error: 'Failed to get activation history' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/activation/stats", (req, res) => {
+    try {
+      const activationEngine = waidesKIDreamLayerVision.getSymbolActivationEngine();
+      const stats = activationEngine.getActivationStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting activation stats:', error);
+      res.status(500).json({ error: 'Failed to get activation statistics' });
+    }
+  });
+
+  // Dream Interpreter endpoints
+  app.get("/api/waides-ki/dream/interpreter/history", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const dreamInterpreter = waidesKIDreamLayerVision.getDreamInterpreter();
+      const history = dreamInterpreter.getDreamHistory(limit);
+      res.json(history);
+    } catch (error) {
+      console.error('Error getting dream history:', error);
+      res.status(500).json({ error: 'Failed to get dream history' });
+    }
+  });
+
+  app.get("/api/waides-ki/dream/interpreter/stats", (req, res) => {
+    try {
+      const dreamInterpreter = waidesKIDreamLayerVision.getDreamInterpreter();
+      const stats = dreamInterpreter.getDreamStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting dream interpreter stats:', error);
+      res.status(500).json({ error: 'Failed to get dream interpreter statistics' });
+    }
+  });
+
+  // Demo endpoint for complete dream workflow
+  app.post("/api/waides-ki/dream/demo", async (req, res) => {
+    try {
+      // Force trigger a dream cycle
+      const dreamTriggered = await waidesKIDreamLayerVision.forceDreamCycle();
+      
+      // Get current state
+      const dreamState = waidesKIDreamLayerVision.getDreamLayerState();
+      const visions = waidesKIDreamLayerVision.getActivePrecognitiveVisions();
+      const konsealTree = waidesKIDreamLayerVision.getKonsealSymbolTree();
+      const symbols = konsealTree.getActiveSymbols();
+      
+      res.json({
+        demo_triggered: dreamTriggered,
+        dream_state: dreamState,
+        active_visions: visions,
+        konseal_symbols: symbols,
+        message: dreamTriggered ? 'Dream cycle completed - symbols generated and visions created' : 'Demo cycle failed'
+      });
+    } catch (error) {
+      console.error('Error in dream demo:', error);
+      res.status(500).json({ error: 'Failed to execute dream demo' });
+    }
+  });
+
   return httpServer;
 }

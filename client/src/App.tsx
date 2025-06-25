@@ -14,6 +14,7 @@ import GatewayPage from "@/pages/GatewayPage";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
+import DreamLayerVision from "@/components/DreamLayerVision";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
     { path: "/reincarnation", label: "Reincarnation" },
     { path: "/sigil-layer", label: "Sigil Layer" },
     { path: "/shadow-defense", label: "Shadow Defense" },
+    { path: "/dream-vision", label: "Dream Vision" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },
@@ -81,6 +83,10 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/reincarnation" component={ReincarnationLoop} />
+          <Route path="/sigil-layer" component={SigilLayer} />
+          <Route path="/shadow-defense" component={ShadowOverrideDefense} />
+          <Route path="/dream-vision" component={DreamLayerVision} />
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/api-docs" component={APIDocsPage} />
