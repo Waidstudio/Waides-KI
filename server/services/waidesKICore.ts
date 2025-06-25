@@ -8,6 +8,7 @@ import { waidesKIRiskManager } from './waidesKIRiskManager';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
 import { waidesKISignalShield } from './waidesKISignalShield';
 import { waidesKIDailyReporter } from './waidesKIDailyReporter';
+import { waidesKISelfRepair } from './waidesKISelfRepair';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -730,6 +731,24 @@ export class WaidesKICore {
           'HIGH',
           'Trade Outcome Analysis'
         );
+        
+        // Record failure for self-repair system
+        waidesKISelfRepair.recordFailure(
+          trade.strategyId || 'unknown',
+          {
+            price: trade.entry,
+            rsi: 50, // Default values - would be actual from trade data
+            vwap_status: 'UNKNOWN',
+            ema50: trade.entry * 0.98,
+            ema200: trade.entry * 0.95,
+            volume: 1000000,
+            trend: trade.action === 'BUY' ? 'UPTREND' : 'DOWNTREND'
+          },
+          `${trade.engine} strategy loss: ${result}`,
+          Math.abs(pnl),
+          trade.confidence,
+          { market_phase: 'unknown', volatility: 'medium' }
+        );
       } else if (result === 'WIN' && pnl > trade.tradeAmount * 0.03) {
         waidesKIDailyReporter.recordLesson(
           `Excellent performance on ${trade.engine} strategy - conditions were optimal for this approach`,
@@ -737,6 +756,13 @@ export class WaidesKICore {
           'MEDIUM',
           'Trade Outcome Analysis'
         );
+        
+        // Mark repair success if this strategy had previous failures
+        const strategyId = trade.strategyId || 'unknown';
+        const repairSuggestion = waidesKISelfRepair.getRepairSuggestion(strategyId);
+        if (repairSuggestion) {
+          waidesKISelfRepair.markRepairSuccess(strategyId, 85); // High success rate for good win
+        }
       }
     }
     
@@ -753,6 +779,7 @@ export class WaidesKICore {
     const riskProfile = waidesKIRiskManager.getRiskProfile();
     const shieldStats = waidesKISignalShield.getShieldStats();
     const currentEmotion = waidesKIDailyReporter.getCurrentEmotionalState();
+    const selfRepairStats = waidesKISelfRepair.getSelfRepairStats();
     
     return {
       isActive: this.isAutonomousMode,
@@ -791,6 +818,12 @@ export class WaidesKICore {
         current: currentEmotion?.emotion || 'FOCUSED',
         confidence: currentEmotion?.confidence_level || 75,
         stability: 'DISCIPLINED'
+      },
+      selfRepair: {
+        repairSuggestions: selfRepairStats.repair_suggestions,
+        learningCycles: selfRepairStats.learning_cycles,
+        successRate: selfRepairStats.success_rate,
+        healing: 'ACTIVE'
       }
     };
   }

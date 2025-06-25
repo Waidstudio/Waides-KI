@@ -21,6 +21,7 @@ import { waidesKIWebSocketTracker } from './services/waidesKIWebSocketTracker.js
 import { waidesKIGateway } from './services/waidesKIGateway.js';
 import { waidesKISignalShield } from './services/waidesKISignalShield.js';
 import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
+import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2350,6 +2351,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error unbanning strategy:', error);
       res.status(500).json({ error: 'Failed to unban strategy' });
+    }
+  });
+
+  // Self-Repair and Trade Simulation endpoints
+  app.get("/api/waides-ki/self-repair/stats", (req, res) => {
+    try {
+      const stats = waidesKISelfRepair.getSelfRepairStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting self-repair stats:', error);
+      res.status(500).json({ error: 'Failed to get self-repair statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-repair/suggestions", (req, res) => {
+    try {
+      const suggestions = waidesKISelfRepair.getAllRepairSuggestions();
+      res.json({ repair_suggestions: suggestions });
+    } catch (error) {
+      console.error('Error getting repair suggestions:', error);
+      res.status(500).json({ error: 'Failed to get repair suggestions' });
+    }
+  });
+
+  app.get("/api/waides-ki/self-repair/failures/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const failures = waidesKISelfRepair.getFailureHistory(strategy_id);
+      res.json({ strategy_id, failure_history: failures });
+    } catch (error) {
+      console.error('Error getting failure history:', error);
+      res.status(500).json({ error: 'Failed to get failure history' });
+    }
+  });
+
+  app.get("/api/waides-ki/simulation/history", (req, res) => {
+    try {
+      const history = waidesKISelfRepair.getSimulationHistory();
+      res.json({ simulation_history: history });
+    } catch (error) {
+      console.error('Error getting simulation history:', error);
+      res.status(500).json({ error: 'Failed to get simulation history' });
+    }
+  });
+
+  app.post("/api/waides-ki/simulation/run", async (req, res) => {
+    try {
+      const { historical_data, days } = req.body;
+      
+      let dataToUse = historical_data;
+      if (!dataToUse && days) {
+        // Generate test data if no historical data provided
+        dataToUse = waidesKISelfRepair.generateTestData(days);
+      } else if (!dataToUse) {
+        // Default to 7 days of test data
+        dataToUse = waidesKISelfRepair.generateTestData(7);
+      }
+      
+      const result = await waidesKISelfRepair.simulateStrategyRepairs(dataToUse);
+      res.json({
+        success: true,
+        simulation_result: result,
+        data_points_used: dataToUse.length
+      });
+    } catch (error) {
+      console.error('Error running simulation:', error);
+      res.status(500).json({ error: 'Failed to run simulation: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/self-repair/record-failure", (req, res) => {
+    try {
+      const { 
+        strategy_id, 
+        indicators, 
+        reason, 
+        loss_amount, 
+        original_confidence, 
+        market_conditions 
+      } = req.body;
+      
+      if (!strategy_id || !indicators || !reason || typeof loss_amount !== 'number') {
+        return res.status(400).json({ 
+          error: 'strategy_id, indicators, reason, and loss_amount are required' 
+        });
+      }
+      
+      waidesKISelfRepair.recordFailure(
+        strategy_id,
+        indicators,
+        reason,
+        loss_amount,
+        original_confidence || 50,
+        market_conditions || {}
+      );
+      
+      res.json({ success: true, message: 'Failure recorded for self-repair analysis' });
+    } catch (error) {
+      console.error('Error recording failure:', error);
+      res.status(500).json({ error: 'Failed to record failure' });
+    }
+  });
+
+  app.post("/api/waides-ki/self-repair/mark-success", (req, res) => {
+    try {
+      const { strategy_id, success_rate } = req.body;
+      
+      if (!strategy_id || typeof success_rate !== 'number') {
+        return res.status(400).json({ error: 'strategy_id and success_rate are required' });
+      }
+      
+      waidesKISelfRepair.markRepairSuccess(strategy_id, success_rate);
+      res.json({ success: true, message: 'Repair success marked' });
+    } catch (error) {
+      console.error('Error marking repair success:', error);
+      res.status(500).json({ error: 'Failed to mark repair success' });
+    }
+  });
+
+  app.post("/api/waides-ki/self-repair/reset", (req, res) => {
+    try {
+      waidesKISelfRepair.resetSelfRepair();
+      res.json({ success: true, message: 'Self-repair system reset successfully' });
+    } catch (error) {
+      console.error('Error resetting self-repair:', error);
+      res.status(500).json({ error: 'Failed to reset self-repair system' });
+    }
+  });
+
+  app.get("/api/waides-ki/test-data/:days", (req, res) => {
+    try {
+      const days = parseInt(req.params.days) || 7;
+      const testData = waidesKISelfRepair.generateTestData(days);
+      res.json({ 
+        test_data: testData,
+        days_generated: days,
+        total_points: testData.length
+      });
+    } catch (error) {
+      console.error('Error generating test data:', error);
+      res.status(500).json({ error: 'Failed to generate test data' });
     }
   });
 
