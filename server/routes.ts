@@ -10,6 +10,7 @@ import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
 import { weeklyScheduler, type WeeklyTradingPlan } from './services/weeklyTradingScheduler.js';
 import { tradingBrain } from './services/tradingBrainEngine.js';
+import { waidesKI } from './services/waidesKICore.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1577,6 +1578,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error analyzing market psychology:', error);
       res.status(500).json({ error: 'Failed to analyze market psychology' });
+    }
+  });
+
+  // Waides KI Core endpoints (minimal exposure)
+  app.get("/api/waides-ki/status", (req, res) => {
+    try {
+      const status = waidesKI.getPublicInterface();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting Waides KI status:', error);
+      res.status(500).json({ error: 'Failed to get system status' });
     }
   });
 

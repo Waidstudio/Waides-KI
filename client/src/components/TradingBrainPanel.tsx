@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { Brain, Search, TrendingUp, Shield, Target, Zap, BarChart3, Globe, Clock, Heart } from "lucide-react";
+import { Brain, Search, TrendingUp, Shield, Target, Zap, BarChart3, Globe, Clock, Heart, Activity } from "lucide-react";
 
 interface TradingKnowledge {
   section: string;
@@ -70,6 +70,19 @@ export default function TradingBrainPanel() {
     refetchInterval: 60000, // Refresh every minute
   });
 
+  const { data: waidesKIStatus } = useQuery<{
+    isActive: boolean;
+    lastScan: string;
+    performance: {
+      winRate: number;
+      totalTrades: number;
+      status: string;
+    };
+  }>({
+    queryKey: ['/api/waides-ki/status'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'MINDSET': return <Brain className="w-4 h-4" />;
@@ -111,26 +124,59 @@ export default function TradingBrainPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Header with Daily Wisdom */}
-      <Card className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border-purple-500/30">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Brain className="w-6 h-6 text-purple-400" />
-            <span>Waides KI Trading Brain</span>
-          </CardTitle>
-          <CardDescription>
-            Advanced trading knowledge system with 100+ professional insights
-          </CardDescription>
-        </CardHeader>
-        {dailyWisdom && (
-          <CardContent>
-            <div className="bg-purple-950/30 p-4 rounded-lg border border-purple-500/20">
-              <div className="text-sm font-medium text-purple-300 mb-2">Daily Trading Wisdom</div>
-              <div className="text-purple-200 italic">"{dailyWisdom.wisdom}"</div>
-            </div>
-          </CardContent>
+      {/* Header with Daily Wisdom and KI Status */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2 bg-gradient-to-r from-purple-900/30 to-blue-900/30 border-purple-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Brain className="w-6 h-6 text-purple-400" />
+              <span>Waides KI Trading Brain</span>
+            </CardTitle>
+            <CardDescription>
+              Advanced trading knowledge system with 100+ professional insights
+            </CardDescription>
+          </CardHeader>
+          {dailyWisdom && (
+            <CardContent>
+              <div className="bg-purple-950/30 p-4 rounded-lg border border-purple-500/20">
+                <div className="text-sm font-medium text-purple-300 mb-2">Daily Trading Wisdom</div>
+                <div className="text-purple-200 italic">"{dailyWisdom.wisdom}"</div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Waides KI Status (Minimal Info) */}
+        {waidesKIStatus && (
+          <Card className="bg-slate-900/50 border-slate-800">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-sm">
+                <Activity className="w-4 h-4 text-green-400" />
+                <span>System Status</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Status</span>
+                <span className="text-xs text-green-400">{waidesKIStatus.performance.status}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Performance</span>
+                <span className="text-xs text-slate-300">{waidesKIStatus.performance.winRate}%</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Last Scan</span>
+                <span className="text-xs text-slate-300">
+                  {new Date(waidesKIStatus.lastScan).toLocaleTimeString()}
+                </span>
+              </div>
+              <div className="text-xs text-slate-500 text-center mt-2">
+                {waidesKIStatus.performance.totalTrades} total decisions
+              </div>
+            </CardContent>
+          </Card>
         )}
-      </Card>
+      </div>
 
       <Tabs defaultValue="knowledge" className="w-full">
         <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
