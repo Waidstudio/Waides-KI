@@ -917,6 +917,8 @@ export class WaidesKICore {
     const autonomousStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
     const sentinelStats = waidesKISentinelWatchdog.getSentinelStatistics();
     const guardianStats = waidesKIGuardianAdjuster.getGuardianStatistics();
+    const oracleStats = waidesKIKonsPulseOracle.getOracleStatistics();
+    const latestForecast = waidesKIKonsPulseOracle.getLatestForecast();
     
     return {
       isActive: this.isAutonomousMode,
@@ -1116,6 +1118,17 @@ export class WaidesKICore {
         autoRecoveries: guardianStats.auto_recoveries,
         averageActionEffectiveness: guardianStats.average_action_effectiveness,
         guardianProtection: 'ACTIVE'
+      },
+      konsPulseOracle: {
+        totalForecastsGenerated: oracleStats.total_forecasts_generated,
+        spokenForecasts: oracleStats.spoken_forecasts,
+        silentPeriods: oracleStats.silent_periods,
+        forecastAccuracy: oracleStats.forecast_accuracy,
+        spiritualEnergyLevel: oracleStats.spiritual_energy_level,
+        mostActiveTimeframe: oracleStats.most_active_timeframe,
+        lastSpokenTime: oracleStats.last_spoken_time,
+        latestMarketMood: latestForecast?.market_mood || 'NEUTRAL_SPIRIT',
+        oracleVision: 'ACTIVE'
       }
     };
   }

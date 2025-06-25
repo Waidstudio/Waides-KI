@@ -42,6 +42,7 @@ import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeC
 import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
 import { waidesKIRiskAlertEngine } from './services/waidesKIRiskAlertEngine.js';
 import { waidesKIGuardianAdjuster } from './services/waidesKIGuardianAdjuster.js';
+import { waidesKIKonsPulseOracle } from './services/waidesKIKonsPulseOracle.js';
 import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
 import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeCore.js';
 import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
@@ -5102,6 +5103,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error checking bot trading status:', error);
       res.status(500).json({ error: 'Failed to check bot trading status' });
+    }
+  });
+
+  // Kons-Pulse Oracle endpoints
+  app.get("/api/waides-ki/kons-oracle/latest-forecast", (req, res) => {
+    try {
+      const latestForecast = waidesKIKonsPulseOracle.getLatestForecast();
+      res.json({ latest_forecast: latestForecast });
+    } catch (error) {
+      console.error('Error getting latest oracle forecast:', error);
+      res.status(500).json({ error: 'Failed to get latest oracle forecast' });
+    }
+  });
+
+  app.get("/api/waides-ki/kons-oracle/statistics", (req, res) => {
+    try {
+      const stats = waidesKIKonsPulseOracle.getOracleStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting oracle statistics:', error);
+      res.status(500).json({ error: 'Failed to get oracle statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/kons-oracle/forecast-history", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = waidesKIKonsPulseOracle.getForecastHistory(limit);
+      res.json({ forecast_history: history });
+    } catch (error) {
+      console.error('Error getting forecast history:', error);
+      res.status(500).json({ error: 'Failed to get forecast history' });
+    }
+  });
+
+  app.get("/api/waides-ki/kons-oracle/frequencies", (req, res) => {
+    try {
+      const frequencies = waidesKIKonsPulseOracle.getKonsFrequencies();
+      res.json({ kons_frequencies: frequencies });
+    } catch (error) {
+      console.error('Error getting Kons frequencies:', error);
+      res.status(500).json({ error: 'Failed to get Kons frequencies' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-oracle/force-forecast", async (req, res) => {
+    try {
+      const forecast = await waidesKIKonsPulseOracle.forceOracleForecast();
+      res.json({ success: true, forecast: forecast });
+    } catch (error) {
+      console.error('Error forcing oracle forecast:', error);
+      res.status(500).json({ error: 'Failed to force oracle forecast' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-oracle/interpret-message", (req, res) => {
+    try {
+      const { kons_message } = req.body;
+      
+      if (!kons_message) {
+        return res.status(400).json({ error: 'kons_message is required' });
+      }
+      
+      const interpretation = waidesKIKonsPulseOracle.interpretKonsMessage(kons_message);
+      res.json({ kons_message: kons_message, interpretation: interpretation });
+    } catch (error) {
+      console.error('Error interpreting Kons message:', error);
+      res.status(500).json({ error: 'Failed to interpret Kons message' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-oracle/set-confidence-threshold", (req, res) => {
+    try {
+      const { threshold } = req.body;
+      
+      if (typeof threshold !== 'number' || threshold < 50 || threshold > 95) {
+        return res.status(400).json({ error: 'threshold must be a number between 50 and 95' });
+      }
+      
+      waidesKIKonsPulseOracle.setConfidenceThreshold(threshold);
+      res.json({ success: true, message: `Oracle confidence threshold set to ${threshold}%` });
+    } catch (error) {
+      console.error('Error setting confidence threshold:', error);
+      res.status(500).json({ error: 'Failed to set confidence threshold' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-oracle/add-frequency", (req, res) => {
+    try {
+      const { key, message } = req.body;
+      
+      if (!key || !message) {
+        return res.status(400).json({ error: 'key and message are required' });
+      }
+      
+      waidesKIKonsPulseOracle.addCustomKonsFrequency(key, message);
+      res.json({ success: true, message: `Custom Kons frequency added: ${key}` });
+    } catch (error) {
+      console.error('Error adding custom Kons frequency:', error);
+      res.status(500).json({ error: 'Failed to add custom Kons frequency' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-oracle/enable", (req, res) => {
+    try {
+      waidesKIKonsPulseOracle.enableOracle();
+      res.json({ success: true, message: 'Kons-Pulse Oracle awakened - spiritual forecasting enabled' });
+    } catch (error) {
+      console.error('Error enabling oracle:', error);
+      res.status(500).json({ error: 'Failed to enable oracle' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-oracle/disable", (req, res) => {
+    try {
+      waidesKIKonsPulseOracle.disableOracle();
+      res.json({ success: true, message: 'Kons-Pulse Oracle enters meditation - forecasting paused' });
+    } catch (error) {
+      console.error('Error disabling oracle:', error);
+      res.status(500).json({ error: 'Failed to disable oracle' });
+    }
+  });
+
+  app.get("/api/waides-ki/kons-oracle/export", (req, res) => {
+    try {
+      const oracleData = waidesKIKonsPulseOracle.exportOracleData();
+      res.json(oracleData);
+    } catch (error) {
+      console.error('Error exporting oracle data:', error);
+      res.status(500).json({ error: 'Failed to export oracle data' });
     }
   });
 

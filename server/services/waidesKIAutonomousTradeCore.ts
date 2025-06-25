@@ -274,7 +274,7 @@ export class WaidesKIAutonomousTradeCore {
   ): Promise<void> {
     try {
       const tradeId = this.generateTradeId();
-      const currentPrice = await waidesKILiveFeed.getCurrentETHPrice();
+      const currentPrice = await waidesKILiveFeed.getCurrentPrice();
       const emotionalState = waidesKIEmotionalFirewall.getCurrentEmotionalState();
       
       // Determine trade direction based on trend
@@ -351,7 +351,7 @@ export class WaidesKIAutonomousTradeCore {
   }
 
   private async monitorActiveTrades(): Promise<void> {
-    const currentPrice = await waidesKILiveFeed.getCurrentETHPrice();
+    const currentPrice = await waidesKILiveFeed.getCurrentPrice();
     
     for (const [tradeId, trade] of this.activeTrades.entries()) {
       try {
@@ -671,7 +671,7 @@ export class WaidesKIAutonomousTradeCore {
   }
 
   async forceCloseAllTrades(): Promise<number> {
-    const currentPrice = await waidesKILiveFeed.getCurrentETHPrice();
+    const currentPrice = await waidesKILiveFeed.getCurrentPrice();
     const closedCount = this.activeTrades.size;
     
     for (const [tradeId] of this.activeTrades.entries()) {
