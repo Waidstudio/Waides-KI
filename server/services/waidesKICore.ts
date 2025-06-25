@@ -11,6 +11,7 @@ import { waidesKIDailyReporter } from './waidesKIDailyReporter';
 import { waidesKISelfRepair } from './waidesKISelfRepair';
 import { waidesKIDNAEngine } from './waidesKIDNAEngine';
 import { waidesKISignatureTracker } from './waidesKISignatureTracker';
+import { waidesKIRootMemory } from './waidesKIRootMemory';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -803,6 +804,23 @@ export class WaidesKICore {
         );
       }
       
+      // Register strategy in root memory tree
+      if (trade.strategyId && trade.dnaId) {
+        waidesKIRootMemory.registerStrategy(
+          trade.strategyId,
+          trade.dnaId,
+          result,
+          pnl,
+          trade.confidence,
+          { 
+            engine: trade.engine,
+            entry_price: trade.entry,
+            exit_price: currentPrice,
+            market_phase: 'completion'
+          }
+        );
+      }
+      
       // Record lesson from trade outcome
       if (result === 'LOSS' && Math.abs(pnl) > trade.tradeAmount * 0.05) {
         waidesKIDailyReporter.recordLesson(
@@ -862,6 +880,7 @@ export class WaidesKICore {
     const selfRepairStats = waidesKISelfRepair.getSelfRepairStats();
     const dnaStats = waidesKIDNAEngine.getDNAStatistics();
     const signatureStats = waidesKISignatureTracker.getDNAStatistics();
+    const memoryStats = waidesKIRootMemory.getTreeStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -912,6 +931,13 @@ export class WaidesKICore {
         blockedDNA: signatureStats.blocked_dna_count,
         stablePatterns: signatureStats.stable_dna_count,
         protection: 'ACTIVE'
+      },
+      memoryTree: {
+        totalNodes: memoryStats.total_nodes,
+        activeNodes: memoryStats.active_nodes,
+        evolvingNodes: memoryStats.evolving_nodes,
+        memoryHealth: memoryStats.memory_health,
+        visualization: 'ACTIVE'
       }
     };
   }

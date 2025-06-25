@@ -24,6 +24,7 @@ import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
 import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
+import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2660,6 +2661,165 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting DNA data:', error);
       res.status(500).json({ error: 'Failed to export DNA data' });
+    }
+  });
+
+  // Root Memory Tree and Symbolic Mind Map endpoints
+  app.get("/api/waides-ki/memory/tree", (req, res) => {
+    try {
+      const memoryTree = waidesKIRootMemory.getMemoryTree();
+      res.json({ memory_tree: memoryTree });
+    } catch (error) {
+      console.error('Error getting memory tree:', error);
+      res.status(500).json({ error: 'Failed to get memory tree' });
+    }
+  });
+
+  app.get("/api/waides-ki/memory/clusters", (req, res) => {
+    try {
+      const clusters = waidesKIRootMemory.getMemoryClusters();
+      res.json({ memory_clusters: clusters });
+    } catch (error) {
+      console.error('Error getting memory clusters:', error);
+      res.status(500).json({ error: 'Failed to get memory clusters' });
+    }
+  });
+
+  app.get("/api/waides-ki/memory/statistics", (req, res) => {
+    try {
+      const stats = waidesKIRootMemory.getTreeStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting memory statistics:', error);
+      res.status(500).json({ error: 'Failed to get memory statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/memory/visual", (req, res) => {
+    try {
+      const visualData = waidesKIRootMemory.getVisualTreeData();
+      res.json(visualData);
+    } catch (error) {
+      console.error('Error getting visual tree data:', error);
+      res.status(500).json({ error: 'Failed to get visual tree data' });
+    }
+  });
+
+  app.get("/api/waides-ki/memory/evolution", (req, res) => {
+    try {
+      const evolutionHistory = waidesKIRootMemory.getEvolutionHistory();
+      res.json({ evolution_history: evolutionHistory });
+    } catch (error) {
+      console.error('Error getting evolution history:', error);
+      res.status(500).json({ error: 'Failed to get evolution history' });
+    }
+  });
+
+  app.get("/api/waides-ki/memory/node/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const nodeInfo = waidesKIRootMemory.getNodeInfo(strategy_id);
+      
+      if (!nodeInfo) {
+        return res.status(404).json({ error: 'Memory node not found' });
+      }
+      
+      res.json({ node_info: nodeInfo });
+    } catch (error) {
+      console.error('Error getting memory node:', error);
+      res.status(500).json({ error: 'Failed to get memory node information' });
+    }
+  });
+
+  app.post("/api/waides-ki/memory/evolve/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const success = waidesKIRootMemory.forceNodeEvolution(strategy_id);
+      
+      if (success) {
+        res.json({ success: true, message: 'Memory node evolved successfully' });
+      } else {
+        res.status(404).json({ error: 'Memory node not found' });
+      }
+    } catch (error) {
+      console.error('Error evolving memory node:', error);
+      res.status(500).json({ error: 'Failed to evolve memory node' });
+    }
+  });
+
+  app.post("/api/waides-ki/memory/retire/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const success = waidesKIRootMemory.retireNode(strategy_id);
+      
+      if (success) {
+        res.json({ success: true, message: 'Memory node retired successfully' });
+      } else {
+        res.status(404).json({ error: 'Memory node not found' });
+      }
+    } catch (error) {
+      console.error('Error retiring memory node:', error);
+      res.status(500).json({ error: 'Failed to retire memory node' });
+    }
+  });
+
+  app.post("/api/waides-ki/memory/revive/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      const success = waidesKIRootMemory.reviveNode(strategy_id);
+      
+      if (success) {
+        res.json({ success: true, message: 'Memory node revived successfully' });
+      } else {
+        res.status(404).json({ error: 'Memory node not found or not retired' });
+      }
+    } catch (error) {
+      console.error('Error reviving memory node:', error);
+      res.status(500).json({ error: 'Failed to revive memory node' });
+    }
+  });
+
+  app.post("/api/waides-ki/memory/register", (req, res) => {
+    try {
+      const { strategy_id, dna_id, result, profit_loss, confidence, market_conditions } = req.body;
+      
+      if (!strategy_id || !dna_id || !result) {
+        return res.status(400).json({ error: 'strategy_id, dna_id, and result are required' });
+      }
+      
+      waidesKIRootMemory.registerStrategy(
+        strategy_id,
+        dna_id,
+        result,
+        profit_loss || 0,
+        confidence || 50,
+        market_conditions || {}
+      );
+      
+      res.json({ success: true, message: 'Strategy registered in memory tree' });
+    } catch (error) {
+      console.error('Error registering strategy in memory:', error);
+      res.status(500).json({ error: 'Failed to register strategy in memory' });
+    }
+  });
+
+  app.post("/api/waides-ki/memory/reset", (req, res) => {
+    try {
+      waidesKIRootMemory.resetMemoryTree();
+      res.json({ success: true, message: 'Memory tree reset successfully' });
+    } catch (error) {
+      console.error('Error resetting memory tree:', error);
+      res.status(500).json({ error: 'Failed to reset memory tree' });
+    }
+  });
+
+  app.get("/api/waides-ki/memory/export", (req, res) => {
+    try {
+      const memoryData = waidesKIRootMemory.exportMemoryData();
+      res.json(memoryData);
+    } catch (error) {
+      console.error('Error exporting memory data:', error);
+      res.status(500).json({ error: 'Failed to export memory data' });
     }
   });
 
