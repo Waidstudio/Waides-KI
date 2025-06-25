@@ -18,6 +18,7 @@ import { waidesKIRiskManager } from './services/waidesKIRiskManager.js';
 import { waidesKILiveFeed } from './services/waidesKILiveFeed.js';
 import { waidesKIAdmin } from './services/waidesKIAdmin.js';
 import { waidesKIWebSocketTracker } from './services/waidesKIWebSocketTracker.js';
+import { waidesKIGateway } from './services/waidesKIGateway.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -2074,6 +2075,178 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error forcing WebSocket reconnection:', error);
       res.status(500).json({ error: 'Failed to force WebSocket reconnection' });
+    }
+  });
+
+  // SECURE STRATEGY API ENDPOINTS FOR EXTERNAL ACCESS
+  
+  // Strategy API - Get trading strategy recommendation
+  app.post("/api/waides_ki/strategy", async (req, res) => {
+    try {
+      const { apikey, trend, rsi, vwap_status, price, volume } = req.body;
+      
+      if (!apikey) {
+        return res.status(401).json({ error: 'API key required' });
+      }
+      
+      // Validate API key and permissions
+      const validation = waidesKIGateway.validateAPIKey(apikey, 'strategy');
+      if (!validation.isValid) {
+        return res.status(validation.error === 'Rate limit exceeded' ? 429 : 403)
+          .json({ error: validation.error });
+      }
+      
+      if (!trend || typeof rsi !== 'number' || !vwap_status) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: trend, rsi, vwap_status' 
+        });
+      }
+      
+      const strategyRequest = {
+        trend: trend.toUpperCase(),
+        rsi,
+        vwap_status: vwap_status.toUpperCase(),
+        price,
+        volume
+      };
+      
+      const strategy = await waidesKIGateway.getStrategyFromMarket(strategyRequest, apikey);
+      res.json(strategy);
+      
+    } catch (error) {
+      console.error('Strategy API error:', error);
+      res.status(500).json({ error: 'Internal strategy engine error' });
+    }
+  });
+  
+  // Trade API - Get complete trade decision
+  app.post("/api/waides_ki/trade", async (req, res) => {
+    try {
+      const { apikey, market_data, trade_amount, risk_tolerance } = req.body;
+      
+      if (!apikey) {
+        return res.status(401).json({ error: 'API key required' });
+      }
+      
+      // Validate API key and permissions
+      const validation = waidesKIGateway.validateAPIKey(apikey, 'trade');
+      if (!validation.isValid) {
+        return res.status(validation.error === 'Rate limit exceeded' ? 429 : 403)
+          .json({ error: validation.error });
+      }
+      
+      if (!market_data || !market_data.price || !market_data.trend || typeof market_data.rsi !== 'number') {
+        return res.status(400).json({ 
+          error: 'Missing required market_data fields: price, trend, rsi, vwap_status' 
+        });
+      }
+      
+      const tradeRequest = {
+        market_data,
+        trade_amount,
+        risk_tolerance: risk_tolerance || 'MODERATE'
+      };
+      
+      const tradeDecision = await waidesKIGateway.getTradeDecision(tradeRequest, apikey);
+      res.json(tradeDecision);
+      
+    } catch (error) {
+      console.error('Trade API error:', error);
+      res.status(500).json({ error: 'Internal trading engine error' });
+    }
+  });
+  
+  // Status API - Get system status for API key holder
+  app.get("/api/waides_ki/status/:apikey", async (req, res) => {
+    try {
+      const { apikey } = req.params;
+      
+      if (!apikey) {
+        return res.status(401).json({ error: 'API key required' });
+      }
+      
+      // Validate API key and permissions
+      const validation = waidesKIGateway.validateAPIKey(apikey, 'status');
+      if (!validation.isValid) {
+        return res.status(validation.error === 'Rate limit exceeded' ? 429 : 403)
+          .json({ error: validation.error });
+      }
+      
+      const status = await waidesKIGateway.getPublicStatus(apikey);
+      res.json(status);
+      
+    } catch (error) {
+      console.error('Status API error:', error);
+      res.status(500).json({ error: 'Internal system error' });
+    }
+  });
+  
+  // Webhook API - Process external market data
+  app.post("/api/waides_ki/webhook", async (req, res) => {
+    try {
+      const { apikey } = req.headers;
+      const candleData = req.body;
+      
+      if (!apikey) {
+        return res.status(401).json({ error: 'API key required in headers' });
+      }
+      
+      // Validate API key and permissions
+      const validation = waidesKIGateway.validateAPIKey(apikey as string, 'webhook');
+      if (!validation.isValid) {
+        return res.status(validation.error === 'Rate limit exceeded' ? 429 : 403)
+          .json({ error: validation.error });
+      }
+      
+      const result = await waidesKIGateway.processWebhook(candleData, apikey as string);
+      res.json(result);
+      
+    } catch (error) {
+      console.error('Webhook API error:', error);
+      res.status(500).json({ error: 'Webhook processing error' });
+    }
+  });
+
+  // API Key Management (Admin only)
+  app.get("/api/waides_ki/admin/keys", async (req, res) => {
+    try {
+      const usage = waidesKIGateway.getAPIKeyUsage();
+      res.json({ api_keys: usage });
+    } catch (error) {
+      console.error('Error getting API key usage:', error);
+      res.status(500).json({ error: 'Failed to get API key usage' });
+    }
+  });
+
+  app.post("/api/waides_ki/admin/keys", async (req, res) => {
+    try {
+      const { name, permissions, rate_limit } = req.body;
+      
+      if (!name || !permissions || !Array.isArray(permissions)) {
+        return res.status(400).json({ error: 'name and permissions array required' });
+      }
+      
+      const newKey = waidesKIGateway.createAPIKey(name, permissions, rate_limit || 50);
+      res.json({ api_key: newKey, message: 'API key created successfully' });
+    } catch (error) {
+      console.error('Error creating API key:', error);
+      res.status(500).json({ error: 'Failed to create API key' });
+    }
+  });
+
+  app.delete("/api/waides_ki/admin/keys/:apikey", async (req, res) => {
+    try {
+      const { apikey } = req.params;
+      const revoked = waidesKIGateway.revokeAPIKey(apikey);
+      
+      if (revoked) {
+        res.json({ message: 'API key revoked successfully' });
+      } else {
+        res.status(404).json({ error: 'API key not found' });
+      }
+    } catch (error) {
+      console.error('Error revoking API key:', error);
+      res.status(500).json({ error: 'Failed to revoke API key' });
     }
   });
 

@@ -10,6 +10,7 @@ import WaidBotProPage from "@/pages/waidbot-pro";
 import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
 import APIDocsPage from "@/pages/APIDocsPage";
+import GatewayPage from "@/pages/GatewayPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
     { path: "/live-data", label: "Live Data" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },
   ];
@@ -73,6 +75,7 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/gateway" component={GatewayPage} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/api-docs" component={APIDocsPage} />
           <Route component={NotFound} />
