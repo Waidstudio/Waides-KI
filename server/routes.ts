@@ -28,6 +28,7 @@ import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
 import { waidesKIExternalAPIGateway } from './services/waidesKIExternalAPIGateway.js';
 import { waidesKITraderEngine } from './services/waidesKITraderEngine.js';
+import { waidesKIShadowSimulator } from './services/waidesKIShadowSimulator.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -3383,6 +3384,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting trader data:', error);
       res.status(500).json({ error: 'Failed to export trader data' });
+    }
+  });
+
+  // Shadow Simulator Engine endpoints
+  app.get("/api/waides-ki/shadow/statistics", (req, res) => {
+    try {
+      const stats = waidesKIShadowSimulator.getShadowStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting shadow statistics:', error);
+      res.status(500).json({ error: 'Failed to get shadow statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/logs", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const logs = waidesKIShadowSimulator.getShadowLog(limit);
+      res.json({ shadow_simulations: logs });
+    } catch (error) {
+      console.error('Error getting shadow logs:', error);
+      res.status(500).json({ error: 'Failed to get shadow logs' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/learnings", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const learnings = waidesKIShadowSimulator.getShadowLearnings(limit);
+      res.json({ shadow_learnings: learnings });
+    } catch (error) {
+      console.error('Error getting shadow learnings:', error);
+      res.status(500).json({ error: 'Failed to get shadow learnings' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/simulate", async (req, res) => {
+    try {
+      const { indicators, real_dna_id, real_decision, real_trade_id } = req.body;
+      
+      if (!indicators || !real_dna_id || !real_decision) {
+        return res.status(400).json({ error: 'indicators, real_dna_id, and real_decision are required' });
+      }
+      
+      const shadowResult = await waidesKIShadowSimulator.simulateAlternatives(
+        indicators,
+        real_dna_id,
+        real_decision,
+        real_trade_id
+      );
+      
+      res.json({ 
+        success: true, 
+        shadow_simulation: shadowResult,
+        shadow_id: shadowResult.shadow_id
+      });
+    } catch (error) {
+      console.error('Error running shadow simulation:', error);
+      res.status(500).json({ error: 'Failed to run shadow simulation: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/intensity", (req, res) => {
+    try {
+      const { intensity } = req.body;
+      
+      if (!intensity || !['LOW', 'MEDIUM', 'HIGH'].includes(intensity)) {
+        return res.status(400).json({ error: 'intensity must be LOW, MEDIUM, or HIGH' });
+      }
+      
+      waidesKIShadowSimulator.setSimulationIntensity(intensity);
+      res.json({ success: true, message: `Shadow simulation intensity set to ${intensity}` });
+    } catch (error) {
+      console.error('Error setting shadow intensity:', error);
+      res.status(500).json({ error: 'Failed to set shadow simulation intensity' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/enable", (req, res) => {
+    try {
+      waidesKIShadowSimulator.enableSimulation();
+      res.json({ success: true, message: 'Shadow simulation enabled successfully' });
+    } catch (error) {
+      console.error('Error enabling shadow simulation:', error);
+      res.status(500).json({ error: 'Failed to enable shadow simulation' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow/disable", (req, res) => {
+    try {
+      waidesKIShadowSimulator.disableSimulation();
+      res.json({ success: true, message: 'Shadow simulation disabled successfully' });
+    } catch (error) {
+      console.error('Error disabling shadow simulation:', error);
+      res.status(500).json({ error: 'Failed to disable shadow simulation' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow/export", (req, res) => {
+    try {
+      const shadowData = waidesKIShadowSimulator.exportShadowData();
+      res.json(shadowData);
+    } catch (error) {
+      console.error('Error exporting shadow data:', error);
+      res.status(500).json({ error: 'Failed to export shadow data' });
     }
   });
 

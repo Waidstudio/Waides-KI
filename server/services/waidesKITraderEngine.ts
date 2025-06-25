@@ -6,6 +6,7 @@ import { waidesKIRiskManager } from './waidesKIRiskManager';
 import { waidesKISignalShield } from './waidesKISignalShield';
 import { waidesKIGenomeEngine } from './waidesKIGenomeEngine';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
+import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { storage } from '../storage';
 
 interface MarketIndicators {
@@ -292,7 +293,10 @@ export class WaidesKITraderEngine {
       // 7. Update learning systems
       await this.updateLearningSystems(executionResult);
       
-      // 8. Store in execution log
+      // 8. Run shadow simulation
+      await this.runShadowSimulation(executionResult, params.indicators);
+      
+      // 9. Store in execution log
       this.executionLog.push(executionResult);
       this.activeTrades.add(executionId);
       this.dailyTradeCount++;
@@ -693,6 +697,32 @@ export class WaidesKITraderEngine {
       
     } catch (error) {
       console.error('Error updating learning systems:', error);
+    }
+  }
+
+  private async runShadowSimulation(executionResult: ExecutionResult, indicators: MarketIndicators): Promise<void> {
+    try {
+      // Only run shadow simulation for executed trades
+      if (executionResult.status === 'EXECUTED') {
+        const shadowResult = await waidesKIShadowSimulator.simulateAlternatives(
+          indicators,
+          executionResult.dna_id,
+          executionResult.action,
+          executionResult.execution_id
+        );
+        
+        // Log significant shadow discoveries
+        if (shadowResult.comparison_analysis.missed_opportunity_score > 60) {
+          waidesKIDailyReporter.recordLesson(
+            `Shadow simulation revealed ${shadowResult.comparison_analysis.missed_opportunity_score}% missed opportunity in ${executionResult.execution_id}`,
+            'SHADOW',
+            'HIGH',
+            'Shadow Simulation'
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error running shadow simulation:', error);
     }
   }
 

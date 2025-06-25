@@ -15,6 +15,7 @@ import { waidesKIRootMemory } from './waidesKIRootMemory';
 import { waidesKIGenomeEngine } from './waidesKIGenomeEngine';
 import { waidesKIExternalAPIGateway } from './waidesKIExternalAPIGateway';
 import { waidesKITraderEngine } from './waidesKITraderEngine';
+import { waidesKIShadowSimulator } from './waidesKIShadowSimulator';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -888,6 +889,7 @@ export class WaidesKICore {
     const apiStats = waidesKIExternalAPIGateway.getAPIStatistics();
     const traderStats = waidesKITraderEngine.getExecutionStatistics();
     const traderConfig = waidesKITraderEngine.getAutoTradingConfig();
+    const shadowStats = waidesKIShadowSimulator.getShadowStatistics();
     
     return {
       isActive: this.isAutonomousMode,
@@ -968,6 +970,13 @@ export class WaidesKICore {
         autoTradingEnabled: traderConfig.is_enabled,
         dailyTradeCount: traderStats.daily_trade_count,
         execution: 'ACTIVE'
+      },
+      shadowSimulator: {
+        totalSimulations: shadowStats.total_simulations,
+        variantsTested: shadowStats.total_variants_tested,
+        avgMissedOpportunity: shadowStats.avg_missed_opportunity,
+        judgmentAccuracy: shadowStats.avg_judgment_accuracy,
+        parallelConsciousness: 'ACTIVE'
       }
     };
   }
