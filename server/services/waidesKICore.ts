@@ -4,6 +4,7 @@ import { tradingBrain } from './tradingBrainEngine';
 import { waidesKILearning } from './waidesKILearningEngine';
 import { waidesKIObserver } from './waidesKIObserver';
 import { waidesKISignalLogger } from './waidesKISignalLogger';
+import { waidesKIRiskManager } from './waidesKIRiskManager';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -39,6 +40,8 @@ interface TradingDecision {
   timeframe: string;
   strategyId?: string;
   engine: 'WAIDBOT' | 'WAIDBOT_PRO' | 'WAIDES_KI_CORE';
+  tradeAmount?: number;
+  riskAssessment?: any;
 }
 
 export class WaidesKICore {
@@ -233,9 +236,34 @@ export class WaidesKICore {
       return null;
     }
     
-    // Step 6: Log successful signal and prepare decision
+    // Step 6: Risk assessment and position sizing
     if (bestDecision) {
       const strategyId = this.generateStrategyId(currentAssessment.indicators);
+      
+      // Calculate optimal trade amount with risk management
+      const riskAssessment = waidesKIRiskManager.calculateTradeAmount(
+        currentAssessment.signalStrength.score,
+        currentAssessment.signalStrength.confidence,
+        strategyId,
+        marketConditions
+      );
+      
+      if (!riskAssessment.approved || riskAssessment.recommendedAmount === 0) {
+        // Log blocked signal due to risk management
+        const signalId = waidesKISignalLogger.logSignal(
+          strategyId,
+          currentAssessment.signalStrength.score,
+          currentAssessment.signalStrength.confidence,
+          currentAssessment.indicators,
+          currentAssessment.signalStrength.reasoning,
+          currentAssessment.recommendation,
+          true
+        );
+        waidesKISignalLogger.updateSignalOutcome(signalId, 'BLOCKED', 'Risk management blocked trade');
+        return null;
+      }
+      
+      // Log successful signal and prepare enhanced decision
       const signalId = waidesKISignalLogger.logSignal(
         strategyId,
         currentAssessment.signalStrength.score,
@@ -246,18 +274,20 @@ export class WaidesKICore {
         true
       );
       
-      // Enhance decision with observation data
+      // Enhance decision with observation data and risk assessment
       bestDecision.confidence = Math.min(
         bestDecision.confidence, 
         currentAssessment.signalStrength.confidence / 100
       );
-      bestDecision.reasoning = `${bestDecision.reasoning} | Observer: ${currentAssessment.recommendation}`;
+      bestDecision.reasoning = `${bestDecision.reasoning} | Observer: ${currentAssessment.recommendation} | Risk: ${riskAssessment.riskPercent.toFixed(2)}%`;
+      bestDecision.tradeAmount = riskAssessment.recommendedAmount;
+      bestDecision.riskAssessment = riskAssessment;
       
       await this.recordTradeWithLearning(bestDecision, marketConditions);
       this.activeDecisions.set(`decision_${Date.now()}`, bestDecision);
       
       // Update signal outcome
-      waidesKISignalLogger.updateSignalOutcome(signalId, 'EXECUTED', `${bestDecision.engine} signal executed`);
+      waidesKISignalLogger.updateSignalOutcome(signalId, 'EXECUTED', `${bestDecision.engine} signal executed with $${riskAssessment.recommendedAmount.toFixed(2)}`);
     }
     
     return bestDecision;
@@ -528,20 +558,20 @@ export class WaidesKICore {
 
   private async executeAutonomousTrade(decision: TradingDecision): Promise<void> {
     try {
-      // Waides KI executes trades autonomously
-      // This would connect to exchange API when configured
-      
-      // For now, simulate the trade execution
+      // Waides KI executes trades autonomously with proper risk management
       const tradeId = `autonomous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       // Log the autonomous decision (hidden from users)
       this.logInternalDecision(decision);
       
-      // Store for result monitoring
+      // Store for result monitoring with risk assessment
       this.activeDecisions.set(tradeId, {
         ...decision,
         timestamp: Date.now(),
-        status: 'ACTIVE'
+        status: 'ACTIVE',
+        tradeId,
+        expectedProfit: decision.riskAssessment?.expectedReward || 0,
+        maxLoss: decision.riskAssessment?.maxLoss || 0
       });
       
     } catch (error) {
@@ -577,14 +607,42 @@ export class WaidesKICore {
   }
 
   private checkTradeResult(trade: any, currentPrice: number): 'WIN' | 'LOSS' | null {
+    let result: 'WIN' | 'LOSS' | null = null;
+    
     if (trade.action === 'BUY') {
-      if (currentPrice >= trade.takeProfit) return 'WIN';
-      if (currentPrice <= trade.stopLoss) return 'LOSS';
+      if (currentPrice >= trade.takeProfit) result = 'WIN';
+      else if (currentPrice <= trade.stopLoss) result = 'LOSS';
     } else if (trade.action === 'SELL') {
-      if (currentPrice <= trade.takeProfit) return 'WIN';
-      if (currentPrice >= trade.stopLoss) return 'LOSS';
+      if (currentPrice <= trade.takeProfit) result = 'WIN';
+      else if (currentPrice >= trade.stopLoss) result = 'LOSS';
     }
-    return null; // Still active
+    
+    // Update capital and risk management if trade completed
+    if (result && trade.tradeAmount) {
+      const pnl = result === 'WIN' ? 
+        (trade.expectedProfit || trade.tradeAmount * 0.02) : 
+        -(trade.maxLoss || trade.tradeAmount);
+      
+      const capitalUpdate = waidesKIRiskManager.updateCapital(
+        result, 
+        pnl, 
+        trade.strategyId || 'unknown'
+      );
+      
+      // Update internal tracking
+      this.updateTradeMemory({
+        timestamp: Date.now(),
+        asset: trade.asset,
+        action: trade.action,
+        price: trade.entry,
+        outcome: result,
+        profit: pnl,
+        riskReward: trade.riskReward,
+        strategy: trade.engine
+      });
+    }
+    
+    return result;
   }
 
   // 9. SECURITY & PRIVACY CORE MODULE
@@ -593,18 +651,23 @@ export class WaidesKICore {
     const learningStats = waidesKILearning.getLearningStats();
     const observationStats = waidesKIObserver.getObservationStats();
     const signalAnalytics = waidesKISignalLogger.getSignalAnalytics();
+    const capitalStats = waidesKIRiskManager.getCapitalStats();
+    const riskProfile = waidesKIRiskManager.getRiskProfile();
     
     return {
       isActive: this.isAutonomousMode,
       lastScan: new Date(this.lastScanTime).toISOString(),
       performance: {
-        winRate: learningStats.overall_win_rate || Math.round(this.winRate * 100),
-        totalTrades: learningStats.total_trades || this.totalTrades,
+        winRate: capitalStats.winRate || Math.round(this.winRate * 100),
+        totalTrades: capitalStats.totalTrades || this.totalTrades,
         status: this.getPublicStatus(),
         evolutionStage: learningStats.evolution_stage,
         learningConfidence: learningStats.learning_confidence,
         activeTrades: this.activeDecisions.size,
-        tradingMode: 'AUTONOMOUS'
+        tradingMode: 'AUTONOMOUS',
+        totalReturn: capitalStats.totalReturnPercent,
+        currentCapital: capitalStats.currentCapital,
+        maxDrawdown: capitalStats.maxDrawdown
       },
       observation: {
         totalObservations: observationStats.totalObservations,
@@ -612,6 +675,11 @@ export class WaidesKICore {
         strongSignals: signalAnalytics.strongSignals,
         marketPhase: observationStats.patterns.marketPhase,
         isObserving: observationStats.isObserving
+      },
+      riskManagement: {
+        currentRiskLevel: riskProfile.maxRiskPercent,
+        blockedStrategies: capitalStats.blockedStrategies,
+        riskAdjustment: 'DYNAMIC'
       }
     };
   }

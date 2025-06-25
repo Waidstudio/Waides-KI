@@ -81,6 +81,9 @@ export default function TradingBrainPanel() {
       learningConfidence: number;
       activeTrades: number;
       tradingMode: string;
+      totalReturn: number;
+      currentCapital: number;
+      maxDrawdown: number;
     };
     observation: {
       totalObservations: number;
@@ -89,8 +92,26 @@ export default function TradingBrainPanel() {
       marketPhase: string;
       isObserving: boolean;
     };
+    riskManagement: {
+      currentRiskLevel: number;
+      blockedStrategies: number;
+      riskAdjustment: string;
+    };
   }>({
     queryKey: ['/api/waides-ki/status'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const { data: capitalStats } = useQuery<{
+    currentCapital: number;
+    totalReturn: number;
+    totalReturnPercent: number;
+    maxDrawdown: number;
+    winRate: number;
+    totalTrades: number;
+    blockedStrategies: number;
+  }>({
+    queryKey: ['/api/waides-ki/capital-stats'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
@@ -218,8 +239,22 @@ export default function TradingBrainPanel() {
                 <span className="text-xs text-slate-400">Signal Quality</span>
                 <span className="text-xs text-blue-400">{waidesKIStatus.observation?.signalQuality || 0}%</span>
               </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Capital</span>
+                <span className="text-xs text-green-400">${capitalStats?.currentCapital?.toFixed(0) || '10,000'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Return</span>
+                <span className={`text-xs ${(capitalStats?.totalReturnPercent || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {(capitalStats?.totalReturnPercent || 0).toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-400">Risk Level</span>
+                <span className="text-xs text-yellow-400">{waidesKIStatus.riskManagement?.currentRiskLevel?.toFixed(1) || 1.0}%</span>
+              </div>
               <div className="text-xs text-slate-500 text-center mt-2">
-                Real-time Observer Active
+                Smart Risk Management Active
               </div>
             </CardContent>
           </Card>

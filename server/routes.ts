@@ -14,6 +14,7 @@ import { waidesKI } from './services/waidesKICore.js';
 import { waidesKILearning } from './services/waidesKILearningEngine.js';
 import { waidesKIObserver } from './services/waidesKIObserver.js';
 import { waidesKISignalLogger } from './services/waidesKISignalLogger.js';
+import { waidesKIRiskManager } from './services/waidesKIRiskManager.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -1674,6 +1675,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting recent signals:', error);
       res.status(500).json({ error: 'Failed to get recent signals' });
+    }
+  });
+
+  // Risk management endpoints (minimal exposure)
+  app.get("/api/waides-ki/capital-stats", (req, res) => {
+    try {
+      const stats = waidesKIRiskManager.getCapitalStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting capital stats:', error);
+      res.status(500).json({ error: 'Failed to get capital statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/recent-performance", (req, res) => {
+    try {
+      const days = parseInt(req.query.days as string) || 7;
+      const performance = waidesKIRiskManager.getRecentPerformance(days);
+      res.json(performance);
+    } catch (error) {
+      console.error('Error getting recent performance:', error);
+      res.status(500).json({ error: 'Failed to get recent performance' });
+    }
+  });
+
+  // Emergency risk controls (hidden endpoints)
+  app.post("/api/waides-ki/emergency-risk-stop", (req, res) => {
+    try {
+      waidesKIRiskManager.emergencyStop();
+      res.json({ success: true, message: 'Emergency risk stop activated' });
+    } catch (error) {
+      console.error('Error activating emergency stop:', error);
+      res.status(500).json({ error: 'Failed to activate emergency stop' });
+    }
+  });
+
+  app.post("/api/waides-ki/reset-risk", (req, res) => {
+    try {
+      waidesKIRiskManager.resetRiskProfile();
+      res.json({ success: true, message: 'Risk profile reset' });
+    } catch (error) {
+      console.error('Error resetting risk profile:', error);
+      res.status(500).json({ error: 'Failed to reset risk profile' });
     }
   });
 

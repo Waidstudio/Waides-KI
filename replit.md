@@ -286,6 +286,17 @@ Changelog:
   - Added signal logging with execution tracking (EXECUTED, IGNORED, BLOCKED) for continuous learning
   - System now observes market every 15 seconds and maintains 200 observation history for pattern recognition
   - All observation logic, signal analysis, and strategy refinement completely hidden from users
+- June 25, 2025. Implemented Advanced Risk Management and Confidence Weighting System
+  - Created WaidesKIRiskManager with intelligent position sizing based on signal confidence and market conditions
+  - Implemented dynamic risk adjustment that reduces position sizes after losses and increases after consistent wins
+  - Added smart strategy filtering that automatically blocks consistently losing strategies for 24 hours
+  - Built confidence weighting system that scales trade amounts from 0.5x to 2.0x based on signal strength
+  - Enhanced capital management with real-time P&L tracking, drawdown limits, and performance-based adjustments
+  - Added comprehensive risk controls including emergency stop, maximum drawdown limits, and strategy blacklisting
+  - Integrated performance-based risk multipliers that adapt to recent win/loss streaks and overall win rates
+  - Enhanced trading decisions with risk assessment validation before execution
+  - System now manages $10,000 virtual capital with sophisticated money management completely hidden from users
+  - All risk calculations, position sizing logic, and capital management processes remain invisible to frontend
 
 ## User Preferences
 

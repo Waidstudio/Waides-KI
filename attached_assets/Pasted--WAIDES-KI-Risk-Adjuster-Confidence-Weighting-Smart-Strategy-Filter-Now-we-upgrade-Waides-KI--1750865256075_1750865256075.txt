@@ -1,0 +1,164 @@
+— WAIDES KI: Risk Adjuster + Confidence Weighting + Smart Strategy Filter
+
+Now we upgrade Waides KI with true intelligence in money management — this is the level where most humans fail.
+
+⸻
+
+✅ In This Step, We Add:
+
+Module	Function
+🧠 Confidence Weighting	Higher signal = higher trade amount
+🧯 Risk Adjuster	Auto-sets amount per trade based on capital, win history
+🔍 Smart Strategy Filter	Avoids repeating losing strategies recently marked as weak
+💸 Capital Manager	Updates wallet after each trade — wins/losses affect future size
+
+
+⸻
+
+📁 File Structure (Continued From Step 2)
+
+You’ll only modify main.py here and optionally update waides_ki_strategy.py. Nothing else changes.
+
+⸻
+
+✅ 1️⃣ Update waides_ki_strategy.py to Filter Mistakes
+
+Make sure this is at the bottom of waides_ki_strategy.py:
+
+    def is_mistake(self, strategy_id):
+        return strategy_id in self.memory.memory["mistakes"]
+
+
+⸻
+
+✅ 2️⃣ Replace your main.py with the full updated version below
+
+from waides_ki_memory import waides_ki_memory
+from waides_ki_strategy import WaidesKIStrategy
+from waides_ki_observer import waides_ki_observer
+from waides_ki_signal_logger import signal_logger
+import datetime
+import time
+import random
+
+class WaidesKI:
+    def __init__(self):
+        self.capital = 1000
+        self.strategy_engine = WaidesKIStrategy(waides_ki_memory)
+        self.trade_log = []
+        self.max_risk_percent = 2  # Max 2% risk per trade
+
+    def assess_signal_strength(self, indicators):
+        score = 0
+        if indicators["trend"] == "uptrend" and indicators["vwap_status"] == "ABOVE" and indicators["rsi"] > 50:
+            score += 3
+        elif indicators["trend"] == "downtrend" and indicators["vwap_status"] == "BELOW" and indicators["rsi"] < 50:
+            score += 3
+        elif indicators["trend"] == "range":
+            score += 1
+        if abs(indicators["rsi"] - 50) > 10:
+            score += 1
+        return score  # max = 5
+
+    def get_trade_amount(self, signal_strength):
+        base_risk = self.capital * (self.max_risk_percent / 100)
+        # confidence scaling: 1 (weak) to 5 (strong)
+        confidence_weight = signal_strength / 5
+        return round(base_risk * (1 + confidence_weight), 2)
+
+    def decide_and_trade(self):
+        waides_ki_observer.fetch_market_data()
+        indicators = waides_ki_observer.get_indicators()
+
+        strategy_id = self.strategy_engine.get_strategy_id(
+            indicators["trend"],
+            indicators["rsi"],
+            indicators["vwap_status"]
+        )
+
+        # Avoid recently failed strategies
+        if self.strategy_engine.is_mistake(strategy_id):
+            print(f"❌ Skipped strategy '{strategy_id}' (marked as mistake)")
+            return
+
+        signal_strength = self.assess_signal_strength(indicators)
+        signal_logger.log_signal(signal_strength, indicators, strategy_id)
+
+        if signal_strength >= 3:
+            trade_amount = self.get_trade_amount(signal_strength)
+            trade = self.execute_trade(
+                "buy" if indicators["trend"] == "uptrend" else "sell",
+                indicators["price"],
+                strategy_id,
+                trade_amount
+            )
+            self.evaluate_result(trade)
+        else:
+            print(f"⚠️ Weak signal ignored. Strength: {signal_strength}/5")
+
+    def execute_trade(self, direction, entry_price, strategy_id, amount):
+        stop_loss = entry_price - 15 if direction == "buy" else entry_price + 15
+        take_profit = entry_price + 30 if direction == "buy" else entry_price - 30
+        trade = {
+            "time": datetime.datetime.utcnow().isoformat(),
+            "direction": direction,
+            "entry_price": entry_price,
+            "stop_loss": stop_loss,
+            "take_profit": take_profit,
+            "strategy_id": strategy_id,
+            "amount": amount
+        }
+        self.trade_log.append(trade)
+        print(f"📈 TRADE: {direction.upper()} ${amount} at ${entry_price} | Strategy: {strategy_id}")
+        return trade
+
+    def evaluate_result(self, trade):
+        result_price = random.uniform(2475, 2550)
+        direction = trade["direction"]
+        win = (
+            result_price >= trade["take_profit"]
+            if direction == "buy"
+            else result_price <= trade["take_profit"]
+        )
+
+        pnl = trade["amount"] * (0.1 if win else -0.1)
+        self.capital += pnl
+        self.strategy_engine.evaluate_trade_result(trade, result_price)
+
+        print(f"✅ Result: {'WIN' if win else 'LOSS'} | PnL: {pnl:.2f} | New Capital: ${self.capital:.2f}")
+
+    def run(self, loops=5):
+        for _ in range(loops):
+            self.decide_and_trade()
+            print("---")
+            time.sleep(1)
+
+if __name__ == "__main__":
+    bot = WaidesKI()
+    bot.run(10)
+
+
+⸻
+
+✅ After Step 3, Waides KI Can:
+
+🧠 Feature	What it does
+✅ Avoid repeat losing strategies	If a strategy failed last time, it’s skipped
+✅ Auto-risk calculator	Trades bigger when the setup is stronger
+✅ Capital updater	Tracks balance, adjusts trade size based on win/loss
+✅ No emotions	Filters out weak setups and ignores noise
+
+
+⸻
+
+Final Structure Now:
+
+/
+├── main.py                         <-- enhanced with logic
+├── waides_ki_memory.py            <-- memory of wins/losses
+├── waides_ki_strategy.py          <-- logic filter
+├── waides_ki_observer.py          <-- simulates price/RSI
+├── waides_ki_signal_logger.py     <-- logs every decision
+├── waides_ki_memory.json
+├── waides_ki_signals.json
+
