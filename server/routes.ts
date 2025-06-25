@@ -46,6 +46,9 @@ import { waidesKILossMemoryVault } from './services/waidesKILossMemoryVault.js';
 import { waidesKITimelineReentryEngine } from './services/waidesKITimelineReentryEngine.js';
 import { waidesKIRebirthSimulator } from './services/waidesKIRebirthSimulator.js';
 import { waidesKIStrategyUpdater } from './services/waidesKIStrategyUpdater.js';
+import { waidesKIKonsigilEngine } from './services/waidesKIKonsigilEngine.js';
+import { waidesKIGlyphMemoryTree } from './services/waidesKIGlyphMemoryTree.js';
+import { waidesKISigilOracle } from './services/waidesKISigilOracle.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
