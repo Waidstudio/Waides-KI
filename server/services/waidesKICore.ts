@@ -23,6 +23,10 @@ import { waidesKIHiddenVision } from './waidesKIHiddenVision';
 import { waidesKIShadowLab } from './waidesKIShadowLab';
 import { waidesKIStrategyVault } from './waidesKIStrategyVault';
 import { waidesKISelfHealing } from './waidesKISelfHealing';
+import { waidesKIVirtualEyeScanner } from './waidesKIVirtualEyeScanner';
+import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
+import { waidesKIAutonomousTradeCore } from './waidesKIAutonomousTradeCore';
+import { waidesKISentinelWatchdog } from './waidesKISentinelWatchdog';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -908,6 +912,15 @@ export class WaidesKICore {
     const vaultStats = waidesKIStrategyVault.getVaultStatistics();
     const liveStrategies = waidesKIStrategyVault.getLiveStrategies();
     const selfHealingStats = waidesKISelfHealing.getSelfHealingStatistics();
+    const virtualEyeStats = waidesKIVirtualEyeScanner.getVirtualEyeStatistics();
+    const emotionalFirewallStats = waidesKIEmotionalFirewall.getEmotionalFirewallStatistics();
+    const autonomousStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
+    const sentinelStats = waidesKISentinelWatchdog.getSentinelStatistics();
+    const guardianStats = waidesKIGuardianAdjuster.getGuardianStatistics();
+    const virtualEyeStats = waidesKIVirtualEyeScanner.getVirtualEyeStatistics();
+    const emotionalFirewallStats = waidesKIEmotionalFirewall.getEmotionalFirewallStatistics();
+    const autonomousStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
+    const sentinelStats = waidesKISentinelWatchdog.getSentinelStatistics();
     
     return {
       isActive: this.isAutonomousMode,

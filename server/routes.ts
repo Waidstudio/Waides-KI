@@ -36,6 +36,10 @@ import { waidesKIHiddenVision } from './services/waidesKIHiddenVision.js';
 import { waidesKIShadowLab } from './services/waidesKIShadowLab.js';
 import { waidesKIStrategyVault } from './services/waidesKIStrategyVault.js';
 import { waidesKISelfHealing } from './services/waidesKISelfHealing.js';
+import { waidesKIVirtualEyeScanner } from './services/waidesKIVirtualEyeScanner.js';
+import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.js';
+import { waidesKIAutonomousTradeCore } from './services/waidesKIAutonomousTradeCore.js';
+import { waidesKISentinelWatchdog } from './services/waidesKISentinelWatchdog.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -4803,6 +4807,308 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting self-healing data:', error);
       res.status(500).json({ error: 'Failed to export self-healing data' });
+    }
+  });
+
+  // Virtual Eye Scanner endpoints
+  app.get("/api/waides-ki/virtual-eye/statistics", (req, res) => {
+    try {
+      const stats = waidesKIVirtualEyeScanner.getVirtualEyeStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting virtual eye statistics:', error);
+      res.status(500).json({ error: 'Failed to get virtual eye statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/virtual-eye/scan-result", (req, res) => {
+    try {
+      const scanResult = waidesKIVirtualEyeScanner.getLastScanResult();
+      res.json({ scan_result: scanResult });
+    } catch (error) {
+      console.error('Error getting scan result:', error);
+      res.status(500).json({ error: 'Failed to get scan result' });
+    }
+  });
+
+  app.get("/api/waides-ki/virtual-eye/trends", (req, res) => {
+    try {
+      const trends = waidesKIVirtualEyeScanner.getCurrentTrends();
+      res.json(trends);
+    } catch (error) {
+      console.error('Error getting trends:', error);
+      res.status(500).json({ error: 'Failed to get trends' });
+    }
+  });
+
+  app.get("/api/waides-ki/virtual-eye/trading-safety", (req, res) => {
+    try {
+      const safety = waidesKIVirtualEyeScanner.getTradingSafety();
+      res.json(safety);
+    } catch (error) {
+      console.error('Error getting trading safety:', error);
+      res.status(500).json({ error: 'Failed to get trading safety' });
+    }
+  });
+
+  app.post("/api/waides-ki/virtual-eye/force-scan", async (req, res) => {
+    try {
+      const scanResult = await waidesKIVirtualEyeScanner.forceScan();
+      res.json({ success: true, scan_result: scanResult });
+    } catch (error) {
+      console.error('Error forcing scan:', error);
+      res.status(500).json({ error: 'Failed to force scan' });
+    }
+  });
+
+  // Emotional Firewall endpoints
+  app.get("/api/waides-ki/emotional-firewall/statistics", (req, res) => {
+    try {
+      const stats = waidesKIEmotionalFirewall.getEmotionalFirewallStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting emotional firewall statistics:', error);
+      res.status(500).json({ error: 'Failed to get emotional firewall statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/emotional-firewall/emotional-state", (req, res) => {
+    try {
+      const state = waidesKIEmotionalFirewall.getCurrentEmotionalState();
+      res.json(state);
+    } catch (error) {
+      console.error('Error getting emotional state:', error);
+      res.status(500).json({ error: 'Failed to get emotional state' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional-firewall/evaluate-exit", (req, res) => {
+    try {
+      const { trade_id, current_pnl, time_held_minutes } = req.body;
+      
+      if (!trade_id || current_pnl === undefined || time_held_minutes === undefined) {
+        return res.status(400).json({ error: 'trade_id, current_pnl, and time_held_minutes are required' });
+      }
+      
+      const evaluation = waidesKIEmotionalFirewall.evaluateTradeExit(trade_id, current_pnl, time_held_minutes);
+      res.json(evaluation);
+    } catch (error) {
+      console.error('Error evaluating trade exit:', error);
+      res.status(500).json({ error: 'Failed to evaluate trade exit' });
+    }
+  });
+
+  app.post("/api/waides-ki/emotional-firewall/evaluate-entry", (req, res) => {
+    try {
+      const evaluation = waidesKIEmotionalFirewall.evaluateTradeEntry();
+      res.json(evaluation);
+    } catch (error) {
+      console.error('Error evaluating trade entry:', error);
+      res.status(500).json({ error: 'Failed to evaluate trade entry' });
+    }
+  });
+
+  // Autonomous Trade Core endpoints
+  app.get("/api/waides-ki/autonomous-core/statistics", (req, res) => {
+    try {
+      const stats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting autonomous statistics:', error);
+      res.status(500).json({ error: 'Failed to get autonomous statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/autonomous-core/status", (req, res) => {
+    try {
+      const status = waidesKIAutonomousTradeCore.getAutonomousStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting autonomous status:', error);
+      res.status(500).json({ error: 'Failed to get autonomous status' });
+    }
+  });
+
+  app.get("/api/waides-ki/autonomous-core/active-trades", (req, res) => {
+    try {
+      const trades = waidesKIAutonomousTradeCore.getActiveTrades();
+      res.json({ active_trades: trades });
+    } catch (error) {
+      console.error('Error getting active trades:', error);
+      res.status(500).json({ error: 'Failed to get active trades' });
+    }
+  });
+
+  app.get("/api/waides-ki/autonomous-core/trade-history", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = waidesKIAutonomousTradeCore.getTradeHistory(limit);
+      res.json({ trade_history: history });
+    } catch (error) {
+      console.error('Error getting trade history:', error);
+      res.status(500).json({ error: 'Failed to get trade history' });
+    }
+  });
+
+  app.post("/api/waides-ki/autonomous-core/enable", (req, res) => {
+    try {
+      waidesKIAutonomousTradeCore.enableAutonomousTrading();
+      res.json({ success: true, message: 'Autonomous trading enabled' });
+    } catch (error) {
+      console.error('Error enabling autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to enable autonomous trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/autonomous-core/disable", (req, res) => {
+    try {
+      waidesKIAutonomousTradeCore.disableAutonomousTrading();
+      res.json({ success: true, message: 'Autonomous trading disabled' });
+    } catch (error) {
+      console.error('Error disabling autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to disable autonomous trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/autonomous-core/force-close-all", async (req, res) => {
+    try {
+      const closedCount = await waidesKIAutonomousTradeCore.forceCloseAllTrades();
+      res.json({ success: true, message: `${closedCount} trades closed`, closed_trades: closedCount });
+    } catch (error) {
+      console.error('Error force closing trades:', error);
+      res.status(500).json({ error: 'Failed to force close trades' });
+    }
+  });
+
+  // Sentinel Watchdog endpoints
+  app.get("/api/waides-ki/sentinel/statistics", (req, res) => {
+    try {
+      const stats = waidesKISentinelWatchdog.getSentinelStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting sentinel statistics:', error);
+      res.status(500).json({ error: 'Failed to get sentinel statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/watched-bots", (req, res) => {
+    try {
+      const bots = waidesKISentinelWatchdog.getAllWatchedBots();
+      res.json({ watched_bots: bots });
+    } catch (error) {
+      console.error('Error getting watched bots:', error);
+      res.status(500).json({ error: 'Failed to get watched bots' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/alerts", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const severity = req.query.severity as any;
+      const alerts = waidesKISentinelWatchdog.getSentinelAlerts(limit, severity);
+      res.json({ alerts: alerts });
+    } catch (error) {
+      console.error('Error getting sentinel alerts:', error);
+      res.status(500).json({ error: 'Failed to get sentinel alerts' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/bot-status/:bot_id", (req, res) => {
+    try {
+      const { bot_id } = req.params;
+      const status = waidesKISentinelWatchdog.getBotStatus(bot_id);
+      
+      if (!status) {
+        return res.status(404).json({ error: `Bot ${bot_id} not found` });
+      }
+      
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting bot status:', error);
+      res.status(500).json({ error: 'Failed to get bot status' });
+    }
+  });
+
+  app.post("/api/waides-ki/sentinel/register", (req, res) => {
+    try {
+      const { bot_id, bot_name, bot_type } = req.body;
+      
+      if (!bot_id || !bot_name) {
+        return res.status(400).json({ error: 'bot_id and bot_name are required' });
+      }
+      
+      const result = waidesKISentinelWatchdog.registerBot(bot_id, bot_name, bot_type);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('Error registering bot:', error);
+      res.status(500).json({ error: 'Failed to register bot' });
+    }
+  });
+
+  app.post("/api/waides-ki/sentinel/unregister", (req, res) => {
+    try {
+      const { bot_id } = req.body;
+      
+      if (!bot_id) {
+        return res.status(400).json({ error: 'bot_id is required' });
+      }
+      
+      const result = waidesKISentinelWatchdog.unregisterBot(bot_id);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('Error unregistering bot:', error);
+      res.status(500).json({ error: 'Failed to unregister bot' });
+    }
+  });
+
+  app.post("/api/waides-ki/sentinel/resolve-alert", (req, res) => {
+    try {
+      const { alert_id } = req.body;
+      
+      if (!alert_id) {
+        return res.status(400).json({ error: 'alert_id is required' });
+      }
+      
+      const result = waidesKISentinelWatchdog.resolveAlert(alert_id);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('Error resolving alert:', error);
+      res.status(500).json({ error: 'Failed to resolve alert' });
+    }
+  });
+
+  app.post("/api/waides-ki/sentinel/emergency-shutdown", async (req, res) => {
+    try {
+      const result = await waidesKISentinelWatchdog.performEmergencyShutdown();
+      res.json(result);
+    } catch (error) {
+      console.error('Error performing emergency shutdown:', error);
+      res.status(500).json({ error: 'Failed to perform emergency shutdown' });
+    }
+  });
+
+  app.get("/api/waides-ki/sentinel/export", (req, res) => {
+    try {
+      const sentinelData = waidesKISentinelWatchdog.exportSentinelData();
+      res.json(sentinelData);
+    } catch (error) {
+      console.error('Error exporting sentinel data:', error);
+      res.status(500).json({ error: 'Failed to export sentinel data' });
     }
   });
 

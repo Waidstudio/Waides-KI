@@ -1,695 +1,653 @@
 import { waidesKIDailyReporter } from './waidesKIDailyReporter';
-import { waidesKIRiskManager } from './waidesKIRiskManager';
 
-interface TradeRecord {
-  timestamp: number;
-  result: 'WIN' | 'LOSS' | 'NEUTRAL';
-  profit_loss: number;
-  confidence: number;
-  market_conditions: any;
-  emotional_state: string;
-  strategy_type: string;
+interface EmotionalState {
+  fear_level: number; // 0-100
+  greed_level: number; // 0-100
+  panic_level: number; // 0-100
+  revenge_level: number; // 0-100
+  confidence_level: number; // 0-100
+  patience_level: number; // 0-100
+  discipline_level: number; // 0-100
+  overall_emotional_health: 'EXCELLENT' | 'GOOD' | 'MODERATE' | 'POOR' | 'CRITICAL';
 }
 
-interface EmotionalPattern {
-  pattern_name: string;
-  detection_threshold: number;
-  cooldown_minutes: number;
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  description: string;
-  prevention_message: string;
-}
-
-interface EmotionalBlock {
-  block_id: string;
-  timestamp: number;
-  pattern_triggered: string;
-  block_reason: string;
-  cooldown_until: number;
-  severity: string;
-  trades_blocked: number;
-  is_active: boolean;
-}
-
-interface ReflectionEntry {
-  reflection_id: string;
-  timestamp: number;
-  trade_result: 'WIN' | 'LOSS' | 'NEUTRAL';
-  market_indicators: any;
-  emotional_analysis: {
-    detected_emotion: string;
-    confidence_level: number;
-    bias_indicators: string[];
-    decision_quality: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR' | 'EMOTIONAL';
+interface TradeEmotionAnalysis {
+  trade_id: string;
+  open_time: number;
+  current_pnl: number;
+  time_held_minutes: number;
+  emotional_triggers: {
+    panic_exit_risk: boolean;
+    revenge_trade_risk: boolean;
+    greed_hold_risk: boolean;
+    fear_close_risk: boolean;
   };
-  self_coaching_notes: string[];
-  lesson_learned: string;
-  improvement_suggestions: string[];
-  psychological_insights: string[];
+  firewall_recommendations: {
+    allow_exit: boolean;
+    allow_entry: boolean;
+    suggested_action: 'HOLD' | 'EXIT' | 'REDUCE' | 'WAIT' | 'FORCE_EXIT';
+    reasoning: string[];
+  };
+  emotion_override_active: boolean;
+}
+
+interface EmotionalFirewallRule {
+  rule_id: string;
+  rule_name: string;
+  rule_type: 'PANIC_PROTECTION' | 'REVENGE_PREVENTION' | 'GREED_CONTROL' | 'FEAR_MANAGEMENT' | 'DISCIPLINE_ENFORCEMENT';
+  conditions: {
+    min_time_held?: number; // minutes
+    max_loss_percent?: number;
+    max_profit_percent?: number;
+    consecutive_losses?: number;
+    emotional_threshold?: number;
+  };
+  action: 'BLOCK_EXIT' | 'BLOCK_ENTRY' | 'FORCE_EXIT' | 'REDUCE_SIZE' | 'DELAY_ACTION';
+  description: string;
+  is_active: boolean;
+  trigger_count: number;
+  success_rate: number;
+}
+
+interface EmotionalFirewallStatistics {
+  total_interventions: number;
+  panic_exits_prevented: number;
+  revenge_trades_blocked: number;
+  greed_holds_corrected: number;
+  fear_paralysis_overcome: number;
+  successful_interventions: number;
+  firewall_success_rate: number;
+  average_emotional_health: number;
+  emotional_stability_trend: 'IMPROVING' | 'STABLE' | 'DECLINING';
+  most_common_emotion: string;
+  firewall_effectiveness: number;
 }
 
 export class WaidesKIEmotionalFirewall {
-  private recentTrades: TradeRecord[] = [];
-  private emotionalBlocks: EmotionalBlock[] = [];
-  private reflectionEntries: ReflectionEntry[] = [];
-  private emotionalPatterns: EmotionalPattern[];
+  private currentEmotionalState: EmotionalState = {
+    fear_level: 30,
+    greed_level: 25,
+    panic_level: 15,
+    revenge_level: 10,
+    confidence_level: 70,
+    patience_level: 80,
+    discipline_level: 85,
+    overall_emotional_health: 'GOOD'
+  };
+  
+  private activeTrades: Map<string, TradeEmotionAnalysis> = new Map();
+  private firewallRules: EmotionalFirewallRule[] = [];
+  private emotionalHistory: Array<{ timestamp: number; state: EmotionalState }> = [];
+  private interventionLog: Array<{
+    timestamp: number;
+    trade_id: string;
+    intervention_type: string;
+    reasoning: string;
+    outcome: 'SUCCESS' | 'FAILURE' | 'PENDING';
+  }> = [];
+  
+  private firewallStatistics: EmotionalFirewallStatistics = {
+    total_interventions: 0,
+    panic_exits_prevented: 0,
+    revenge_trades_blocked: 0,
+    greed_holds_corrected: 0,
+    fear_paralysis_overcome: 0,
+    successful_interventions: 0,
+    firewall_success_rate: 0,
+    average_emotional_health: 75,
+    emotional_stability_trend: 'STABLE',
+    most_common_emotion: 'CONFIDENCE',
+    firewall_effectiveness: 85
+  };
+  
   private isFirewallActive: boolean = true;
-  private maxTradeHistory: number = 100;
+  private maxHistorySize: number = 1000;
+  private consecutiveLosses: number = 0;
+  private lastTradeResult: 'WIN' | 'LOSS' | null = null;
 
   constructor() {
-    this.initializeEmotionalPatterns();
-    this.startMaintenanceCycle();
+    this.initializeFirewallRules();
+    this.startEmotionalMonitoring();
   }
 
-  private initializeEmotionalPatterns(): void {
-    this.emotionalPatterns = [
+  private initializeFirewallRules(): void {
+    this.firewallRules = [
       {
-        pattern_name: 'REVENGE_TRADING',
-        detection_threshold: 3, // 3 losses in succession
-        cooldown_minutes: 15,
-        severity: 'HIGH',
-        description: 'Multiple consecutive losses detected - high risk of revenge trading',
-        prevention_message: 'Taking a break to prevent emotional revenge trading'
+        rule_id: 'PANIC_EXIT_PROTECTION',
+        rule_name: 'Panic Exit Protection',
+        rule_type: 'PANIC_PROTECTION',
+        conditions: {
+          min_time_held: 10, // Must hold for at least 10 minutes
+          max_loss_percent: -5, // When loss is greater than 5%
+          emotional_threshold: 70 // High panic level
+        },
+        action: 'BLOCK_EXIT',
+        description: 'Prevents panic exits during temporary drawdowns',
+        is_active: true,
+        trigger_count: 0,
+        success_rate: 0
       },
       {
-        pattern_name: 'OVERCONFIDENCE_SPIKE',
-        detection_threshold: 5, // 5 wins in succession
-        cooldown_minutes: 10,
-        severity: 'MEDIUM',
-        description: 'Consecutive wins detected - risk of overconfidence and larger position sizing',
-        prevention_message: 'Cooling down to maintain discipline after winning streak'
+        rule_id: 'REVENGE_TRADE_BLOCKER',
+        rule_name: 'Revenge Trade Blocker',
+        rule_type: 'REVENGE_PREVENTION',
+        conditions: {
+          consecutive_losses: 2,
+          emotional_threshold: 60 // High revenge level
+        },
+        action: 'BLOCK_ENTRY',
+        description: 'Blocks new trades after consecutive losses when revenge emotions are high',
+        is_active: true,
+        trigger_count: 0,
+        success_rate: 0
       },
       {
-        pattern_name: 'RAPID_FIRE_TRADING',
-        detection_threshold: 4, // 4 trades in 5 minutes
-        cooldown_minutes: 20,
-        severity: 'HIGH',
-        description: 'Excessive trading frequency detected - emotional decision making likely',
-        prevention_message: 'Rapid trading detected - enforcing cooling period for clarity'
+        rule_id: 'GREED_PROFIT_TAKER',
+        rule_name: 'Greed Profit Taker',
+        rule_type: 'GREED_CONTROL',
+        conditions: {
+          max_profit_percent: 15, // When profit exceeds 15%
+          emotional_threshold: 70 // High greed level
+        },
+        action: 'FORCE_EXIT',
+        description: 'Forces profit taking when greed prevents logical exits',
+        is_active: true,
+        trigger_count: 0,
+        success_rate: 0
       },
       {
-        pattern_name: 'DRAWDOWN_PANIC',
-        detection_threshold: 2, // 2% portfolio drawdown
-        cooldown_minutes: 30,
-        severity: 'CRITICAL',
-        description: 'Significant drawdown detected - risk of panic decisions',
-        prevention_message: 'Portfolio protection mode activated due to drawdown'
+        rule_id: 'FEAR_PARALYSIS_BREAKER',
+        rule_name: 'Fear Paralysis Breaker',
+        rule_type: 'FEAR_MANAGEMENT',
+        conditions: {
+          emotional_threshold: 75, // High fear level
+          min_time_held: 60 // Held too long due to fear
+        },
+        action: 'FORCE_EXIT',
+        description: 'Forces action when fear causes trading paralysis',
+        is_active: true,
+        trigger_count: 0,
+        success_rate: 0
       },
       {
-        pattern_name: 'FOMO_PATTERN',
-        detection_threshold: 3, // 3 trades above normal confidence threshold
-        cooldown_minutes: 12,
-        severity: 'MEDIUM',
-        description: 'FOMO trading pattern detected - entering trades with unusually high confidence',
-        prevention_message: 'FOMO prevention - taking time to reassess market objectively'
-      },
-      {
-        pattern_name: 'LATE_NIGHT_TRADING',
-        detection_threshold: 1, // After 10 PM or before 6 AM
-        cooldown_minutes: 480, // 8 hours
-        severity: 'MEDIUM',
-        description: 'Trading outside optimal hours - decision quality may be compromised',
-        prevention_message: 'Late night trading blocked - wait for optimal decision hours'
+        rule_id: 'DISCIPLINE_ENFORCER',
+        rule_name: 'Discipline Enforcer',
+        rule_type: 'DISCIPLINE_ENFORCEMENT',
+        conditions: {
+          emotional_threshold: 40 // Low discipline level
+        },
+        action: 'DELAY_ACTION',
+        description: 'Adds cooling-off period when discipline is compromised',
+        is_active: true,
+        trigger_count: 0,
+        success_rate: 0
       }
     ];
   }
 
-  private startMaintenanceCycle(): void {
+  private startEmotionalMonitoring(): void {
+    // Update emotional state every 5 minutes
+    setInterval(() => {
+      this.updateEmotionalState();
+      this.monitorActiveTradesForEmotions();
+    }, 5 * 60 * 1000);
+
     // Clean old data every hour
     setInterval(() => {
       this.cleanOldData();
-      this.updateEmotionalBlocks();
     }, 60 * 60 * 1000);
   }
 
-  // CORE FIREWALL FUNCTIONS
-  recordTrade(
-    result: 'WIN' | 'LOSS' | 'NEUTRAL',
-    profitLoss: number,
-    confidence: number,
-    marketConditions: any,
-    strategyType: string = 'UNKNOWN'
-  ): void {
-    const emotionalState = this.detectCurrentEmotionalState(result, profitLoss);
+  private updateEmotionalState(): void {
+    // Simulate emotional state changes based on trading activity and market conditions
+    const previousState = { ...this.currentEmotionalState };
     
-    const tradeRecord: TradeRecord = {
+    // Factor in recent trade results
+    if (this.consecutiveLosses >= 2) {
+      this.currentEmotionalState.revenge_level = Math.min(100, this.currentEmotionalState.revenge_level + 15);
+      this.currentEmotionalState.confidence_level = Math.max(0, this.currentEmotionalState.confidence_level - 10);
+    } else if (this.lastTradeResult === 'WIN') {
+      this.currentEmotionalState.confidence_level = Math.min(100, this.currentEmotionalState.confidence_level + 5);
+      this.currentEmotionalState.revenge_level = Math.max(0, this.currentEmotionalState.revenge_level - 10);
+    }
+    
+    // Natural emotional decay towards neutral
+    this.currentEmotionalState.fear_level = this.decayTowards(this.currentEmotionalState.fear_level, 30, 0.1);
+    this.currentEmotionalState.greed_level = this.decayTowards(this.currentEmotionalState.greed_level, 25, 0.1);
+    this.currentEmotionalState.panic_level = this.decayTowards(this.currentEmotionalState.panic_level, 15, 0.15);
+    this.currentEmotionalState.revenge_level = this.decayTowards(this.currentEmotionalState.revenge_level, 10, 0.2);
+    
+    // Patience and discipline slowly improve with good behavior
+    if (this.firewallStatistics.firewall_success_rate > 70) {
+      this.currentEmotionalState.patience_level = Math.min(100, this.currentEmotionalState.patience_level + 1);
+      this.currentEmotionalState.discipline_level = Math.min(100, this.currentEmotionalState.discipline_level + 1);
+    }
+    
+    // Calculate overall emotional health
+    this.currentEmotionalState.overall_emotional_health = this.calculateOverallHealth();
+    
+    // Store emotional history
+    this.emotionalHistory.push({
       timestamp: Date.now(),
-      result,
-      profit_loss: profitLoss,
-      confidence,
-      market_conditions: marketConditions,
-      emotional_state: emotionalState,
-      strategy_type: strategyType
+      state: { ...this.currentEmotionalState }
+    });
+    
+    // Maintain history size
+    if (this.emotionalHistory.length > this.maxHistorySize) {
+      this.emotionalHistory = this.emotionalHistory.slice(-this.maxHistorySize);
+    }
+  }
+
+  private decayTowards(current: number, target: number, rate: number): number {
+    return current + (target - current) * rate;
+  }
+
+  private calculateOverallHealth(): 'EXCELLENT' | 'GOOD' | 'MODERATE' | 'POOR' | 'CRITICAL' {
+    const healthScore = 
+      (100 - this.currentEmotionalState.fear_level) * 0.2 +
+      (100 - this.currentEmotionalState.greed_level) * 0.15 +
+      (100 - this.currentEmotionalState.panic_level) * 0.25 +
+      (100 - this.currentEmotionalState.revenge_level) * 0.15 +
+      this.currentEmotionalState.confidence_level * 0.1 +
+      this.currentEmotionalState.patience_level * 0.075 +
+      this.currentEmotionalState.discipline_level * 0.075;
+    
+    if (healthScore >= 85) return 'EXCELLENT';
+    if (healthScore >= 70) return 'GOOD';
+    if (healthScore >= 55) return 'MODERATE';
+    if (healthScore >= 40) return 'POOR';
+    return 'CRITICAL';
+  }
+
+  private monitorActiveTradesForEmotions(): void {
+    for (const [tradeId, analysis] of this.activeTrades.entries()) {
+      const updatedAnalysis = this.analyzeTradeEmotions(analysis);
+      this.activeTrades.set(tradeId, updatedAnalysis);
+      
+      // Check for firewall interventions
+      this.checkFirewallRules(updatedAnalysis);
+    }
+  }
+
+  // CORE EMOTIONAL ANALYSIS METHODS
+  analyzeTradeEmotions(trade: {
+    trade_id: string;
+    open_time: number;
+    current_pnl: number;
+    time_held_minutes?: number;
+  }): TradeEmotionAnalysis {
+    const timeHeld = trade.time_held_minutes || Math.floor((Date.now() - trade.open_time) / (60 * 1000));
+    const pnlPercent = trade.current_pnl;
+    
+    // Detect emotional triggers
+    const panicExitRisk = pnlPercent < -3 && timeHeld < 15 && this.currentEmotionalState.panic_level > 60;
+    const revengeTradeRisk = this.consecutiveLosses >= 2 && this.currentEmotionalState.revenge_level > 50;
+    const greedHoldRisk = pnlPercent > 10 && this.currentEmotionalState.greed_level > 60;
+    const fearCloseRisk = this.currentEmotionalState.fear_level > 70;
+    
+    // Generate firewall recommendations
+    const recommendations = this.generateFirewallRecommendations({
+      trade_id: trade.trade_id,
+      pnl_percent: pnlPercent,
+      time_held: timeHeld,
+      panic_risk: panicExitRisk,
+      revenge_risk: revengeTradeRisk,
+      greed_risk: greedHoldRisk,
+      fear_risk: fearCloseRisk
+    });
+    
+    return {
+      trade_id: trade.trade_id,
+      open_time: trade.open_time,
+      current_pnl: pnlPercent,
+      time_held_minutes: timeHeld,
+      emotional_triggers: {
+        panic_exit_risk: panicExitRisk,
+        revenge_trade_risk: revengeTradeRisk,
+        greed_hold_risk: greedHoldRisk,
+        fear_close_risk: fearCloseRisk
+      },
+      firewall_recommendations: recommendations,
+      emotion_override_active: recommendations.allow_exit === false || recommendations.allow_entry === false
+    };
+  }
+
+  private generateFirewallRecommendations(context: {
+    trade_id: string;
+    pnl_percent: number;
+    time_held: number;
+    panic_risk: boolean;
+    revenge_risk: boolean;
+    greed_risk: boolean;
+    fear_risk: boolean;
+  }): TradeEmotionAnalysis['firewall_recommendations'] {
+    const reasoning: string[] = [];
+    let allowExit = true;
+    let allowEntry = true;
+    let suggestedAction: 'HOLD' | 'EXIT' | 'REDUCE' | 'WAIT' | 'FORCE_EXIT' = 'HOLD';
+    
+    // Panic exit protection
+    if (context.panic_risk && context.time_held < 10) {
+      allowExit = false;
+      reasoning.push('Panic exit blocked - insufficient time to assess true trend');
+      suggestedAction = 'HOLD';
+    }
+    
+    // Revenge trade prevention
+    if (context.revenge_risk) {
+      allowEntry = false;
+      reasoning.push('New trade entry blocked - revenge trading pattern detected');
+      suggestedAction = 'WAIT';
+    }
+    
+    // Greed control
+    if (context.greed_risk && context.pnl_percent > 15) {
+      reasoning.push('High profit target reached - greed override suggests taking profits');
+      suggestedAction = 'FORCE_EXIT';
+    }
+    
+    // Fear management
+    if (context.fear_risk && context.time_held > 60) {
+      reasoning.push('Fear paralysis detected - consider position management');
+      if (context.pnl_percent > 0) {
+        suggestedAction = 'EXIT';
+      } else {
+        suggestedAction = 'REDUCE';
+      }
+    }
+    
+    // Default reasoning if no emotions triggered
+    if (reasoning.length === 0) {
+      reasoning.push('No emotional triggers detected - normal trading behavior');
+    }
+    
+    return {
+      allow_exit: allowExit,
+      allow_entry: allowEntry,
+      suggested_action: suggestedAction,
+      reasoning: reasoning
+    };
+  }
+
+  private checkFirewallRules(analysis: TradeEmotionAnalysis): void {
+    if (!this.isFirewallActive) return;
+    
+    for (const rule of this.firewallRules) {
+      if (!rule.is_active) continue;
+      
+      const shouldTrigger = this.evaluateFirewallRule(rule, analysis);
+      
+      if (shouldTrigger) {
+        this.triggerFirewallIntervention(rule, analysis);
+      }
+    }
+  }
+
+  private evaluateFirewallRule(rule: EmotionalFirewallRule, analysis: TradeEmotionAnalysis): boolean {
+    const conditions = rule.conditions;
+    const state = this.currentEmotionalState;
+    
+    switch (rule.rule_type) {
+      case 'PANIC_PROTECTION':
+        return analysis.current_pnl < (conditions.max_loss_percent || -5) &&
+               analysis.time_held_minutes < (conditions.min_time_held || 10) &&
+               state.panic_level > (conditions.emotional_threshold || 70);
+               
+      case 'REVENGE_PREVENTION':
+        return this.consecutiveLosses >= (conditions.consecutive_losses || 2) &&
+               state.revenge_level > (conditions.emotional_threshold || 60);
+               
+      case 'GREED_CONTROL':
+        return analysis.current_pnl > (conditions.max_profit_percent || 15) &&
+               state.greed_level > (conditions.emotional_threshold || 70);
+               
+      case 'FEAR_MANAGEMENT':
+        return state.fear_level > (conditions.emotional_threshold || 75) &&
+               analysis.time_held_minutes > (conditions.min_time_held || 60);
+               
+      case 'DISCIPLINE_ENFORCEMENT':
+        return state.discipline_level < (conditions.emotional_threshold || 40);
+        
+      default:
+        return false;
+    }
+  }
+
+  private triggerFirewallIntervention(rule: EmotionalFirewallRule, analysis: TradeEmotionAnalysis): void {
+    rule.trigger_count++;
+    
+    const intervention = {
+      timestamp: Date.now(),
+      trade_id: analysis.trade_id,
+      intervention_type: rule.rule_name,
+      reasoning: `${rule.description} - ${rule.action}`,
+      outcome: 'PENDING' as const
     };
     
-    this.recentTrades.push(tradeRecord);
+    this.interventionLog.push(intervention);
+    this.firewallStatistics.total_interventions++;
     
-    // Maintain trade history size
-    if (this.recentTrades.length > this.maxTradeHistory) {
-      this.recentTrades = this.recentTrades.slice(-this.maxTradeHistory);
-    }
-    
-    // Generate reflection
-    this.generateReflection(tradeRecord);
-    
-    // Log significant emotional states
-    if (['STRESSED', 'OVERCONFIDENT', 'PANICKED'].includes(emotionalState)) {
-      waidesKIDailyReporter.logEmotionalState(
-        emotionalState as any,
-        `Trade ${result} detected emotional state: ${emotionalState}`,
-        'Emotional Firewall',
-        result === 'LOSS' ? 30 : 85
-      );
-    }
-  }
-
-  shouldBlockTrade(
-    confidence: number,
-    marketConditions: any,
-    strategyType: string = 'UNKNOWN'
-  ): { shouldBlock: boolean; reason: string; blockType?: string; severity?: string } {
-    if (!this.isFirewallActive) {
-      return { shouldBlock: false, reason: 'Firewall disabled' };
-    }
-
-    // Check active blocks
-    const activeBlock = this.getActiveBlock();
-    if (activeBlock) {
-      const timeRemaining = Math.ceil((activeBlock.cooldown_until - Date.now()) / 60000);
-      return {
-        shouldBlock: true,
-        reason: `${activeBlock.block_reason} (${timeRemaining} minutes remaining)`,
-        blockType: activeBlock.pattern_triggered,
-        severity: activeBlock.severity
-      };
-    }
-
-    // Check for emotional patterns
-    const patternViolation = this.detectEmotionalPatterns(confidence, marketConditions, strategyType);
-    if (patternViolation) {
-      this.activateEmotionalBlock(patternViolation);
-      return {
-        shouldBlock: true,
-        reason: patternViolation.prevention_message,
-        blockType: patternViolation.pattern_name,
-        severity: patternViolation.severity
-      };
-    }
-
-    return { shouldBlock: false, reason: 'Safe to trade' };
-  }
-
-  private detectEmotionalPatterns(
-    confidence: number,
-    marketConditions: any,
-    strategyType: string
-  ): EmotionalPattern | null {
-    const now = Date.now();
-    const recentTrades = this.recentTrades.filter(trade => now - trade.timestamp < 30 * 60 * 1000); // Last 30 minutes
-
-    // Check revenge trading pattern
-    const recentLosses = recentTrades.filter(trade => trade.result === 'LOSS');
-    const consecutiveLosses = this.getConsecutiveLosses();
-    if (consecutiveLosses >= this.emotionalPatterns.find(p => p.pattern_name === 'REVENGE_TRADING')!.detection_threshold) {
-      return this.emotionalPatterns.find(p => p.pattern_name === 'REVENGE_TRADING')!;
-    }
-
-    // Check overconfidence pattern
-    const consecutiveWins = this.getConsecutiveWins();
-    if (consecutiveWins >= this.emotionalPatterns.find(p => p.pattern_name === 'OVERCONFIDENCE_SPIKE')!.detection_threshold) {
-      return this.emotionalPatterns.find(p => p.pattern_name === 'OVERCONFIDENCE_SPIKE')!;
-    }
-
-    // Check rapid fire trading
-    const tradesLast5Min = recentTrades.filter(trade => now - trade.timestamp < 5 * 60 * 1000);
-    if (tradesLast5Min.length >= this.emotionalPatterns.find(p => p.pattern_name === 'RAPID_FIRE_TRADING')!.detection_threshold) {
-      return this.emotionalPatterns.find(p => p.pattern_name === 'RAPID_FIRE_TRADING')!;
-    }
-
-    // Check drawdown panic
-    const portfolioDrawdown = this.calculateCurrentDrawdown();
-    if (portfolioDrawdown >= 2.0) { // 2% drawdown
-      return this.emotionalPatterns.find(p => p.pattern_name === 'DRAWDOWN_PANIC')!;
-    }
-
-    // Check FOMO pattern
-    if (confidence > 90) { // Unusually high confidence
-      const highConfidenceTrades = recentTrades.filter(trade => trade.confidence > 85);
-      if (highConfidenceTrades.length >= this.emotionalPatterns.find(p => p.pattern_name === 'FOMO_PATTERN')!.detection_threshold) {
-        return this.emotionalPatterns.find(p => p.pattern_name === 'FOMO_PATTERN')!;
-      }
-    }
-
-    // Check late night trading
-    const currentHour = new Date().getHours();
-    if (currentHour >= 22 || currentHour <= 6) { // 10 PM to 6 AM
-      return this.emotionalPatterns.find(p => p.pattern_name === 'LATE_NIGHT_TRADING')!;
-    }
-
-    return null;
-  }
-
-  private getConsecutiveLosses(): number {
-    let count = 0;
-    for (let i = this.recentTrades.length - 1; i >= 0; i--) {
-      if (this.recentTrades[i].result === 'LOSS') {
-        count++;
-      } else {
+    // Update specific intervention counters
+    switch (rule.rule_type) {
+      case 'PANIC_PROTECTION':
+        this.firewallStatistics.panic_exits_prevented++;
         break;
-      }
-    }
-    return count;
-  }
-
-  private getConsecutiveWins(): number {
-    let count = 0;
-    for (let i = this.recentTrades.length - 1; i >= 0; i--) {
-      if (this.recentTrades[i].result === 'WIN') {
-        count++;
-      } else {
+      case 'REVENGE_PREVENTION':
+        this.firewallStatistics.revenge_trades_blocked++;
         break;
-      }
+      case 'GREED_CONTROL':
+        this.firewallStatistics.greed_holds_corrected++;
+        break;
+      case 'FEAR_MANAGEMENT':
+        this.firewallStatistics.fear_paralysis_overcome++;
+        break;
     }
-    return count;
-  }
-
-  private calculateCurrentDrawdown(): number {
-    if (this.recentTrades.length === 0) return 0;
-    
-    let runningPnL = 0;
-    let peak = 0;
-    let maxDrawdown = 0;
-    
-    for (const trade of this.recentTrades) {
-      runningPnL += trade.profit_loss;
-      if (runningPnL > peak) peak = runningPnL;
-      const drawdown = ((peak - runningPnL) / Math.abs(peak)) * 100;
-      if (drawdown > maxDrawdown) maxDrawdown = drawdown;
-    }
-    
-    return maxDrawdown;
-  }
-
-  private detectCurrentEmotionalState(result: 'WIN' | 'LOSS' | 'NEUTRAL', profitLoss: number): string {
-    const recentResults = this.recentTrades.slice(-5).map(t => t.result);
-    const consecutiveLosses = this.getConsecutiveLosses();
-    const consecutiveWins = this.getConsecutiveWins();
-    
-    if (consecutiveLosses >= 3) return 'STRESSED';
-    if (consecutiveLosses >= 2 && profitLoss < -2) return 'PANICKED';
-    if (consecutiveWins >= 4) return 'OVERCONFIDENT';
-    if (consecutiveWins >= 2 && profitLoss > 3) return 'EUPHORIC';
-    if (result === 'LOSS' && profitLoss < -1) return 'DISAPPOINTED';
-    if (result === 'WIN' && profitLoss > 2) return 'SATISFIED';
-    
-    return 'NEUTRAL';
-  }
-
-  private activateEmotionalBlock(pattern: EmotionalPattern): void {
-    const blockId = this.generateBlockId();
-    const cooldownUntil = Date.now() + (pattern.cooldown_minutes * 60 * 1000);
-    
-    const block: EmotionalBlock = {
-      block_id: blockId,
-      timestamp: Date.now(),
-      pattern_triggered: pattern.pattern_name,
-      block_reason: pattern.prevention_message,
-      cooldown_until: cooldownUntil,
-      severity: pattern.severity,
-      trades_blocked: 0,
-      is_active: true
-    };
-    
-    this.emotionalBlocks.push(block);
     
     waidesKIDailyReporter.recordLesson(
-      `Emotional firewall activated: ${pattern.pattern_name} (${pattern.cooldown_minutes} min cooldown)`,
-      'EMOTIONAL',
-      pattern.severity as any,
+      `Emotional firewall intervention: ${rule.rule_name} triggered for trade ${analysis.trade_id}`,
+      'EMOTIONAL_FIREWALL',
+      'HIGH',
       'Emotional Firewall'
     );
   }
 
-  private getActiveBlock(): EmotionalBlock | null {
-    const now = Date.now();
-    const activeBlock = this.emotionalBlocks.find(block => 
-      block.is_active && block.cooldown_until > now
-    );
-    
-    if (activeBlock) {
-      activeBlock.trades_blocked++;
-    }
-    
-    return activeBlock || null;
-  }
-
-  private updateEmotionalBlocks(): void {
-    const now = Date.now();
-    this.emotionalBlocks.forEach(block => {
-      if (block.cooldown_until <= now) {
-        block.is_active = false;
-      }
-    });
-  }
-
-  // THOUGHT CLEANSER AND REFLECTION
-  private generateReflection(tradeRecord: TradeRecord): void {
-    const reflectionId = this.generateReflectionId();
-    const marketIndicators = tradeRecord.market_conditions;
-    
-    const emotionalAnalysis = this.analyzeEmotionalFactors(tradeRecord);
-    const selfCoachingNotes = this.generateSelfCoaching(tradeRecord, emotionalAnalysis);
-    const lessonLearned = this.extractLesson(tradeRecord, marketIndicators);
-    const improvementSuggestions = this.generateImprovementSuggestions(tradeRecord);
-    const psychologicalInsights = this.generatePsychologicalInsights(tradeRecord);
-    
-    const reflection: ReflectionEntry = {
-      reflection_id: reflectionId,
-      timestamp: Date.now(),
-      trade_result: tradeRecord.result,
-      market_indicators: marketIndicators,
-      emotional_analysis: emotionalAnalysis,
-      self_coaching_notes: selfCoachingNotes,
-      lesson_learned: lessonLearned,
-      improvement_suggestions: improvementSuggestions,
-      psychological_insights: psychologicalInsights
-    };
-    
-    this.reflectionEntries.push(reflection);
-    
-    // Maintain reflection history
-    if (this.reflectionEntries.length > 200) {
-      this.reflectionEntries = this.reflectionEntries.slice(-200);
-    }
-  }
-
-  private analyzeEmotionalFactors(tradeRecord: TradeRecord): ReflectionEntry['emotional_analysis'] {
-    const biasIndicators: string[] = [];
-    let decisionQuality: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR' | 'EMOTIONAL' = 'AVERAGE';
-    
-    // Analyze confidence levels
-    if (tradeRecord.confidence > 95) {
-      biasIndicators.push('Overconfidence bias detected');
-      decisionQuality = 'POOR';
-    } else if (tradeRecord.confidence < 30) {
-      biasIndicators.push('Under-confidence or hesitation detected');
-    }
-    
-    // Analyze market conditions vs result
-    const indicators = tradeRecord.market_conditions;
-    if (indicators) {
-      if (indicators.rsi > 75 && tradeRecord.result === 'LOSS') {
-        biasIndicators.push('Ignored overbought conditions');
-        decisionQuality = 'POOR';
-      }
-      
-      if (indicators.rsi < 25 && tradeRecord.result === 'WIN') {
-        biasIndicators.push('Good contrarian timing');
-        decisionQuality = 'EXCELLENT';
-      }
-      
-      if (indicators.price < indicators.ema50 && tradeRecord.result === 'LOSS') {
-        biasIndicators.push('Traded against trend');
-        decisionQuality = 'EMOTIONAL';
-      }
-    }
-    
-    // Analyze emotional state impact
-    if (['STRESSED', 'PANICKED', 'OVERCONFIDENT'].includes(tradeRecord.emotional_state)) {
-      biasIndicators.push(`Emotional state: ${tradeRecord.emotional_state}`);
-      decisionQuality = 'EMOTIONAL';
-    }
-    
-    return {
-      detected_emotion: tradeRecord.emotional_state,
-      confidence_level: tradeRecord.confidence,
-      bias_indicators: biasIndicators,
-      decision_quality: decisionQuality
-    };
-  }
-
-  private generateSelfCoaching(tradeRecord: TradeRecord, emotionalAnalysis: any): string[] {
-    const notes: string[] = [];
-    const result = tradeRecord.result;
-    const profitLoss = tradeRecord.profit_loss;
-    
-    if (result === 'LOSS') {
-      if (emotionalAnalysis.decision_quality === 'EMOTIONAL') {
-        notes.push('This loss appears emotionally driven - take time to center before next trade');
-      } else if (profitLoss < -2) {
-        notes.push('Significant loss - review position sizing and risk management');
-      } else {
-        notes.push('Acceptable loss within risk parameters - part of trading process');
-      }
-      
-      if (emotionalAnalysis.bias_indicators.length > 0) {
-        notes.push(`Bias analysis: ${emotionalAnalysis.bias_indicators.join(', ')}`);
-      }
-    } else if (result === 'WIN') {
-      if (profitLoss > 3) {
-        notes.push('Excellent profit - remember this setup for future reference');
-      } else {
-        notes.push('Good profitable trade - consistent execution');
-      }
-      
-      if (emotionalAnalysis.decision_quality === 'EXCELLENT') {
-        notes.push('High-quality decision making - reinforce this approach');
-      }
-    }
-    
-    // Add emotional coaching
-    switch (tradeRecord.emotional_state) {
-      case 'STRESSED':
-        notes.push('Stress detected - consider reducing position sizes temporarily');
-        break;
-      case 'OVERCONFIDENT':
-        notes.push('Overconfidence warning - maintain disciplined approach');
-        break;
-      case 'PANICKED':
-        notes.push('Panic state detected - step away and reassess when calm');
-        break;
-    }
-    
-    return notes;
-  }
-
-  private extractLesson(tradeRecord: TradeRecord, marketIndicators: any): string {
-    const result = tradeRecord.result;
-    
-    if (!marketIndicators) {
-      return `${result} trade completed - insufficient market data for detailed analysis`;
-    }
-    
-    if (result === 'LOSS') {
-      if (marketIndicators.rsi > 70) {
-        return 'Lesson: Respect overbought conditions - avoid buying into strong resistance';
-      } else if (marketIndicators.price < marketIndicators.ema50) {
-        return 'Lesson: Trading against the trend is high risk - wait for trend confirmation';
-      } else {
-        return 'Lesson: Market conditions were reasonable - loss is part of normal trading variance';
-      }
-    } else if (result === 'WIN') {
-      if (marketIndicators.rsi < 40 && marketIndicators.price > marketIndicators.ema50) {
-        return 'Lesson: Excellent timing - oversold conditions with trend support provide good entries';
-      } else {
-        return 'Lesson: Good execution of trading plan - maintain consistency';
-      }
-    }
-    
-    return 'Lesson: Neutral outcome - continue following systematic approach';
-  }
-
-  private generateImprovementSuggestions(tradeRecord: TradeRecord): string[] {
-    const suggestions: string[] = [];
-    
-    if (tradeRecord.confidence < 50 && tradeRecord.result === 'LOSS') {
-      suggestions.push('Consider skipping trades with confidence below 60%');
-    }
-    
-    if (tradeRecord.confidence > 90) {
-      suggestions.push('High confidence trades warrant review - ensure not overriding risk management');
-    }
-    
-    if (Math.abs(tradeRecord.profit_loss) > 3) {
-      suggestions.push('Large P&L movements suggest reviewing position sizing strategy');
-    }
-    
-    const consecutiveLosses = this.getConsecutiveLosses();
-    if (consecutiveLosses >= 2) {
-      suggestions.push('Multiple losses detected - consider reducing trade frequency temporarily');
-    }
-    
-    return suggestions;
-  }
-
-  private generatePsychologicalInsights(tradeRecord: TradeRecord): string[] {
-    const insights: string[] = [];
-    
-    const emotionalState = tradeRecord.emotional_state;
-    
-    switch (emotionalState) {
-      case 'STRESSED':
-        insights.push('Stress can lead to poor decision making - implement stress management techniques');
-        insights.push('Consider meditation or breathing exercises before trading sessions');
-        break;
-      case 'OVERCONFIDENT':
-        insights.push('Overconfidence is often followed by significant losses - maintain humility');
-        insights.push('Success can breed complacency - stay disciplined with risk management');
-        break;
-      case 'PANICKED':
-        insights.push('Panic leads to impulsive decisions - develop emotional regulation skills');
-        insights.push('Fear-based trading often results in buying high and selling low');
-        break;
-      case 'EUPHORIC':
-        insights.push('Euphoria can cloud judgment - avoid increasing position sizes during wins');
-        break;
-    }
-    
-    // Add general psychological principles
-    if (tradeRecord.result === 'LOSS') {
-      insights.push('Losses are information, not failures - focus on learning rather than regret');
-    }
-    
-    return insights;
-  }
-
-  // UTILITY METHODS
-  private generateBlockId(): string {
-    return `BLOCK_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-  }
-
-  private generateReflectionId(): string {
-    return `REFLECT_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-  }
-
   private cleanOldData(): void {
-    const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    const cutoffTime = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
     
-    // Clean old trades
-    this.recentTrades = this.recentTrades.filter(trade => trade.timestamp > thirtyDaysAgo);
+    // Clean emotional history
+    this.emotionalHistory = this.emotionalHistory.filter(h => h.timestamp > cutoffTime);
     
-    // Clean old blocks
-    this.emotionalBlocks = this.emotionalBlocks.filter(block => block.timestamp > thirtyDaysAgo);
-    
-    // Clean old reflections
-    this.reflectionEntries = this.reflectionEntries.filter(reflection => reflection.timestamp > thirtyDaysAgo);
+    // Clean intervention log
+    this.interventionLog = this.interventionLog.filter(i => i.timestamp > cutoffTime);
   }
 
   // PUBLIC INTERFACE METHODS
-  getEmotionalStatistics(): {
-    firewall_active: boolean;
-    total_trades_recorded: number;
-    total_blocks_activated: number;
-    active_blocks: number;
-    emotional_state_distribution: { [state: string]: number };
-    decision_quality_distribution: { [quality: string]: number };
-    pattern_trigger_frequency: { [pattern: string]: number };
-    reflection_count: number;
-    avg_confidence_level: number;
+  evaluateTradeExit(tradeId: string, currentPnL: number, timeHeldMinutes: number): {
+    allowed: boolean;
+    reasoning: string[];
+    suggested_action: string;
+    emotional_state: string;
   } {
-    const totalTrades = this.recentTrades.length;
-    const activeBlocks = this.emotionalBlocks.filter(block => block.is_active).length;
+    if (!this.isFirewallActive) {
+      return {
+        allowed: true,
+        reasoning: ['Emotional firewall disabled - exit allowed'],
+        suggested_action: 'EXIT',
+        emotional_state: 'NEUTRAL'
+      };
+    }
     
-    // Emotional state distribution
-    const emotionalStates: { [state: string]: number } = {};
-    this.recentTrades.forEach(trade => {
-      emotionalStates[trade.emotional_state] = (emotionalStates[trade.emotional_state] || 0) + 1;
+    const analysis = this.analyzeTradeEmotions({
+      trade_id: tradeId,
+      open_time: Date.now() - (timeHeldMinutes * 60 * 1000),
+      current_pnl: currentPnL,
+      time_held_minutes: timeHeldMinutes
     });
-    
-    // Decision quality distribution
-    const decisionQuality: { [quality: string]: number } = {};
-    this.reflectionEntries.forEach(reflection => {
-      const quality = reflection.emotional_analysis.decision_quality;
-      decisionQuality[quality] = (decisionQuality[quality] || 0) + 1;
-    });
-    
-    // Pattern trigger frequency
-    const patternFrequency: { [pattern: string]: number } = {};
-    this.emotionalBlocks.forEach(block => {
-      patternFrequency[block.pattern_triggered] = (patternFrequency[block.pattern_triggered] || 0) + 1;
-    });
-    
-    // Average confidence
-    const avgConfidence = totalTrades > 0 ? 
-      this.recentTrades.reduce((sum, trade) => sum + trade.confidence, 0) / totalTrades : 0;
     
     return {
-      firewall_active: this.isFirewallActive,
-      total_trades_recorded: totalTrades,
-      total_blocks_activated: this.emotionalBlocks.length,
-      active_blocks: activeBlocks,
-      emotional_state_distribution: emotionalStates,
-      decision_quality_distribution: decisionQuality,
-      pattern_trigger_frequency: patternFrequency,
-      reflection_count: this.reflectionEntries.length,
-      avg_confidence_level: Math.round(avgConfidence * 100) / 100
+      allowed: analysis.firewall_recommendations.allow_exit,
+      reasoning: analysis.firewall_recommendations.reasoning,
+      suggested_action: analysis.firewall_recommendations.suggested_action,
+      emotional_state: this.currentEmotionalState.overall_emotional_health
     };
   }
 
-  getReflectionLog(limit: number = 50): ReflectionEntry[] {
-    return this.reflectionEntries.slice(-limit).reverse();
+  evaluateTradeEntry(): {
+    allowed: boolean;
+    reasoning: string[];
+    emotional_state: string;
+    wait_time_minutes?: number;
+  } {
+    if (!this.isFirewallActive) {
+      return {
+        allowed: true,
+        reasoning: ['Emotional firewall disabled - entry allowed'],
+        emotional_state: 'NEUTRAL'
+      };
+    }
+    
+    const revengeRisk = this.consecutiveLosses >= 2 && this.currentEmotionalState.revenge_level > 50;
+    const disciplineLow = this.currentEmotionalState.discipline_level < 40;
+    
+    if (revengeRisk) {
+      return {
+        allowed: false,
+        reasoning: ['Revenge trading pattern detected - cooling off period required'],
+        emotional_state: this.currentEmotionalState.overall_emotional_health,
+        wait_time_minutes: 30
+      };
+    }
+    
+    if (disciplineLow) {
+      return {
+        allowed: false,
+        reasoning: ['Low discipline level - discipline enforcement active'],
+        emotional_state: this.currentEmotionalState.overall_emotional_health,
+        wait_time_minutes: 15
+      };
+    }
+    
+    return {
+      allowed: true,
+      reasoning: ['Emotional state stable - entry allowed'],
+      emotional_state: this.currentEmotionalState.overall_emotional_health
+    };
   }
 
-  getEmotionalBlocks(limit: number = 20): EmotionalBlock[] {
-    return this.emotionalBlocks.slice(-limit).reverse();
+  recordTradeResult(tradeId: string, result: 'WIN' | 'LOSS', finalPnL: number): void {
+    this.lastTradeResult = result;
+    
+    if (result === 'LOSS') {
+      this.consecutiveLosses++;
+      // Increase negative emotions
+      this.currentEmotionalState.fear_level = Math.min(100, this.currentEmotionalState.fear_level + 10);
+      this.currentEmotionalState.confidence_level = Math.max(0, this.currentEmotionalState.confidence_level - 5);
+    } else {
+      this.consecutiveLosses = 0;
+      // Reduce negative emotions
+      this.currentEmotionalState.fear_level = Math.max(0, this.currentEmotionalState.fear_level - 5);
+      this.currentEmotionalState.confidence_level = Math.min(100, this.currentEmotionalState.confidence_level + 5);
+    }
+    
+    // Remove from active trades
+    this.activeTrades.delete(tradeId);
+    
+    // Update firewall rule success rates
+    this.updateRuleSuccessRates(tradeId, result);
   }
 
-  getRecentTrades(limit: number = 50): TradeRecord[] {
-    return this.recentTrades.slice(-limit).reverse();
+  private updateRuleSuccessRates(tradeId: string, result: 'WIN' | 'LOSS'): void {
+    // Find interventions for this trade
+    const tradeInterventions = this.interventionLog.filter(i => i.trade_id === tradeId);
+    
+    for (const intervention of tradeInterventions) {
+      intervention.outcome = result === 'WIN' ? 'SUCCESS' : 'FAILURE';
+      
+      if (result === 'WIN') {
+        this.firewallStatistics.successful_interventions++;
+      }
+    }
+    
+    // Update overall success rate
+    if (this.firewallStatistics.total_interventions > 0) {
+      this.firewallStatistics.firewall_success_rate = 
+        Math.round((this.firewallStatistics.successful_interventions / this.firewallStatistics.total_interventions) * 100);
+    }
+  }
+
+  registerActiveTrade(tradeId: string, openTime: number): void {
+    const analysis = this.analyzeTradeEmotions({
+      trade_id: tradeId,
+      open_time: openTime,
+      current_pnl: 0
+    });
+    
+    this.activeTrades.set(tradeId, analysis);
+  }
+
+  updateTradeProgress(tradeId: string, currentPnL: number): void {
+    const existingTrade = this.activeTrades.get(tradeId);
+    if (existingTrade) {
+      const updatedAnalysis = this.analyzeTradeEmotions({
+        trade_id: tradeId,
+        open_time: existingTrade.open_time,
+        current_pnl: currentPnL
+      });
+      
+      this.activeTrades.set(tradeId, updatedAnalysis);
+    }
+  }
+
+  getCurrentEmotionalState(): EmotionalState {
+    return { ...this.currentEmotionalState };
+  }
+
+  getEmotionalFirewallStatistics(): EmotionalFirewallStatistics {
+    return { ...this.firewallStatistics };
+  }
+
+  getFirewallRules(): EmotionalFirewallRule[] {
+    return [...this.firewallRules];
+  }
+
+  getInterventionHistory(limit: number = 50): typeof this.interventionLog {
+    return this.interventionLog.slice(-limit).reverse();
   }
 
   enableFirewall(): void {
     this.isFirewallActive = true;
+    
     waidesKIDailyReporter.logEmotionalState(
       'CONFIDENT',
-      'Emotional firewall activated for trading protection',
+      'Emotional firewall activated - protecting against emotional trading mistakes',
       'Firewall Activation',
-      85
+      90
     );
   }
 
   disableFirewall(): void {
     this.isFirewallActive = false;
+    
     waidesKIDailyReporter.logEmotionalState(
       'NEUTRAL',
-      'Emotional firewall deactivated',
+      'Emotional firewall deactivated - manual emotional control required',
       'Firewall Deactivation',
       70
     );
   }
 
-  clearActiveBlocks(): void {
-    this.emotionalBlocks.forEach(block => {
-      block.is_active = false;
-    });
-    
-    waidesKIDailyReporter.recordLesson(
-      'All active emotional blocks cleared manually',
-      'EMOTIONAL',
-      'MEDIUM',
-      'Emotional Firewall'
-    );
-  }
-
-  updatePatternThreshold(patternName: string, newThreshold: number): boolean {
-    const pattern = this.emotionalPatterns.find(p => p.pattern_name === patternName);
-    if (pattern) {
-      pattern.detection_threshold = newThreshold;
-      return true;
-    }
-    return false;
-  }
-
-  exportEmotionalData(): any {
+  exportEmotionalFirewallData(): any {
     return {
-      emotional_statistics: this.getEmotionalStatistics(),
-      recent_trades: this.recentTrades,
-      emotional_blocks: this.emotionalBlocks,
-      reflection_entries: this.reflectionEntries,
-      emotional_patterns: this.emotionalPatterns,
+      emotional_firewall_statistics: this.getEmotionalFirewallStatistics(),
+      current_emotional_state: this.getCurrentEmotionalState(),
+      firewall_rules: this.getFirewallRules(),
+      intervention_history: this.getInterventionHistory(100),
+      active_trades: Array.from(this.activeTrades.values()),
+      emotional_history: this.emotionalHistory.slice(-100),
       firewall_config: {
         is_active: this.isFirewallActive,
-        max_trade_history: this.maxTradeHistory
+        consecutive_losses: this.consecutiveLosses,
+        max_history_size: this.maxHistorySize
       },
       export_timestamp: new Date().toISOString()
     };
