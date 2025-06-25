@@ -33,6 +33,7 @@ import { waidesKIEmotionalFirewall } from './services/waidesKIEmotionalFirewall.
 import { waidesKIDNAHealer } from './services/waidesKIDNAHealer.js';
 import { waidesKISituationalIntelligence } from './services/waidesKISituationalIntelligence.js';
 import { waidesKIHiddenVision } from './services/waidesKIHiddenVision.js';
+import { waidesKIShadowLab } from './services/waidesKIShadowLab.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -4220,6 +4221,168 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error exporting hidden vision data:', error);
       res.status(500).json({ error: 'Failed to export hidden vision data' });
+    }
+  });
+
+  // Shadow Lab Strategy Creation Chamber endpoints
+  app.get("/api/waides-ki/shadow-lab/statistics", (req, res) => {
+    try {
+      const stats = waidesKIShadowLab.getShadowLabStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting shadow lab statistics:', error);
+      res.status(500).json({ error: 'Failed to get shadow lab statistics' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/elite-strategies", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const eliteStrategies = waidesKIShadowLab.getTopEliteStrategies(limit);
+      res.json({ elite_strategies: eliteStrategies });
+    } catch (error) {
+      console.error('Error getting elite strategies:', error);
+      res.status(500).json({ error: 'Failed to get elite strategies' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/vault-ready", (req, res) => {
+    try {
+      const vaultReady = waidesKIShadowLab.getVaultReadyStrategies();
+      res.json({ vault_ready_strategies: vaultReady });
+    } catch (error) {
+      console.error('Error getting vault ready strategies:', error);
+      res.status(500).json({ error: 'Failed to get vault ready strategies' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/deployment-ready", (req, res) => {
+    try {
+      const deploymentReady = waidesKIShadowLab.getDeploymentReadyStrategies();
+      res.json({ deployment_ready_strategies: deploymentReady });
+    } catch (error) {
+      console.error('Error getting deployment ready strategies:', error);
+      res.status(500).json({ error: 'Failed to get deployment ready strategies' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/sessions", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const sessions = waidesKIShadowLab.getRecentSessions(limit);
+      res.json({ shadow_sessions: sessions });
+    } catch (error) {
+      console.error('Error getting shadow lab sessions:', error);
+      res.status(500).json({ error: 'Failed to get shadow lab sessions' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/elite-by-score", (req, res) => {
+    try {
+      const minScore = parseInt(req.query.min_score as string) || 80;
+      const eliteByScore = waidesKIShadowLab.getEliteByScore(minScore);
+      res.json({ 
+        elite_strategies: eliteByScore,
+        minimum_score: minScore,
+        count: eliteByScore.length 
+      });
+    } catch (error) {
+      console.error('Error getting elite strategies by score:', error);
+      res.status(500).json({ error: 'Failed to get elite strategies by score' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/lineage/:strategy_id", (req, res) => {
+    try {
+      const { strategy_id } = req.params;
+      
+      if (!strategy_id) {
+        return res.status(400).json({ error: 'Strategy ID is required' });
+      }
+      
+      const lineage = waidesKIShadowLab.getStrategyLineage(strategy_id);
+      res.json({ 
+        strategy_lineage: lineage,
+        generations: lineage.length,
+        original_dna: lineage[lineage.length - 1] || null
+      });
+    } catch (error) {
+      console.error('Error getting strategy lineage:', error);
+      res.status(500).json({ error: 'Failed to get strategy lineage' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow-lab/generate", async (req, res) => {
+    try {
+      const { count } = req.body;
+      const generationCount = count || 100;
+      
+      if (generationCount < 10 || generationCount > 500) {
+        return res.status(400).json({ error: 'Generation count must be between 10 and 500' });
+      }
+      
+      const session = await waidesKIShadowLab.generateAndTestStrategies(generationCount);
+      
+      res.json({ 
+        success: true, 
+        session: session,
+        message: `Shadow evolution completed: ${session.elite_discovered} elite strategies discovered`
+      });
+    } catch (error) {
+      console.error('Error generating shadow strategies:', error);
+      res.status(500).json({ error: 'Failed to generate shadow strategies: ' + error.message });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow-lab/activate", (req, res) => {
+    try {
+      waidesKIShadowLab.activateLab();
+      res.json({ success: true, message: 'Shadow Lab activated - entering darkness to birth genius' });
+    } catch (error) {
+      console.error('Error activating shadow lab:', error);
+      res.status(500).json({ error: 'Failed to activate shadow lab' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow-lab/deactivate", (req, res) => {
+    try {
+      waidesKIShadowLab.deactivateLab();
+      res.json({ success: true, message: 'Shadow Lab deactivated - evolution paused' });
+    } catch (error) {
+      console.error('Error deactivating shadow lab:', error);
+      res.status(500).json({ error: 'Failed to deactivate shadow lab' });
+    }
+  });
+
+  app.post("/api/waides-ki/shadow-lab/configure", (req, res) => {
+    try {
+      const { max_variants_per_session, elite_threshold, vault_threshold } = req.body;
+      
+      const params: any = {};
+      if (max_variants_per_session !== undefined) params.maxVariantsPerSession = max_variants_per_session;
+      if (elite_threshold !== undefined) params.eliteThreshold = elite_threshold;
+      if (vault_threshold !== undefined) params.vaultThreshold = vault_threshold;
+      
+      waidesKIShadowLab.setEvolutionParameters(params);
+      
+      res.json({ 
+        success: true, 
+        message: 'Shadow Lab evolution parameters updated successfully',
+        updated_parameters: params
+      });
+    } catch (error) {
+      console.error('Error configuring shadow lab:', error);
+      res.status(500).json({ error: 'Failed to configure shadow lab' });
+    }
+  });
+
+  app.get("/api/waides-ki/shadow-lab/export", (req, res) => {
+    try {
+      const shadowLabData = waidesKIShadowLab.exportShadowLabData();
+      res.json(shadowLabData);
+    } catch (error) {
+      console.error('Error exporting shadow lab data:', error);
+      res.status(500).json({ error: 'Failed to export shadow lab data' });
     }
   });
 

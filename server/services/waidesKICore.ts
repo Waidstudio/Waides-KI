@@ -20,6 +20,7 @@ import { waidesKIEmotionalFirewall } from './waidesKIEmotionalFirewall';
 import { waidesKIDNAHealer } from './waidesKIDNAHealer';
 import { waidesKISituationalIntelligence } from './waidesKISituationalIntelligence';
 import { waidesKIHiddenVision } from './waidesKIHiddenVision';
+import { waidesKIShadowLab } from './waidesKIShadowLab';
 import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
 import { neuralQuantumSingularityStrategy } from './neuralQuantumSingularityStrategy';
 
@@ -900,6 +901,8 @@ export class WaidesKICore {
     const situationalContext = waidesKISituationalIntelligence.getCurrentContext();
     const hiddenVisionState = waidesKIHiddenVision.getHiddenVisionState();
     const activePredictions = waidesKIHiddenVision.getActivePredictions();
+    const shadowLabStats = waidesKIShadowLab.getShadowLabStatistics();
+    const eliteStrategies = waidesKIShadowLab.getTopEliteStrategies(5);
     
     return {
       isActive: this.isAutonomousMode,
@@ -1022,6 +1025,17 @@ export class WaidesKICore {
         sacredEnergyLevel: hiddenVisionState.sacred_energy_level,
         spiritualConnection: hiddenVisionState.spiritual_connection_strength,
         sacredSight: 'ACTIVE'
+      },
+      shadowLab: {
+        labActive: shadowLabStats.lab_active,
+        totalDNAGenerated: shadowLabStats.total_dna_generated,
+        eliteStrategies: shadowLabStats.elite_strategies,
+        vaultReady: shadowLabStats.vault_ready,
+        deploymentReady: shadowLabStats.deployment_ready,
+        currentGeneration: shadowLabStats.current_generation,
+        darknessLevel: shadowLabStats.darkness_level,
+        bestEliteScore: shadowLabStats.best_elite_score,
+        strategyCreation: 'ACTIVE'
       }
     };
   }
