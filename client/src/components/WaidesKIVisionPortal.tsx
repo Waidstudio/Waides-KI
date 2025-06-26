@@ -1102,7 +1102,9 @@ export default function WaidesKIVisionPortal() {
           </div>
 
       {/* Chat Window */}
-      <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 h-[calc(100vh-300px)] overflow-hidden max-w-6xl mx-auto">
+      <div className={`relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 overflow-hidden max-w-6xl mx-auto ${
+        activeTab === 'chat' ? 'h-[calc(100vh-100px)]' : 'h-[calc(100vh-300px)]'
+      }`}>
         <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-800">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center">
@@ -1384,8 +1386,9 @@ export default function WaidesKIVisionPortal() {
         </div>
       )}
 
-      {/* Action Menu */}
-      <div className="relative z-10 mx-4 mb-4">
+      {/* Action Menu - Only show when not in chat tab */}
+      {activeTab !== 'chat' && (
+        <div className="relative z-10 mx-4 mb-4">
         <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-center text-purple-300 text-sm">System Components</CardTitle>
@@ -1635,7 +1638,8 @@ export default function WaidesKIVisionPortal() {
             </div>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      )}
 
       {/* WaidBot Summoning Panel */}
       <WaidBotSummonPanel
