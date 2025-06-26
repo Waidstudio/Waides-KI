@@ -92,12 +92,14 @@ export default function WaidesKIVisionPortal() {
       return response.json();
     },
     onSuccess: (data: any) => {
-      // Handle reasoning responses
-      if (data.reasoning && Array.isArray(data.reasoning)) {
-        typeMessage(data.answer, 'reasoning', data.confidence, undefined, data.reasoning);
-      } else {
+      // Handle reasoning responses with safety checks
+      if (data && data.reasoning && Array.isArray(data.reasoning)) {
+        typeMessage(data.answer || 'No response received', 'reasoning', data.confidence, undefined, data.reasoning);
+      } else if (data) {
         // Handle oracle/standard responses
-        typeMessage(data.answer, data.source, data.confidence, data.konslangProcessing);
+        typeMessage(data.answer || data.response || 'No response received', data.source, data.confidence, data.konslangProcessing);
+      } else {
+        typeMessage('Error: No response data received', 'error', 0);
       }
     },
     onError: (error) => {
@@ -118,7 +120,11 @@ export default function WaidesKIVisionPortal() {
       return response.json();
     },
     onSuccess: (data) => {
-      typeMessage(data.response, 'combined', 95);
+      if (data && (data.response || data.message)) {
+        typeMessage(data.response || data.message || 'Command executed successfully', 'combined', 95);
+      } else {
+        typeMessage('Command executed but no response received', 'combined', 80);
+      }
     },
   });
 
@@ -134,7 +140,51 @@ export default function WaidesKIVisionPortal() {
       return response.json();
     },
     onSuccess: (data) => {
-      typeMessage(data.answer, 'enhanced_bot_memory', 98);
+      if (data && data.answer) {
+        typeMessage(data.answer, 'enhanced_bot_memory', 98);
+      } else {
+        typeMessage('No answer received from enhanced bot memory', 'enhanced_bot_memory', 50);
+      }
+    },
+  });
+
+  // Reasoning mutation
+  const reasoningMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/chat/reasoning', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      if (!response.ok) throw new Error('Failed to get reasoning response');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.reasoning && Array.isArray(data.reasoning)) {
+        typeMessage(data.answer || 'Reasoning complete', 'reasoning', data.confidence, undefined, data.reasoning);
+      } else {
+        typeMessage('Reasoning analysis complete', 'reasoning', 75);
+      }
+    },
+  });
+
+  // Oracle mutation
+  const oracleMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/chat/oracle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      if (!response.ok) throw new Error('Failed to get oracle response');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.answer) {
+        typeMessage(data.answer, data.source || 'oracle', data.confidence, data.konslangProcessing);
+      } else {
+        typeMessage('Oracle consultation complete', 'oracle', 80);
+      }
     },
   });
 
@@ -159,6 +209,12 @@ export default function WaidesKIVisionPortal() {
   });
 
   const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
+    // Safety check for undefined message
+    if (!message || typeof message !== 'string') {
+      console.warn('typeMessage called with invalid message:', message);
+      return;
+    }
+    
     setIsTyping(true);
     setCurrentTypingMessage('');
     
