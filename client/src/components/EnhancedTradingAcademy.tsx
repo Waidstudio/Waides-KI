@@ -51,6 +51,16 @@ export default function EnhancedTradingAcademy() {
   const [activeSimulation, setActiveSimulation] = useState<string | null>(null);
   const [simulationResults, setSimulationResults] = useState<any>(null);
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [calculatorInputs, setCalculatorInputs] = useState({
+    positionSize: { accountBalance: '', riskPercent: '', stopLossDistance: '' },
+    riskReward: { entryPrice: '', stopLoss: '', takeProfit: '' },
+    portfolio: { positions: '' }
+  });
+  const [calculatorResults, setCalculatorResults] = useState({
+    positionSize: null,
+    riskReward: null,
+    portfolio: null
+  });
   const queryClient = useQueryClient();
 
   // Comprehensive Trading Courses
@@ -223,8 +233,11 @@ export default function EnhancedTradingAcademy() {
     setCurrentQuestion('');
 
     try {
-      const response = await apiRequest('/api/chat/ask', {
+      const response = await fetch('/api/chat/ask', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ 
           message: question,
           context: 'trading_education',
@@ -232,9 +245,10 @@ export default function EnhancedTradingAcademy() {
         })
       });
 
+      const data = await response.json();
       const konsAiMessage = { 
         role: 'konsai' as const, 
-        message: response.message || response.response || 'I can help you learn about trading. Ask me anything!', 
+        message: data.message || data.response || 'I can help you learn about trading. Ask me anything!', 
         timestamp: Date.now() 
       };
       setChatHistory(prev => [...prev, konsAiMessage]);
@@ -254,12 +268,16 @@ export default function EnhancedTradingAcademy() {
     setActiveSimulation(simulationId);
     
     try {
-      const response = await apiRequest('/api/trading/simulation/run', {
+      const response = await fetch('/api/trading/simulation/run', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ simulationId, userId: 'demo-user' })
       });
       
-      setSimulationResults(response);
+      const data = await response.json();
+      setSimulationResults(data);
     } catch (error) {
       console.error('Simulation error:', error);
       // Provide demo results for simulation
@@ -283,6 +301,96 @@ export default function EnhancedTradingAcademy() {
       case 'ADVANCED': return 'bg-orange-500';
       case 'EXPERT': return 'bg-red-500';
       default: return 'bg-gray-500';
+    }
+  };
+
+  // Trading Calculator Functions
+  const calculatePositionSize = async () => {
+    const { accountBalance, riskPercent, stopLossDistance } = calculatorInputs.positionSize;
+    
+    if (!accountBalance || !riskPercent || !stopLossDistance) {
+      alert('Please fill in all position size fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/trading/tools/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          toolType: 'position-size',
+          inputs: {
+            accountBalance: parseFloat(accountBalance),
+            riskPercent: parseFloat(riskPercent),
+            stopLossDistance: parseFloat(stopLossDistance)
+          }
+        })
+      });
+
+      const data = await response.json();
+      setCalculatorResults(prev => ({ ...prev, positionSize: data }));
+    } catch (error) {
+      console.error('Position size calculation error:', error);
+    }
+  };
+
+  const calculateRiskReward = async () => {
+    const { entryPrice, stopLoss, takeProfit } = calculatorInputs.riskReward;
+    
+    if (!entryPrice || !stopLoss || !takeProfit) {
+      alert('Please fill in all risk/reward fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/trading/tools/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          toolType: 'risk-reward',
+          inputs: {
+            entryPrice: parseFloat(entryPrice),
+            stopLoss: parseFloat(stopLoss),
+            takeProfit: parseFloat(takeProfit)
+          }
+        })
+      });
+
+      const data = await response.json();
+      setCalculatorResults(prev => ({ ...prev, riskReward: data }));
+    } catch (error) {
+      console.error('Risk/reward calculation error:', error);
+    }
+  };
+
+  const analyzePortfolio = async () => {
+    const { positions } = calculatorInputs.portfolio;
+    
+    if (!positions.trim()) {
+      alert('Please enter your portfolio positions');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/trading/tools/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          toolType: 'portfolio-analysis',
+          inputs: { positions }
+        })
+      });
+
+      const data = await response.json();
+      setCalculatorResults(prev => ({ ...prev, portfolio: data }));
+    } catch (error) {
+      console.error('Portfolio analysis error:', error);
     }
   };
 
@@ -648,12 +756,52 @@ export default function EnhancedTradingAcademy() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Input placeholder="Account Balance" className="bg-gray-700 border-gray-600" />
-                  <Input placeholder="Risk Per Trade (%)" className="bg-gray-700 border-gray-600" />
-                  <Input placeholder="Stop Loss Distance" className="bg-gray-700 border-gray-600" />
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Input 
+                    placeholder="Account Balance" 
+                    className="bg-gray-700 border-gray-600" 
+                    value={calculatorInputs.positionSize.accountBalance}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      positionSize: { ...prev.positionSize, accountBalance: e.target.value }
+                    }))}
+                  />
+                  <Input 
+                    placeholder="Risk Per Trade (%)" 
+                    className="bg-gray-700 border-gray-600" 
+                    value={calculatorInputs.positionSize.riskPercent}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      positionSize: { ...prev.positionSize, riskPercent: e.target.value }
+                    }))}
+                  />
+                  <Input 
+                    placeholder="Stop Loss Distance" 
+                    className="bg-gray-700 border-gray-600" 
+                    value={calculatorInputs.positionSize.stopLossDistance}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      positionSize: { ...prev.positionSize, stopLossDistance: e.target.value }
+                    }))}
+                  />
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    onClick={calculatePositionSize}
+                  >
                     Calculate Position Size
                   </Button>
+                  {calculatorResults.positionSize && (
+                    <div className="mt-4 p-3 bg-gray-700 rounded-lg space-y-2">
+                      <div className="text-sm text-gray-300">
+                        <strong>Position Size:</strong> ${calculatorResults.positionSize.positionSize}
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        <strong>Risk Amount:</strong> ${calculatorResults.positionSize.riskAmount}
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        <strong>Max Loss:</strong> ${calculatorResults.positionSize.maxLoss}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -667,12 +815,58 @@ export default function EnhancedTradingAcademy() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <Input placeholder="Entry Price" className="bg-gray-700 border-gray-600" />
-                  <Input placeholder="Stop Loss Price" className="bg-gray-700 border-gray-600" />
-                  <Input placeholder="Take Profit Price" className="bg-gray-700 border-gray-600" />
-                  <Button className="w-full bg-green-600 hover:bg-green-700">
+                  <Input 
+                    placeholder="Entry Price" 
+                    className="bg-gray-700 border-gray-600" 
+                    value={calculatorInputs.riskReward.entryPrice}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      riskReward: { ...prev.riskReward, entryPrice: e.target.value }
+                    }))}
+                  />
+                  <Input 
+                    placeholder="Stop Loss Price" 
+                    className="bg-gray-700 border-gray-600" 
+                    value={calculatorInputs.riskReward.stopLoss}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      riskReward: { ...prev.riskReward, stopLoss: e.target.value }
+                    }))}
+                  />
+                  <Input 
+                    placeholder="Take Profit Price" 
+                    className="bg-gray-700 border-gray-600" 
+                    value={calculatorInputs.riskReward.takeProfit}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      riskReward: { ...prev.riskReward, takeProfit: e.target.value }
+                    }))}
+                  />
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    onClick={calculateRiskReward}
+                  >
                     Calculate R:R Ratio
                   </Button>
+                  {calculatorResults.riskReward && (
+                    <div className="mt-4 p-3 bg-gray-700 rounded-lg space-y-2">
+                      <div className="text-sm text-gray-300">
+                        <strong>Risk:</strong> ${calculatorResults.riskReward.riskAmount}
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        <strong>Reward:</strong> ${calculatorResults.riskReward.rewardAmount}
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        <strong>R:R Ratio:</strong> 1:{calculatorResults.riskReward.ratio}
+                      </div>
+                      <div className={`text-sm font-semibold ${
+                        calculatorResults.riskReward.quality === 'Excellent' ? 'text-green-400' :
+                        calculatorResults.riskReward.quality === 'Good' ? 'text-yellow-400' : 'text-red-400'
+                      }`}>
+                        Quality: {calculatorResults.riskReward.quality}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
