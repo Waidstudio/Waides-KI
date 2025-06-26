@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings } from 'lucide-react';
+import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings, MessageCircle } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 
 interface ChatMessage {
@@ -12,9 +12,10 @@ interface ChatMessage {
   message: string;
   timestamp: Date;
   personality?: string;
-  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined';
+  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning';
   confidence?: number;
   konslangProcessing?: string;
+  reasoning?: any[];
 }
 
 interface OracleResponse {
@@ -425,6 +426,35 @@ export default function WaidesKIVisionPortal() {
                   </div>
                 )}
                 <p className="whitespace-pre-wrap leading-relaxed">{message.message}</p>
+                
+                {/* Display reasoning steps for reasoning mode */}
+                {message.reasoning && message.reasoning.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <div className="text-xs text-purple-300 font-semibold flex items-center gap-2">
+                      <Brain className="w-3 h-3" />
+                      Reasoning Process
+                    </div>
+                    {message.reasoning.map((step, index) => (
+                      <div key={index} className="bg-gray-900/40 border border-purple-500/10 rounded-lg p-3">
+                        <div className="text-xs text-purple-400 font-medium mb-1">
+                          Step {index + 1}: {step.step}
+                        </div>
+                        <div className="text-sm text-gray-300 mb-2">
+                          {step.analysis}
+                        </div>
+                        {step.data && Object.keys(step.data).length > 0 && (
+                          <div className="text-xs text-gray-400 bg-gray-800/60 rounded p-2">
+                            <strong>Data:</strong> {JSON.stringify(step.data, null, 2)}
+                          </div>
+                        )}
+                        <div className="text-xs text-purple-300 mt-1">
+                          Confidence: {step.confidence}%
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
                 {message.konslangProcessing && (
                   <div className="mt-2 text-xs text-purple-400 italic">
                     🔮 {message.konslangProcessing}
