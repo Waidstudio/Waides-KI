@@ -139,6 +139,310 @@ export default function EnhancedTradingAcademy() {
     }
   ];
 
+  // Detailed Course Lessons - Trading Psychology & Discipline
+  const tradingPsychologyLessons = [
+    {
+      id: 1,
+      title: 'The Psychology of Trading Success',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand how psychology impacts trading performance',
+          'Identify the key mental traits of successful traders',
+          'Recognize the difference between amateur and professional mindset'
+        ],
+        keyPoints: [
+          'Trading is 80% psychology and 20% strategy',
+          'Successful traders control emotions rather than being controlled by them',
+          'The market tests your emotional weaknesses repeatedly',
+          'Consistency comes from disciplined execution, not perfect predictions'
+        ],
+        summary: 'Trading psychology is the foundation of consistent profitability. Understanding how emotions affect decision-making and developing mental discipline are more important than any technical strategy. This lesson establishes the psychological framework needed for trading success.'
+      }
+    },
+    {
+      id: 2,
+      title: 'Understanding Fear and Greed Cycles',
+      duration: '30 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Recognize how fear and greed manifest in trading decisions',
+          'Learn to identify market fear and greed cycles',
+          'Develop strategies to counteract emotional trading impulses'
+        ],
+        keyPoints: [
+          'Fear causes traders to exit winning trades too early',
+          'Greed leads to holding losing positions too long',
+          'Market cycles are driven by collective fear and greed',
+          'Contrarian thinking often provides the best opportunities'
+        ],
+        summary: 'Fear and greed are the two dominant emotions that drive market behavior and individual trading decisions. Learning to recognize these emotions in yourself and the market is crucial for making rational trading decisions and capitalizing on emotional extremes.'
+      }
+    },
+    {
+      id: 3,
+      title: 'Conquering FOMO (Fear of Missing Out)',
+      duration: '28 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Identify FOMO triggers and warning signs',
+          'Develop systematic approaches to avoid FOMO trading',
+          'Create personal rules for trade entry and patience'
+        ],
+        keyPoints: [
+          'FOMO leads to chasing prices and poor entry points',
+          'There are always new opportunities in the market',
+          'Patience is more profitable than activity',
+          'Having a trading plan reduces FOMO impulses'
+        ],
+        summary: 'FOMO is one of the most destructive emotions in trading, leading to impulsive decisions and poor risk management. This lesson provides practical strategies for maintaining discipline and waiting for proper setups instead of chasing the market.'
+      }
+    },
+    {
+      id: 4,
+      title: 'Dealing with Trading Losses and Drawdowns',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Develop healthy attitudes toward trading losses',
+          'Learn psychological strategies for handling drawdowns',
+          'Build resilience and maintain confidence during difficult periods'
+        ],
+        keyPoints: [
+          'Losses are part of trading - expect them and plan for them',
+          'How you handle losses determines long-term success',
+          'Drawdowns test your psychological strength and system faith',
+          'Recovery requires both mental and strategic adjustments'
+        ],
+        summary: 'Learning to handle losses and drawdowns psychologically is essential for long-term trading success. This lesson teaches how to maintain emotional balance during difficult periods and use setbacks as learning opportunities rather than confidence destroyers.'
+      }
+    },
+    {
+      id: 5,
+      title: 'Building Unshakeable Trading Discipline',
+      duration: '32 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand the components of trading discipline',
+          'Develop personal accountability systems',
+          'Create habits that support consistent execution'
+        ],
+        keyPoints: [
+          'Discipline means following your plan even when you don\'t want to',
+          'Small, consistent actions build strong trading habits',
+          'Rules without consequences are merely suggestions',
+          'Discipline is developed through practice and reinforcement'
+        ],
+        summary: 'Trading discipline is the ability to consistently execute your trading plan regardless of market conditions or emotional state. This lesson provides frameworks for building and maintaining the discipline necessary for long-term trading success.'
+      }
+    },
+    {
+      id: 6,
+      title: 'The Winner\'s Mindset vs. Loser\'s Mindset',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Identify characteristics of winning and losing trader mentalities',
+          'Transform limiting beliefs into empowering thoughts',
+          'Develop a growth mindset for continuous improvement'
+        ],
+        keyPoints: [
+          'Winners focus on process; losers focus on outcomes',
+          'Successful traders take responsibility; unsuccessful ones blame external factors',
+          'Growth mindset sees failures as learning opportunities',
+          'Confidence comes from preparation and consistent execution'
+        ],
+        summary: 'The difference between successful and unsuccessful traders often lies in their mindset and approach to the market. This lesson explores the mental frameworks that separate winners from losers and how to cultivate a winning mentality.'
+      }
+    },
+    {
+      id: 7,
+      title: 'Overconfidence and Revenge Trading',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Recognize signs of overconfidence and its dangers',
+          'Understand the revenge trading cycle and how to break it',
+          'Develop strategies for maintaining emotional equilibrium'
+        ],
+        keyPoints: [
+          'Overconfidence leads to larger position sizes and increased risk',
+          'Revenge trading attempts to recover losses through emotional decisions',
+          'Both patterns destroy accounts faster than any market movement',
+          'Humility and respect for the market are essential for survival'
+        ],
+        summary: 'Overconfidence and revenge trading are two of the most dangerous psychological traps in trading. This lesson teaches how to recognize these patterns early and implement safeguards to prevent emotional decision-making from destroying your account.'
+      }
+    },
+    {
+      id: 8,
+      title: 'Stress Management and Mental Health',
+      duration: '28 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand how stress affects trading performance',
+          'Learn stress reduction techniques for traders',
+          'Develop sustainable trading practices for mental health'
+        ],
+        keyPoints: [
+          'Chronic stress impairs decision-making and judgment',
+          'Physical health directly impacts trading performance',
+          'Regular breaks and exercise improve mental clarity',
+          'Trading should enhance life, not consume it'
+        ],
+        summary: 'Managing stress and maintaining mental health are crucial for sustainable trading success. This lesson covers practical techniques for managing trading-related stress and maintaining psychological well-being in a high-pressure environment.'
+      }
+    },
+    {
+      id: 9,
+      title: 'Patience and Timing in Trading',
+      duration: '22 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Develop patience as a trading skill',
+          'Learn to wait for optimal market conditions',
+          'Understand the relationship between patience and profitability'
+        ],
+        keyPoints: [
+          'The market rewards patience and punishes impatience',
+          'Best traders wait for their setups rather than forcing trades',
+          'Doing nothing is often the most profitable action',
+          'Quality over quantity leads to better results'
+        ],
+        summary: 'Patience is one of the most undervalued skills in trading. This lesson teaches how to develop patience as a competitive advantage and understand that in trading, sometimes the best action is no action at all.'
+      }
+    },
+    {
+      id: 10,
+      title: 'Creating Your Personal Trading Rules',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Develop personalized trading rules and guidelines',
+          'Create accountability systems for rule adherence',
+          'Build flexibility within structured frameworks'
+        ],
+        keyPoints: [
+          'Personal rules should reflect your risk tolerance and lifestyle',
+          'Written rules are more powerful than mental commitments',
+          'Rules should be specific, measurable, and actionable',
+          'Regular review and refinement of rules is necessary'
+        ],
+        summary: 'Personal trading rules create structure and consistency in an unpredictable environment. This lesson guides you through creating a personalized set of trading rules that align with your goals, personality, and risk tolerance.'
+      }
+    },
+    {
+      id: 11,
+      title: 'The Power of Routine and Habits',
+      duration: '25 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand how routines support trading success',
+          'Develop pre-market and post-market routines',
+          'Build positive trading habits that become automatic'
+        ],
+        keyPoints: [
+          'Routines reduce decision fatigue and improve focus',
+          'Consistent habits create reliable performance patterns',
+          'Pre-market preparation sets the tone for the trading day',
+          'Post-market review drives continuous improvement'
+        ],
+        summary: 'Successful traders follow consistent routines that prepare them mentally and strategically for market sessions. This lesson helps you develop powerful routines and habits that support disciplined trading and continuous improvement.'
+      }
+    },
+    {
+      id: 12,
+      title: 'Handling Success and Winning Streaks',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Learn to handle success without becoming overconfident',
+          'Understand the psychological challenges of winning streaks',
+          'Maintain discipline during profitable periods'
+        ],
+        keyPoints: [
+          'Success can be more dangerous than failure in trading',
+          'Winning streaks often lead to increased risk-taking',
+          'Humility during success preserves long-term profitability',
+          'Good times are when you should prepare for difficult times'
+        ],
+        summary: 'Learning to handle success properly is often more challenging than dealing with losses. This lesson addresses the psychological pitfalls of winning streaks and how to maintain discipline and perspective during profitable periods.'
+      }
+    },
+    {
+      id: 13,
+      title: 'Social Media and External Influences',
+      duration: '18 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Recognize how external influences affect trading decisions',
+          'Develop independence from social media trading advice',
+          'Create information filters for better decision-making'
+        ],
+        keyPoints: [
+          'Social media often amplifies emotional trading decisions',
+          'Following others\' trades prevents developing your own skills',
+          'Information overload leads to analysis paralysis',
+          'Independent thinking is essential for trading success'
+        ],
+        summary: 'External influences, particularly social media, can significantly impact trading psychology and decision-making. This lesson teaches how to maintain independence and filter information to support rather than hinder your trading success.'
+      }
+    },
+    {
+      id: 14,
+      title: 'Long-term Perspective and Goal Setting',
+      duration: '30 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Develop a long-term perspective on trading success',
+          'Set realistic and achievable trading goals',
+          'Balance short-term performance with long-term objectives'
+        ],
+        keyPoints: [
+          'Trading success is measured over years, not days or weeks',
+          'Realistic goals prevent disappointment and emotional trading',
+          'Long-term thinking improves decision-making quality',
+          'Consistent small gains compound into significant wealth'
+        ],
+        summary: 'Maintaining a long-term perspective is crucial for sustainable trading success. This lesson helps you set realistic goals and develop the patience needed to achieve lasting profitability in the markets.'
+      }
+    },
+    {
+      id: 15,
+      title: 'Developing Your Trading Psychology Plan',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Integrate all psychological concepts into a comprehensive plan',
+          'Create systems for ongoing psychological development',
+          'Establish metrics for measuring psychological progress'
+        ],
+        keyPoints: [
+          'A written psychology plan provides structure and accountability',
+          'Regular self-assessment identifies areas for improvement',
+          'Psychological development is an ongoing process, not a destination',
+          'Mental preparation is as important as technical preparation'
+        ],
+        summary: 'This final lesson integrates all previous concepts into a comprehensive trading psychology plan. You\'ll create a structured approach to ongoing psychological development that supports consistent trading performance and continuous improvement.'
+      }
+    }
+  ];
+
   // Detailed Course Lessons - Risk Management & Capital Preservation
   const riskManagementLessons = [
     {
@@ -1527,6 +1831,214 @@ export default function EnhancedTradingAcademy() {
                                   <Button
                                     onClick={() => setSelectedLesson(lesson.id + 1)}
                                     className="bg-orange-600 hover:bg-orange-700"
+                                  >
+                                    Next Lesson →
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Trading Psychology & Discipline Course Detail View */}
+          {selectedCourse === 'trading-psychology' && (
+            <div className="space-y-6">
+              {/* Course Header with Back Button */}
+              <Card className="bg-gradient-to-r from-purple-900 to-pink-900 border-purple-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-white text-2xl flex items-center space-x-3">
+                        <Brain className="h-8 w-8" />
+                        <span>Trading Psychology & Discipline</span>
+                        <Badge className="bg-pink-600 text-white">ADVANCED</Badge>
+                      </CardTitle>
+                      <CardDescription className="text-purple-200 mt-2">
+                        Develop the mental framework for consistent trading success
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCourse(null);
+                        setSelectedLesson(null);
+                      }}
+                      className="text-white border-white hover:bg-white hover:text-purple-900"
+                    >
+                      ← Back to Courses
+                    </Button>
+                  </div>
+                  <div className="flex items-center space-x-6 mt-4 text-purple-200">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>5 hours total</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="h-4 w-4" />
+                      <span>15 lessons</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>{Object.keys(lessonProgress).length}/15 completed</span>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Lesson List or Lesson Detail */}
+              {!selectedLesson && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tradingPsychologyLessons.map((lesson) => (
+                    <Card 
+                      key={lesson.id} 
+                      className={`bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-300 cursor-pointer ${
+                        lessonProgress[lesson.id] ? 'border-green-500' : ''
+                      }`}
+                      onClick={() => setSelectedLesson(lesson.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-white text-lg flex items-center space-x-2">
+                              <span className="text-purple-500">#{lesson.id}</span>
+                              <span>{lesson.title}</span>
+                              {lessonProgress[lesson.id] && <Badge className="bg-green-600">✓ Completed</Badge>}
+                            </CardTitle>
+                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{lesson.duration}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.type}
+                              </Badge>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Individual Lesson Detail */}
+              {selectedLesson && (
+                <div className="space-y-6">
+                  {(() => {
+                    const lesson = tradingPsychologyLessons.find(l => l.id === selectedLesson);
+                    if (!lesson) return null;
+                    
+                    return (
+                      <>
+                        <Card className="bg-gray-800 border-gray-700">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <CardTitle className="text-white text-xl flex items-center space-x-2">
+                                  <span className="text-purple-500">Lesson {lesson.id}:</span>
+                                  <span>{lesson.title}</span>
+                                </CardTitle>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{lesson.duration}</span>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {lesson.type}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedLesson(null)}
+                                className="text-white border-gray-600 hover:bg-gray-700"
+                              >
+                                ← Back to Lessons
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Learning Objectives */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                                <span>Learning Objectives</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.objectives.map((objective, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-purple-500 mt-1">•</span>
+                                    <span>{objective}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Key Points */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Eye className="h-5 w-5 text-green-500" />
+                                <span>Key Points</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.keyPoints.map((point, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-green-500 mt-1">✓</span>
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Summary */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <FileText className="h-5 w-5 text-purple-500" />
+                                <span>Summary</span>
+                              </h3>
+                              <p className="text-gray-300 leading-relaxed">
+                                {lesson.content.summary}
+                              </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                              <div className="flex items-center space-x-3">
+                                {lesson.id > 1 && (
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedLesson(lesson.id - 1)}
+                                    className="text-white border-gray-600 hover:bg-gray-700"
+                                  >
+                                    ← Previous Lesson
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Button
+                                  onClick={() => {
+                                    setLessonProgress(prev => ({ ...prev, [lesson.id]: true }));
+                                  }}
+                                  className={`${
+                                    lessonProgress[lesson.id] 
+                                      ? 'bg-green-600 hover:bg-green-700' 
+                                      : 'bg-purple-600 hover:bg-purple-700'
+                                  }`}
+                                >
+                                  {lessonProgress[lesson.id] ? '✓ Completed' : 'Mark Complete'}
+                                </Button>
+                                {lesson.id < tradingPsychologyLessons.length && (
+                                  <Button
+                                    onClick={() => setSelectedLesson(lesson.id + 1)}
+                                    className="bg-pink-600 hover:bg-pink-700"
                                   >
                                     Next Lesson →
                                   </Button>
