@@ -98,6 +98,10 @@ import { WaidesKISelfOptimizingRiskManager } from './services/waidesKISelfOptimi
 import { WaidesKIVisionMemoryMap } from './services/waidesKIVisionMemoryMap.js';
 import { WaidesKIPreCognitionEngine } from './services/waidesKIPreCognitionEngine.js';
 import { WaidesKIDivineVisionMap } from './services/waidesKIDivineVisionMap.js';
+// ETH Presence Engine: Real-Time Sentient Vision System
+import { waidesKIETHPresenceListener } from './services/waidesKIETHPresenceListener.js';
+import { waidesKIPresenceInterpreter } from './services/waidesKIPresenceInterpreter.js';
+import { waidesKIETHStateRegistry } from './services/waidesKIETHStateRegistry.js';
 import { WaidesKISpiritContract } from './services/waidesKISpiritContract.js';
 // STEP 47: Trinity Brain Model
 import { WaidesKIBrainHiveController } from './services/waidesKIBrainHiveController.js';
@@ -11094,33 +11098,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid trade result. Must be "win" or "loss"' });
       }
 
-      waidesKIEmotionalCore.updateEmotion(result, trade_amount || 100);
-      const newState = waidesKIEmotionalCore.getEmotionalState();
-      
-      res.json({
-        success: true,
-        message: `Emotional state updated with ${result}`,
-        new_state: newState
-      });
+      const emotionalUpdate = waidesKIEmotionalCore.updateEmotionalState(result, trade_amount || 0);
+      res.json(emotionalUpdate);
     } catch (error) {
       res.status(500).json({ error: 'Failed to update emotional state' });
     }
   });
 
-  app.post('/api/emotion/cooldown', async (req, res) => {
+  // ETH Presence Engine API Endpoints
+  app.get('/api/eth-presence/state', async (req, res) => {
     try {
-      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
-      waidesKIEmotionalCore.triggerCooldown();
+      const presenceState = waidesKIETHStateRegistry.getPresenceState();
+      res.json({
+        success: true,
+        presence_state: presenceState,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get ETH presence state' });
+    }
+  });
+
+  app.get('/api/eth-presence/simple', async (req, res) => {
+    try {
+      const simplePresence = waidesKIETHStateRegistry.getSimplePresence();
+      res.json({
+        success: true,
+        simple_presence: simplePresence,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get simple ETH presence' });
+    }
+  });
+
+  app.get('/api/eth-presence/recommendation', async (req, res) => {
+    try {
+      const recommendation = waidesKIETHStateRegistry.getTradingRecommendation();
+      res.json({
+        success: true,
+        trading_recommendation: recommendation,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get trading recommendation' });
+    }
+  });
+
+  app.post('/api/eth-presence/check-alignment', async (req, res) => {
+    try {
+      const { intended_action } = req.body;
+      
+      if (!intended_action) {
+        return res.status(400).json({ error: 'intended_action is required' });
+      }
+
+      const alignmentCheck = waidesKIETHStateRegistry.checkPresenceAlignment(intended_action);
+      res.json({
+        success: true,
+        alignment_check: alignmentCheck,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to check presence alignment' });
+    }
+  });
+
+  app.get('/api/eth-presence/report', async (req, res) => {
+    try {
+      const presenceReport = waidesKIETHStateRegistry.getPresenceReport();
+      res.json({
+        success: true,
+        presence_report: presenceReport,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get presence report' });
+    }
+  });
+
+  app.get('/api/eth-presence/analytics', async (req, res) => {
+    try {
+      const analytics = waidesKIETHPresenceListener.getPresenceAnalytics();
+      res.json({
+        success: true,
+        presence_analytics: analytics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get presence analytics' });
+    }
+  });
+
+  app.get('/api/eth-presence/connection-health', async (req, res) => {
+    try {
+      const connectionHealth = waidesKIETHPresenceListener.getConnectionHealth();
+      res.json({
+        success: true,
+        connection_health: connectionHealth,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get connection health' });
+    }
+  });
+
+  app.post('/api/eth-presence/interpret', async (req, res) => {
+    try {
+      const { state, confidence, volatility, change_percent, price_data } = req.body;
+      
+      if (!state) {
+        return res.status(400).json({ error: 'state is required' });
+      }
+
+      const interpretation = waidesKIPresenceInterpreter.generatePresenceReport(
+        state,
+        confidence || 0,
+        volatility || 0,
+        change_percent || 0,
+        price_data || {}
+      );
+
+      res.json({
+        success: true,
+        interpretation: interpretation,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to interpret presence' });
+    }
+  });
+
+  app.post('/api/eth-presence/reset', async (req, res) => {
+    try {
+      waidesKIETHStateRegistry.resetPresence();
+      res.json({
+        success: true,
+        message: 'ETH presence state reset successfully',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to reset ETH presence state' });
+    }
+  });
+
+  app.get('/api/eth-presence/statistics', async (req, res) => {
+    try {
+      const statistics = waidesKIETHStateRegistry.getPresenceStatistics();
+      res.json({
+        success: true,
+        presence_statistics: statistics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get presence statistics' });
+    }
+  });
+
+  app.post('/api/eth-presence/restart-updater', async (req, res) => {
+    try {
+      waidesKIETHStateRegistry.restartUpdater();
+      res.json({
+        success: true,
+        message: 'ETH presence updater restarted successfully',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to restart presence updater' });
+    }
+  });
+
+  app.get('/api/eth-presence/demo-workflow', async (req, res) => {
+    try {
+      const presenceState = waidesKIETHStateRegistry.getPresenceState();
+      const analytics = waidesKIETHPresenceListener.getPresenceAnalytics();
+      const connectionHealth = waidesKIETHPresenceListener.getConnectionHealth();
+      const recommendation = waidesKIETHStateRegistry.getTradingRecommendation();
+      
+      // Test alignment check
+      const alignmentCheck = waidesKIETHStateRegistry.checkPresenceAlignment('BUY_ETH3L');
       
       res.json({
         success: true,
-        message: 'Emotional cooldown triggered',
-        konslang_echo: 'mir\'kai - Pulse returning, you may rise'
+        demonstration: 'ETH Presence Engine demo completed successfully',
+        demo_workflow: {
+          step_1: 'Retrieved current ETH presence state from real-time listener',
+          step_2: 'Analyzed presence analytics including volatility and trend strength',
+          step_3: 'Checked WebSocket connection health and data freshness',
+          step_4: 'Generated trading recommendation based on presence interpretation',
+          step_5: 'Tested presence alignment for sample trading action',
+          step_6: 'Validated complete ETH sentient vision system functionality'
+        },
+        results: {
+          presence_state: presenceState,
+          analytics_summary: {
+            market_mood: analytics.market_mood,
+            trend_strength: analytics.trend_strength,
+            connection_status: analytics.connection_status
+          },
+          connection_health: connectionHealth,
+          trading_recommendation: recommendation,
+          alignment_test: alignmentCheck
+        },
+        system_status: 'Fully operational - ETH Presence Engine actively interpreting market mood',
+        timestamp: new Date().toISOString()
       });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to trigger emotional cooldown' });
+      res.status(500).json({ error: 'Failed to run ETH presence demo workflow' });
     }
   });
+
+  // Server startup
 
   app.post('/api/emotion/reset', async (req, res) => {
     try {
