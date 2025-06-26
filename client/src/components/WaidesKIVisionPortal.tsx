@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings, MessageCircle } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
+import getSmartAnswer from './WaidesKI_MemoryEngine';
 
 interface ChatMessage {
   id: string;
@@ -375,11 +376,9 @@ export default function WaidesKIVisionPortal() {
           openAIChatMutation.mutate(currentMessage);
           break;
         case 'spiritual':
-          if (isSelfKnowledge || isETHQuestion) {
-            questionMutation.mutate(currentMessage);
-          } else {
-            openAIChatMutation.mutate(currentMessage);
-          }
+          // Use local Memory Engine for instant responses
+          const memoryResponse = getSmartAnswer(currentMessage);
+          typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
           break;
         case 'oracle':
           if (oracleEnabled) {
@@ -748,7 +747,7 @@ export default function WaidesKIVisionPortal() {
                       <span className="text-purple-300 font-medium">Spiritual Mode Active</span>
                     </div>
                     <p className="text-purple-200/80">
-                      Waides KI spiritual intelligence with KonsLang wisdom and ETH trading guidance.
+                      Local Memory Engine providing instant spiritual responses with KonsLang wisdom and ETH trading guidance.
                     </p>
                   </div>
                 )}
