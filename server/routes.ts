@@ -15865,6 +15865,33 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
+  // Generate demo strategy
+  app.post('/api/strategy-autogen/demo', async (req, res) => {
+    try {
+      const strategy = await waidesKIStrategyAutogen.generateDemoStrategy();
+      
+      if (strategy) {
+        res.json({
+          success: true,
+          strategy,
+          message: `Generated demo strategy: ${strategy.name}`,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Failed to generate demo strategy'
+        });
+      }
+    } catch (error) {
+      console.error('Demo strategy generation error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate demo strategy',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Get generation statistics
   app.get('/api/strategy-autogen/stats', async (req, res) => {
     try {
