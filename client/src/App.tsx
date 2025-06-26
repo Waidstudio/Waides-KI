@@ -21,6 +21,7 @@ import SeasonalRebirth from "@/components/SeasonalRebirth";
 import { ETHEmpathNetworkGuardian } from "@/components/ETHEmpathNetworkGuardian";
 import MetaGuardianNetwork from "@/components/MetaGuardianNetwork";
 import WaidesFullEngine from "@/components/WaidesFullEngine";
+import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
 import NotFound from "@/pages/not-found";
 
 function Router() {

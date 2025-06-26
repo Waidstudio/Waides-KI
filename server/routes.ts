@@ -107,6 +107,10 @@ import { WaidesKISpiritContract } from './services/waidesKISpiritContract.js';
 import { WaidesKIBrainHiveController } from './services/waidesKIBrainHiveController.js';
 // Order Simulation & Plumbing System
 import { waidesKIOrderManager, waidesKIOrderSimulator } from './services/orderManager.js';
+// Risk Scenario Simulations & Historical Backtesting
+import { waidesKIHistoricalDataLoader } from './services/historicalDataLoader.js';
+import { waidesKIBacktestEngine } from './services/backtestEngine.js';
+import { waidesKIScenarioManager } from './services/scenarioManager.js';
 // STEP 48: WAIS Autonomous Engine
 import { waidesKIWAISAutonomousEngine } from './services/waidesKIWAISAutonomousEngine.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
@@ -11469,6 +11473,335 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  // ============================================================================
+  // RISK SCENARIO SIMULATIONS & HISTORICAL BACKTESTING ENDPOINTS
+  // ============================================================================
+
+  // Historical Data Loader Endpoints
+  app.get('/api/backtest/historical-data', async (req, res) => {
+    try {
+      const { symbol = 'ETHUSDT', interval = '1h', limit = 1000 } = req.query;
+      const data = await waidesKIHistoricalDataLoader.loadHistoricalData({
+        symbol: symbol as string,
+        interval: interval as string,
+        limit: parseInt(limit as string)
+      });
+      
+      const stats = waidesKIHistoricalDataLoader.calculateDataStats(data);
+      
+      res.json({
+        success: true,
+        historical_data: data,
+        data_statistics: stats,
+        cache_stats: waidesKIHistoricalDataLoader.getCacheStats()
+      });
+    } catch (error) {
+      console.error('❌ Historical data loading failed:', error);
+      res.status(500).json({ error: 'Failed to load historical data' });
+    }
+  });
+
+  // Load multiple symbols for comparison
+  app.post('/api/backtest/historical-data/multiple', async (req, res) => {
+    try {
+      const { symbols, interval = '1h', limit = 1000 } = req.body;
+      
+      if (!symbols || !Array.isArray(symbols)) {
+        return res.status(400).json({ error: 'Symbols array is required' });
+      }
+      
+      const dataMap = await waidesKIHistoricalDataLoader.loadMultipleSymbols(symbols, interval, limit);
+      const results = Object.fromEntries(dataMap);
+      
+      res.json({
+        success: true,
+        multi_symbol_data: results,
+        symbols_loaded: Object.keys(results).length
+      });
+    } catch (error) {
+      console.error('❌ Multi-symbol data loading failed:', error);
+      res.status(500).json({ error: 'Failed to load multi-symbol data' });
+    }
+  });
+
+  // Load backtesting scenarios data
+  app.get('/api/backtest/historical-data/scenarios/:symbol', async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const scenarios = await waidesKIHistoricalDataLoader.loadBacktestingScenarios(symbol);
+      const scenarioData = Object.fromEntries(scenarios);
+      
+      res.json({
+        success: true,
+        symbol,
+        backtesting_scenarios: scenarioData,
+        total_scenarios: Object.keys(scenarioData).length
+      });
+    } catch (error) {
+      console.error('❌ Backtesting scenarios loading failed:', error);
+      res.status(500).json({ error: 'Failed to load backtesting scenarios' });
+    }
+  });
+
+  // Clear historical data cache
+  app.post('/api/backtest/historical-data/clear-cache', (req, res) => {
+    try {
+      waidesKIHistoricalDataLoader.clearCache();
+      res.json({
+        success: true,
+        message: 'Historical data cache cleared'
+      });
+    } catch (error) {
+      console.error('❌ Cache clearing failed:', error);
+      res.status(500).json({ error: 'Failed to clear cache' });
+    }
+  });
+
+  // Backtest Engine Endpoints
+  app.post('/api/backtest/run', async (req, res) => {
+    try {
+      const config = req.body;
+      
+      // Validate required fields
+      if (!config.symbol || !config.interval || !config.strategy) {
+        return res.status(400).json({ error: 'Missing required fields: symbol, interval, strategy' });
+      }
+      
+      const result = await waidesKIBacktestEngine.runBacktest(config);
+      
+      res.json({
+        success: true,
+        backtest_result: result,
+        execution_time: result.timeRange.duration
+      });
+    } catch (error) {
+      console.error('❌ Backtest execution failed:', error);
+      res.status(500).json({ error: 'Failed to run backtest' });
+    }
+  });
+
+  // Get backtest engine status
+  app.get('/api/backtest/status', (req, res) => {
+    try {
+      const status = waidesKIBacktestEngine.getStatus();
+      const supportedStrategies = waidesKIBacktestEngine.getSupportedStrategies();
+      
+      res.json({
+        success: true,
+        backtest_status: status,
+        supported_strategies: supportedStrategies
+      });
+    } catch (error) {
+      console.error('❌ Backtest status retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get backtest status' });
+    }
+  });
+
+  // Scenario Manager Endpoints
+  app.get('/api/scenarios/available', (req, res) => {
+    try {
+      const scenarios = waidesKIScenarioManager.getAvailableScenarios();
+      const status = waidesKIScenarioManager.getStatus();
+      
+      res.json({
+        success: true,
+        available_scenarios: scenarios,
+        scenario_status: status
+      });
+    } catch (error) {
+      console.error('❌ Available scenarios retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get available scenarios' });
+    }
+  });
+
+  // Run a single scenario
+  app.post('/api/scenarios/run/:scenarioId', async (req, res) => {
+    try {
+      const { scenarioId } = req.params;
+      const result = await waidesKIScenarioManager.runScenario(scenarioId);
+      
+      res.json({
+        success: true,
+        scenario_result: result,
+        scenario_id: scenarioId
+      });
+    } catch (error) {
+      console.error('❌ Scenario execution failed:', error);
+      res.status(500).json({ error: `Failed to run scenario: ${error}` });
+    }
+  });
+
+  // Run multiple scenarios
+  app.post('/api/scenarios/run-multiple', async (req, res) => {
+    try {
+      const { scenarioIds } = req.body;
+      
+      if (!scenarioIds || !Array.isArray(scenarioIds)) {
+        return res.status(400).json({ error: 'scenarioIds array is required' });
+      }
+      
+      const results = await waidesKIScenarioManager.runMultipleScenarios(scenarioIds);
+      const resultsObj = Object.fromEntries(results);
+      
+      res.json({
+        success: true,
+        multiple_scenario_results: resultsObj,
+        scenarios_completed: results.size
+      });
+    } catch (error) {
+      console.error('❌ Multiple scenarios execution failed:', error);
+      res.status(500).json({ error: 'Failed to run multiple scenarios' });
+    }
+  });
+
+  // Run all predefined scenarios
+  app.post('/api/scenarios/run-all', async (req, res) => {
+    try {
+      const results = await waidesKIScenarioManager.runAllScenarios();
+      const resultsObj = Object.fromEntries(results);
+      
+      res.json({
+        success: true,
+        all_scenario_results: resultsObj,
+        scenarios_completed: results.size
+      });
+    } catch (error) {
+      console.error('❌ All scenarios execution failed:', error);
+      res.status(500).json({ error: 'Failed to run all scenarios' });
+    }
+  });
+
+  // Get scenario result by ID
+  app.get('/api/scenarios/result/:scenarioId', (req, res) => {
+    try {
+      const { scenarioId } = req.params;
+      const result = waidesKIScenarioManager.getScenarioResult(scenarioId);
+      
+      if (!result) {
+        return res.status(404).json({ error: 'Scenario result not found' });
+      }
+      
+      res.json({
+        success: true,
+        scenario_result: result
+      });
+    } catch (error) {
+      console.error('❌ Scenario result retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get scenario result' });
+    }
+  });
+
+  // Get all scenario results
+  app.get('/api/scenarios/results', (req, res) => {
+    try {
+      const results = waidesKIScenarioManager.getAllScenarioResults();
+      
+      res.json({
+        success: true,
+        all_scenario_results: results,
+        total_results: results.length
+      });
+    } catch (error) {
+      console.error('❌ All scenario results retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get all scenario results' });
+    }
+  });
+
+  // Get scenario comparison analysis
+  app.get('/api/scenarios/comparison', (req, res) => {
+    try {
+      const comparison = waidesKIScenarioManager.getScenarioComparison();
+      
+      res.json({
+        success: true,
+        scenario_comparison: comparison
+      });
+    } catch (error) {
+      console.error('❌ Scenario comparison failed:', error);
+      res.status(500).json({ error: 'Failed to get scenario comparison' });
+    }
+  });
+
+  // Clear all scenario results
+  app.post('/api/scenarios/clear-results', (req, res) => {
+    try {
+      waidesKIScenarioManager.clearResults();
+      
+      res.json({
+        success: true,
+        message: 'All scenario results cleared'
+      });
+    } catch (error) {
+      console.error('❌ Scenario results clearing failed:', error);
+      res.status(500).json({ error: 'Failed to clear scenario results' });
+    }
+  });
+
+  // Get scenario manager status
+  app.get('/api/scenarios/status', (req, res) => {
+    try {
+      const status = waidesKIScenarioManager.getStatus();
+      
+      res.json({
+        success: true,
+        scenario_manager_status: status
+      });
+    } catch (error) {
+      console.error('❌ Scenario manager status retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get scenario manager status' });
+    }
+  });
+
+  // Demo workflow endpoint for testing the complete system
+  app.post('/api/scenarios/demo-workflow', async (req, res) => {
+    try {
+      console.log('🧪 Starting Risk Scenario Simulations & Historical Backtesting demo workflow...');
+      
+      // 1. Load historical data for ETH
+      const historicalData = await waidesKIHistoricalDataLoader.loadHistoricalData({
+        symbol: 'ETHUSDT',
+        interval: '1h',
+        limit: 500
+      });
+      
+      // 2. Run a quick backtest
+      const backtestResult = await waidesKIBacktestEngine.runBacktest({
+        symbol: 'ETHUSDT',
+        interval: '1h',
+        startingBalance: 10000,
+        lookbackPeriod: 50,
+        strategy: 'waides_full',
+        stopLoss: 2,
+        takeProfit: 5,
+        maxPosition: 1000
+      });
+      
+      // 3. Run a scenario for comparison
+      const scenarioResult = await waidesKIScenarioManager.runScenario('eth_1y_15m');
+      
+      res.json({
+        success: true,
+        demo_workflow_complete: true,
+        historical_data_loaded: historicalData.length,
+        backtest_performance: backtestResult.performance,
+        scenario_comparison: {
+          scenario_name: scenarioResult.scenario.name,
+          scenario_performance: scenarioResult.riskMetrics,
+          duration_ms: scenarioResult.duration
+        },
+        system_validation: {
+          historical_loader: 'operational',
+          backtest_engine: 'operational',
+          scenario_manager: 'operational',
+          risk_metrics: 'calculated'
+        }
+      });
+    } catch (error) {
+      console.error('❌ Demo workflow failed:', error);
+      res.status(500).json({ error: 'Demo workflow failed', details: error });
     }
   });
 
