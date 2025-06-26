@@ -160,6 +160,23 @@ export const executionLogs = pgTable('execution_logs', {
   metadata: jsonb('metadata').default({})
 });
 
+// Prophecy Log System
+export const prophecyLogs = pgTable('prophecy_logs', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  content: text('content').notNull(),
+  source: text('source').notNull(), // 'chatgpt' | 'incite' | 'konslang' | 'combined'
+  confidence: real('confidence'),
+  konslangProcessing: text('konslang_processing'),
+  category: text('category').default('general'), // 'trading' | 'analysis' | 'guidance' | 'general'
+  pinned: boolean('pinned').default(false),
+  shared: boolean('shared').default(false),
+  shareToken: text('share_token'),
+  tags: jsonb('tags').default([]),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
 // Wallet schema validation
 export const insertSmaiWalletSchema = createInsertSchema(smaiWallets).omit({
   id: true,
@@ -182,6 +199,12 @@ export const insertExecutionLogSchema = createInsertSchema(executionLogs).omit({
   executedAt: true
 });
 
+export const insertProphecyLogSchema = createInsertSchema(prophecyLogs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
 // Wallet types
 export type SmaiWallet = typeof smaiWallets.$inferSelect;
 export type InsertSmaiWallet = z.infer<typeof insertSmaiWalletSchema>;
@@ -191,3 +214,7 @@ export type BotPerformance = typeof botPerformance.$inferSelect;
 export type InsertBotPerformance = z.infer<typeof insertBotPerformanceSchema>;
 export type ExecutionLog = typeof executionLogs.$inferSelect;
 export type InsertExecutionLog = z.infer<typeof insertExecutionLogSchema>;
+
+// Prophecy Log types
+export type ProphecyLog = typeof prophecyLogs.$inferSelect;
+export type InsertProphecyLog = z.infer<typeof insertProphecyLogSchema>;
