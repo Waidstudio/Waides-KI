@@ -26,31 +26,33 @@ import MetaGuardianNetwork from "@/components/MetaGuardianNetwork";
 import WaidesFullEngine from "@/components/WaidesFullEngine";
 import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
 import MLLifecycleManager from "@/components/MLLifecycleManager";
+import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   const [location] = useLocation();
 
   const navItems = [
-    { path: "/", label: "Dashboard" },
-    { path: "/live-data", label: "Live Data" },
+    { path: "/", label: "Vision Portal" },
+    { path: "/dashboard", label: "Dashboard" },
+    { path: "/autonomous-wealth", label: "SmaiWallet" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/enhanced-waidbot", label: "Enhanced Controller" },
-    { path: "/autonomous-wealth", label: "Autonomous Wealth Engine" },
+    { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
-    { path: "/ml-lifecycle", label: "ML Lifecycle" },
-    { path: "/risk-backtesting", label: "Risk Backtesting" },
-    { path: "/reincarnation", label: "Reincarnation" },
+    { path: "/dream-vision", label: "Dream Vision" },
+    { path: "/vision-spirit", label: "Vision Spirit" },
     { path: "/spiritual-recall", label: "Spiritual Recall" },
     { path: "/seasonal-rebirth", label: "Seasonal Rebirth" },
     { path: "/sigil-layer", label: "Sigil Layer" },
     { path: "/shadow-defense", label: "Shadow Defense" },
-    { path: "/dream-vision", label: "Dream Vision" },
-    { path: "/vision-spirit", label: "Vision Spirit" },
+    { path: "/reincarnation", label: "Reincarnation" },
     { path: "/eth-empath-guardian", label: "ETH Guardian" },
     { path: "/meta-guardian", label: "Meta-Guardian" },
     { path: "/full-engine", label: "Full Engine" },
+    { path: "/ml-lifecycle", label: "ML Lifecycle" },
+    { path: "/risk-backtesting", label: "Risk Backtesting" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },

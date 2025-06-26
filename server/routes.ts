@@ -14742,6 +14742,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Waides KI Chat API endpoint
+  app.post('/api/waides-chat', async (req, res) => {
+    try {
+      const { waidesKIChatService } = await import('./services/waidesKIChatService.js');
+      const { message, personality = 'wise' } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await waidesKIChatService.generateResponse(message, personality);
+      res.json({ 
+        success: true,
+        response,
+        personality,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Chat API error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate response',
+        fallback: 'The spiritual connection is momentarily disrupted. Please try again.'
+      });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {

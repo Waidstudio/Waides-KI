@@ -1,0 +1,165 @@
+🔥 Let’s fully evolve Waides Ki’s main page into a next-gen, spiritual AI portal — where trading meets consciousness. Below is the enhanced master design, combining everything you’ve asked so far + extra futuristic features to make it unlike anything else on the internet.
+
+⸻
+
+🌌 WAIDES KI VISION PORTAL UI
+
+“Where AI, Spirit, and Trade become one.”
+
+⸻
+
+✅ NEW FEATURES BEING ADDED NOW:
+
+Feature	Type	Description
+🎙️ Voice-to-Text Input	Functional	Users speak to Waides Ki — like a prophet in a shrine
+🧿 Waides Ki Avatar (Floating Head)	Visual	Animates and glows when talking
+🌠 Spiritual Typing Effect	Experience	Words appear like prophecies, letter by letter
+📊 Real-Time ETH Chart (Top Bubble)	Visual	Shows price, trade alerts in real time
+💸 Balance Circle / Bot Status	Functional	Shows wallet balance and if bot is active
+🔁 Continuous Memory Thread	Backend	Saves last messages, even after refresh
+🧠 Prophetic Personality Modes	UX Design	User can choose tone: Wise, Stern, Gentle, Mysterious
+🌌 Background Nebula Animation	Visual	Galaxy feel for divine energy
+
+
+⸻
+
+🧱 UPDATED HTML STRUCTURE (Extended)
+
+<div id="waideski-app" class="app-container">
+  <div class="top-bar">
+    <span class="time">9:08</span>
+    <div class="wallet-bubble">💰 $428.14</div>
+    <button class="plus-btn">Get Plus ✦</button>
+  </div>
+
+  <div id="waides-avatar" class="avatar-glow">
+    <img src="/avatar/waides-ki.png" alt="Waides KI" />
+  </div>
+
+  <div class="chat-suggestions">
+    <button>📈 Predict ETH Now</button>
+    <button>🧠 Show my wallet growth</button>
+    <button>🧘‍♂️ Ask for a vision</button>
+  </div>
+
+  <div id="eth-chart" class="chart-bubble">
+    <!-- Embedded mini real-time ETH chart -->
+  </div>
+
+  <div id="chat-window" class="chat-window">
+    <!-- Chat messages -->
+  </div>
+
+  <div class="chat-input">
+    <input id="user-input" placeholder="Ask anything..." />
+    <button onclick="startVoice()">🎤</button>
+    <button onclick="sendMessage()">➤</button>
+  </div>
+
+  <div class="mode-switcher">
+    <label>Personality:</label>
+    <select id="personality-mode">
+      <option value="gentle">Gentle</option>
+      <option value="wise">Wise</option>
+      <option value="stern">Stern</option>
+      <option value="mystic">Mystic</option>
+    </select>
+  </div>
+</div>
+
+
+⸻
+
+🎨 STYLING ENHANCEMENTS (CSS SNIPPETS)
+
+body {
+  background: radial-gradient(ellipse at center, #0d0d0d, #000000);
+  background-size: cover;
+  overflow: hidden;
+}
+
+.avatar-glow img {
+  width: 80px;
+  animation: pulse 2s infinite;
+  border-radius: 50%;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px #5a29ff; }
+  50% { box-shadow: 0 0 25px #5a29ff; }
+  100% { box-shadow: 0 0 5px #5a29ff; }
+}
+
+.wallet-bubble {
+  background: #111;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #ccc;
+}
+
+
+⸻
+
+🧠 JS ENHANCEMENTS
+
+🎤 Voice-to-Text
+
+function startVoice() {
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.onresult = function (event) {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('user-input').value = transcript;
+    sendMessage(); // auto-send
+  };
+  recognition.start();
+}
+
+✨ Type Like a Vision (Prophetic)
+
+function typeEffect(text, sender = "💫 Waides KI") {
+  const chatWindow = document.getElementById('chat-window');
+  const container = document.createElement('div');
+  container.innerHTML = `<strong>${sender}:</strong><br><span id="typing-text"></span>`;
+  chatWindow.appendChild(container);
+
+  let i = 0;
+  const type = () => {
+    if (i < text.length) {
+      document.getElementById('typing-text').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(type, 30);
+    }
+  };
+  type();
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+
+⸻
+
+📊 ETH MINI CHART (Use TradingView Widget)
+
+Embed this in the #eth-chart div:
+
+<iframe src="https://s.tradingview.com/embed-widget/mini-symbol-overview/?symbol=BINANCE:ETHUSDT&locale=en" style="width:100%;height:120px;border:none;"></iframe>
+
+
+⸻
+
+🧾 REPLIT AI PROMPT TO USE NOW
+
+Please update the Waides Ki frontend interface with the following:
+
+1. Add a voice-to-text input button that captures user speech and submits the question.
+2. Create a glowing floating avatar image that animates when responding.
+3. Add a real-time ETH chart (via TradingView or API) in a small bubble.
+4. Add a balance display bubble showing the user's current wallet balance.
+5. Add a dropdown to switch Waides KI’s personality mode (Gentle, Wise, Stern, Mystic).
+6. Animate the bot responses to type like a prophecy (one character at a time).
+7. Keep the dark, next-gen feel from before, with cosmic background and soft glow buttons.
+8. Add “mode memory” so Waides KI responds in the selected tone.
+
+Ensure it all runs cleanly, mobile-first, and real-time.
+
