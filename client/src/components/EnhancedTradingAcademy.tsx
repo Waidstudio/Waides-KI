@@ -56,7 +56,11 @@ export default function EnhancedTradingAcademy() {
     riskReward: { entryPrice: '', stopLoss: '', takeProfit: '' },
     portfolio: { positions: '' }
   });
-  const [calculatorResults, setCalculatorResults] = useState({
+  const [calculatorResults, setCalculatorResults] = useState<{
+    positionSize: any,
+    riskReward: any,
+    portfolio: any
+  }>({
     positionSize: null,
     riskReward: null,
     portfolio: null
@@ -881,13 +885,44 @@ export default function EnhancedTradingAcademy() {
               <CardContent>
                 <div className="space-y-3">
                   <Textarea 
-                    placeholder="Enter your positions (Symbol:Amount)"
+                    placeholder="Enter your positions (Symbol:Amount, e.g., ETH:1.5 BTC:0.1)"
                     className="bg-gray-700 border-gray-600"
                     rows={3}
+                    value={calculatorInputs.portfolio.positions}
+                    onChange={(e) => setCalculatorInputs(prev => ({
+                      ...prev,
+                      portfolio: { ...prev.portfolio, positions: e.target.value }
+                    }))}
                   />
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                  <Button 
+                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    onClick={analyzePortfolio}
+                  >
                     Analyze Portfolio
                   </Button>
+                  {calculatorResults.portfolio && (
+                    <div className="mt-4 p-3 bg-gray-700 rounded-lg space-y-2">
+                      <div className="text-sm text-gray-300">
+                        <strong>Total Value:</strong> ${calculatorResults.portfolio.totalValue?.toLocaleString()}
+                      </div>
+                      {calculatorResults.portfolio.allocation && (
+                        <div className="space-y-1">
+                          <div className="text-sm font-semibold text-gray-300">Allocation:</div>
+                          {Object.entries(calculatorResults.portfolio.allocation).map(([asset, percentage]) => (
+                            <div key={asset} className="flex justify-between text-sm text-gray-400">
+                              <span>{asset}:</span>
+                              <span>{percentage}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {calculatorResults.portfolio.riskScore && (
+                        <div className="text-sm text-gray-300">
+                          <strong>Risk Score:</strong> {calculatorResults.portfolio.riskScore}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
