@@ -10974,5 +10974,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 48: WAIS Autonomous Engine Control
+  app.post('/api/wais/start-autonomous', async (req, res) => {
+    try {
+      waidesKIWAISAutonomousEngine.startAutonomousMonitoring();
+      res.json({
+        success: true,
+        message: 'WAIS autonomous biological immunity engine started',
+        monitoring_frequency: '30 seconds',
+        learning_frequency: '2 minutes',
+        protection_layers: 4
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start WAIS autonomous engine' });
+    }
+  });
+
+  app.post('/api/wais/stop-autonomous', async (req, res) => {
+    try {
+      waidesKIWAISAutonomousEngine.stopAutonomousMonitoring();
+      res.json({
+        success: true,
+        message: 'WAIS autonomous engine stopped'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to stop WAIS autonomous engine' });
+    }
+  });
+
+  app.get('/api/wais/status', async (req, res) => {
+    try {
+      const status = waidesKIWAISAutonomousEngine.getWAISStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get WAIS status' });
+    }
+  });
+
+  app.post('/api/wais/trinity-integration-demo', async (req, res) => {
+    try {
+      const demo_result = await waidesKIWAISAutonomousEngine.demonstrateTrinityWAISIntegration();
+      res.json(demo_result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to demonstrate Trinity-WAIS integration' });
+    }
+  });
+
+  app.post('/api/wais/emergency-reset', async (req, res) => {
+    try {
+      const reset_success = waidesKIWAISAutonomousEngine.emergencyReset();
+      res.json({
+        success: reset_success,
+        message: reset_success ? 'WAIS immunity system reset successfully' : 'Reset failed - system not active'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to reset WAIS immunity system' });
+    }
+  });
+
   return httpServer;
 }
