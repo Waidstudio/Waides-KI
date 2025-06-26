@@ -46,6 +46,7 @@ export default function WaidesKIVisionPortal() {
   const [isListening, setIsListening] = useState(false);
   const [oracleEnabled, setOracleEnabled] = useState(false);
   const [reasoningMode, setReasoningMode] = useState(false);
+  const [chatMode, setChatMode] = useState<'auto' | 'openai' | 'spiritual' | 'oracle'>('auto');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');
@@ -364,19 +365,41 @@ export default function WaidesKIVisionPortal() {
     ];
     const isETHQuestion = ethPatterns.some(pattern => message.includes(pattern));
 
-    // Route to appropriate system
+    // Enhanced routing with chat mode support
     if (isCommand) {
       commandMutation.mutate(currentMessage);
-    } else if (isSelfKnowledge || isETHQuestion) {
-      // Use enhanced bot memory for self-knowledge and ETH questions
-      questionMutation.mutate(currentMessage);
-    } else if (reasoningMode) {
-      reasoningMutation.mutate(currentMessage);
-    } else if (oracleEnabled) {
-      oracleMutation.mutate(currentMessage);
     } else {
-      // Default to enhanced bot memory for comprehensive answers
-      questionMutation.mutate(currentMessage);
+      // Route based on chat mode
+      switch (chatMode) {
+        case 'openai':
+          openAIChatMutation.mutate(currentMessage);
+          break;
+        case 'spiritual':
+          if (isSelfKnowledge || isETHQuestion) {
+            questionMutation.mutate(currentMessage);
+          } else {
+            openAIChatMutation.mutate(currentMessage);
+          }
+          break;
+        case 'oracle':
+          if (oracleEnabled) {
+            oracleMutation.mutate(currentMessage);
+          } else {
+            openAIChatMutation.mutate(currentMessage);
+          }
+          break;
+        default: // 'auto' mode
+          if (isSelfKnowledge || isETHQuestion) {
+            questionMutation.mutate(currentMessage);
+          } else if (reasoningMode) {
+            reasoningMutation.mutate(currentMessage);
+          } else if (oracleEnabled) {
+            oracleMutation.mutate(currentMessage);
+          } else {
+            openAIChatMutation.mutate(currentMessage);
+          }
+          break;
+      }
     }
 
     setCurrentMessage('');
@@ -556,37 +579,71 @@ export default function WaidesKIVisionPortal() {
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
           
-          {/* Chat Mode Selection */}
+          {/* Enhanced Chat Mode Selection */}
           <div className="flex items-center gap-1 bg-gray-800/60 rounded-lg p-1">
             <Button
               onClick={() => {
+                setChatMode('auto');
                 setOracleEnabled(false);
                 setReasoningMode(false);
               }}
               variant="ghost"
               size="sm"
               className={`text-xs px-2 py-1 ${
-                !oracleEnabled && !reasoningMode
+                chatMode === 'auto'
+                  ? 'bg-emerald-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-700/50'
+              }`}
+            >
+              🔄 Auto
+            </Button>
+            <Button
+              onClick={() => {
+                setChatMode('openai');
+                setOracleEnabled(false);
+                setReasoningMode(false);
+              }}
+              variant="ghost"
+              size="sm"
+              className={`text-xs px-2 py-1 ${
+                chatMode === 'openai'
                   ? 'bg-blue-600 text-white' 
                   : 'text-gray-300 hover:bg-gray-700/50'
               }`}
             >
-              Standard
+              🧠 Universal
             </Button>
             <Button
               onClick={() => {
+                setChatMode('spiritual');
+                setOracleEnabled(false);
+                setReasoningMode(false);
+              }}
+              variant="ghost"
+              size="sm"
+              className={`text-xs px-2 py-1 ${
+                chatMode === 'spiritual'
+                  ? 'bg-purple-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-700/50'
+              }`}
+            >
+              ✨ Spiritual
+            </Button>
+            <Button
+              onClick={() => {
+                setChatMode('oracle');
                 setOracleEnabled(true);
                 setReasoningMode(false);
               }}
               variant="ghost"
               size="sm"
               className={`text-xs px-2 py-1 ${
-                oracleEnabled && !reasoningMode
-                  ? 'bg-purple-600 text-white' 
+                chatMode === 'oracle'
+                  ? 'bg-cyan-600 text-white' 
                   : 'text-gray-300 hover:bg-gray-700/50'
               }`}
             >
-              Oracle ✦
+              🔮 Oracle
             </Button>
             <Button
               onClick={() => {
@@ -662,36 +719,58 @@ export default function WaidesKIVisionPortal() {
                 Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
               <div className="text-sm text-gray-500">
-                {reasoningMode && (
-                  <div className="bg-cyan-900/30 border border-cyan-500/30 rounded-lg p-3 mb-2">
+                {chatMode === 'auto' && (
+                  <div className="bg-emerald-900/30 border border-emerald-500/30 rounded-lg p-3 mb-2">
                     <div className="flex items-center gap-2 mb-1">
-                      <Brain className="w-4 h-4 text-cyan-400" />
-                      <span className="text-cyan-300 font-medium">Advanced Reasoning Mode Active</span>
+                      <Brain className="w-4 h-4 text-emerald-400" />
+                      <span className="text-emerald-300 font-medium">Auto Mode Active</span>
                     </div>
-                    <p className="text-cyan-200/80">
-                      I'll think step-by-step, gather information from all connected systems, and provide comprehensive analysis.
+                    <p className="text-emerald-200/80">
+                      Intelligent routing based on question type - spiritual, trading, or universal knowledge.
                     </p>
                   </div>
                 )}
-                {oracleEnabled && !reasoningMode && (
-                  <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3 mb-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Zap className="w-4 h-4 text-purple-400" />
-                      <span className="text-purple-300 font-medium">Oracle Mode Active</span>
-                    </div>
-                    <p className="text-purple-200/80">
-                      Connected to dual AI systems for enhanced mystical and technical insights.
-                    </p>
-                  </div>
-                )}
-                {!oracleEnabled && !reasoningMode && (
+                {chatMode === 'openai' && (
                   <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 mb-2">
                     <div className="flex items-center gap-2 mb-1">
-                      <MessageCircle className="w-4 h-4 text-blue-400" />
-                      <span className="text-blue-300 font-medium">Standard Chat Mode</span>
+                      <Brain className="w-4 h-4 text-blue-400" />
+                      <span className="text-blue-300 font-medium">Universal Mode Active</span>
                     </div>
                     <p className="text-blue-200/80">
-                      Basic spiritual chat interface with KonsLang wisdom and trading guidance.
+                      Direct access to universal knowledge via ChatGPT for any question or topic.
+                    </p>
+                  </div>
+                )}
+                {chatMode === 'spiritual' && (
+                  <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Heart className="w-4 h-4 text-purple-400" />
+                      <span className="text-purple-300 font-medium">Spiritual Mode Active</span>
+                    </div>
+                    <p className="text-purple-200/80">
+                      Waides KI spiritual intelligence with KonsLang wisdom and ETH trading guidance.
+                    </p>
+                  </div>
+                )}
+                {chatMode === 'oracle' && (
+                  <div className="bg-cyan-900/30 border border-cyan-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Zap className="w-4 h-4 text-cyan-400" />
+                      <span className="text-cyan-300 font-medium">Oracle Mode Active</span>
+                    </div>
+                    <p className="text-cyan-200/80">
+                      Advanced dual-AI oracle with enhanced reasoning and mystical insights.
+                    </p>
+                  </div>
+                )}
+                {reasoningMode && (
+                  <div className="bg-cyan-900/30 border border-cyan-500/30 rounded-lg p-3 mb-2 mt-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Brain className="w-4 h-4 text-cyan-400" />
+                      <span className="text-cyan-300 font-medium">Advanced Reasoning Active</span>
+                    </div>
+                    <p className="text-cyan-200/80">
+                      Step-by-step analysis with comprehensive system integration.
                     </p>
                   </div>
                 )}
