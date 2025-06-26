@@ -156,6 +156,8 @@ import { waidesKIStopLossManager } from './services/waidesKIStopLossManager.js';
 import { basicWaidBot } from './services/basicWaidBot.js';
 import { waidBotPro } from './services/waidBotPro.js';
 import { enhancedWaidBotController } from './services/enhancedWaidBotController.js';
+// WAIDES KI CORE ENGINE: Intelligence Heart System
+import { WaidesKiCoreEngine, type WalletState } from './services/waidesKiCoreEngine.js';
 
 
 
@@ -285,6 +287,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize Gamified Learning System
   gamifiedLearning = new GamifiedLearningSystem();
+
+  // Initialize Waides KI Core Engine - The Heart of Intelligence
+  const waidesKiCoreEngine = new WaidesKiCoreEngine();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -15230,6 +15235,177 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting supported commands:', error);
       res.status(500).json({ error: 'Failed to get supported commands' });
+    }
+  });
+
+  // ============================================================================
+  // WAIDES KI CORE ENGINE API ENDPOINTS - Heart of Intelligence System
+  // ============================================================================
+
+  // Get engine status and statistics
+  app.get('/api/waides-ki/core/status', (req, res) => {
+    try {
+      const status = waidesKiCoreEngine.getEngineStatus();
+      res.json({
+        success: true,
+        engine: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine status error:', error);
+      res.status(500).json({ error: 'Failed to get engine status' });
+    }
+  });
+
+  // Start the core intelligence engine
+  app.post('/api/waides-ki/core/start', (req, res) => {
+    try {
+      const { balance = 10000, activeBot = 'autonomous', riskLevel = 'moderate' } = req.body;
+
+      const walletState: WalletState = {
+        balance: parseFloat(balance.toString()),
+        totalProfit: 0,
+        activeBot,
+        riskLevel
+      };
+
+      waidesKiCoreEngine.startEngine(walletState);
+
+      res.json({
+        success: true,
+        message: '🚀 Waides KI Core Intelligence Engine started successfully',
+        walletState,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine start error:', error);
+      res.status(500).json({ error: 'Failed to start core engine' });
+    }
+  });
+
+  // Stop the core intelligence engine
+  app.post('/api/waides-ki/core/stop', (req, res) => {
+    try {
+      waidesKiCoreEngine.stopEngine();
+      res.json({
+        success: true,
+        message: '🛑 Waides KI Core Intelligence Engine stopped',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine stop error:', error);
+      res.status(500).json({ error: 'Failed to stop core engine' });
+    }
+  });
+
+  // Trigger dream mode simulation
+  app.post('/api/waides-ki/core/dream', async (req, res) => {
+    try {
+      await waidesKiCoreEngine.dreamMode();
+      res.json({
+        success: true,
+        message: '💭 Dream mode simulation completed',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine dream mode error:', error);
+      res.status(500).json({ error: 'Failed to run dream mode' });
+    }
+  });
+
+  // Get engine memory and learning statistics
+  app.get('/api/waides-ki/core/memory', (req, res) => {
+    try {
+      const status = waidesKiCoreEngine.getEngineStatus();
+      res.json({
+        success: true,
+        memory: {
+          totalTrades: status.memory.totalTrades,
+          successRate: status.memory.successRate,
+          gainStreak: status.memory.gainStreak,
+          failStreak: status.memory.failStreak,
+          spiritualState: status.memory.spiritualState,
+          learningWeight: status.memory.learningWeight,
+          priceHistoryLength: status.memory.priceHistoryLength,
+          signalHistoryLength: status.memory.signalHistoryLength
+        },
+        recentSignals: status.recentSignals,
+        lastMarketPrice: status.lastMarketPrice,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine memory error:', error);
+      res.status(500).json({ error: 'Failed to get engine memory' });
+    }
+  });
+
+  // Manual trade execution through core engine
+  app.post('/api/waides-ki/core/execute-trade', async (req, res) => {
+    try {
+      const { type, confidence = 0.8, walletBalance = 10000 } = req.body;
+
+      if (!type || !['BUY', 'SELL', 'SCALP'].includes(type)) {
+        return res.status(400).json({ error: 'Valid trade type required (BUY, SELL, SCALP)' });
+      }
+
+      const marketData = await waidesKiCoreEngine.fetchETHMarketData();
+      
+      const signal = {
+        type: type as 'BUY' | 'SELL' | 'SCALP',
+        confidence: Math.min(1, Math.max(0, confidence)),
+        timestamp: Date.now(),
+        market: marketData
+      };
+
+      const walletState: WalletState = {
+        balance: walletBalance,
+        totalProfit: 0,
+        activeBot: 'autonomous',
+        riskLevel: 'moderate'
+      };
+
+      const result = await waidesKiCoreEngine.executeTrade(signal, walletState);
+
+      res.json({
+        success: true,
+        signal,
+        result,
+        message: `Trade executed: ${result.success ? 'SUCCESS' : 'FAILED'}`,
+        profit: result.profit,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine trade execution error:', error);
+      res.status(500).json({ error: 'Failed to execute trade' });
+    }
+  });
+
+  // Get current market analysis from core engine
+  app.get('/api/waides-ki/core/market-analysis', async (req, res) => {
+    try {
+      const marketData = await waidesKiCoreEngine.fetchETHMarketData();
+      
+      const walletState: WalletState = {
+        balance: 10000,
+        totalProfit: 0,
+        activeBot: 'autonomous',
+        riskLevel: 'moderate'
+      };
+
+      const decision = waidesKiCoreEngine.decideTrade(marketData, walletState);
+      
+      res.json({
+        success: true,
+        marketData,
+        decision,
+        spiritualGuidance: decision.shouldTrade ? 
+          '✅ The path is clear. The chart aligns with inner peace.' : 
+          '⚠️ Patience, young trader. Let the market breathe.',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Core engine market analysis error:', error);
+      res.status(500).json({ error: 'Failed to analyze market' });
     }
   });
 
