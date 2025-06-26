@@ -105,6 +105,8 @@ import { waidesKIETHStateRegistry } from './services/waidesKIETHStateRegistry.js
 import { WaidesKISpiritContract } from './services/waidesKISpiritContract.js';
 // STEP 47: Trinity Brain Model
 import { WaidesKIBrainHiveController } from './services/waidesKIBrainHiveController.js';
+// Order Simulation & Plumbing System
+import { waidesKIOrderManager, waidesKIOrderSimulator } from './services/orderManager.js';
 // STEP 48: WAIS Autonomous Engine
 import { waidesKIWAISAutonomousEngine } from './services/waidesKIWAISAutonomousEngine.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
@@ -12655,6 +12657,389 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to run Full Engine demo' });
+    }
+  });
+
+  // ========================================
+  // BINANCE ORDER SIMULATION & PLUMBING SYSTEM API ENDPOINTS
+  // ========================================
+
+  // Order Manager Status and Configuration
+  app.get('/api/order-manager/status', async (req, res) => {
+    try {
+      const status = waidesKIOrderManager.getStatus();
+      const config = waidesKIOrderManager.getConfiguration();
+      const connection = await waidesKIOrderManager.testConnection();
+      
+      res.json({
+        status,
+        configuration: config,
+        connection_test: connection,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error getting order manager status:', error);
+      res.status(500).json({ error: 'Failed to get order manager status' });
+    }
+  });
+
+  app.post('/api/order-manager/configure', async (req, res) => {
+    try {
+      const { simulate, safety_enabled, max_trade_amount, max_daily_trades, emergency_stop } = req.body;
+      
+      const newConfig = {
+        ...(simulate !== undefined && { simulate }),
+        ...(safety_enabled !== undefined && { safety_enabled }),
+        ...(max_trade_amount !== undefined && { max_trade_amount: parseFloat(max_trade_amount) }),
+        ...(max_daily_trades !== undefined && { max_daily_trades: parseInt(max_daily_trades) }),
+        ...(emergency_stop !== undefined && { emergency_stop })
+      };
+
+      waidesKIOrderManager.updateConfiguration(newConfig);
+      
+      res.json({
+        status: 'updated',
+        new_configuration: waidesKIOrderManager.getConfiguration(),
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error updating order manager config:', error);
+      res.status(500).json({ error: 'Failed to update configuration' });
+    }
+  });
+
+  // Order Execution Endpoints
+  app.post('/api/order-manager/buy', async (req, res) => {
+    try {
+      const { symbol, quote_amount } = req.body;
+      
+      if (!symbol || !quote_amount) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: symbol, quote_amount' 
+        });
+      }
+
+      const result = await waidesKIOrderManager.buy(symbol, parseFloat(quote_amount));
+      
+      res.json({
+        order_result: result,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error executing buy order:', error);
+      res.status(500).json({ error: 'Failed to execute buy order' });
+    }
+  });
+
+  app.post('/api/order-manager/sell', async (req, res) => {
+    try {
+      const { symbol, quantity } = req.body;
+      
+      if (!symbol) {
+        return res.status(400).json({ 
+          error: 'Missing required parameter: symbol' 
+        });
+      }
+
+      const result = await waidesKIOrderManager.sell(symbol, quantity ? parseFloat(quantity) : undefined);
+      
+      res.json({
+        order_result: result,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error executing sell order:', error);
+      res.status(500).json({ error: 'Failed to execute sell order' });
+    }
+  });
+
+  // Emergency Controls
+  app.post('/api/order-manager/emergency-stop', async (req, res) => {
+    try {
+      waidesKIOrderManager.activateEmergencyStop();
+      
+      res.json({
+        status: 'emergency_stop_activated',
+        message: 'All trading halted immediately',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error activating emergency stop:', error);
+      res.status(500).json({ error: 'Failed to activate emergency stop' });
+    }
+  });
+
+  app.post('/api/order-manager/clear-emergency', async (req, res) => {
+    try {
+      waidesKIOrderManager.deactivateEmergencyStop();
+      waidesKIOrderManager.clearEmergencyMode();
+      
+      res.json({
+        status: 'emergency_cleared',
+        message: 'Emergency mode deactivated, trading can resume',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error clearing emergency mode:', error);
+      res.status(500).json({ error: 'Failed to clear emergency mode' });
+    }
+  });
+
+  app.post('/api/order-manager/set-simulation', async (req, res) => {
+    try {
+      const { simulate } = req.body;
+      
+      if (typeof simulate !== 'boolean') {
+        return res.status(400).json({ 
+          error: 'Invalid parameter: simulate must be boolean' 
+        });
+      }
+
+      waidesKIOrderManager.setSimulationMode(simulate);
+      
+      res.json({
+        status: 'simulation_mode_updated',
+        simulation_enabled: simulate,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error setting simulation mode:', error);
+      res.status(500).json({ error: 'Failed to set simulation mode' });
+    }
+  });
+
+  // Order Simulator Direct Access
+  app.get('/api/order-simulator/balance', async (req, res) => {
+    try {
+      const balance = waidesKIOrderSimulator.getBalance();
+      
+      res.json({
+        balance,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error getting simulator balance:', error);
+      res.status(500).json({ error: 'Failed to get simulator balance' });
+    }
+  });
+
+  app.get('/api/order-simulator/positions', async (req, res) => {
+    try {
+      const positions = waidesKIOrderSimulator.getPositions();
+      
+      res.json({
+        positions,
+        count: positions.length,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error getting simulator positions:', error);
+      res.status(500).json({ error: 'Failed to get simulator positions' });
+    }
+  });
+
+  app.get('/api/order-simulator/history', async (req, res) => {
+    try {
+      const { limit } = req.query;
+      const history = waidesKIOrderSimulator.getTradeHistory();
+      const limitedHistory = limit ? history.slice(0, parseInt(limit as string)) : history;
+      
+      res.json({
+        trade_history: limitedHistory,
+        total_trades: history.length,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error getting simulator history:', error);
+      res.status(500).json({ error: 'Failed to get simulator history' });
+    }
+  });
+
+  app.get('/api/order-simulator/statistics', async (req, res) => {
+    try {
+      const statistics = waidesKIOrderSimulator.getStatistics();
+      
+      res.json({
+        statistics,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error getting simulator statistics:', error);
+      res.status(500).json({ error: 'Failed to get simulator statistics' });
+    }
+  });
+
+  app.post('/api/order-simulator/reset', async (req, res) => {
+    try {
+      const { starting_balance } = req.body;
+      const balance = starting_balance ? parseFloat(starting_balance) : 10000;
+      
+      waidesKIOrderSimulator.reset(balance);
+      
+      res.json({
+        status: 'simulator_reset',
+        new_starting_balance: balance,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error resetting simulator:', error);
+      res.status(500).json({ error: 'Failed to reset simulator' });
+    }
+  });
+
+  app.get('/api/order-simulator/export', async (req, res) => {
+    try {
+      const exportData = waidesKIOrderSimulator.exportState();
+      
+      res.json({
+        export_data: exportData,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error exporting simulator state:', error);
+      res.status(500).json({ error: 'Failed to export simulator state' });
+    }
+  });
+
+  // Order Manager Complete Data Export
+  app.get('/api/order-manager/export', async (req, res) => {
+    try {
+      const exportData = waidesKIOrderManager.exportData();
+      
+      res.json({
+        export_data: exportData,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error exporting order manager data:', error);
+      res.status(500).json({ error: 'Failed to export order manager data' });
+    }
+  });
+
+  // Trading Integration with Waides KI Systems
+  app.post('/api/order-manager/execute-waides-decision', async (req, res) => {
+    try {
+      const { decision, symbol, amount, source_system } = req.body;
+      
+      if (!decision || !symbol || !amount) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: decision, symbol, amount' 
+        });
+      }
+
+      let result;
+      const tradeAmount = parseFloat(amount);
+
+      switch (decision.toUpperCase()) {
+        case 'BUY':
+        case 'BUY_ETH':
+          result = await waidesKIOrderManager.buy(symbol, tradeAmount);
+          break;
+        case 'SELL':
+        case 'SELL_ETH':
+          result = await waidesKIOrderManager.sell(symbol, tradeAmount);
+          break;
+        default:
+          return res.status(400).json({ 
+            error: 'Invalid decision. Must be: BUY, SELL, BUY_ETH, or SELL_ETH' 
+          });
+      }
+
+      res.json({
+        waides_decision: decision,
+        source_system: source_system || 'manual',
+        order_result: result,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error executing Waides decision:', error);
+      res.status(500).json({ error: 'Failed to execute Waides decision' });
+    }
+  });
+
+  // Demo and Testing Endpoints
+  app.post('/api/order-manager/demo-trade', async (req, res) => {
+    try {
+      const { action, amount } = req.body;
+      const symbol = 'ETH';
+      const tradeAmount = amount ? parseFloat(amount) : 100;
+
+      // Force simulation mode for demo
+      const originalMode = waidesKIOrderManager.getConfiguration().simulate;
+      waidesKIOrderManager.setSimulationMode(true);
+
+      let result;
+      if (action === 'buy') {
+        result = await waidesKIOrderManager.buy(symbol, tradeAmount);
+      } else if (action === 'sell') {
+        result = await waidesKIOrderManager.sell(symbol);
+      } else {
+        return res.status(400).json({ 
+          error: 'Invalid action. Must be: buy or sell' 
+        });
+      }
+
+      // Restore original mode
+      waidesKIOrderManager.setSimulationMode(originalMode);
+
+      const balance = waidesKIOrderSimulator.getBalance();
+      const statistics = waidesKIOrderSimulator.getStatistics();
+
+      res.json({
+        demo_trade: {
+          action,
+          symbol,
+          amount: tradeAmount,
+          result
+        },
+        current_balance: balance,
+        performance: statistics,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error running demo trade:', error);
+      res.status(500).json({ error: 'Failed to run demo trade' });
+    }
+  });
+
+  app.get('/api/order-manager/system-health', async (req, res) => {
+    try {
+      const orderManagerStatus = waidesKIOrderManager.getStatus();
+      const simulatorActive = waidesKIOrderSimulator.isSimulatorActive();
+      const connectionTest = await waidesKIOrderManager.testConnection();
+      const balance = waidesKIOrderSimulator.getBalance();
+      const statistics = waidesKIOrderSimulator.getStatistics();
+
+      const systemHealth = {
+        order_manager: {
+          status: orderManagerStatus,
+          operational: !orderManagerStatus.emergency_stop
+        },
+        simulator: {
+          active: simulatorActive,
+          balance: balance,
+          performance: {
+            success_rate: statistics.success_rate,
+            total_trades: statistics.total_trades,
+            profit_loss: statistics.profit_loss
+          }
+        },
+        connection: connectionTest,
+        overall_health: !orderManagerStatus.emergency_stop && simulatorActive ? 'healthy' : 'degraded',
+        safety_measures: {
+          emergency_stop: orderManagerStatus.emergency_stop,
+          simulation_mode: orderManagerStatus.mode === 'SIMULATED',
+          safety_enabled: orderManagerStatus.safety_enabled
+        }
+      };
+
+      res.json({
+        system_health: systemHealth,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error getting system health:', error);
+      res.status(500).json({ error: 'Failed to get system health' });
     }
   });
 
