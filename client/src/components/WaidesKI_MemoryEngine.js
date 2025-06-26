@@ -80,7 +80,7 @@ function checkUKC(q) {
 }
 
 // ✨ Very simple smart match function with Enhancement Plugins
-export default function getSmartAnswer(userInput, setBotState) {
+export default function getSmartAnswer(userInput, setBotState, walletContext = null) {
   const q = userInput.toLowerCase().trim();
 
   // 🚀 REAL-TIME DIVINE INTELLIGENCE LAYER - First Priority

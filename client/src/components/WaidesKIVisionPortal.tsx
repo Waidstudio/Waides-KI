@@ -8,6 +8,7 @@ import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, Ba
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
 import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine';
+import { useSmaiWallet } from '@/context/SmaiWalletContext';
 
 interface ChatMessage {
   id: string;
@@ -72,6 +73,7 @@ export default function WaidesKIVisionPortal() {
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const { smaiBalance, localBalance, transactions, canAffordTrade } = useSmaiWallet();
 
   // Handle page navigation from recommendations
   const handlePageNavigation = (route: string) => {
@@ -408,8 +410,13 @@ export default function WaidesKIVisionPortal() {
           openAIChatMutation.mutate(currentMessage);
           break;
         case 'spiritual':
-          // Use local Memory Engine for instant responses with plugin support
-          const memoryResponse = getSmartAnswer(currentMessage, setBotState);
+          // Use local Memory Engine for instant responses with plugin support and wallet context
+          const memoryResponse = getSmartAnswer(currentMessage, setBotState, {
+            smaiBalance,
+            localBalance,
+            totalTransactions: transactions.length,
+            canAfford: canAffordTrade
+          });
           if (memoryResponse) {
             typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
           } else {
@@ -425,8 +432,13 @@ export default function WaidesKIVisionPortal() {
           }
           break;
         default: // 'auto' mode
-          // First try UKC and Memory Engine for instant responses with plugin support
-          const smartResponse = getSmartAnswer(currentMessage, setBotState);
+          // First try UKC and Memory Engine for instant responses with plugin support and wallet context
+          const smartResponse = getSmartAnswer(currentMessage, setBotState, {
+            smaiBalance,
+            localBalance,
+            totalTransactions: transactions.length,
+            canAfford: canAffordTrade
+          });
           if (smartResponse) {
             typeMessage(smartResponse, 'enhanced_bot_memory', 95);
           } else if (isSelfKnowledge || isETHQuestion) {

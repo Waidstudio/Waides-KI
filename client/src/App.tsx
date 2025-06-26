@@ -148,12 +148,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="dark min-h-screen waides-bg">
-          <Toaster />
-          <Router />
-        </div>
-      </TooltipProvider>
+      <SmaiWalletProvider>
+        <TooltipProvider>
+          <div className="dark min-h-screen waides-bg">
+            <Toaster />
+            <Router />
+          </div>
+        </TooltipProvider>
+      </SmaiWalletProvider>
     </QueryClientProvider>
   );
 }
