@@ -11824,6 +11824,18 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
       });
 
       if (!openaiResponse.ok) {
+        // Handle rate limiting gracefully
+        if (openaiResponse.status === 429) {
+          // Fallback to spiritual mode for rate-limited requests
+          const spiritualResponse = await waidesKIQuestionAnswerer.answerQuestion(question);
+          return res.json({
+            success: true,
+            answer: `🧠➜✨ ${spiritualResponse.answer}\n\n*Note: Universal mode temporarily unavailable due to high demand. Routing through Waides KI spiritual intelligence.*`,
+            source: 'spiritual_fallback',
+            confidence: spiritualResponse.confidence || 85,
+            konslangProcessing: spiritualResponse.konslangProcessing
+          });
+        }
         throw new Error(`OpenAI API error: ${openaiResponse.status}`);
       }
 
@@ -11840,11 +11852,23 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
 
     } catch (error: any) {
       console.error('OpenAI chat error:', error);
-      res.status(500).json({ 
-        success: false,
-        error: 'Failed to get AI response',
-        fallback: 'I\'m having trouble accessing my universal knowledge right now. Please try again.'
-      });
+      
+      // Fallback to spiritual intelligence when OpenAI fails
+      try {
+        const spiritualResponse = await waidesKIQuestionAnswerer.answerQuestion(question);
+        res.json({
+          success: true,
+          answer: `🧠➜✨ ${spiritualResponse.answer}\n\n*Note: Universal mode temporarily unavailable. Routing through Waides KI spiritual intelligence.*`,
+          source: 'spiritual_fallback',
+          confidence: spiritualResponse.confidence || 80,
+          konslangProcessing: spiritualResponse.konslangProcessing
+        });
+      } catch (fallbackError) {
+        res.status(500).json({
+          success: false,
+          error: 'Unable to access universal knowledge at the moment. Please try again.'
+        });
+      }
     }
   });
 
