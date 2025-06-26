@@ -156,6 +156,49 @@ interface UserSettings {
   customCss: string | null;
   betaFeatures: boolean;
   developerMode: boolean;
+  
+  // Performance Settings
+  cpuPriority?: string;
+  memoryLimit?: number;
+  updateFrequency?: string;
+  hardwareAcceleration?: boolean;
+  multiThreading?: boolean;
+  backgroundProcessing?: boolean;
+  analysisDepth?: string;
+  predictionMode?: string;
+  signalProcessing?: number;
+  neuralLayers?: number;
+  quantumComputing?: boolean;
+  edgeComputing?: boolean;
+  cacheStrategy?: string;
+  dataCompression?: number;
+  backupFrequency?: string;
+  autoCleanup?: boolean;
+  dataEncryption?: boolean;
+  connectionPool?: number;
+  timeoutSettings?: number;
+  retryStrategy?: string;
+  loadBalancing?: boolean;
+  autoFailover?: boolean;
+  
+  // Integration Settings
+  binanceIntegration?: boolean;
+  coinbaseIntegration?: boolean;
+  krakenIntegration?: boolean;
+  bybitIntegration?: boolean;
+  openaiIntegration?: boolean;
+  tradingviewIntegration?: boolean;
+  messariIntegration?: boolean;
+  konsaiIntegration?: boolean;
+  discordIntegration?: boolean;
+  telegramIntegration?: boolean;
+  emailIntegration?: boolean;
+  pushIntegration?: boolean;
+  githubIntegration?: boolean;
+  webhooksIntegration?: boolean;
+  restApiIntegration?: boolean;
+  graphqlIntegration?: boolean;
+  
   createdAt: string;
   updatedAt: string;
 }

@@ -24,7 +24,7 @@ import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
 import LearningPage from "@/pages/learning";
 import EnhancedWaidBotPage from "@/pages/enhanced-waidbot";
-import ProfilePage from "@/pages/profile";
+import SimpleProfilePage from "@/pages/simple-profile";
 import AutonomousWealthEngine from "@/components/AutonomousWealthEngine";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
@@ -187,7 +187,7 @@ function Router() {
         <Switch>
           <Route path="/" component={WaidesKIVisionPortal} />
           <Route path="/biometric-trading" component={BiometricTradingInterface} />
-          <Route path="/profile" component={ProfilePage} />
+          <Route path="/profile" component={SimpleProfilePage} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />

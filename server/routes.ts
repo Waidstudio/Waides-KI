@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage.js";
+import { storage, db } from "./storage.js";
+import { eq } from "drizzle-orm";
+import { userProfiles, userSettings } from "@shared/schema";
 import { EthMonitor } from "./services/ethMonitor.js";
 import { SignalAnalyzer } from "./services/signalAnalyzer.js";
 import { KonsEngine } from "./services/konsEngine.js";
