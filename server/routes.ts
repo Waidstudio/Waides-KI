@@ -25,6 +25,7 @@ import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKIChatService } from './services/waidesKIChatService.js';
 import { waidesKICommandProcessor } from './services/waidesKICommandProcessor.js';
+import { waidesKIStrategyAutogen } from './services/waidesKIStrategyAutogen.js';
 import chatOracleService from './services/chatOracleService.js';
 import { WaidesKIReasoningEngine } from './services/waidesKIReasoningEngine.js';
 import { WaidesKIProphecyLogService } from './services/prophecyLogService.js';
@@ -15680,6 +15681,324 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     } catch (error) {
       console.error('Capabilities error:', error);
       res.status(500).json({ error: 'Failed to get capabilities' });
+    }
+  });
+
+  // ====================================================================
+  // WAIDES KI STRATEGY AUTOGEN ENGINE - Self-Evolving Trading Strategies
+  // ====================================================================
+
+  // Generate new strategy with AI
+  app.post('/api/strategy-autogen/generate', async (req, res) => {
+    try {
+      // Get historical ETH data for backtesting
+      const ethData = [];
+      for (let i = 0; i < 100; i++) {
+        const timestamp = new Date(Date.now() - (i * 15 * 60 * 1000)); // 15-minute intervals
+        const basePrice = 2400 + Math.sin(i * 0.1) * 100; // Simulate price movement
+        const price = basePrice + (Math.random() - 0.5) * 50;
+        const volume = 1000000 + Math.random() * 5000000;
+        
+        ethData.unshift({
+          timestamp,
+          price,
+          volume
+        });
+      }
+
+      const strategy = await waidesKIStrategyAutogen.generateAndTestStrategy(ethData);
+      
+      if (strategy) {
+        res.json({
+          success: true,
+          strategy,
+          message: `Generated profitable strategy: ${strategy.name}`
+        });
+      } else {
+        res.json({
+          success: false,
+          message: 'Generated strategy did not meet profit threshold'
+        });
+      }
+    } catch (error) {
+      console.error('Strategy generation error:', error);
+      res.status(500).json({
+        error: 'Failed to generate strategy',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get all generated strategies
+  app.get('/api/strategy-autogen/strategies', async (req, res) => {
+    try {
+      const strategies = waidesKIStrategyAutogen.getStrategies();
+      const stats = waidesKIStrategyAutogen.getGenerationStats();
+      
+      res.json({
+        success: true,
+        strategies,
+        stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Get strategies error:', error);
+      res.status(500).json({ error: 'Failed to get strategies' });
+    }
+  });
+
+  // Get active strategies only
+  app.get('/api/strategy-autogen/active', async (req, res) => {
+    try {
+      const activeStrategies = waidesKIStrategyAutogen.getActiveStrategies();
+      
+      res.json({
+        success: true,
+        strategies: activeStrategies,
+        count: activeStrategies.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Get active strategies error:', error);
+      res.status(500).json({ error: 'Failed to get active strategies' });
+    }
+  });
+
+  // Get top performing strategies
+  app.get('/api/strategy-autogen/top-performers', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 5;
+      const topPerformers = waidesKIStrategyAutogen.getTopPerformers(limit);
+      
+      res.json({
+        success: true,
+        strategies: topPerformers,
+        limit,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Get top performers error:', error);
+      res.status(500).json({ error: 'Failed to get top performers' });
+    }
+  });
+
+  // Get specific strategy by ID
+  app.get('/api/strategy-autogen/strategy/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const strategy = waidesKIStrategyAutogen.getStrategyById(id);
+      
+      if (strategy) {
+        res.json({
+          success: true,
+          strategy,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          error: 'Strategy not found',
+          id
+        });
+      }
+    } catch (error) {
+      console.error('Get strategy error:', error);
+      res.status(500).json({ error: 'Failed to get strategy' });
+    }
+  });
+
+  // Delete strategy
+  app.delete('/api/strategy-autogen/strategy/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = waidesKIStrategyAutogen.deleteStrategy(id);
+      
+      if (deleted) {
+        res.json({
+          success: true,
+          message: `Strategy ${id} deleted successfully`
+        });
+      } else {
+        res.status(404).json({
+          error: 'Strategy not found',
+          id
+        });
+      }
+    } catch (error) {
+      console.error('Delete strategy error:', error);
+      res.status(500).json({ error: 'Failed to delete strategy' });
+    }
+  });
+
+  // Evolve all strategies with new data
+  app.post('/api/strategy-autogen/evolve', async (req, res) => {
+    try {
+      // Generate new historical data for evolution
+      const newEthData = [];
+      for (let i = 0; i < 50; i++) {
+        const timestamp = new Date(Date.now() - (i * 15 * 60 * 1000));
+        const basePrice = 2450 + Math.sin(i * 0.15) * 80;
+        const price = basePrice + (Math.random() - 0.5) * 40;
+        const volume = 800000 + Math.random() * 4000000;
+        
+        newEthData.unshift({
+          timestamp,
+          price,
+          volume
+        });
+      }
+
+      await waidesKIStrategyAutogen.evolveStrategies(newEthData);
+      const stats = waidesKIStrategyAutogen.getGenerationStats();
+      
+      res.json({
+        success: true,
+        message: 'Strategies evolved successfully',
+        stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Strategy evolution error:', error);
+      res.status(500).json({
+        error: 'Failed to evolve strategies',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get generation statistics
+  app.get('/api/strategy-autogen/stats', async (req, res) => {
+    try {
+      const stats = waidesKIStrategyAutogen.getGenerationStats();
+      
+      res.json({
+        success: true,
+        stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Get stats error:', error);
+      res.status(500).json({ error: 'Failed to get statistics' });
+    }
+  });
+
+  // Batch generate multiple strategies
+  app.post('/api/strategy-autogen/batch-generate', async (req, res) => {
+    try {
+      const { count = 3 } = req.body;
+      const maxCount = Math.min(count, 10); // Limit to 10 strategies at once
+      
+      const results = [];
+      const ethData = [];
+      
+      // Generate sample data
+      for (let i = 0; i < 120; i++) {
+        const timestamp = new Date(Date.now() - (i * 15 * 60 * 1000));
+        const basePrice = 2420 + Math.sin(i * 0.12) * 90;
+        const price = basePrice + (Math.random() - 0.5) * 45;
+        const volume = 900000 + Math.random() * 4500000;
+        
+        ethData.unshift({
+          timestamp,
+          price,
+          volume
+        });
+      }
+
+      for (let i = 0; i < maxCount; i++) {
+        try {
+          const strategy = await waidesKIStrategyAutogen.generateAndTestStrategy(ethData);
+          if (strategy) {
+            results.push({
+              success: true,
+              strategy,
+              index: i + 1
+            });
+          } else {
+            results.push({
+              success: false,
+              message: 'Strategy did not meet profit threshold',
+              index: i + 1
+            });
+          }
+        } catch (error) {
+          results.push({
+            success: false,
+            error: error instanceof Error ? error.message : 'Generation failed',
+            index: i + 1
+          });
+        }
+      }
+
+      const successCount = results.filter(r => r.success).length;
+      const stats = waidesKIStrategyAutogen.getGenerationStats();
+      
+      res.json({
+        success: true,
+        results,
+        summary: {
+          requested: maxCount,
+          generated: successCount,
+          failed: maxCount - successCount
+        },
+        stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Batch generation error:', error);
+      res.status(500).json({
+        error: 'Failed to generate strategies in batch',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Auto-evolution scheduler endpoint
+  app.post('/api/strategy-autogen/start-auto-evolution', async (req, res) => {
+    try {
+      const { intervalMinutes = 60 } = req.body;
+      
+      // Start auto-evolution every hour by default
+      const evolutionInterval = setInterval(async () => {
+        try {
+          console.log('🧬 Starting automated strategy evolution...');
+          
+          const newEthData = [];
+          for (let i = 0; i < 100; i++) {
+            const timestamp = new Date(Date.now() - (i * 15 * 60 * 1000));
+            const basePrice = 2400 + Math.sin(i * 0.1) * 100;
+            const price = basePrice + (Math.random() - 0.5) * 50;
+            const volume = 1000000 + Math.random() * 5000000;
+            
+            newEthData.unshift({
+              timestamp,
+              price,
+              volume
+            });
+          }
+          
+          await waidesKIStrategyAutogen.evolveStrategies(newEthData);
+          
+          // Also try to generate a new strategy
+          await waidesKIStrategyAutogen.generateAndTestStrategy(newEthData);
+          
+          console.log('✅ Automated strategy evolution completed');
+        } catch (error) {
+          console.error('❌ Auto-evolution failed:', error);
+        }
+      }, intervalMinutes * 60 * 1000);
+
+      res.json({
+        success: true,
+        message: `Auto-evolution started with ${intervalMinutes}-minute intervals`,
+        intervalMinutes,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Start auto-evolution error:', error);
+      res.status(500).json({
+        error: 'Failed to start auto-evolution',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 

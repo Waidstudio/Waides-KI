@@ -28,6 +28,7 @@ import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
 import MLLifecycleManager from "@/components/MLLifecycleManager";
 import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
 import AdminConfigPanel from "@/components/AdminConfigPanel";
+import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 
 import NotFound from "@/pages/not-found";
 
