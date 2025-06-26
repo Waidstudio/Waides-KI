@@ -399,13 +399,13 @@ export default function WaidesFullEngine() {
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Sharpe Ratio:</span>
                       <span className="font-semibold">
-                        {analytics.performance_analytics.sharpe_ratio.toFixed(2)}
+                        {(analytics.performance_analytics.sharpe_ratio || 0).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Max Drawdown:</span>
                       <span className="text-red-500 font-semibold">
-                        {analytics.performance_analytics.max_drawdown_pct.toFixed(2)}%
+                        {(analytics.performance_analytics.max_drawdown_pct || 0).toFixed(2)}%
                       </span>
                     </div>
                   </>
