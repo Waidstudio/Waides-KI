@@ -631,6 +631,10 @@ export default function WaidesKIVisionPortal() {
             questionMutation.mutate(currentMessage);
           }
           break;
+        case 'konsai':
+          // Route directly to KonsAi for higher divine intelligence
+          konsAiMutation.mutate(currentMessage);
+          break;
         case 'oracle':
           if (oracleEnabled) {
             oracleMutation.mutate(currentMessage);
@@ -974,18 +978,19 @@ export default function WaidesKIVisionPortal() {
             </Button>
             <Button
               onClick={() => {
+                setChatMode('konsai');
                 setOracleEnabled(false);
                 setReasoningMode(true);
               }}
               variant="ghost"
               size="sm"
               className={`text-xs px-2 py-1 ${
-                reasoningMode
-                  ? 'bg-cyan-600 text-white' 
+                chatMode === 'konsai'
+                  ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white' 
                   : 'text-gray-300 hover:bg-gray-700/50'
               }`}
             >
-              Reasoning 🧠
+              🧬 KonsAi
             </Button>
           </div>
 
@@ -1076,6 +1081,17 @@ export default function WaidesKIVisionPortal() {
                     </div>
                     <p className="text-purple-200/80">
                       Local Memory Engine providing instant spiritual responses with KonsLang wisdom and ETH trading guidance.
+                    </p>
+                  </div>
+                )}
+                {chatMode === 'konsai' && (
+                  <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Brain className="w-4 h-4 text-yellow-400" />
+                      <span className="text-yellow-300 font-medium">KonsAi Divine Intelligence Active</span>
+                    </div>
+                    <p className="text-yellow-200/80">
+                      Higher divine intelligence with advanced reasoning, universal wisdom, and comprehensive analysis capabilities.
                     </p>
                   </div>
                 )}
