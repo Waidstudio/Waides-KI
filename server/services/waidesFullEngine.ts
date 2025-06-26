@@ -335,26 +335,72 @@ export class WaidesFullEngine {
       execution_plan: {
         symbol: this.symbol,
         action: consensus.decision,
-        quantity: this.calculatePositionSize(consensus.confidence, context.meta.risk_level),
-        confidence: consensus.confidence
+        quantity: kellySize.recommended_amount,
+        confidence: consensus.confidence * mlPrediction.confidence
       }
     };
   }
 
-  private calculateConsensus(brainDecision: any, shieldResult: any, emotionalCheck: any): { decision: string; confidence: number } {
+  private createBlockedDecision(reason: string, mlPrediction: any): GuardianDecision {
+    return {
+      consensus: 'BLOCK',
+      vision: {
+        confidence: 0,
+        direction: 'NEUTRAL',
+        reasoning: `Blocked: ${reason}`
+      },
+      ethic: {
+        allow: false,
+        reasoning: [reason, `ML confidence: ${(mlPrediction.confidence * 100).toFixed(1)}%`]
+      },
+      execution_plan: {
+        symbol: this.symbol,
+        action: 'HOLD',
+        quantity: 0,
+        confidence: 0
+      }
+    };
+  }
+
+  private determineMarketPhase(context: EngineContext): string {
+    const indicators = context.indicators;
+    if (!indicators) return 'neutral';
+    
+    const rsi = indicators.rsi;
+    const price = indicators.price;
+    const ema50 = indicators.ema_50;
+    const ema200 = indicators.ema_200;
+    
+    if (rsi > 70 && price > ema50 && ema50 > ema200) return 'bullish';
+    if (rsi < 30 && price < ema50 && ema50 < ema200) return 'bearish';
+    if (rsi > 50 && price > ema50) return 'trending';
+    if (Math.abs(rsi - 50) < 10) return 'ranging';
+    return 'neutral';
+  }
+
+  private calculateConsensus(brainDecision: any, shieldResult: any, emotionalCheck: any, mlPrediction?: any): { decision: string; confidence: number } {
     if (shieldResult.should_block || !emotionalCheck.can_trade) {
       return { decision: 'HOLD', confidence: 0 };
     }
 
-    const confidence = brainDecision.confidence || 0;
+    const brainConfidence = brainDecision.confidence || 0;
+    const mlConfidence = mlPrediction ? mlPrediction.confidence : 0.5;
     
-    if (confidence < 0.6) {
-      return { decision: 'HOLD', confidence };
+    // Combine brain and ML confidence
+    const combinedConfidence = (brainConfidence + mlConfidence) / 2;
+    
+    if (combinedConfidence < 0.6) {
+      return { decision: 'HOLD', confidence: combinedConfidence };
     }
 
+    // Use ML prediction if available, otherwise brain decision
+    const decision = mlPrediction ? 
+      (mlPrediction.prediction_class === 'BUY' ? 'BUY' : mlPrediction.prediction_class === 'SELL' ? 'SELL' : 'HOLD') :
+      (brainDecision.action || 'HOLD');
+
     return {
-      decision: brainDecision.action || 'HOLD',
-      confidence
+      decision,
+      confidence: combinedConfidence
     };
   }
 

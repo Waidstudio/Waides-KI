@@ -11072,6 +11072,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 65: ML Engine + Kelly Sizing API Endpoints for Clinical Precision Trading
+  app.post('/api/ml/predict', async (req, res) => {
+    try {
+      const { waidesKIMLEngine } = await import('./services/waidesKIMLEngine.js');
+      const features = req.body;
+      const prediction = waidesKIMLEngine.predictProbability(features);
+      res.json({
+        success: true,
+        prediction,
+        model_version: prediction.model_version,
+        confidence_gate: prediction.confidence >= 0.6 ? 'PASS' : 'BLOCK'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to generate ML prediction' });
+    }
+  });
+
+  app.get('/api/ml/stats', async (req, res) => {
+    try {
+      const { waidesKIMLEngine } = await import('./services/waidesKIMLEngine.js');
+      const stats = waidesKIMLEngine.getModelStats();
+      res.json({
+        success: true,
+        ml_statistics: stats,
+        feature_weights: stats.feature_weights,
+        prediction_history: stats.prediction_count
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get ML statistics' });
+    }
+  });
+
+  app.post('/api/kelly/calculate', async (req, res) => {
+    try {
+      const { waidesKIKellySizer } = await import('./services/waidesKIKellySizer.js');
+      const { balance, maxAmount, mlConfidence } = req.body;
+      const sizing = waidesKIKellySizer.calculatePositionSize(balance, maxAmount, mlConfidence);
+      res.json({
+        success: true,
+        kelly_sizing: sizing,
+        safety_metrics: {
+          kelly_fraction: `${(sizing.kelly_fraction * 100).toFixed(1)}%`,
+          risk_level: sizing.risk_assessment,
+          capital_protection: sizing.max_safe_amount < sizing.recommended_amount
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to calculate Kelly position size' });
+    }
+  });
+
+  app.get('/api/kelly/performance', async (req, res) => {
+    try {
+      const { waidesKIKellySizer } = await import('./services/waidesKIKellySizer.js');
+      const performance = waidesKIKellySizer.getPerformanceStats();
+      res.json({
+        success: true,
+        kelly_performance: performance,
+        trade_history: performance.total_trades,
+        capital_evolution: performance.current_capital
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get Kelly performance stats' });
+    }
+  });
+
+  app.post('/api/kelly/record-trade', async (req, res) => {
+    try {
+      const { waidesKIKellySizer } = await import('./services/waidesKIKellySizer.js');
+      const { outcome, profitLoss, amount } = req.body;
+      waidesKIKellySizer.recordTrade(outcome, profitLoss, amount);
+      res.json({
+        success: true,
+        message: `Trade recorded: ${outcome} with P&L ${profitLoss}`,
+        updated_performance: waidesKIKellySizer.getPerformanceStats()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to record trade for Kelly sizing' });
+    }
+  });
+
+  app.post('/api/ml-kelly/integrated-analysis', async (req, res) => {
+    try {
+      const { waidesKIMLEngine } = await import('./services/waidesKIMLEngine.js');
+      const { waidesKIKellySizer } = await import('./services/waidesKIKellySizer.js');
+      
+      const { marketData, balance, maxAmount } = req.body;
+      
+      // Get ML prediction
+      const mlPrediction = waidesKIMLEngine.predictProbability(marketData);
+      
+      // Calculate Kelly sizing with ML confidence
+      const kellySizing = waidesKIKellySizer.calculatePositionSize(balance, maxAmount, mlPrediction.confidence);
+      
+      // Combined analysis
+      const integratedDecision = {
+        ml_prediction: mlPrediction,
+        kelly_sizing: kellySizing,
+        final_recommendation: {
+          should_trade: mlPrediction.confidence >= 0.6 && kellySizing.risk_assessment !== 'EXTREME',
+          position_size: kellySizing.recommended_amount,
+          confidence_score: mlPrediction.confidence,
+          risk_level: kellySizing.risk_assessment,
+          reasoning: [
+            `ML confidence: ${(mlPrediction.confidence * 100).toFixed(1)}%`,
+            `Kelly fraction: ${(kellySizing.kelly_fraction * 100).toFixed(1)}%`,
+            `Risk assessment: ${kellySizing.risk_assessment}`
+          ]
+        }
+      };
+      
+      res.json({
+        success: true,
+        integrated_analysis: integratedDecision,
+        clinical_grade: true
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to perform integrated ML-Kelly analysis' });
+    }
+  });
+
   // STEP 49: Emotional Core + Risk-Thermodynamics Engine API Endpoints
   app.get('/api/emotion/state', async (req, res) => {
     try {
