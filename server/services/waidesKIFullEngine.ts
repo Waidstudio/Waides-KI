@@ -6,7 +6,6 @@
 import { WaidesKIStopLossManager, TradeEntry } from './waidesKIStopLossManager';
 import { WaidesKIPerformanceTracker, TradeRecord } from './waidesKIPerformanceTracker';
 import { WaidesKIStrategyTuner, waidesKIStrategyTuner as tunerInstance } from './waidesKIStrategyTuner';
-import { ethMonitor } from './ethMonitor';
 
 export interface FullEngineConfig {
   strategy_name: string;

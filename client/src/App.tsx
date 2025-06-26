@@ -20,6 +20,7 @@ import { SpiritualRecall } from "@/components/SpiritualRecall";
 import SeasonalRebirth from "@/components/SeasonalRebirth";
 import { ETHEmpathNetworkGuardian } from "@/components/ETHEmpathNetworkGuardian";
 import MetaGuardianNetwork from "@/components/MetaGuardianNetwork";
+import WaidesFullEngine from "@/components/WaidesFullEngine";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -39,6 +40,7 @@ function Router() {
     { path: "/vision-spirit", label: "Vision Spirit" },
     { path: "/eth-empath-guardian", label: "ETH Guardian" },
     { path: "/meta-guardian", label: "Meta-Guardian" },
+    { path: "/full-engine", label: "Full Engine" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/api-docs", label: "API Docs" },
@@ -101,6 +103,7 @@ function Router() {
           <Route path="/vision-spirit" component={VisionSpirit} />
           <Route path="/eth-empath-guardian" component={ETHEmpathNetworkGuardian} />
           <Route path="/meta-guardian" component={MetaGuardianNetwork} />
+          <Route path="/full-engine" component={WaidesFullEngine} />
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/api-docs" component={APIDocsPage} />

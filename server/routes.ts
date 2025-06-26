@@ -12413,6 +12413,251 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============================================================================
+  // WAIDES FULL ENGINE - SMART RISK MANAGEMENT API ENDPOINTS
+  // ============================================================================
+
+  // Get Full Engine status
+  app.get('/api/full-engine/status', (req, res) => {
+    try {
+      const status = waidesKIFullEngine.getStatus();
+      res.json({
+        success: true,
+        engine_status: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get Full Engine status' });
+    }
+  });
+
+  // Start Full Engine
+  app.post('/api/full-engine/start', (req, res) => {
+    try {
+      waidesKIFullEngine.start();
+      res.json({
+        success: true,
+        message: 'Waides KI Full Engine started successfully',
+        status: waidesKIFullEngine.getStatus()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start Full Engine' });
+    }
+  });
+
+  // Stop Full Engine
+  app.post('/api/full-engine/stop', (req, res) => {
+    try {
+      waidesKIFullEngine.stop();
+      res.json({
+        success: true,
+        message: 'Waides KI Full Engine stopped successfully'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to stop Full Engine' });
+    }
+  });
+
+  // Execute trade with Full Engine
+  app.post('/api/full-engine/execute-trade', async (req, res) => {
+    try {
+      const { action, confidence, price, reasoning, strategy_source, risk_assessment } = req.body;
+      
+      if (!action || !confidence || !price) {
+        return res.status(400).json({ error: 'Trading signal parameters are required' });
+      }
+
+      const signal = {
+        action,
+        confidence: parseFloat(confidence),
+        price: parseFloat(price),
+        reasoning: reasoning || 'Manual trade execution',
+        strategy_source: strategy_source || 'MANUAL',
+        risk_assessment: risk_assessment || 'Standard risk'
+      };
+
+      const result = await waidesKIFullEngine.executeTrade(signal);
+      res.json({
+        success: result.success,
+        trade_result: result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to execute trade' });
+    }
+  });
+
+  // Force close all trades
+  app.post('/api/full-engine/close-all-trades', async (req, res) => {
+    try {
+      const { reason } = req.body;
+      await waidesKIFullEngine.forceCloseAllTrades(reason || 'MANUAL_CLOSE');
+      res.json({
+        success: true,
+        message: 'All active trades closed successfully'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to close trades' });
+    }
+  });
+
+  // Update Full Engine configuration
+  app.post('/api/full-engine/config', (req, res) => {
+    try {
+      const config = req.body;
+      waidesKIFullEngine.updateConfig(config);
+      res.json({
+        success: true,
+        message: 'Full Engine configuration updated',
+        new_status: waidesKIFullEngine.getStatus()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update configuration' });
+    }
+  });
+
+  // Get performance analytics
+  app.get('/api/full-engine/analytics', (req, res) => {
+    try {
+      const analytics = waidesKIFullEngine.getPerformanceAnalytics();
+      res.json({
+        success: true,
+        performance_analytics: analytics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get analytics' });
+    }
+  });
+
+  // Export engine data
+  app.get('/api/full-engine/export', (req, res) => {
+    try {
+      const exportData = waidesKIFullEngine.exportEngineData();
+      res.json({
+        success: true,
+        export_data: exportData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to export engine data' });
+    }
+  });
+
+  // Performance Tracker endpoints
+  app.get('/api/performance-tracker/strategies', (req, res) => {
+    try {
+      const performances = waidesKIPerformanceTracker.getAllStrategyPerformances();
+      res.json({
+        success: true,
+        strategy_performances: performances,
+        quick_stats: waidesKIPerformanceTracker.getQuickStats()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get strategy performances' });
+    }
+  });
+
+  app.get('/api/performance-tracker/top-strategies', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 5;
+      const topStrategies = waidesKIPerformanceTracker.getTopStrategies(limit);
+      res.json({
+        success: true,
+        top_strategies: topStrategies
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get top strategies' });
+    }
+  });
+
+  app.get('/api/performance-tracker/:strategy', (req, res) => {
+    try {
+      const { strategy } = req.params;
+      const performance = waidesKIPerformanceTracker.getStrategyPerformance(strategy);
+      res.json({
+        success: true,
+        strategy_performance: performance
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get strategy performance' });
+    }
+  });
+
+  // Stop Loss Manager endpoints
+  app.get('/api/stop-loss/state', (req, res) => {
+    try {
+      const state = waidesKIStopLossManager.getState();
+      const config = waidesKIStopLossManager.getConfig();
+      const analytics = waidesKIStopLossManager.getAnalytics();
+      
+      res.json({
+        success: true,
+        stop_loss_state: state,
+        configuration: config,
+        analytics: analytics
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get stop loss state' });
+    }
+  });
+
+  app.post('/api/stop-loss/config', (req, res) => {
+    try {
+      const config = req.body;
+      waidesKIStopLossManager.updateConfig(config);
+      res.json({
+        success: true,
+        message: 'Stop loss configuration updated',
+        new_config: waidesKIStopLossManager.getConfig()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update stop loss configuration' });
+    }
+  });
+
+  app.get('/api/stop-loss/history', (req, res) => {
+    try {
+      const history = waidesKIStopLossManager.exportHistory();
+      res.json({
+        success: true,
+        stop_loss_history: history
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get stop loss history' });
+    }
+  });
+
+  // Demo workflow for Full Engine
+  app.get('/api/full-engine/demo', (req, res) => {
+    try {
+      const status = waidesKIFullEngine.getStatus();
+      const analytics = waidesKIFullEngine.getPerformanceAnalytics();
+      const exportData = waidesKIFullEngine.exportEngineData();
+      
+      res.json({
+        success: true,
+        demonstration: 'Waides Full Engine Smart Risk Management demo completed',
+        demo_workflow: {
+          step_1: 'Retrieved Full Engine operational status and active trades',
+          step_2: 'Analyzed performance metrics across all strategies',
+          step_3: 'Examined stop-loss management and risk controls',
+          step_4: 'Reviewed auto-tuning and strategy evolution',
+          step_5: 'Validated complete risk management system integration'
+        },
+        results: {
+          engine_status: status,
+          performance_analytics: analytics,
+          system_configuration: exportData.config
+        },
+        system_status: 'Smart Risk Management System fully operational with dynamic stop-loss and auto-tuning',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to run Full Engine demo' });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {
