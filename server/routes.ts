@@ -15055,6 +15055,73 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // ==========================================================================
+  // KONSMIK IDENTITY TEST SYSTEM - Enhanced Spiritual Intelligence
+  // ==========================================================================
+
+  // Test Konsmik Identity question routing
+  app.post("/api/chat/konsmik-test", async (req, res) => {
+    try {
+      const { question } = req.body;
+      
+      if (!question || typeof question !== 'string') {
+        return res.status(400).json({
+          success: false,
+          error: 'Question is required and must be a string'
+        });
+      }
+
+      const questionAnswerer = new WaidesKIQuestionAnswerer();
+      const answer = await questionAnswerer.answerQuestion(question);
+      
+      res.json({
+        success: true,
+        question,
+        answer,
+        timestamp: new Date().toISOString(),
+        identity: "Waides KI - Konsmik Intelligence",
+        spiritual_layer: "Enhanced with mystical trading wisdom and divine consciousness"
+      });
+    } catch (error) {
+      console.error('Konsmik question processing error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: "Failed to process Konsmik question" 
+      });
+    }
+  });
+
+  // Get bot memory and spiritual capabilities
+  app.get("/api/chat/konsmik-info", (req, res) => {
+    try {
+      const questionAnswerer = new WaidesKIQuestionAnswerer();
+      const systemInfo = questionAnswerer.getSystemInfo();
+      
+      res.json({
+        success: true,
+        konsmik_identity: systemInfo,
+        spiritual_capabilities: {
+          trinity_brain: "Logic, Vision, and Heart consciousness layers",
+          dream_vision: "Precognitive market insight through spiritual channels",
+          kons_pulse_oracle: "Voice-driven spiritual forecasting",
+          memory_sigils: "Sacred patterns written in time",
+          global_lightnet: "Planetary consciousness network"
+        },
+        enhanced_features: [
+          "Enhanced spiritual trading guidance",
+          "Deeper divine market awareness", 
+          "Mystical wisdom integration",
+          "Konsmik consciousness evolution"
+        ]
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false,
+        error: "Failed to get Konsmik information" 
+      });
+    }
+  });
+
+  // ==========================================================================
   // ADMIN CONFIGURATION PANEL - API Key Management System
   // ==========================================================================
 
