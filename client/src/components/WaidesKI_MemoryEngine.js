@@ -1,7 +1,7 @@
 import BotMemory from "./BotMemory";
 import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
 import UKC from './UKC';
-import { addPendingQuestion, autoTeachFromConversation } from './KnowledgeLoader';
+import { addPendingQuestion, autoTeachFromConversation, expandKnowledgeAutonomously } from './KnowledgeLoader';
 
 // Dynamic memory for auto-learning - lives in runtime memory only
 let dynamicMemory = {};
@@ -134,6 +134,20 @@ export default function getSmartAnswer(userInput) {
 
   // If no match found, add to pending questions for learning
   addPendingQuestion(userInput);
+  
+  // ✨ DIVINE EXPANSION: Generate new questions while thinking
+  // This makes Waides KI literally birth new questions during conversations
+  try {
+    const expansionResult = expandKnowledgeAutonomously(userInput, 5);
+    if (expansionResult.saved > 0) {
+      console.log(`🌌 Divine Expansion: Generated ${expansionResult.saved} new questions while thinking about "${userInput}"`);
+    }
+  } catch (error) {
+    console.log('Divine expansion encountered resistance:', error);
+  }
+  
+  // Store in dynamic memory with expansion notification
+  dynamicMemory[q] = "🤔 I'm thinking deeper about this. Meanwhile, I've expanded my knowledge core with related questions for future wisdom.";
   
   // Return null to allow fallback to server-side intelligence
   return null;
