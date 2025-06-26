@@ -5,6 +5,8 @@
 
 import { waidesKIETHPresenceListener } from './waidesKIETHPresenceListener';
 import { waidesKIPresenceInterpreter } from './waidesKIPresenceInterpreter';
+import { waidesKIPresenceMultiSense } from './waidesKIPresenceMultiSense';
+import { waidesKIPresenceSynthesizer } from './waidesKIPresenceSynthesizer';
 
 interface ETHRegistryState {
   state: 'rising' | 'falling' | 'sideways' | 'unknown';
@@ -58,42 +60,81 @@ export class WaidesKIETHStateRegistry {
   }
 
   /**
-   * Update presence state from listener
+   * Update presence state from multi-sense integration
    */
   private updatePresenceState(): void {
     try {
+      // Get multi-sense presence data
+      const multiSenseState = waidesKIPresenceMultiSense.getPresenceState();
+      const multiSenseAnalytics = waidesKIPresenceMultiSense.getMultiSenseAnalytics();
+      
+      // Synthesize into human metaphors
+      const synthesizedPresence = waidesKIPresenceSynthesizer.translate(multiSenseState);
+      const comprehensiveAnalysis = waidesKIPresenceSynthesizer.getComprehensiveAnalysis(multiSenseState);
+      
+      // Get fallback from listener
       const presenceState = waidesKIETHPresenceListener.getPresenceState();
       const analytics = waidesKIETHPresenceListener.getPresenceAnalytics();
       const connectionHealth = waidesKIETHPresenceListener.getConnectionHealth();
-
-      // Generate enhanced interpretation
-      const report = waidesKIPresenceInterpreter.generatePresenceReport(
-        presenceState.state,
-        presenceState.confidence,
-        analytics.volatility,
-        presenceState.priceData.changePercent,
-        presenceState.priceData
-      );
+      
+      // Determine final state using multi-sense priority
+      let finalState = multiSenseState.price_trend;
+      let finalConfidence = synthesizedPresence.confidence;
+      let finalDescription = synthesizedPresence.description;
+      let enhancedPresence = comprehensiveAnalysis.metaphor;
+      
+      // Use listener as fallback if multi-sense data is insufficient
+      if (multiSenseAnalytics.data_points < 3 && presenceState) {
+        finalState = presenceState.state;
+        finalConfidence = Math.max(presenceState.confidence, synthesizedPresence.confidence);
+        
+        // Generate traditional interpretation for blending
+        const report = waidesKIPresenceInterpreter.generatePresenceReport(
+          presenceState.state,
+          presenceState.confidence,
+          analytics?.volatility || multiSenseState.volatility,
+          presenceState.priceData?.changePercent || Math.abs(multiSenseState.sentiment),
+          presenceState.priceData
+        );
+        
+        finalDescription = `${synthesizedPresence.description} (${report.enhanced_presence.description})`;
+        enhancedPresence = {
+          ...synthesizedPresence,
+          traditional_presence: report.enhanced_presence,
+          blend_reason: 'Multi-sense data limited, using listener fallback'
+        };
+      }
 
       this.currentState = {
-        state: presenceState.state,
-        description: presenceState.description,
-        enhanced_presence: report.enhanced_presence,
-        narrative: report.narrative,
-        trading_advice: report.trading_advice,
-        confidence: presenceState.confidence,
+        state: finalState,
+        description: finalDescription,
+        enhanced_presence: {
+          ...enhancedPresence,
+          multi_sense_state: multiSenseState,
+          emotional_context: comprehensiveAnalysis.emotional_context,
+          risk_assessment: comprehensiveAnalysis.risk_assessment,
+          timeframe_recommendation: waidesKIPresenceSynthesizer.getTimeframeRecommendation(multiSenseState)
+        },
+        narrative: comprehensiveAnalysis.emotional_context,
+        trading_advice: comprehensiveAnalysis.trading_advice,
+        confidence: finalConfidence,
         last_update: new Date(),
-        connection_health: connectionHealth,
-        analytics: analytics
+        connection_health: waidesKIPresenceMultiSense.getConnectionHealth(),
+        analytics: {
+          multi_sense: multiSenseAnalytics,
+          traditional: analytics,
+          listener_state: presenceState,
+          timeframe_rec: waidesKIPresenceSynthesizer.getTimeframeRecommendation(multiSenseState)
+        }
       };
 
-      // Log significant state changes
-      if (presenceState.confidence > 60) {
-        console.log(`💫 ETH Presence Update: ${presenceState.state} - ${presenceState.description} (${presenceState.confidence}% confidence)`);
+      // Log significant state changes with multi-sense context
+      if (finalConfidence > 60) {
+        console.log(`🧬 ETH Multi-Sense Update: ${finalState} - ${finalDescription} (${finalConfidence}% confidence)`);
       }
 
     } catch (error) {
-      console.error('❌ Error updating ETH presence state:', error);
+      console.error('❌ Error updating multi-sense presence state:', error);
     }
   }
 
