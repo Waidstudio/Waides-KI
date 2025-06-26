@@ -10,7 +10,7 @@ import { WaidTrader } from "./services/waidTrader.js";
 import { BinanceWebSocketService, type CandlestickData } from "./services/binanceWebSocket.js";
 import { weeklyScheduler, type WeeklyTradingPlan } from './services/weeklyTradingScheduler.js';
 import { tradingBrain } from './services/tradingBrainEngine.js';
-import { waidesKI } from './services/waidesKICore.js';
+import { waidesKICore } from './services/waidesKICore.js';
 import { waidesKILearning } from './services/waidesKILearningEngine.js';
 import { waidesKIObserver } from './services/waidesKIObserver.js';
 import { waidesKISignalLogger } from './services/waidesKISignalLogger.js';

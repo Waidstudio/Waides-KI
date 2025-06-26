@@ -1,6 +1,7 @@
 import { waidesKIAutonomousTradeCore } from './waidesKIAutonomousTradeCore';
 import { SmaiWalletManager } from './smaiWalletManager';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
+import { waidesKICore } from './waidesKICore';
 
 interface CommandResult {
   success: boolean;

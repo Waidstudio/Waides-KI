@@ -130,7 +130,7 @@ export default function WaidesKIVisionPortal() {
   // Command execution mutation for real-time trading commands
   const commandMutation = useMutation({
     mutationFn: async (command: string) => {
-      const response = await fetch('/api/waides-ki/command/execute', {
+      const response = await fetch('/api/commands/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command, userId: 'user123' })
@@ -140,7 +140,7 @@ export default function WaidesKIVisionPortal() {
     onSuccess: async (data) => {
       // Type the command result as if Waides KI is responding
       const resultMessage = data.success 
-        ? `✅ ${data.message}`
+        ? data.message
         : `❌ ${data.message}`;
       
       await typeWaidesResponse(resultMessage);
@@ -308,10 +308,19 @@ export default function WaidesKIVisionPortal() {
   // Function to detect if message contains trading commands
   const detectTradingCommand = (message: string): boolean => {
     const tradingKeywords = [
+      // Trading control commands
       'activate autonomous trading', 'deactivate autonomous trading',
       'start trading', 'stop trading', 'trading status',
       'check balance', 'balance', 'close all trades',
-      'trading performance', 'set take profit', 'set stop loss'
+      'trading performance', 'set take profit', 'set stop loss',
+      // ETH prediction and analysis commands
+      'predict eth', 'eth prediction', 'eth price prediction',
+      'analyze market', 'market analysis', 'get signals',
+      'trading signals', 'market forecast', 'price forecast',
+      'eth forecast', 'trading advice', 'market insights',
+      // Voice variations
+      'predict ethereum', 'ethereum prediction', 'price prediction',
+      'what will eth do', 'eth analysis', 'market trend'
     ];
     
     const normalizedMessage = message.toLowerCase().trim();

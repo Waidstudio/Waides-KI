@@ -2,7 +2,7 @@ import { waidesKISignalShield } from './waidesKISignalShield';
 import { waidesKILearning } from './waidesKILearningEngine';
 import { waidesKIObserver } from './waidesKIObserver';
 import { waidesKIRiskManager } from './waidesKIRiskManager';
-import { waidesKI } from './waidesKICore';
+import { waidesKICore } from './waidesKICore';
 
 interface DailyEmotionalState {
   timestamp: number;
