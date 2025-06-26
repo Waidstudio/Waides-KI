@@ -203,7 +203,7 @@ export default function SmaiSikaWallet() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              ₭ {smaiBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              ₭ {(smaiBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <p className="text-xs text-muted-foreground">Available for trading</p>
           </CardContent>
