@@ -151,8 +151,7 @@ import { waidesKIStopLossManager } from './services/waidesKIStopLossManager.js';
 // WAIDBOT SERVICES: Basic and Pro Trading Bots
 import { basicWaidBot } from './services/basicWaidBot.js';
 import { waidBotPro } from './services/waidBotPro.js';
-// GAMIFIED LEARNING SYSTEM
-import { GamifiedLearningSystem } from './services/gamifiedLearning.js';
+
 
 
 let ethMonitor: EthMonitor;

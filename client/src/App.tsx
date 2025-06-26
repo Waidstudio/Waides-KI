@@ -11,6 +11,7 @@ import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
 import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
+import LearningPage from "@/pages/learning";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
@@ -33,6 +34,7 @@ function Router() {
     { path: "/live-data", label: "Live Data" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/learning", label: "Trading Academy" },
     { path: "/ml-lifecycle", label: "ML Lifecycle" },
     { path: "/risk-backtesting", label: "Risk Backtesting" },
     { path: "/reincarnation", label: "Reincarnation" },
@@ -99,6 +101,7 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/learning" component={LearningPage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
           <Route path="/reincarnation" component={ReincarnationLoop} />
