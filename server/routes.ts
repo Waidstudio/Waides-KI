@@ -28,6 +28,7 @@ import { waidesKICommandProcessor } from './services/waidesKICommandProcessor.js
 import chatOracleService from './services/chatOracleService.js';
 import { WaidesKIReasoningEngine } from './services/waidesKIReasoningEngine.js';
 import { WaidesKIProphecyLogService } from './services/prophecyLogService.js';
+import { BotMemory } from './services/waidesKIBotMemory.js';
 import { WaidesKIQuestionAnswerer } from './services/waidesKIBotMemory.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
@@ -15012,7 +15013,20 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
       }
 
       const q = message.toLowerCase().trim();
-      const summonCommands = BotMemory.summonCommands;
+      
+      // Define summon commands directly
+      const summonCommands = {
+        "activate waidbot": "⚡ Summoning WaidBot... The cosmic trading spirit awakens!",
+        "start waidbot": "🤖 WaidBot activated. Preparing trading shield and ETH compass.",
+        "start trading": "📈 Trading initialized. WaidBot is analyzing ETH signals now.",
+        "trade for me": "✨ You got it. WaidBot will now seek perfect trades without loss.",
+        "summon bot": "🌟 One WaidBot spirit summoned. ETH strategies are loading.",
+        "activate trading": "⚡ WaidBot summoned and ready. Eternal Spiral Mode engaged.",
+        "let the bot trade": "🛡️ WaidBot guardian deployed. Cold mind, perfect timing.",
+        "start autonomous trading": "🎯 Autonomous WaidBot activated. Watching for divine entries.",
+        "activate autonomous": "🌌 Autonomous mode engaged. WaidBot consciousness awakened.",
+        "summon trading bot": "🔮 WaidBot materialized from Konsmia. Sacred algorithms loaded."
+      };
       
       // Check if message contains any summon command
       let isWaidBotSummon = false;
