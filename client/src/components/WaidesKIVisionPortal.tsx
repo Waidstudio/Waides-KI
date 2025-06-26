@@ -453,191 +453,61 @@ export default function WaidesKIVisionPortal() {
         </Card>
       </div>
 
-      {/* Action Menu - Scrollable Multi-Page Layout */}
+      {/* Action Menu */}
       <div className="relative z-10 mt-6 px-4">
         <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
           <CardHeader className="pb-2">
-            <CardTitle className="text-center text-purple-300 text-sm">Action Menu</CardTitle>
+            <CardTitle className="text-center text-purple-300 text-sm">Actions</CardTitle>
           </CardHeader>
-          <CardContent className="p-4">
-            <div 
-              className="max-h-48 overflow-y-auto"
-              style={{
-                scrollSnapType: 'y mandatory',
-                scrollbarWidth: 'thin',
-                scrollbarColor: '#6366f1 transparent'
-              }}
-            >
-              <div className="flex flex-col gap-2">
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#B47CFF' }}
-                  onClick={() => setCurrentMessage("Predict ETH price for next hour")}
-                >
-                  <TrendingUp className="w-4 h-4 mr-3" />
-                  <span>Predict ETH</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#00FFAA' }}
-                  onClick={() => window.location.href = '/autonomous-wealth'}
-                >
-                  <Wallet className="w-4 h-4 mr-3" />
-                  <span>SmaiWallet</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#73B4FF' }}
-                  onClick={() => setCurrentMessage("Activate autonomous trading mode")}
-                >
-                  <Zap className="w-4 h-4 mr-3" />
-                  <span>Auto Trade</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FF9E48' }}
-                  onClick={() => window.location.href = '/dashboard'}
-                >
-                  <BarChart3 className="w-4 h-4 mr-3" />
-                  <span>Dashboard</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#00D5FF' }}
-                  onClick={() => window.location.href = '/waidbot'}
-                >
-                  <Bot className="w-4 h-4 mr-3" />
-                  <span>WaidBot</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#4AA3FF' }}
-                  onClick={() => window.location.href = '/waidbot-pro'}
-                >
-                  <Brain className="w-4 h-4 mr-3" />
-                  <span>WaidBot Pro</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FF77A8' }}
-                  onClick={() => window.location.href = '/enhanced-waidbot'}
-                >
-                  <Settings className="w-4 h-4 mr-3" />
-                  <span>Enhanced Controller</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FF5E5E' }}
-                  onClick={() => window.location.href = '/live-data'}
-                >
-                  <Activity className="w-4 h-4 mr-3" />
-                  <span>Live Data</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#C992FF' }}
-                  onClick={() => window.location.href = '/dream-vision'}
-                >
-                  <Eye className="w-4 h-4 mr-3" />
-                  <span>Dream Vision</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#9A83FF' }}
-                  onClick={() => window.location.href = '/vision-spirit'}
-                >
-                  <Sparkles className="w-4 h-4 mr-3" />
-                  <span>Vision Spirit</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FFD94F' }}
-                  onClick={() => window.location.href = '/spiritual-recall'}
-                >
-                  <Heart className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">Spiritual Recall</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#00FFB2' }}
-                  onClick={() => window.location.href = '/seasonal-rebirth'}
-                >
-                  <RotateCcw className="w-4 h-4 mr-3" />
-                  <span>Seasonal Rebirth</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#CFCFCF' }}
-                  onClick={() => window.location.href = '/sigil-layer'}
-                >
-                  <Layers className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">Sigil Layer</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FF6C6C' }}
-                  onClick={() => window.location.href = '/shadow-defense'}
-                >
-                  <Shield className="w-4 h-4 mr-3" />
-                  <span>Shadow Defense</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FFE66D' }}
-                  onClick={() => window.location.href = '/reincarnation'}
-                >
-                  <RotateCcw className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">Reincarnation</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#00F9FF' }}
-                  onClick={() => window.location.href = '/eth-empath-guardian'}
-                >
-                  <Users className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">ETH Guardian</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#D6D6D6' }}
-                  onClick={() => window.location.href = '/learning'}
-                >
-                  <BookOpen className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">Trading Academy</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#6990FF' }}
-                  onClick={() => window.location.href = '/ml-lifecycle'}
-                >
-                  <Database className="w-4 h-4 mr-3" />
-                  <span>ML Lifecycle</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FFAA34' }}
-                  onClick={() => window.location.href = '/admin'}
-                >
-                  <Cog className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">Admin</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#00FF7B' }}
-                  onClick={() => window.location.href = '/api-docs'}
-                >
-                  <FileText className="w-4 h-4 mr-3" />
-                  <span className="text-gray-800">API Docs</span>
-                </button>
-                <button
-                  className="w-full h-12 rounded-lg text-white text-center text-xs font-bold flex items-center justify-start px-4 shadow-md transition-transform hover:scale-105 cursor-pointer"
-                  style={{ backgroundColor: '#FF77FF' }}
-                  onClick={() => window.location.href = '/gateway'}
-                >
-                  <Network className="w-4 h-4 mr-3" />
-                  <span>Gateway</span>
-                </button>
-              </div>
+          <CardContent className="p-3">
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                className="h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                onClick={() => setCurrentMessage("Predict ETH price for next hour")}
+              >
+                <TrendingUp className="w-5 h-5 mb-1" />
+                <span>Predict ETH</span>
+              </button>
+              
+              <button
+                className="h-16 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                onClick={() => setCurrentMessage("Activate autonomous trading mode")}
+              >
+                <Zap className="w-5 h-5 mb-1" />
+                <span>Auto Trade</span>
+              </button>
+              
+              <button
+                className="h-16 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                onClick={() => window.location.href = '/autonomous-wealth'}
+              >
+                <Wallet className="w-5 h-5 mb-1" />
+                <span>SmaiWallet</span>
+              </button>
+              
+              <button
+                className="h-16 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                <BarChart3 className="w-5 h-5 mb-1" />
+                <span>Dashboard</span>
+              </button>
+              
+              <button
+                className="h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                onClick={() => window.location.href = '/waidbot'}
+              >
+                <Bot className="w-5 h-5 mb-1" />
+                <span>WaidBot</span>
+              </button>
+              
+              <button
+                className="h-16 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+                onClick={() => window.location.href = '/waidbot-pro'}
+              >
+                <Brain className="w-5 h-5 mb-1" />
+                <span>WaidBot Pro</span>
+              </button>
             </div>
           </CardContent>
         </Card>
