@@ -49,7 +49,7 @@ function Router() {
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
     { path: "/voice-command", label: "Voice Command" },
-    { path: "/enhanced-waidbot", label: "Enhanced Controller" },
+
     { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
     { path: "/dream-vision", label: "Dream Vision" },
