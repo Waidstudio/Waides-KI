@@ -342,6 +342,86 @@ export default function VisionSpirit() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="konsai" className="space-y-4">
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-slate-100 flex items-center gap-2">
+                  <Bot className="h-5 w-5 text-purple-400" />
+                  KonsAi - Divine Trading Intelligence
+                </CardTitle>
+                <p className="text-slate-400 text-sm">
+                  Ask KonsAi anything about the markets. More powerful than regular AI, capable of deep trading wisdom.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="h-96 bg-slate-900 rounded-lg border border-slate-600 overflow-y-auto p-4 space-y-3">
+                  {chatMessages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[80%] p-3 rounded-lg ${
+                          message.type === 'user'
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-slate-700 text-slate-100 border border-slate-600'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          {message.type === 'konsai' && (
+                            <Bot className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                          )}
+                          <div className="flex-1">
+                            <p className="text-sm">{message.content}</p>
+                            <div className="flex items-center justify-between mt-2 text-xs opacity-70">
+                              <span>{message.timestamp.toLocaleTimeString()}</span>
+                              {message.confidence && (
+                                <span className="text-purple-300">
+                                  {(message.confidence * 100).toFixed(0)}% confidence
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {chatMutation.isPending && (
+                    <div className="flex justify-start">
+                      <div className="bg-slate-700 text-slate-100 border border-slate-600 p-3 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Bot className="h-4 w-4 text-purple-400 animate-pulse" />
+                          <span className="text-sm">KonsAi is thinking...</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex gap-2">
+                  <Input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Ask KonsAi about market trends, analysis, or trading strategies..."
+                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400"
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
+                  />
+                  <Button
+                    onClick={handleSendChat}
+                    disabled={!chatInput.trim() || chatMutation.isPending}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="text-xs text-slate-500 text-center">
+                  KonsAi combines mystical wisdom with advanced market analysis for superior trading intelligence
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="validation" className="space-y-4">
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
