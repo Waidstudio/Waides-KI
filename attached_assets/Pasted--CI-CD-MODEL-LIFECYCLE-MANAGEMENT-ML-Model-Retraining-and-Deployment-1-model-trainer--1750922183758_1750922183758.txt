@@ -1,0 +1,96 @@
+
+— CI/CD & MODEL LIFECYCLE MANAGEMENT 🚀
+
+🛠️ ML Model Retraining and Deployment
+
+1️⃣ model_trainer.py: Automated Retraining Script
+
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+import pickle
+
+def train_and_save(data_path="features.csv", model_path="waides_model.pkl"):
+    df = pd.read_csv(data_path)
+    X, y = df.drop("label", axis=1), df["label"]
+    model = RandomForestClassifier(n_estimators=100)
+    model.fit(X, y)
+    with open(model_path, "wb") as f:
+        pickle.dump(model, f)
+    print("✅ Retrained and saved ML model.")
+
+2️⃣ GitHub Actions Workflow (.github/workflows/model.yml)
+
+name: Retrain Model
+
+on:
+  schedule: cron(0 2 * * 0)  # weekly Sunday 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  retrain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with: python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: python model_trainer.py
+      - run: |
+          git config --local user.email "ci@waides.ai"
+          git config --local user.name "Waides CI"
+          git add waides_model.pkl
+          git commit -m "Automated retrain model"
+          git push
+
+
+⸻
+
+🔹 STEP 67 — MONITORING & MODEL EVALUATION DASHBOARD 📊
+
+📈 ML Drift & Model Health Tracking
+
+1️⃣ model_health.py: Drift Detector
+
+import pandas as pd
+from scipy.stats import ks_2samp
+import pickle
+
+def check_drift(new_data_path="live_features.csv"):
+    df = pd.read_csv(new_data_path)
+    X = df.drop("label", axis=1)
+    with open("waides_model.pkl","rb") as f:
+        model = pickle.load(f)
+    preds = model.predict_proba(X)[:,1]
+    stored = pd.read_csv("last_run_preds.csv")["prob"]
+    stat, pval = ks_2samp(preds, stored)
+    print(f"Drift test p-value: {pval:.3f}")
+
+2️⃣ Dashboard Integration
+	•	Add metrics for model accuracy, drift alerts, and retrain timestamps.
+	•	Expose endpoints for health:
+	•	/api/model/health
+	•	/api/model/drift
+
+⸻
+
+🔹 STEP 68 — A/B TESTING & CONTINUOUS IMPROVEMENT ⚖️
+
+🧪 Dual-Model Live Testing for Performance Validation
+
+1️⃣ ab_test_engine.py
+
+from ml_overlay import MLEngine as AModel
+from ml_overlay_v2 import MLEngine as BModel
+
+a = AModel("model_v1.pkl")
+b = BModel("model_v2.pkl")
+
+def pick_model(features):
+    pa = a.predict_prob(features)
+    pb = b.predict_prob(features)
+    return ("A", pa) if pa >= pb else ("B", pb)
+
+2️⃣ Integration in Trade Engine
+	•	Track chosen_model, log performance per model.
+	•	Compare win rates, trade returns, and adjust flows based on results.

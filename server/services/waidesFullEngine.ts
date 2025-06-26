@@ -14,6 +14,8 @@ import { waidesKISignalShield } from './waidesKISignalShield';
 import { waidesKIDailyReporter } from './waidesKIDailyReporter';
 import { waidesKIStopLossManager } from './waidesKIStopLossManager';
 import { waidesKIPerformanceTracker } from './waidesKIPerformanceTracker';
+import { waidesKIMLEngine } from './waidesKIMLEngine';
+import { waidesKIKellySizer } from './waidesKIKellySizer';
 
 interface EngineContext {
   indicators: any;
@@ -275,6 +277,28 @@ export class WaidesFullEngine {
   }
 
   private async evaluateGuardianConsensus(context: EngineContext): Promise<GuardianDecision> {
+    // STEP 65: ML Overlay + Kelly Position Sizing Integration
+    
+    // Get ML prediction for trade confidence
+    const mlPrediction = waidesKIMLEngine.predictProbability({
+      rsi: context.indicators.rsi,
+      ema_50: context.indicators.ema_50,
+      ema_200: context.indicators.ema_200,
+      price: context.indicators.price,
+      volume: context.indicators.volume,
+      volatility: context.indicators.volatility || 0.02,
+      sentiment_score: context.presence?.sentiment || 50,
+      presence_strength: context.presence?.strength || 50,
+      market_phase: this.determineMarketPhase(context),
+      time_hour: new Date().getHours()
+    });
+
+    // Check ML confidence gate - block if below threshold
+    if (waidesKIMLEngine.shouldBlockTrade(mlPrediction)) {
+      console.log(`⚠️ ML Engine blocks trade (confidence ${(mlPrediction.confidence * 100).toFixed(1)}%)`);
+      return this.createBlockedDecision('ML_CONFIDENCE_TOO_LOW', mlPrediction);
+    }
+
     // Get brain hive decision (Logic, Vision, Heart brains)
     const brainDecision = await waidesKIBrainHiveController.makeDecision(context.indicators);
     
@@ -284,18 +308,27 @@ export class WaidesFullEngine {
     // Get emotional firewall assessment
     const emotionalCheck = waidesKIEmotionalFirewall.evaluateTradeEntry();
     
-    // Calculate consensus confidence
-    const consensus = this.calculateConsensus(brainDecision, shieldResult, emotionalCheck);
+    // Calculate consensus confidence with ML enhancement
+    const consensus = this.calculateConsensus(brainDecision, shieldResult, emotionalCheck, mlPrediction);
+    
+    // Kelly position sizing calculation
+    const kellySize = waidesKIKellySizer.calculatePositionSize(
+      this.quoteAmount, // Current account balance
+      this.quoteAmount * 0.25, // Max trade amount (25% of balance)
+      mlPrediction.confidence // ML confidence factor
+    );
+
+    console.log(`📏 Kelly sizing: ${(kellySize.kelly_fraction * 100).toFixed(1)}% (${kellySize.risk_assessment} risk)`);
     
     return {
       consensus: consensus.decision,
       vision: {
-        confidence: brainDecision.confidence || 0,
-        direction: brainDecision.action || 'HOLD',
-        reasoning: brainDecision.reasoning || 'No clear signal'
+        confidence: consensus.confidence * mlPrediction.confidence,
+        direction: mlPrediction.prediction_class === 'BUY' ? 'LONG' : mlPrediction.prediction_class === 'SELL' ? 'SHORT' : 'NEUTRAL',
+        reasoning: `ML-Enhanced: ${mlPrediction.prediction_class} (${(mlPrediction.confidence * 100).toFixed(1)}%)`
       },
       ethic: {
-        allow: !shieldResult.should_block && emotionalCheck.can_trade,
+        allow: !shieldResult.should_block && emotionalCheck.can_trade && kellySize.risk_assessment !== 'EXTREME',
         reasoning: shieldResult.should_block ? shieldResult.block_reason : 
                   !emotionalCheck.can_trade ? emotionalCheck.block_reason : 'Trade approved'
       },
