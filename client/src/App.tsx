@@ -32,6 +32,8 @@ import AdminConfigPanel from "@/components/AdminConfigPanel";
 import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
 import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
+import BiometricTradingInterface from "@/components/BiometricTradingInterface";
+import CosmicAIChatInterface from "@/components/CosmicAIChatInterface";
 
 import NotFound from "@/pages/not-found";
 
@@ -40,6 +42,8 @@ function Router() {
 
   const navItems = [
     { path: "/", label: "Vision Portal" },
+    { path: "/cosmic-ai", label: "Cosmic AI Chat" },
+    { path: "/biometric-trading", label: "Biometric Trading" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/autonomous-wealth", label: "SmaiWallet" },
     { path: "/waidbot", label: "WaidBot" },
@@ -113,6 +117,8 @@ function Router() {
       <main>
         <Switch>
           <Route path="/" component={WaidesKIVisionPortal} />
+          <Route path="/cosmic-ai" component={CosmicAIChatInterface} />
+          <Route path="/biometric-trading" component={BiometricTradingInterface} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
