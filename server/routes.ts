@@ -28,6 +28,7 @@ import { waidesKICommandProcessor } from './services/waidesKICommandProcessor.js
 import chatOracleService from './services/chatOracleService.js';
 import { WaidesKIReasoningEngine } from './services/waidesKIReasoningEngine.js';
 import { WaidesKIProphecyLogService } from './services/prophecyLogService.js';
+import { WaidesKIQuestionAnswerer } from './services/waidesKIBotMemory.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
@@ -294,6 +295,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize Advanced Reasoning Engine
   const waidesKIReasoningEngine = new WaidesKIReasoningEngine(ethMonitor);
+  
+  // Initialize Question Answerer with Bot Memory
+  const questionAnswerer = new WaidesKIQuestionAnswerer();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -15467,6 +15471,95 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     } catch (error) {
       console.error('Core engine market analysis error:', error);
       res.status(500).json({ error: 'Failed to analyze market' });
+    }
+  });
+
+  // ===== WAIDES KI BOT MEMORY & ENHANCED QUESTION ANSWERING =====
+  
+  // Get bot memory and system information
+  app.get('/api/waides-ki/bot-memory', async (req, res) => {
+    try {
+      const systemInfo = questionAnswerer.getSystemInfo();
+      res.json({
+        success: true,
+        systemInfo,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Bot memory error:', error);
+      res.status(500).json({ error: 'Failed to get bot memory' });
+    }
+  });
+
+  // Enhanced question answering endpoint
+  app.post('/api/waides-ki/answer-question', async (req, res) => {
+    try {
+      const { question, context } = req.body;
+      
+      if (!question || typeof question !== 'string') {
+        return res.status(400).json({ error: 'Question is required' });
+      }
+
+      // Get current market context for enhanced answers
+      let marketContext = {};
+      try {
+        const marketData = await waidesKiCoreEngine.fetchETHMarketData();
+        marketContext = {
+          ethPrice: marketData.price,
+          marketConditions: marketData.trend,
+          tradingActive: true
+        };
+      } catch (e) {
+        // Fallback context if market data unavailable
+        marketContext = {
+          ethPrice: 'Live data temporarily unavailable',
+          marketConditions: 'monitoring',
+          tradingActive: false
+        };
+      }
+
+      const answer = await questionAnswerer.answerQuestion(question, {
+        ...context,
+        market: marketContext,
+        systemTime: new Date().toISOString()
+      });
+
+      res.json({
+        success: true,
+        question,
+        answer,
+        context: marketContext,
+        timestamp: new Date().toISOString(),
+        mode: 'enhanced_bot_memory'
+      });
+    } catch (error) {
+      console.error('Question answering error:', error);
+      res.status(500).json({ 
+        error: 'Failed to answer question',
+        fallback: "I'm still learning and evolving. Try asking about ETH trading, my capabilities, or market analysis."
+      });
+    }
+  });
+
+  // Get bot capabilities and features
+  app.get('/api/waides-ki/capabilities', async (req, res) => {
+    try {
+      const systemInfo = questionAnswerer.getSystemInfo();
+      res.json({
+        success: true,
+        capabilities: {
+          name: systemInfo.name,
+          description: systemInfo.description,
+          consciousnessLayers: systemInfo.consciousnessLayers,
+          knowledgeAreas: systemInfo.knowledgeAreas,
+          totalFeatures: systemInfo.totalFeatures,
+          spiritualLogic: systemInfo.spiritualLogic
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Capabilities error:', error);
+      res.status(500).json({ error: 'Failed to get capabilities' });
     }
   });
 

@@ -119,6 +119,22 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
+  // Enhanced question answering mutation
+  const questionMutation = useMutation({
+    mutationFn: async (question: string) => {
+      const response = await fetch('/api/waides-ki/answer-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question }),
+      });
+      if (!response.ok) throw new Error('Failed to answer question');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      typeMessage(data.answer, 'enhanced_bot_memory', 98);
+    },
+  });
+
   const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     setIsTyping(true);
     setCurrentTypingMessage('');
