@@ -11309,6 +11309,289 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============================================================================
+  // ETH ORDER BOOK SENTIENCE API ENDPOINTS
+  // ============================================================================
+  
+  // Import the new order book services
+  const { waidesKIOrderPresenceService } = await import('./services/waidesKIOrderPresenceService.js');
+  const { waidesKIOrderPresenceSync } = await import('./services/waidesKIOrderPresenceSync.js');
+  const { waidesKIOrderBookSentry } = await import('./services/waidesKIOrderBookSentry.js');
+  const { waidesKIOrderBookInterpreter } = await import('./services/waidesKIOrderBookInterpreter.js');
+  const { waidesKIETHOrderPresenceRegistry } = await import('./services/waidesKIETHOrderPresenceRegistry.js');
+
+  // Get current order book presence state
+  app.get('/api/order-book/presence', (req, res) => {
+    try {
+      const presenceState = waidesKIETHOrderPresenceRegistry.get();
+      res.json({
+        success: true,
+        order_book_presence: presenceState,
+        system_health: waidesKIETHOrderPresenceRegistry.getHealthStatus()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get order book presence' });
+    }
+  });
+
+  // Get comprehensive order book analysis
+  app.get('/api/order-book/analysis', (req, res) => {
+    try {
+      const analysis = waidesKIOrderPresenceService.getComprehensiveAnalysis();
+      res.json({
+        success: true,
+        comprehensive_analysis: analysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get order book analysis' });
+    }
+  });
+
+  // Get order book sentiment for trading decisions
+  app.get('/api/order-book/sentiment', (req, res) => {
+    try {
+      const sentiment = waidesKIOrderPresenceService.getOrderBookSentiment();
+      res.json({
+        success: true,
+        sentiment: sentiment,
+        crowd_analysis: {
+          description: sentiment.description,
+          trading_implication: sentiment.confidence > 60 ? 'High confidence signals' : 'Wait for clearer signals'
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get order book sentiment' });
+    }
+  });
+
+  // Validate trading action against order book
+  app.post('/api/order-book/validate-trade', (req, res) => {
+    try {
+      const { action, amount } = req.body;
+      
+      if (!action) {
+        return res.status(400).json({ error: 'Trading action is required' });
+      }
+
+      const validation = waidesKIOrderPresenceService.validateTradingAction(action, amount);
+      const tradeCheck = waidesKIOrderPresenceService.checkBeforeTrade(action);
+      
+      res.json({
+        success: true,
+        validation: validation,
+        order_book_check: tradeCheck,
+        recommendation: tradeCheck.should_proceed ? 'Proceed with trade' : 'Wait for better conditions'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to validate trading action' });
+    }
+  });
+
+  // Get real-time order flow insights
+  app.get('/api/order-book/flow-insights', (req, res) => {
+    try {
+      const insights = waidesKIOrderPresenceService.getOrderFlowInsights();
+      const analytics = waidesKIOrderBookSentry.getOrderBookAnalytics();
+      
+      res.json({
+        success: true,
+        flow_insights: insights,
+        raw_analytics: analytics,
+        interpretation: 'Real-time order flow and liquidity analysis'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get order flow insights' });
+    }
+  });
+
+  // Get order book pressure strength
+  app.get('/api/order-book/pressure', (req, res) => {
+    try {
+      const pressureStrength = waidesKIETHOrderPresenceRegistry.getPressureStrength();
+      const currentState = waidesKIETHOrderPresenceRegistry.get();
+      
+      res.json({
+        success: true,
+        pressure_analysis: pressureStrength,
+        current_reading: {
+          pressure: currentState.pressure,
+          description: currentState.description,
+          confidence: currentState.confidence
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get order book pressure' });
+    }
+  });
+
+  // Get trading decision support
+  app.get('/api/order-book/trading-support', (req, res) => {
+    try {
+      const decisionSupport = waidesKIETHOrderPresenceRegistry.getTradingDecisionSupport();
+      res.json({
+        success: true,
+        trading_decision_support: decisionSupport,
+        system_ready: waidesKIOrderPresenceService.getSystemStatus().service_initialized
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get trading decision support' });
+    }
+  });
+
+  // Get system status for order book sentience
+  app.get('/api/order-book/system-status', (req, res) => {
+    try {
+      const systemStatus = waidesKIOrderPresenceService.getSystemStatus();
+      res.json({
+        success: true,
+        system_status: systemStatus,
+        order_book_sentience: 'Fully operational - Deep order book awareness active'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  // ============================================================================
+  // PEER SYNCHRONIZATION ENDPOINTS (MODULE 6)
+  // ============================================================================
+
+  // Receive order presence from peer nodes
+  app.post('/api/order_presence', (req, res) => {
+    try {
+      const result = waidesKIOrderPresenceSync.receiveOrderPresence(req.body);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: 'Failed to process peer sync' });
+    }
+  });
+
+  // Get current order presence for peer requests
+  app.get('/api/order_presence/current', (req, res) => {
+    try {
+      const currentState = waidesKIETHOrderPresenceRegistry.exportForSync();
+      res.json(currentState);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to export current state' });
+    }
+  });
+
+  // Get peer network consensus
+  app.get('/api/order-book/peer-consensus', async (req, res) => {
+    try {
+      const consensus = await waidesKIOrderPresenceSync.gatherPeerConsensus();
+      res.json({
+        success: true,
+        peer_consensus: consensus,
+        interpretation: consensus.agreement_level > 70 ? 'Strong consensus' : 'Mixed signals from network'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to gather peer consensus' });
+    }
+  });
+
+  // Get peer network status
+  app.get('/api/order-book/peer-status', (req, res) => {
+    try {
+      const peerStatus = waidesKIOrderPresenceSync.getPeerNetworkStatus();
+      res.json({
+        success: true,
+        peer_network: peerStatus,
+        sync_statistics: waidesKIOrderPresenceSync.getSyncStatistics()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get peer network status' });
+    }
+  });
+
+  // Add new peer node
+  app.post('/api/order-book/add-peer', (req, res) => {
+    try {
+      const { peer_url } = req.body;
+      
+      if (!peer_url) {
+        return res.status(400).json({ error: 'Peer URL is required' });
+      }
+
+      const added = waidesKIOrderPresenceSync.addPeer(peer_url);
+      res.json({
+        success: added,
+        message: added ? 'Peer added successfully' : 'Peer already exists'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to add peer' });
+    }
+  });
+
+  // ============================================================================
+  // ORDER BOOK DEMO AND TESTING ENDPOINTS
+  // ============================================================================
+
+  // Comprehensive order book demo workflow
+  app.get('/api/order-book/demo-workflow', (req, res) => {
+    try {
+      const presence = waidesKIETHOrderPresenceRegistry.get();
+      const analytics = waidesKIOrderBookSentry.getOrderBookAnalytics();
+      const connectionHealth = waidesKIOrderBookSentry.getConnectionHealth();
+      
+      // Test different trading actions
+      const buyTest = waidesKIOrderPresenceService.checkBeforeTrade('BUY_ETH');
+      const sellTest = waidesKIOrderPresenceService.checkBeforeTrade('SELL_ETH');
+      
+      // Enhanced interpretation
+      const enhanced = waidesKIOrderBookInterpreter.interpretEnhanced(presence.pressure, analytics);
+      const comprehensive = waidesKIOrderBookInterpreter.getComprehensiveAnalysis(presence.pressure, analytics);
+      
+      res.json({
+        success: true,
+        demo_workflow: {
+          step_1_current_presence: presence,
+          step_2_raw_analytics: analytics,
+          step_3_enhanced_interpretation: enhanced,
+          step_4_comprehensive_analysis: comprehensive,
+          step_5_trading_tests: {
+            buy_eth_test: buyTest,
+            sell_eth_test: sellTest
+          },
+          step_6_connection_health: connectionHealth,
+          step_7_system_integration: waidesKIOrderPresenceService.getSystemStatus()
+        },
+        conclusion: 'ETH Order Book Sentience system fully operational - From seeing to feeling market heartbeat',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to run order book demo workflow' });
+    }
+  });
+
+  // Test order book interpretation with custom pressure
+  app.post('/api/order-book/test-interpretation', (req, res) => {
+    try {
+      const { pressure, test_analytics } = req.body;
+      
+      if (!pressure) {
+        return res.status(400).json({ error: 'Pressure type is required' });
+      }
+
+      const basic = waidesKIOrderBookInterpreter.interpret(pressure);
+      const enhanced = waidesKIOrderBookInterpreter.interpretEnhanced(pressure, test_analytics || {});
+      const tradingAdvice = waidesKIOrderBookInterpreter.getTradingAdvice(pressure, test_analytics || {});
+      
+      res.json({
+        success: true,
+        test_results: {
+          input_pressure: pressure,
+          basic_interpretation: basic,
+          enhanced_interpretation: enhanced,
+          trading_advice: tradingAdvice
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to test interpretation' });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {
