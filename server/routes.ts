@@ -99,6 +99,8 @@ import { WaidesKIVisionMemoryMap } from './services/waidesKIVisionMemoryMap.js';
 import { WaidesKIPreCognitionEngine } from './services/waidesKIPreCognitionEngine.js';
 import { WaidesKIDivineVisionMap } from './services/waidesKIDivineVisionMap.js';
 import { WaidesKISpiritContract } from './services/waidesKISpiritContract.js';
+// STEP 47: Trinity Brain Model
+import { WaidesKIBrainHiveController } from './services/waidesKIBrainHiveController.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
@@ -146,6 +148,8 @@ let waidesKIVisionMemoryMap: WaidesKIVisionMemoryMap;
 let waidesKIPreCognitionEngine: WaidesKIPreCognitionEngine;
 let waidesKIDivineVisionMap: WaidesKIDivineVisionMap;
 let waidesKISpiritContract: WaidesKISpiritContract;
+// STEP 47: Trinity Brain Model
+let waidesKIBrainHiveController: WaidesKIBrainHiveController;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -211,6 +215,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   waidesKIPreCognitionEngine = new WaidesKIPreCognitionEngine();
   waidesKIDivineVisionMap = new WaidesKIDivineVisionMap();
   waidesKISpiritContract = new WaidesKISpiritContract();
+
+  // Initialize STEP 47: Trinity Brain Model
+  waidesKIBrainHiveController = new WaidesKIBrainHiveController(
+    waidesKISpiritContract,
+    waidesKIDivineVisionMap,
+    waidesKIPreCognitionEngine,
+    waidesKIVisionMemoryMap
+  );
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
