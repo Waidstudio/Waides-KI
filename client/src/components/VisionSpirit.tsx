@@ -142,11 +142,10 @@ export default function VisionSpirit() {
 
   // Mutation for KonsAi chat
   const chatMutation = useMutation({
-    mutationFn: (question: string) =>
-      apiRequest('/api/waides-ki/konsai-chat', {
-        method: 'POST',
-        body: JSON.stringify({ question })
-      }),
+    mutationFn: async (question: string) => {
+      const response = await apiRequest('POST', '/api/waides-ki/konsai-chat', { question });
+      return await response.json();
+    },
     onSuccess: (data) => {
       console.log('KonsAi response:', data);
       const newMessage: ChatMessage = {
