@@ -24,6 +24,7 @@ import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
 import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKIChatService } from './services/waidesKIChatService.js';
+import chatOracleService from './services/chatOracleService.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
@@ -11609,6 +11610,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  // ==========================================
+  // CHAT ORACLE SYSTEM - Dual AI Integration
+  // ==========================================
+
+  // Main chat endpoint with dual-AI integration and spiritual filtering
+  app.post('/api/chat/oracle', async (req, res) => {
+    try {
+      const { message, context = [] } = req.body;
+
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await chatOracleService.processChat(message, context);
+      
+      res.json({
+        success: true,
+        ...response,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Chat Oracle error:', error);
+      res.status(500).json({ 
+        error: 'The cosmic channels are experiencing interference',
+        fallback: "💫 Waides KI speaks with vision:\n\nThe spiritual energies are realigning. Let me commune with the cosmic forces and return with clarity. 🌟"
+      });
+    }
+  });
+
+  // Get Chat Oracle API status
+  app.get('/api/chat/oracle/status', (req, res) => {
+    try {
+      const status = chatOracleService.getApiStatus();
+      
+      res.json({
+        success: true,
+        api_status: status,
+        spiritual_layer: 'Always active',
+        dual_ai_ready: status.chatgpt || status.incite,
+        message: status.chatgpt && status.incite ? 
+          'Full dual-AI oracle active' : 
+          status.chatgpt ? 'ChatGPT oracle active' :
+          status.incite ? 'Incite AI oracle active' :
+          'Spiritual oracle only'
+      });
+    } catch (error) {
+      console.error('Oracle status error:', error);
+      res.status(500).json({ error: 'Failed to get oracle status' });
+    }
+  });
+
+  // Test chat oracle with sample questions
+  app.post('/api/chat/oracle/test', async (req, res) => {
+    try {
+      const testQuestions = [
+        "What's the current ETH price trend?",
+        "How do I overcome fear in trading?",
+        "Should I invest in cryptocurrency?"
+      ];
+
+      const testResults = [];
+      
+      for (const question of testQuestions) {
+        const response = await chatOracleService.processChat(question);
+        testResults.push({
+          question,
+          response: response.answer,
+          source: response.source,
+          confidence: response.confidence
+        });
+      }
+
+      res.json({
+        success: true,
+        test_results: testResults,
+        oracle_performance: 'Functional'
+      });
+    } catch (error) {
+      console.error('Oracle test error:', error);
+      res.status(500).json({ error: 'Oracle test failed' });
     }
   });
 
