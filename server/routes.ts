@@ -11150,6 +11150,312 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 51: Meta-Emotion Feedback Loops API Endpoints
+
+  app.get('/api/meta-emotion/reflection', async (req, res) => {
+    try {
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const reflection = waidesKIMetaEmotionEngine.performMetaReflection();
+      res.json({
+        success: true,
+        meta_reflection: reflection,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to perform meta-emotional reflection' });
+    }
+  });
+
+  app.get('/api/meta-emotion/stats', async (req, res) => {
+    try {
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const stats = waidesKIMetaEmotionEngine.getMetaEmotionStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get meta-emotion statistics' });
+    }
+  });
+
+  app.get('/api/meta-emotion/history', async (req, res) => {
+    try {
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKIMetaEmotionEngine.getEmotionalHistory(limit);
+      res.json({
+        success: true,
+        emotional_history: history,
+        total_entries: history.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get emotional history' });
+    }
+  });
+
+  app.post('/api/meta-emotion/record', async (req, res) => {
+    try {
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const { emotion_state, temperature, context } = req.body;
+      
+      waidesKIMetaEmotionEngine.recordEmotionalState(emotion_state, temperature, context);
+      
+      res.json({
+        success: true,
+        message: 'Emotional state recorded for meta-analysis',
+        recorded_state: { emotion_state, temperature, context }
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to record emotional state' });
+    }
+  });
+
+  app.post('/api/meta-emotion/trigger-reflection', async (req, res) => {
+    try {
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const reflection = waidesKIMetaEmotionEngine.triggerImmediateReflection();
+      res.json({
+        success: true,
+        message: 'Immediate meta-emotional reflection triggered',
+        reflection: reflection
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to trigger immediate reflection' });
+    }
+  });
+
+  app.get('/api/adaptive-thresholds/config', async (req, res) => {
+    try {
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      const config = waidesKIAdaptiveThresholdManager.getCurrentConfig();
+      res.json({
+        success: true,
+        current_config: config,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get threshold configuration' });
+    }
+  });
+
+  app.get('/api/adaptive-thresholds/stats', async (req, res) => {
+    try {
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      const stats = waidesKIAdaptiveThresholdManager.getAdaptationStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get adaptation statistics' });
+    }
+  });
+
+  app.get('/api/adaptive-thresholds/history', async (req, res) => {
+    try {
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      const limit = parseInt(req.query.limit as string) || 10;
+      const history = waidesKIAdaptiveThresholdManager.getAdaptationHistory(limit);
+      res.json({
+        success: true,
+        adaptation_history: history,
+        total_entries: history.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get adaptation history' });
+    }
+  });
+
+  app.post('/api/adaptive-thresholds/adapt', async (req, res) => {
+    try {
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      
+      const metaReflection = waidesKIMetaEmotionEngine.performMetaReflection();
+      const adaptation = waidesKIAdaptiveThresholdManager.performAdaptiveAdjustment(metaReflection);
+      
+      res.json({
+        success: true,
+        message: 'Adaptive threshold adjustment performed',
+        meta_reflection: metaReflection,
+        threshold_adaptation: adaptation
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to perform adaptive adjustment' });
+    }
+  });
+
+  app.post('/api/adaptive-thresholds/force-adapt', async (req, res) => {
+    try {
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      const adaptation = waidesKIAdaptiveThresholdManager.forceAdaptation();
+      res.json({
+        success: true,
+        message: 'Forced adaptation completed (bypassed cooldown)',
+        adaptation: adaptation
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to force adaptation' });
+    }
+  });
+
+  app.post('/api/adaptive-thresholds/reset', async (req, res) => {
+    try {
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      waidesKIAdaptiveThresholdManager.resetToBaseline();
+      res.json({
+        success: true,
+        message: 'Thresholds reset to baseline configuration',
+        baseline_config: waidesKIAdaptiveThresholdManager.getCurrentConfig()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to reset thresholds' });
+    }
+  });
+
+  app.get('/api/emotion-reflection/analytics', async (req, res) => {
+    try {
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      const analytics = waidesKIEmotionReflectionLog.getReflectionAnalytics();
+      res.json({
+        success: true,
+        analytics: analytics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get reflection analytics' });
+    }
+  });
+
+  app.get('/api/emotion-reflection/patterns', async (req, res) => {
+    try {
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      const patterns = waidesKIEmotionReflectionLog.getDetectedPatterns();
+      res.json({
+        success: true,
+        detected_patterns: patterns,
+        pattern_count: patterns.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get detected patterns' });
+    }
+  });
+
+  app.get('/api/emotion-reflection/recent', async (req, res) => {
+    try {
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      const limit = parseInt(req.query.limit as string) || 5;
+      const recent = waidesKIEmotionReflectionLog.getRecentReflections(limit);
+      res.json({
+        success: true,
+        recent_reflections: recent,
+        total_entries: recent.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get recent reflections' });
+    }
+  });
+
+  app.get('/api/emotion-reflection/metrics', async (req, res) => {
+    try {
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      const metrics = waidesKIEmotionReflectionLog.getLearningMetrics();
+      res.json({
+        success: true,
+        learning_metrics: metrics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get learning metrics' });
+    }
+  });
+
+  app.post('/api/emotion-reflection/record', async (req, res) => {
+    try {
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      
+      const { performance_context } = req.body;
+      
+      // Perform meta-reflection
+      const metaReflection = waidesKIMetaEmotionEngine.performMetaReflection();
+      
+      // Perform adaptive adjustment
+      const thresholdAdaptation = waidesKIAdaptiveThresholdManager.performAdaptiveAdjustment(metaReflection);
+      
+      // Record comprehensive reflection
+      waidesKIEmotionReflectionLog.recordReflection(metaReflection, thresholdAdaptation, performance_context);
+      
+      res.json({
+        success: true,
+        message: 'Complete emotional reflection cycle recorded',
+        meta_reflection: metaReflection,
+        threshold_adaptation: thresholdAdaptation
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to record reflection cycle' });
+    }
+  });
+
+  app.post('/api/emotion-reflection/reset', async (req, res) => {
+    try {
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      waidesKIEmotionReflectionLog.resetReflectionLog();
+      res.json({
+        success: true,
+        message: 'Emotion reflection log reset successfully'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to reset reflection log' });
+    }
+  });
+
+  app.get('/api/meta-emotion/demo-workflow', async (req, res) => {
+    try {
+      const { waidesKIMetaEmotionEngine } = await import('./services/waidesKIMetaEmotionEngine.js');
+      const { waidesKIAdaptiveThresholdManager } = await import('./services/waidesKIAdaptiveThresholdManager.js');
+      const { waidesKIEmotionReflectionLog } = await import('./services/waidesKIEmotionReflectionLog.js');
+      
+      // Step 1: Record various emotional states
+      waidesKIMetaEmotionEngine.recordEmotionalState('overheated', 45, 'rapid_trading');
+      waidesKIMetaEmotionEngine.recordEmotionalState('hot', 35, 'profit_streak');
+      waidesKIMetaEmotionEngine.recordEmotionalState('neutral', 5, 'steady_trading');
+      waidesKIMetaEmotionEngine.recordEmotionalState('cold', -25, 'loss_streak');
+      waidesKIMetaEmotionEngine.recordEmotionalState('frozen', -40, 'major_loss');
+      
+      // Step 2: Perform meta-reflection
+      const metaReflection = waidesKIMetaEmotionEngine.performMetaReflection();
+      
+      // Step 3: Adaptive threshold adjustment
+      const thresholdAdaptation = waidesKIAdaptiveThresholdManager.performAdaptiveAdjustment(metaReflection);
+      
+      // Step 4: Record complete reflection
+      waidesKIEmotionReflectionLog.recordReflection(metaReflection, thresholdAdaptation, {
+        recent_trades: 15,
+        win_rate: 0.67,
+        current_balance: 10250,
+        trading_session_duration: 3600
+      });
+      
+      // Step 5: Get analytics
+      const analytics = waidesKIEmotionReflectionLog.getReflectionAnalytics();
+      const stats = waidesKIMetaEmotionEngine.getMetaEmotionStats();
+      
+      res.json({
+        demo_workflow: {
+          step_1: 'Recorded 5 emotional states with varying temperatures',
+          step_2: 'Performed meta-emotional reflection and analysis',
+          step_3: 'Applied adaptive threshold adjustments based on emotional patterns',
+          step_4: 'Logged complete reflection with performance context',
+          step_5: 'Generated comprehensive analytics and learning metrics'
+        },
+        meta_reflection: metaReflection,
+        threshold_adaptation: thresholdAdaptation,
+        analytics: analytics,
+        meta_emotion_stats: stats,
+        demonstration: 'STEP 51 Meta-Emotion Feedback Loops fully operational'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to run meta-emotion demo workflow' });
+    }
+  });
+
   app.get('/api/thermodynamics/safety-report', async (req, res) => {
     try {
       const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
