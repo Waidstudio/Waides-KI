@@ -361,4 +361,59 @@ export class WaidesKIMemorySigilVault {
     const phases = ['NEW_MOON', 'WAXING_CRESCENT', 'FIRST_QUARTER', 'WAXING_GIBBOUS', 'FULL_MOON', 'WANING_GIBBOUS', 'LAST_QUARTER', 'WANING_CRESCENT'];
     return phases[Math.floor(Math.random() * phases.length)];
   }
+
+  /**
+   * Get all symbols in the vault
+   */
+  getAllSymbols(): string[] {
+    return Array.from(this.sigilOutcomes.keys());
+  }
+
+  /**
+   * Get outcomes for a specific symbol
+   */
+  getSymbolOutcomes(symbol: string): SigilOutcome[] {
+    return this.sigilOutcomes.get(symbol) || [];
+  }
+
+  /**
+   * Purge a specific symbol from the vault
+   */
+  purgeSymbol(symbol: string): boolean {
+    const outcomes = this.sigilOutcomes.get(symbol);
+    if (outcomes) {
+      this.sigilOutcomes.delete(symbol);
+      this.vaultStats.total_symbols--;
+      this.vaultStats.total_outcomes -= outcomes.length;
+      this.vaultStats.last_update = new Date().toISOString();
+      
+      console.log(`🔥 Symbol purged from vault: ${symbol}`);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Perform spiritual cleansing of the entire vault
+   */
+  performSpiritualCleansing(): void {
+    const symbolsToRemove: string[] = [];
+    
+    // Remove symbols with excessive losses
+    for (const [symbol, outcomes] of this.sigilOutcomes.entries()) {
+      const lossCount = outcomes.filter(o => o.result === 'loss').length;
+      const lossRate = lossCount / outcomes.length;
+      
+      if (outcomes.length >= 5 && lossRate >= 0.8) {
+        symbolsToRemove.push(symbol);
+      }
+    }
+    
+    // Remove corrupted symbols
+    for (const symbol of symbolsToRemove) {
+      this.purgeSymbol(symbol);
+    }
+    
+    console.log(`🕊️ Spiritual cleansing complete: ${symbolsToRemove.length} corrupted symbols removed`);
+  }
 }
