@@ -88,6 +88,11 @@ const PageKnowledge = {
     description: "The central intelligence core with autonomous trading and learning systems.",
     keywords: ["core", "central", "intelligence", "autonomous", "waides core", "main system"],
     route: "waides-core"
+  },
+  "Weekly Trading Schedule": {
+    description: "Professional trading schedule analysis showing optimal times, days, and market windows for trading.",
+    keywords: ["time", "when", "schedule", "timing", "best time", "trading hours", "market hours", "optimal time", "when to trade", "trading schedule", "weekly", "daily", "hours"],
+    route: "/dashboard"
   }
 };
 
