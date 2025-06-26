@@ -6,8 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Wallet, TrendingUp, History, ArrowRightLeft, Plus, DollarSign } from 'lucide-react';
+import { useSmaiWallet } from '@/context/SmaiWalletContext';
+import { Wallet, TrendingUp, History, ArrowRightLeft, Plus, DollarSign, Shield, Zap, Heart, Lock, Eye } from 'lucide-react';
 
 interface Transaction {
   id: string;
@@ -19,343 +21,345 @@ interface Transaction {
 }
 
 export default function SmaiSikaWallet() {
-  const [smaiBalance, setSmaiBalance] = useState(0);
-  const [localBalance, setLocalBalance] = useState(0);
+  const {
+    smaiBalance,
+    localBalance,
+    lockedForTrade,
+    karmaScore,
+    tradeEnergy,
+    lockedUntil,
+    moralIndicator,
+    divineApproval,
+    smaiPrintAuthorized,
+    transactions,
+    isLoading,
+    lockTradeFunds,
+    unlockTradeFunds,
+    updateKarma,
+    chargeTradeEnergy,
+    consumeTradeEnergy,
+    isTradeAllowed,
+    requestDivineApproval,
+    checkMoralAlignment,
+    setTimeLock,
+    clearTimeLock,
+    fetchWalletData,
+  } = useSmaiWallet();
+
   const [fundAmount, setFundAmount] = useState('');
   const [convertAmount, setConvertAmount] = useState('');
+  const [lockAmount, setLockAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('paystack');
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const conversionRate = 500; // 1 ₭ = ₦500
   const convertedAmount = convertAmount ? (parseFloat(convertAmount) / conversionRate).toFixed(2) : '0.00';
 
-  // Fetch wallet data from backend
-  const fetchWalletData = async () => {
-    try {
-      const response = await fetch('/api/wallet/balance');
-      const data = await response.json();
-      if (data.success) {
-        setSmaiBalance(data.smaiBalance);
-        setLocalBalance(data.localBalance);
-      }
-    } catch (error) {
+  // Handle trade fund locking
+  const handleLockFunds = async () => {
+    const amount = parseFloat(lockAmount);
+    if (!amount || amount <= 0) {
       toast({
-        title: "Error",
-        description: "Failed to fetch wallet balance",
+        title: "Invalid Amount",
+        description: "Please enter a valid amount to lock",
         variant: "destructive",
       });
+      return;
+    }
+
+    const success = await lockTradeFunds(amount);
+    if (success) {
+      setLockAmount('');
     }
   };
 
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch('/api/wallet/transactions');
-      const data = await response.json();
-      if (data.success) {
-        setTransactions(data.transactions);
-      }
-    } catch (error) {
+  // Handle trade fund unlocking
+  const handleUnlockFunds = async () => {
+    const amount = parseFloat(lockAmount);
+    if (!amount || amount <= 0) {
       toast({
-        title: "Error",
-        description: "Failed to fetch transactions",
+        title: "Invalid Amount", 
+        description: "Please enter a valid amount to unlock",
         variant: "destructive",
       });
+      return;
     }
+
+    const success = await unlockTradeFunds(amount);
+    if (success) {
+      setLockAmount('');
+    }
+  };
+
+  // Simulate divine approval request
+  const handleRequestDivineApproval = async () => {
+    const amount = parseFloat(lockAmount) || 100;
+    await requestDivineApproval(amount);
+  };
+
+  // Demo karma update
+  const handleDemoKarma = (result: 'profit' | 'loss') => {
+    const amount = Math.random() * 50 + 10; // Random amount between 10-60
+    updateKarma(result, amount);
+  };
+
+  // Get moral indicator color
+  const getMoralColor = () => {
+    switch (moralIndicator) {
+      case 'ethical': return 'text-green-400';
+      case 'neutral': return 'text-yellow-400';
+      case 'blocked': return 'text-red-400';
+      default: return 'text-gray-400';
+    }
+  };
+
+  // Get karma color based on score
+  const getKarmaColor = () => {
+    if (karmaScore >= 80) return 'text-green-400';
+    if (karmaScore >= 40) return 'text-yellow-400';
+    return 'text-red-400';
   };
 
   useEffect(() => {
     fetchWalletData();
-    fetchTransactions();
   }, []);
 
-  const handleFundWallet = async () => {
-    const amount = parseFloat(fundAmount);
-    if (amount > 0) {
-      setIsLoading(true);
-      
-      try {
-        const response = await fetch('/api/wallet/fund', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount,
-            paymentMethod
-          }),
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-          setLocalBalance(data.newBalance);
-          setTransactions(prev => [data.transaction, ...prev]);
-          setFundAmount('');
-          toast({
-            title: "Success",
-            description: data.message,
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: data.error || "Failed to fund wallet",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to fund wallet",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const handleConvert = async () => {
-    const amount = parseFloat(convertAmount);
-    if (amount > 0 && amount <= localBalance) {
-      setIsLoading(true);
-      
-      try {
-        const response = await fetch('/api/wallet/convert', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            amount,
-            fromCurrency: 'local',
-            toCurrency: 'smai'
-          }),
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-          setSmaiBalance(data.newSmaiBalance);
-          setLocalBalance(data.newLocalBalance);
-          setTransactions(prev => [data.transaction, ...prev]);
-          setConvertAmount('');
-          toast({
-            title: "Success",
-            description: data.message,
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: data.error || "Failed to convert currency",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to convert currency",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const getTransactionIcon = (type: string) => {
-    switch (type) {
-      case 'deposit': return <Plus className="h-4 w-4 text-green-500" />;
-      case 'conversion': return <ArrowRightLeft className="h-4 w-4 text-blue-500" />;
-      case 'trade': return <TrendingUp className="h-4 w-4 text-purple-500" />;
-      default: return <DollarSign className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed': return <Badge variant="default" className="bg-green-500">Completed</Badge>;
-      case 'pending': return <Badge variant="secondary">Pending</Badge>;
-      case 'failed': return <Badge variant="destructive">Failed</Badge>;
-      default: return <Badge variant="outline">Unknown</Badge>;
-    }
-  };
-
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-          💰 SmaiSika Wallet
-        </h1>
-        <p className="text-muted-foreground">
-          Manage your SmaiSika currency for Waides KI trading operations
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-4">
+      <div className="max-w-6xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <div className="text-center py-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+            SmaiSika Wallet
+          </h1>
+          <p className="text-lg text-purple-300">Konsmic Intelligence Trading Engine</p>
+        </div>
 
-      {/* Balance Cards */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-200 dark:border-purple-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">SmaiSika Balance</CardTitle>
-            <Wallet className="h-4 w-4 text-purple-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              ₭ {(smaiBalance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-muted-foreground">Available for trading</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-200 dark:border-green-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Local Wallet Balance</CardTitle>
-            <DollarSign className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              ₦ {localBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </div>
-            <p className="text-xs text-muted-foreground">Nigerian Naira</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Fund Wallet Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-green-500" />
-            Fund Wallet
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="fund-amount">Amount (₦)</Label>
-              <Input
-                id="fund-amount"
-                type="number"
-                placeholder="Enter amount to fund"
-                value={fundAmount}
-                onChange={(e) => setFundAmount(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="payment-method">Payment Method</Label>
-              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select payment method" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="paystack">Paystack</SelectItem>
-                  <SelectItem value="flutterwave">Flutterwave</SelectItem>
-                  <SelectItem value="manual">Manual Transfer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <Button 
-            onClick={handleFundWallet} 
-            disabled={!fundAmount || parseFloat(fundAmount) <= 0 || isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Processing...' : 'Fund Wallet'}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Convert Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ArrowRightLeft className="h-5 w-5 text-blue-500" />
-            Convert Local to SmaiSika
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="convert-amount">Amount to Convert (₦)</Label>
-              <Input
-                id="convert-amount"
-                type="number"
-                placeholder="Enter amount to convert"
-                value={convertAmount}
-                onChange={(e) => setConvertAmount(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>You will receive</Label>
-              <div className="p-3 bg-muted rounded-md">
-                <span className="text-lg font-semibold text-purple-600 dark:text-purple-400">
-                  ₭ {convertedAmount}
-                </span>
+        {/* Main Dashboard */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Balance Overview */}
+          <Card className="lg:col-span-2 bg-slate-800/50 border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wallet className="h-5 w-5 text-purple-400" />
+                Balance Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-purple-900/30 rounded-lg border border-purple-500/20">
+                  <div className="text-2xl font-bold text-purple-300">₭{smaiBalance?.toLocaleString() || 0}</div>
+                  <div className="text-sm text-gray-400">Available SMAI</div>
+                </div>
+                <div className="text-center p-4 bg-orange-900/30 rounded-lg border border-orange-500/20">
+                  <div className="text-2xl font-bold text-orange-300">₭{lockedForTrade?.toLocaleString() || 0}</div>
+                  <div className="text-sm text-gray-400">Locked for Trading</div>
+                </div>
+                <div className="text-center p-4 bg-green-900/30 rounded-lg border border-green-500/20">
+                  <div className="text-2xl font-bold text-green-300">₦{localBalance?.toLocaleString() || 0}</div>
+                  <div className="text-sm text-gray-400">Local Currency</div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            Exchange Rate: 1 ₭ = ₦{conversionRate.toLocaleString()}
-          </div>
-          <Button 
-            onClick={handleConvert} 
-            disabled={!convertAmount || parseFloat(convertAmount) <= 0 || parseFloat(convertAmount) > localBalance || isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Converting...' : 'Convert to SmaiSika'}
-          </Button>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Transaction History */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5 text-gray-500" />
-            Transaction History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {transactions.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No transactions yet</p>
-            ) : (
-              transactions.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    {getTransactionIcon(transaction.type)}
+          {/* Divine Intelligence Status */}
+          <Card className="bg-slate-800/50 border-cyan-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-cyan-400" />
+                Divine Intelligence
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              
+              {/* Karma Score */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm">Karma Score</span>
+                  <span className={`font-bold ${getKarmaColor()}`}>{karmaScore}/200</span>
+                </div>
+                <Progress value={(karmaScore / 200) * 100} className="h-2" />
+              </div>
+
+              {/* Trade Energy */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm flex items-center gap-1">
+                    <Zap className="h-3 w-3" />
+                    Trade Energy
+                  </span>
+                  <span className="font-bold text-blue-400">{tradeEnergy}/100</span>
+                </div>
+                <Progress value={tradeEnergy} className="h-2" />
+              </div>
+
+              {/* Moral Indicator */}
+              <div className="flex justify-between items-center">
+                <span className="text-sm flex items-center gap-1">
+                  <Heart className="h-3 w-3" />
+                  Moral Alignment
+                </span>
+                <Badge className={`${getMoralColor()} capitalize`}>
+                  {moralIndicator}
+                </Badge>
+              </div>
+
+              {/* Divine Approval */}
+              <div className="flex justify-between items-center">
+                <span className="text-sm flex items-center gap-1">
+                  <Shield className="h-3 w-3" />
+                  Divine Approval
+                </span>
+                <Badge variant={divineApproval ? "default" : "destructive"}>
+                  {divineApproval ? "Granted" : "Pending"}
+                </Badge>
+              </div>
+
+              {/* Trading Status */}
+              <div className="mt-4 p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-center">
+                  <div className={`text-lg font-bold ${isTradeAllowed() ? 'text-green-400' : 'text-red-400'}`}>
+                    {isTradeAllowed() ? 'Trading Enabled' : 'Trading Restricted'}
+                  </div>
+                  {lockedUntil && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      Locked until: {new Date(lockedUntil).toLocaleString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Konsmic Intelligence Controls */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Fund Management */}
+          <Card className="bg-slate-800/50 border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-purple-400" />
+                Trading Fund Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="lockAmount">Amount (₭)</Label>
+                <Input
+                  id="lockAmount"
+                  type="number"
+                  value={lockAmount}
+                  onChange={(e) => setLockAmount(e.target.value)}
+                  placeholder="Enter amount to lock/unlock"
+                  className="bg-slate-700 border-slate-600"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleLockFunds} className="flex-1 bg-orange-600 hover:bg-orange-700">
+                  Lock Funds
+                </Button>
+                <Button onClick={handleUnlockFunds} variant="outline" className="flex-1">
+                  Unlock Funds
+                </Button>
+              </div>
+              <Button onClick={handleRequestDivineApproval} className="w-full bg-cyan-600 hover:bg-cyan-700">
+                Request Divine Approval
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Karma & Energy Controls */}
+          <Card className="bg-slate-800/50 border-green-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-green-400" />
+                Karma & Energy Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-gray-400 mb-4">
+                Simulate trading outcomes to see karma effects:
+              </div>
+              
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => handleDemoKarma('profit')} 
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  Profitable Trade
+                </Button>
+                <Button 
+                  onClick={() => handleDemoKarma('loss')} 
+                  variant="destructive" 
+                  className="flex-1"
+                >
+                  Loss Trade
+                </Button>
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => chargeTradeEnergy(10)} 
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Charge Energy +10
+                </Button>
+                <Button 
+                  onClick={() => consumeTradeEnergy(5)} 
+                  variant="outline" 
+                  className="flex-1"
+                >
+                  Use Energy -5
+                </Button>
+              </div>
+
+              {lockedUntil && (
+                <Button onClick={clearTimeLock} className="w-full bg-purple-600 hover:bg-purple-700">
+                  Clear Time Lock
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Transactions */}
+        <Card className="bg-slate-800/50 border-blue-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <History className="h-5 w-5 text-blue-400" />
+              Recent Trading Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {transactions?.length > 0 ? (
+              <div className="space-y-2">
+                {transactions.slice(0, 5).map((transaction) => (
+                  <div key={transaction.id} className="flex justify-between items-center p-3 bg-slate-700/30 rounded-lg">
                     <div>
                       <div className="font-medium">{transaction.description}</div>
-                      <div className="text-sm text-muted-foreground">{transaction.date}</div>
+                      <div className="text-sm text-gray-400">{transaction.date}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">₭{transaction.amount}</div>
+                      <Badge variant={transaction.status === 'completed' ? 'default' : 'secondary'}>
+                        {transaction.status}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="text-right space-y-1">
-                    <div className="font-semibold">{transaction.amount}</div>
-                    {getStatusBadge(transaction.status)}
-                  </div>
-                </div>
-              ))
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                No recent transactions found
+              </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Usage Info */}
-      <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-6 w-6 text-blue-500" />
-            <div>
-              <h3 className="font-semibold">Ready for Trading</h3>
-              <p className="text-sm text-muted-foreground">
-                Your SmaiSika balance is automatically available for Waides KI trading operations including WaidBot and WaidBot Pro
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

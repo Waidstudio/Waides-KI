@@ -13,6 +13,13 @@ interface Transaction {
 interface SmaiWalletContextType {
   smaiBalance: number;
   localBalance: number;
+  lockedForTrade: number;
+  karmaScore: number;
+  tradeEnergy: number;
+  lockedUntil: string | null;
+  moralIndicator: 'ethical' | 'neutral' | 'blocked';
+  divineApproval: boolean;
+  smaiPrintAuthorized: boolean;
   transactions: Transaction[];
   isLoading: boolean;
   updateBalance: (smaiAmount: number, localAmount: number) => void;
@@ -21,6 +28,17 @@ interface SmaiWalletContextType {
   canAffordTrade: (amount: number) => boolean;
   deductTradingBalance: (amount: number) => Promise<boolean>;
   addTradingProfit: (amount: number) => Promise<void>;
+  // New Konsmic Intelligence features
+  lockTradeFunds: (amount: number) => Promise<boolean>;
+  unlockTradeFunds: (amount: number) => Promise<boolean>;
+  updateKarma: (result: 'profit' | 'loss', amount: number) => void;
+  chargeTradeEnergy: (amount: number) => boolean;
+  consumeTradeEnergy: (amount: number) => boolean;
+  isTradeAllowed: () => boolean;
+  requestDivineApproval: (tradeAmount: number) => Promise<boolean>;
+  checkMoralAlignment: (tradeType: string) => 'ethical' | 'neutral' | 'blocked';
+  setTimeLock: (unlockDate: string) => void;
+  clearTimeLock: () => void;
 }
 
 const SmaiWalletContext = createContext<SmaiWalletContextType | undefined>(undefined);
@@ -32,6 +50,13 @@ interface SmaiWalletProviderProps {
 export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
   const [smaiBalance, setSmaiBalance] = useState(0);
   const [localBalance, setLocalBalance] = useState(0);
+  const [lockedForTrade, setLockedForTrade] = useState(0);
+  const [karmaScore, setKarmaScore] = useState(100);
+  const [tradeEnergy, setTradeEnergy] = useState(100);
+  const [lockedUntil, setLockedUntil] = useState<string | null>(null);
+  const [moralIndicator, setMoralIndicator] = useState<'ethical' | 'neutral' | 'blocked'>('ethical');
+  const [divineApproval, setDivineApproval] = useState(false);
+  const [smaiPrintAuthorized, setSmaiPrintAuthorized] = useState(true);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -148,6 +173,170 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     }
   };
 
+  // Konsmic Intelligence Trading Engine Functions
+  
+  // Lock funds for trading only
+  const lockTradeFunds = async (amount: number): Promise<boolean> => {
+    if (amount <= 0 || amount > smaiBalance) {
+      toast({
+        title: "Lock Failed",
+        description: `Cannot lock ₭${amount}. Insufficient balance or invalid amount.`,
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    setSmaiBalance(prev => prev - amount);
+    setLockedForTrade(prev => prev + amount);
+    
+    toast({
+      title: "Trade Funds Locked",
+      description: `₭${amount} locked for trading energy`,
+    });
+    
+    return true;
+  };
+
+  // Unlock trading funds back to balance
+  const unlockTradeFunds = async (amount: number): Promise<boolean> => {
+    if (amount <= 0 || amount > lockedForTrade) {
+      toast({
+        title: "Unlock Failed",
+        description: `Cannot unlock ₭${amount}. Insufficient locked funds.`,
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    setLockedForTrade(prev => prev - amount);
+    setSmaiBalance(prev => prev + amount);
+    
+    toast({
+      title: "Trade Funds Unlocked",
+      description: `₭${amount} returned to available balance`,
+    });
+    
+    return true;
+  };
+
+  // Update karma based on trading results
+  const updateKarma = (result: 'profit' | 'loss', amount: number) => {
+    if (result === 'profit') {
+      setKarmaScore(prev => Math.min(200, prev + Math.floor(amount / 10)));
+      setTradeEnergy(prev => Math.min(100, prev + 5));
+      setMoralIndicator('ethical');
+    } else {
+      setKarmaScore(prev => Math.max(0, prev - Math.floor(amount / 5)));
+      setTradeEnergy(prev => Math.max(0, prev - 10));
+      if (karmaScore < 30) {
+        setMoralIndicator('blocked');
+      } else if (karmaScore < 70) {
+        setMoralIndicator('neutral');
+      }
+    }
+  };
+
+  // Charge trade energy (add energy)
+  const chargeTradeEnergy = (amount: number): boolean => {
+    if (amount <= 0) return false;
+    setTradeEnergy(prev => Math.min(100, prev + amount));
+    return true;
+  };
+
+  // Consume trade energy for trading
+  const consumeTradeEnergy = (amount: number): boolean => {
+    if (amount <= 0 || amount > tradeEnergy) return false;
+    setTradeEnergy(prev => prev - amount);
+    return true;
+  };
+
+  // Check if trading is allowed (time lock + moral + energy)
+  const isTradeAllowed = (): boolean => {
+    // Check time lock
+    if (lockedUntil && new Date() < new Date(lockedUntil)) {
+      return false;
+    }
+    
+    // Check moral alignment
+    if (moralIndicator === 'blocked') {
+      return false;
+    }
+    
+    // Check minimum trade energy
+    if (tradeEnergy < 10) {
+      return false;
+    }
+    
+    // Check SmaiPrint authorization
+    if (!smaiPrintAuthorized) {
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Request divine approval for major trades
+  const requestDivineApproval = async (tradeAmount: number): Promise<boolean> => {
+    // Major trades require divine approval (>100 SMAI)
+    if (tradeAmount < 100) {
+      setDivineApproval(true);
+      return true;
+    }
+
+    // Simulate divine consultation based on karma and energy
+    const approvalChance = (karmaScore / 100) * (tradeEnergy / 100);
+    const isApproved = Math.random() < approvalChance;
+    
+    setDivineApproval(isApproved);
+    
+    if (isApproved) {
+      toast({
+        title: "Divine Approval Granted",
+        description: "KonsAi has blessed this trade",
+      });
+    } else {
+      toast({
+        title: "Divine Approval Denied", 
+        description: "KonsAi advises against this trade",
+        variant: "destructive",
+      });
+    }
+    
+    return isApproved;
+  };
+
+  // Check moral alignment of trade
+  const checkMoralAlignment = (tradeType: string): 'ethical' | 'neutral' | 'blocked' => {
+    // Block obviously unethical patterns
+    const unethicalPatterns = ['revenge', 'panic', 'greed', 'manipulation'];
+    if (unethicalPatterns.some(pattern => tradeType.toLowerCase().includes(pattern))) {
+      return 'blocked';
+    }
+    
+    // Check karma level
+    if (karmaScore >= 80) return 'ethical';
+    if (karmaScore >= 40) return 'neutral';
+    return 'blocked';
+  };
+
+  // Set time lock
+  const setTimeLock = (unlockDate: string) => {
+    setLockedUntil(unlockDate);
+    toast({
+      title: "Funds Time Locked",
+      description: `Trading locked until ${new Date(unlockDate).toLocaleString()}`,
+    });
+  };
+
+  // Clear time lock
+  const clearTimeLock = () => {
+    setLockedUntil(null);
+    toast({
+      title: "Time Lock Cleared",
+      description: "Trading restrictions removed",
+    });
+  };
+
   // Load wallet data on mount
   useEffect(() => {
     fetchWalletData();
@@ -156,6 +345,13 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
   const value: SmaiWalletContextType = {
     smaiBalance,
     localBalance,
+    lockedForTrade,
+    karmaScore,
+    tradeEnergy,
+    lockedUntil,
+    moralIndicator,
+    divineApproval,
+    smaiPrintAuthorized,
     transactions,
     isLoading,
     updateBalance,
@@ -164,6 +360,17 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     canAffordTrade,
     deductTradingBalance,
     addTradingProfit,
+    // Konsmic Intelligence functions
+    lockTradeFunds,
+    unlockTradeFunds,
+    updateKarma,
+    chargeTradeEnergy,
+    consumeTradeEnergy,
+    isTradeAllowed,
+    requestDivineApproval,
+    checkMoralAlignment,
+    setTimeLock,
+    clearTimeLock,
   };
 
   return (
