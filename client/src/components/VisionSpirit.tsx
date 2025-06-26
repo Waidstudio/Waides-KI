@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -80,6 +80,14 @@ export default function VisionSpirit() {
     }
   ]);
   const [chatInput, setChatInput] = useState('');
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
 
   // Query for current vision
   const { data: currentVision } = useQuery({
@@ -140,6 +148,7 @@ export default function VisionSpirit() {
         body: JSON.stringify({ question })
       }),
     onSuccess: (data) => {
+      console.log('KonsAi response:', data);
       const newMessage: ChatMessage = {
         id: Date.now().toString(),
         type: 'konsai',
@@ -148,6 +157,17 @@ export default function VisionSpirit() {
         confidence: data.confidence || 0.85
       };
       setChatMessages(prev => [...prev, newMessage]);
+    },
+    onError: (error) => {
+      console.error('KonsAi chat error:', error);
+      const errorMessage: ChatMessage = {
+        id: Date.now().toString(),
+        type: 'konsai',
+        content: 'I apologize, but I am experiencing a temporary connection issue. Please try again.',
+        timestamp: new Date(),
+        confidence: 0.5
+      };
+      setChatMessages(prev => [...prev, errorMessage]);
     }
   });
 
@@ -354,7 +374,10 @@ export default function VisionSpirit() {
                 </p>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="h-96 bg-slate-900 rounded-lg border border-slate-600 overflow-y-auto p-4 space-y-3">
+                <div 
+                  ref={chatScrollRef}
+                  className="h-96 bg-slate-900 rounded-lg border border-slate-600 overflow-y-auto p-4 space-y-3"
+                >
                   {chatMessages.map((message) => (
                     <div
                       key={message.id}
