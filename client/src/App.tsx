@@ -134,7 +134,7 @@ function Router() {
           <Route path="/sigil-layer" component={SigilLayer} />
           <Route path="/shadow-defense" component={ShadowOverrideDefense} />
           <Route path="/dream-vision" component={DreamLayerVision} />
-          <Route path="/vision-spirit" component={VisionSpirit} />
+          <Route path="/vision-spirit" component={WaidesKIVisionPortal} />
           <Route path="/eth-empath-guardian" component={ETHEmpathNetworkGuardian} />
           <Route path="/meta-guardian" component={MetaGuardianNetwork} />
           <Route path="/full-engine" component={WaidesFullEngine} />
