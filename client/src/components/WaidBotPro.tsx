@@ -95,7 +95,7 @@ export function WaidBotPro() {
     currentRisk: 0.05
   };
 
-  const history: WaidBotProDecision[] = historyData || [];
+  const history: WaidBotProDecision[] = Array.isArray(historyData) ? historyData : [];
   const analysis: TechnicalAnalysis = analysisData || {
     currentPrice: 0,
     trendDirection: 'SIDEWAYS',
