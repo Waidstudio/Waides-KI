@@ -139,6 +139,210 @@ export default function EnhancedTradingAcademy() {
     }
   ];
 
+  // Detailed Course Lessons - Risk Management & Capital Preservation
+  const riskManagementLessons = [
+    {
+      id: 1,
+      title: 'Introduction to Risk Management',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the fundamental principles of trading risk management',
+          'Learn the difference between risk and uncertainty in trading',
+          'Identify the key components of a comprehensive risk management plan'
+        ],
+        keyPoints: [
+          'Risk management is about preserving capital, not maximizing profits',
+          'Professional traders focus on managing downside before considering upside',
+          'Risk comes from not knowing what you are doing',
+          'A good risk management plan helps you survive losing streaks'
+        ],
+        summary: 'Risk management is the foundation of successful trading. It involves identifying, analyzing, and taking steps to reduce or control exposure to financial loss. The primary goal is capital preservation, which enables long-term trading success.'
+      }
+    },
+    {
+      id: 2,
+      title: 'Position Sizing Fundamentals',
+      duration: '25 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master the basic principles of position sizing',
+          'Learn to calculate appropriate position sizes for different account sizes',
+          'Understand the relationship between position size and risk tolerance'
+        ],
+        keyPoints: [
+          'Position size determines your potential profit and loss per trade',
+          'Never risk more than 1-2% of your account on a single trade',
+          'Larger positions amplify both gains and losses',
+          'Position sizing should be based on stop loss distance, not gut feeling'
+        ],
+        summary: 'Position sizing is the process of determining how much capital to allocate to each trade. Proper position sizing ensures that no single trade can significantly damage your account, while still allowing for meaningful profits.'
+      }
+    },
+    {
+      id: 3,
+      title: 'The 1% Rule and Risk Per Trade',
+      duration: '18 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the mathematical foundation of the 1% rule',
+          'Learn how the 1% rule protects against catastrophic losses',
+          'Calculate maximum position sizes using the 1% rule'
+        ],
+        keyPoints: [
+          'Risk only 1% of your account balance per trade',
+          'With 1% risk, you can survive 100 consecutive losses',
+          'The 1% rule forces disciplined position sizing',
+          'Adjust position size based on stop loss distance, not market excitement'
+        ],
+        summary: 'The 1% rule is a cornerstone of professional risk management. By risking only 1% of your account per trade, you ensure long-term survival even during extended losing streaks, while maintaining the potential for substantial gains.'
+      }
+    },
+    {
+      id: 4,
+      title: 'Stop Loss Strategies and Implementation',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master different types of stop loss orders and their applications',
+          'Learn to set stop losses based on technical analysis',
+          'Understand trailing stops and their proper implementation'
+        ],
+        keyPoints: [
+          'Stop losses should be set before entering a trade, not after',
+          'Place stops based on market structure, not arbitrary percentages',
+          'Trailing stops can lock in profits as trades move favorably',
+          'Never move a stop loss further away from your entry price'
+        ],
+        summary: 'Stop loss orders are essential tools for limiting losses and protecting capital. Proper stop loss placement requires understanding market structure, volatility, and the specific characteristics of each trading setup.'
+      }
+    },
+    {
+      id: 5,
+      title: 'Risk-Reward Ratios and Expectancy',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Calculate and interpret risk-reward ratios for trading setups',
+          'Understand positive expectancy and its importance in trading',
+          'Learn to evaluate trading systems using expectancy calculations'
+        ],
+        keyPoints: [
+          'Minimum risk-reward ratio should be 1:2 for most strategies',
+          'Higher win rates can compensate for lower risk-reward ratios',
+          'Positive expectancy means your system makes money over time',
+          'Focus on trades with favorable risk-reward profiles'
+        ],
+        summary: 'Risk-reward ratios and expectancy calculations help traders evaluate the long-term profitability of their trading strategies. Understanding these concepts is crucial for developing sustainable trading approaches.'
+      }
+    },
+    {
+      id: 6,
+      title: 'Portfolio Diversification and Correlation',
+      duration: '22 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the principles of portfolio diversification in trading',
+          'Learn about asset correlation and its impact on risk',
+          'Apply diversification strategies to reduce overall portfolio risk'
+        ],
+        keyPoints: [
+          'Diversification reduces risk without necessarily reducing returns',
+          'Avoid trading highly correlated assets simultaneously',
+          'Diversify across timeframes, strategies, and asset classes',
+          'True diversification requires understanding correlation coefficients'
+        ],
+        summary: 'Portfolio diversification involves spreading risk across multiple assets, strategies, or timeframes to reduce overall portfolio volatility. Proper diversification can improve risk-adjusted returns significantly.'
+      }
+    },
+    {
+      id: 7,
+      title: 'Drawdown Management and Recovery',
+      duration: '20 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand different types of drawdowns and their implications',
+          'Learn strategies for managing and recovering from drawdowns',
+          'Develop psychological resilience during difficult trading periods'
+        ],
+        keyPoints: [
+          'Drawdowns are inevitable in trading - plan for them',
+          'Maximum drawdown limits help preserve capital',
+          'Recovery from large drawdowns requires exponentially larger gains',
+          'Consider reducing position sizes during drawdown periods'
+        ],
+        summary: 'Drawdown management involves preparing for and responding to periods of losses. Effective drawdown strategies help traders maintain their capital and psychological well-being during challenging market conditions.'
+      }
+    },
+    {
+      id: 8,
+      title: 'Kelly Criterion and Optimal Position Sizing',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the Kelly Criterion formula and its applications',
+          'Learn to calculate optimal position sizes using historical data',
+          'Recognize the limitations and practical applications of Kelly sizing'
+        ],
+        keyPoints: [
+          'Kelly Criterion maximizes long-term growth rate',
+          'Full Kelly sizing can be too aggressive for most traders',
+          'Fractional Kelly (25-50%) provides more conservative approach',
+          'Kelly requires accurate estimates of win rate and average win/loss'
+        ],
+        summary: 'The Kelly Criterion provides a mathematical approach to optimal position sizing based on your trading system\'s historical performance. While powerful, it should be applied conservatively in practice.'
+      }
+    },
+    {
+      id: 9,
+      title: 'Market Volatility and Risk Adjustment',
+      duration: '18 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand how market volatility affects trading risk',
+          'Learn to adjust position sizes based on volatility conditions',
+          'Apply volatility-based risk management techniques'
+        ],
+        keyPoints: [
+          'Higher volatility requires smaller position sizes',
+          'Use Average True Range (ATR) to measure volatility',
+          'Volatility clustering means volatile periods tend to continue',
+          'Adjust stop losses and position sizes for current market conditions'
+        ],
+        summary: 'Market volatility significantly impacts trading risk. Successful traders adjust their position sizing and risk management approach based on current volatility conditions to maintain consistent risk exposure.'
+      }
+    },
+    {
+      id: 10,
+      title: 'Building a Complete Risk Management System',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Integrate all risk management components into a cohesive system',
+          'Develop a personal risk management plan and trading rules',
+          'Create procedures for monitoring and adjusting risk parameters'
+        ],
+        keyPoints: [
+          'Document your risk management rules and follow them consistently',
+          'Regular review and adjustment of risk parameters is essential',
+          'Combine multiple risk management techniques for robust protection',
+          'Risk management should evolve with your trading experience and market conditions'
+        ],
+        summary: 'A complete risk management system integrates position sizing, stop losses, diversification, and drawdown management into a comprehensive framework. This system should be documented, tested, and consistently applied to achieve long-term trading success.'
+      }
+    }
+  ];
+
   // Detailed Course Lessons - Technical Analysis Mastery
   const technicalAnalysisLessons = [
     {
@@ -1129,6 +1333,214 @@ export default function EnhancedTradingAcademy() {
                 ))}
               </div>
             </>
+          )}
+
+          {/* Risk Management & Capital Preservation Course Detail View */}
+          {selectedCourse === 'risk-management' && (
+            <div className="space-y-6">
+              {/* Course Header with Back Button */}
+              <Card className="bg-gradient-to-r from-red-900 to-orange-900 border-red-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-white text-2xl flex items-center space-x-3">
+                        <Shield className="h-8 w-8" />
+                        <span>Risk Management & Capital Preservation</span>
+                        <Badge className="bg-orange-600 text-white">INTERMEDIATE</Badge>
+                      </CardTitle>
+                      <CardDescription className="text-orange-200 mt-2">
+                        Protect your capital with advanced risk management techniques
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCourse(null);
+                        setSelectedLesson(null);
+                      }}
+                      className="text-white border-white hover:bg-white hover:text-red-900"
+                    >
+                      ← Back to Courses
+                    </Button>
+                  </div>
+                  <div className="flex items-center space-x-6 mt-4 text-orange-200">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>3 hours total</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="h-4 w-4" />
+                      <span>10 lessons</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>{Object.keys(lessonProgress).length}/10 completed</span>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Lesson List or Lesson Detail */}
+              {!selectedLesson && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {riskManagementLessons.map((lesson) => (
+                    <Card 
+                      key={lesson.id} 
+                      className={`bg-gray-800 border-gray-700 hover:border-red-500 transition-all duration-300 cursor-pointer ${
+                        lessonProgress[lesson.id] ? 'border-green-500' : ''
+                      }`}
+                      onClick={() => setSelectedLesson(lesson.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-white text-lg flex items-center space-x-2">
+                              <span className="text-red-500">#{lesson.id}</span>
+                              <span>{lesson.title}</span>
+                              {lessonProgress[lesson.id] && <Badge className="bg-green-600">✓ Completed</Badge>}
+                            </CardTitle>
+                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{lesson.duration}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.type}
+                              </Badge>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Individual Lesson Detail */}
+              {selectedLesson && (
+                <div className="space-y-6">
+                  {(() => {
+                    const lesson = riskManagementLessons.find(l => l.id === selectedLesson);
+                    if (!lesson) return null;
+                    
+                    return (
+                      <>
+                        <Card className="bg-gray-800 border-gray-700">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <CardTitle className="text-white text-xl flex items-center space-x-2">
+                                  <span className="text-red-500">Lesson {lesson.id}:</span>
+                                  <span>{lesson.title}</span>
+                                </CardTitle>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{lesson.duration}</span>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {lesson.type}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedLesson(null)}
+                                className="text-white border-gray-600 hover:bg-gray-700"
+                              >
+                                ← Back to Lessons
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Learning Objectives */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                                <span>Learning Objectives</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.objectives.map((objective, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-red-500 mt-1">•</span>
+                                    <span>{objective}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Key Points */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Eye className="h-5 w-5 text-green-500" />
+                                <span>Key Points</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.keyPoints.map((point, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-green-500 mt-1">✓</span>
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Summary */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <FileText className="h-5 w-5 text-red-500" />
+                                <span>Summary</span>
+                              </h3>
+                              <p className="text-gray-300 leading-relaxed">
+                                {lesson.content.summary}
+                              </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                              <div className="flex items-center space-x-3">
+                                {lesson.id > 1 && (
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedLesson(lesson.id - 1)}
+                                    className="text-white border-gray-600 hover:bg-gray-700"
+                                  >
+                                    ← Previous Lesson
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Button
+                                  onClick={() => {
+                                    setLessonProgress(prev => ({ ...prev, [lesson.id]: true }));
+                                  }}
+                                  className={`${
+                                    lessonProgress[lesson.id] 
+                                      ? 'bg-green-600 hover:bg-green-700' 
+                                      : 'bg-red-600 hover:bg-red-700'
+                                  }`}
+                                >
+                                  {lessonProgress[lesson.id] ? '✓ Completed' : 'Mark Complete'}
+                                </Button>
+                                {lesson.id < riskManagementLessons.length && (
+                                  <Button
+                                    onClick={() => setSelectedLesson(lesson.id + 1)}
+                                    className="bg-orange-600 hover:bg-orange-700"
+                                  >
+                                    Next Lesson →
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Technical Analysis Mastery Course Detail View */}
