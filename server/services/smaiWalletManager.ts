@@ -411,4 +411,43 @@ export class SmaiWalletManager {
       console.error('❌ Error updating bot performance:', error);
     }
   }
+
+  /**
+   * Deposit funds to wallet
+   */
+  async deposit(userId: string, amount: number): Promise<any> {
+    try {
+      const walletResult = await this.getWallet(userId);
+      if (!walletResult.success) {
+        return walletResult;
+      }
+
+      const currentBalance = parseFloat(walletResult.wallet.balance);
+      const newBalance = currentBalance + amount;
+
+      await db
+        .update(smaiWallets)
+        .set({
+          balance: newBalance.toString(),
+          updatedAt: new Date()
+        })
+        .where(eq(smaiWallets.userId, userId));
+
+      console.log(`💰 Deposit processed for ${userId}: ${currentBalance} → ${newBalance} (+${amount})`);
+
+      return {
+        success: true,
+        previousBalance: currentBalance,
+        newBalance,
+        depositAmount: amount,
+        message: 'Deposit processed successfully'
+      };
+    } catch (error) {
+      console.error('❌ Error processing deposit:', error);
+      return {
+        success: false,
+        error: 'Failed to process deposit'
+      };
+    }
+  }
 }

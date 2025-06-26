@@ -14725,6 +14725,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/smai-wallet/deposit', async (req, res) => {
+    try {
+      const { SmaiWalletManager } = await import('./services/smaiWalletManager.js');
+      const manager = SmaiWalletManager.getInstance();
+      const { userId, amount } = req.body;
+      
+      if (!userId || amount <= 0) {
+        return res.status(400).json({ error: 'Valid userId and positive amount required' });
+      }
+      
+      const result = await manager.deposit(userId, amount);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to process deposit' });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {
