@@ -181,13 +181,13 @@ export default function WaidesKIVisionPortal() {
         <div className="flex items-center gap-3">
           {/* Wallet Balance Bubble */}
           <div className="bg-gray-800/60 backdrop-blur-sm rounded-full px-3 py-1 text-sm border border-purple-500/30">
-            💰 ${walletData?.wallet?.balance ? parseFloat(walletData.wallet.balance).toFixed(2) : '0.00'}
+            💰 ${(walletData as any)?.wallet?.balance ? parseFloat((walletData as any).wallet.balance).toFixed(2) : '0.00'}
           </div>
           
           {/* ETH Price Bubble */}
-          {ethData?.ethData?.price && (
+          {(ethData as any)?.ethData?.price && (
             <div className="bg-gray-800/60 backdrop-blur-sm rounded-full px-3 py-1 text-sm border border-green-500/30">
-              📈 ETH ${ethData.ethData.price.toFixed(2)}
+              📈 ETH ${typeof (ethData as any).ethData.price === 'number' ? (ethData as any).ethData.price.toFixed(2) : (ethData as any).ethData.price}
             </div>
           )}
           
@@ -347,7 +347,7 @@ export default function WaidesKIVisionPortal() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .stars {
           background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='star' cx='50%25' cy='50%25' r='1px'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='1'/%3E%3Cstop offset='100%25' stop-color='%23ffffff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='25' cy='25' r='1' fill='url(%23star)'/%3E%3Ccircle cx='75' cy='75' r='0.5' fill='url(%23star)'/%3E%3Ccircle cx='50' cy='10' r='0.5' fill='url(%23star)'/%3E%3Ccircle cx='10' cy='50' r='0.5' fill='url(%23star)'/%3E%3Ccircle cx='90' cy='30' r='0.5' fill='url(%23star)'/%3E%3C/svg%3E") repeat;
           animation: twinkle 3s infinite;

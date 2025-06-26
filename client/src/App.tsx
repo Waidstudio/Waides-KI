@@ -103,7 +103,8 @@ function Router() {
 
       <main>
         <Switch>
-          <Route path="/" component={Dashboard} />
+          <Route path="/" component={WaidesKIVisionPortal} />
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
