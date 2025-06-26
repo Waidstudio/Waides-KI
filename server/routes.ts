@@ -24,6 +24,7 @@ import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
 import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKIChatService } from './services/waidesKIChatService.js';
+import { waidesKICommandProcessor } from './services/waidesKICommandProcessor.js';
 import chatOracleService from './services/chatOracleService.js';
 import { WaidesKIProphecyLogService } from './services/prophecyLogService.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
