@@ -6,6 +6,46 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  biometricHash: text("biometric_hash"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const wallets = pgTable("wallets", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  localBalance: numeric("local_balance", { precision: 15, scale: 2 }).default("0.00"),
+  smaiBalance: numeric("smai_balance", { precision: 15, scale: 2 }).default("0.00"),
+  locked: numeric("locked", { precision: 15, scale: 2 }).default("0.00"),
+  lockedUntil: timestamp("locked_until"),
+  karmaScore: integer("karma_score").default(100),
+  tradeEnergy: integer("trade_energy").default(100),
+  divineApproval: boolean("divine_approval").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const memories = pgTable("memories", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  memoryData: jsonb("memory_data").notNull(),
+  memoryType: text("memory_type").notNull(), // 'trade', 'decision', 'konslang', 'biometric'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const trades = pgTable("trades", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  walletId: integer("wallet_id").notNull().references(() => wallets.id),
+  tradeType: text("trade_type").notNull(), // 'BUY', 'SELL'
+  symbol: text("symbol").notNull(), // 'ETH/USDT'
+  amount: numeric("amount", { precision: 15, scale: 8 }).notNull(),
+  price: numeric("price", { precision: 15, scale: 8 }).notNull(),
+  status: text("status").notNull().default("PENDING"), // 'PENDING', 'EXECUTED', 'FAILED', 'CANCELLED'
+  botEngine: text("bot_engine"), // 'WAIDBOT', 'WAIDBOT_PRO', 'MANUAL'
+  memorySignature: text("memory_signature"),
+  konsLangAdvice: text("konslang_advice"),
+  executedAt: timestamp("executed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const apiKeys = pgTable("api_keys", {
@@ -87,6 +127,31 @@ export type InsertSignal = z.infer<typeof insertSignalSchema>;
 export type Signal = typeof signals.$inferSelect;
 export type InsertCandlestick = z.infer<typeof insertCandlestickSchema>;
 export type Candlestick = typeof candlesticks.$inferSelect;
+
+// New comprehensive schemas for wallet system
+export const insertWalletSchema = createInsertSchema(wallets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMemorySchema = createInsertSchema(memories).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTradeSchema = createInsertSchema(trades).omit({
+  id: true,
+  createdAt: true,
+  executedAt: true,
+});
+
+export type InsertWallet = z.infer<typeof insertWalletSchema>;
+export type Wallet = typeof wallets.$inferSelect;
+export type InsertMemory = z.infer<typeof insertMemorySchema>;
+export type Memory = typeof memories.$inferSelect;
+export type InsertTrade = z.infer<typeof insertTradeSchema>;
+export type Trade = typeof trades.$inferSelect;
 
 // SmaiWallet - Core wallet system for autonomous wealth management
 export const smaiWallets = pgTable('smai_wallets', {

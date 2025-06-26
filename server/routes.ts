@@ -218,6 +218,12 @@ import { waidesKIModelTrainer } from './services/waidesKIModelTrainer';
 import { waidesKIModelHealthMonitor } from './services/waidesKIModelHealthMonitor';
 import { waidesKIABTestingEngine } from './services/waidesKIABTestingEngine';
 import { GamifiedLearningSystem } from './services/gamifiedLearning';
+import { konsLangMemoryController } from './services/konsLangMemoryController';
+import { db } from './storage';
+import { wallets, memories, trades, users } from '../shared/schema';
+import { eq, and, desc, sql } from 'drizzle-orm';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server
@@ -300,6 +306,214 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize Question Answerer with Bot Memory
   const questionAnswerer = new WaidesKIQuestionAnswerer();
+
+  // Authentication middleware
+  const auth = (req: any, res: any, next: any) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+    
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'waides-ki-secret') as any;
+      req.user = decoded;
+      next();
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+  };
+
+  // ============================================================
+  // COMPREHENSIVE WALLET & MEMORY API ROUTES (Following Roadmap)
+  // ============================================================
+
+  // GET /api/wallet - Fetch wallet balances and status
+  app.get('/api/wallet', auth, async (req, res) => {
+    try {
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        // Create default wallet for new user
+        const newWallet = await db.insert(wallets).values({
+          userId: req.user.id,
+          localBalance: '1000.00', // Default starting balance
+          smaiBalance: '500.00',   // Default SMAI tokens
+          locked: '0.00',
+          karmaScore: 100,
+          tradeEnergy: 100,
+          divineApproval: true
+        }).returning();
+        
+        return res.json(newWallet[0]);
+      }
+      
+      res.json(userWallet[0]);
+    } catch (error) {
+      console.error('Error fetching wallet:', error);
+      res.status(500).json({ error: 'Failed to fetch wallet data' });
+    }
+  });
+
+  // POST /api/wallet/fund - Add local funds to wallet
+  app.post('/api/wallet/fund', auth, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      const updated = await db.update(wallets)
+        .set({
+          localBalance: sql`local_balance + ${amount}`,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id))
+        .returning();
+
+      if (!updated.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      res.json({ success: true, newBalance: updated[0].localBalance });
+    } catch (error) {
+      console.error('Error funding wallet:', error);
+      res.status(500).json({ error: 'Failed to fund wallet' });
+    }
+  });
+
+  // POST /api/wallet/convert - Convert local currency to SMAI tokens
+  app.post('/api/wallet/convert', auth, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const conversionRate = 0.5; // 1 local = 0.5 SMAI
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const localBalance = parseFloat(userWallet[0].localBalance.toString());
+      
+      if (localBalance < amount) {
+        return res.status(400).json({ error: 'Insufficient local balance' });
+      }
+
+      const smaiAmount = amount * conversionRate;
+
+      const updated = await db.update(wallets)
+        .set({
+          localBalance: sql`local_balance - ${amount}`,
+          smaiBalance: sql`smai_balance + ${smaiAmount}`,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id))
+        .returning();
+
+      res.json({ 
+        success: true, 
+        convertedAmount: smaiAmount,
+        newLocalBalance: updated[0].localBalance,
+        newSmaiBalance: updated[0].smaiBalance
+      });
+    } catch (error) {
+      console.error('Error converting currency:', error);
+      res.status(500).json({ error: 'Failed to convert currency' });
+    }
+  });
+
+  // POST /api/wallet/lock - Lock SMAI tokens for trading
+  app.post('/api/wallet/lock', auth, async (req, res) => {
+    try {
+      const { amount, durationMinutes = 60 } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const smaiBalance = parseFloat(userWallet[0].smaiBalance.toString());
+      const lockedAmount = parseFloat(userWallet[0].locked.toString());
+      const availableBalance = smaiBalance - lockedAmount;
+      
+      if (availableBalance < amount) {
+        return res.status(400).json({ error: 'Insufficient available SMAI balance' });
+      }
+
+      const lockUntil = new Date();
+      lockUntil.setMinutes(lockUntil.getMinutes() + durationMinutes);
+
+      const updated = await db.update(wallets)
+        .set({
+          locked: sql`locked + ${amount}`,
+          lockedUntil: lockUntil,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id))
+        .returning();
+
+      res.json({ 
+        success: true, 
+        lockedAmount: amount,
+        lockUntil: lockUntil,
+        totalLocked: updated[0].locked
+      });
+    } catch (error) {
+      console.error('Error locking funds:', error);
+      res.status(500).json({ error: 'Failed to lock funds' });
+    }
+  });
+
+  // POST /api/wallet/unlock - Unlock SMAI tokens after trade
+  app.post('/api/wallet/unlock', auth, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const lockedAmount = parseFloat(userWallet[0].locked.toString());
+      
+      if (lockedAmount < amount) {
+        return res.status(400).json({ error: 'Cannot unlock more than locked amount' });
+      }
+
+      const updated = await db.update(wallets)
+        .set({
+          locked: sql`locked - ${amount}`,
+          lockedUntil: lockedAmount - amount <= 0 ? null : userWallet[0].lockedUntil,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id))
+        .returning();
+
+      res.json({ 
+        success: true, 
+        unlockedAmount: amount,
+        remainingLocked: updated[0].locked
+      });
+    } catch (error) {
+      console.error('Error unlocking funds:', error);
+      res.status(500).json({ error: 'Failed to unlock funds' });
+    }
+  });
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
