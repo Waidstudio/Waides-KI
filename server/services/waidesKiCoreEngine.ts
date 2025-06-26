@@ -84,7 +84,7 @@ class WaidesKiCoreEngine {
       return {
         price: ethData.price,
         volume: ethData.volume || 0,
-        change: ethData.change24h || 0,
+        change: ethData.priceChange24h || 0,
         marketCap: ethData.marketCap || 0,
         timestamp: Date.now()
       };

@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2 } from 'lucide-react';
+import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings } from 'lucide-react';
+import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 
 interface ChatMessage {
   id: string;
@@ -43,6 +44,7 @@ export default function WaidesKIVisionPortal() {
   const [oracleEnabled, setOracleEnabled] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
+  const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -237,17 +239,53 @@ export default function WaidesKIVisionPortal() {
       {/* Top Status Bar */}
       <div className="relative z-10 flex justify-between items-center p-4 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
         <span className="text-lg font-bold text-purple-300">{formatTime(currentTime)}</span>
-        <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
-        <Button 
-          className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 rounded-lg font-bold"
-          onClick={() => setOracleEnabled(!oracleEnabled)}
-        >
-          {oracleEnabled ? 'Oracle Mode ✦' : 'Get Oracle ✦'}
-        </Button>
+        <div className="flex items-center gap-4">
+          {/* Tab Navigation */}
+          <div className="flex bg-gray-800/60 rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === 'chat'
+                  ? 'bg-purple-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                AI Chat
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('core')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                activeTab === 'core'
+                  ? 'bg-purple-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4" />
+                Heart of Waides Ki
+              </div>
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
+          <Button 
+            className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 rounded-lg font-bold"
+            onClick={() => setOracleEnabled(!oracleEnabled)}
+          >
+            {oracleEnabled ? 'Oracle Mode ✦' : 'Get Oracle ✦'}
+          </Button>
+        </div>
       </div>
 
-      {/* Chat Suggestions */}
-      <div className="relative z-10 flex flex-wrap gap-2 p-4">
+      {/* Tab Content */}
+      {activeTab === 'chat' && (
+        <>
+          {/* Chat Suggestions */}
+          <div className="relative z-10 flex flex-wrap gap-2 p-4">
         {suggestions.map((suggestion, index) => (
           <Button
             key={index}
@@ -325,41 +363,50 @@ export default function WaidesKIVisionPortal() {
         </div>
       </div>
 
-      {/* Chat Input */}
-      <div className="relative z-10 p-4">
-        <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
-          <Input
-            value={currentMessage}
-            onChange={(e) => setCurrentMessage(e.target.value)}
-            placeholder="Ask anything..."
-            className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            disabled={isProcessing}
-          />
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`p-2 rounded-full transition-all ${
-              isListening 
-                ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                : 'hover:bg-purple-500/20 text-purple-400'
-            }`}
-            onClick={startVoiceRecognition}
-            disabled={isProcessing}
-          >
-            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-          </Button>
-          
-          <Button
-            className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
-            onClick={sendMessage}
-            disabled={!currentMessage.trim() || isProcessing}
-          >
-            <Send className="w-5 h-5" />
-          </Button>
+          {/* Chat Input */}
+          <div className="relative z-10 p-4">
+            <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+              <Input
+                value={currentMessage}
+                onChange={(e) => setCurrentMessage(e.target.value)}
+                placeholder="Ask anything..."
+                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                disabled={isProcessing}
+              />
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`p-2 rounded-full transition-all ${
+                  isListening 
+                    ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                    : 'hover:bg-purple-500/20 text-purple-400'
+                }`}
+                onClick={startVoiceRecognition}
+                disabled={isProcessing}
+              >
+                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </Button>
+              
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+                onClick={sendMessage}
+                disabled={!currentMessage.trim() || isProcessing}
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Heart of Waides Ki Core Engine */}
+      {activeTab === 'core' && (
+        <div className="relative z-10 flex-1 mx-4 mb-4 h-[calc(100vh-200px)] overflow-hidden">
+          <WaidesKICoreEnginePanel />
         </div>
-      </div>
+      )}
 
       {/* Action Menu */}
       <div className="relative z-10 mx-4 mb-4">
