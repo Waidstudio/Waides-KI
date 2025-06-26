@@ -4,11 +4,19 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings, MessageCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, 
+  MicOff, Volume2, VolumeX, Heart, Settings, MessageCircle, User, Activity, 
+  Moon, Sun, Waves, Star, Circle, Triangle, Square, Shield
+} from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
 import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine.js';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatMessage {
   id: string;
@@ -61,6 +69,18 @@ export default function WaidesKIVisionPortal() {
   const [speechSupported, setSpeechSupported] = useState(false);
   const [voiceCommand, setVoiceCommand] = useState('');
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
+  
+  // Cosmic AI Enhancement States
+  const [aiPersonality, setAiPersonality] = useState<'spiritual' | 'analytical' | 'creative' | 'balanced'>('balanced');
+  const [voiceSettings, setVoiceSettings] = useState({
+    pitch: 1,
+    rate: 1,
+    volume: 1,
+    enabled: false
+  });
+  const [cosmicMode, setCosmicMode] = useState(false);
+  const [energyLevel, setEnergyLevel] = useState(75);
+  const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [botState, setBotState] = useState<{
     action?: 'wallet' | 'trade' | 'price' | 'open-page' | 'behavior-suggestion' | 'flow' | 'bot-setup';
     page?: string;
@@ -77,6 +97,7 @@ export default function WaidesKIVisionPortal() {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const { smaiBalance, localBalance, transactions, canAffordTrade } = useSmaiWallet();
+  const { toast } = useToast();
 
   // Handle page navigation from recommendations
   const handlePageNavigation = (route: string) => {
@@ -90,6 +111,120 @@ export default function WaidesKIVisionPortal() {
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Initialize speech synthesis and recognition
+  useEffect(() => {
+    // Speech synthesis initialization
+    if ('speechSynthesis' in window) {
+      setSpeechSynthesis(window.speechSynthesis);
+    }
+
+    // Speech recognition initialization  
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        setVoiceCommand('');
+      };
+
+      recognition.onresult = (event: any) => {
+        const command = event.results[0][0].transcript;
+        setVoiceCommand(command);
+        setCurrentMessage(command);
+        setIsVoiceProcessing(true);
+        
+        // Process voice command
+        voiceProcessingMutation.mutate(command);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        setIsVoiceProcessing(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  // Cosmic AI speech synthesis function
+  const speakMessage = (text: string) => {
+    if (!speechSynthesis || !voiceSettings.enabled) return;
+    
+    // Cancel any ongoing speech
+    speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.pitch = voiceSettings.pitch;
+    utterance.rate = voiceSettings.rate;
+    utterance.volume = voiceSettings.volume;
+    
+    // Choose voice based on AI personality
+    const voices = speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Female') || voice.name.includes('Google')
+      ) || voices[0];
+      utterance.voice = preferredVoice;
+    }
+    
+    speechSynthesis.speak(utterance);
+  };
+
+  // Enhanced typeMessage with cosmic features
+  const typeMessageCosmic = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
+    // Safety check for undefined message
+    if (!message || typeof message !== 'string' || message.trim() === '') {
+      console.warn('typeMessage called with invalid message:', message);
+      message = 'I am here to assist you with ETH trading and spiritual guidance. How may I help you?';
+    }
+    
+    setIsTyping(true);
+    setCurrentTypingMessage('');
+    
+    let index = 0;
+    const typeInterval = setInterval(() => {
+      if (index < message.length) {
+        setCurrentTypingMessage(prev => prev + message[index]);
+        index++;
+      } else {
+        clearInterval(typeInterval);
+        setIsTyping(false);
+        
+        const newMessage: ChatMessage = {
+          id: Date.now().toString(),
+          sender: 'waides',
+          message,
+          timestamp: new Date(),
+          source: source as any,
+          confidence,
+          konslangProcessing,
+          reasoning
+        };
+        
+        setMessages(prev => [...prev, newMessage]);
+        setCurrentTypingMessage('');
+        setIsProcessing(false);
+        setShowAudioIcon(true);
+        setTimeout(() => setShowAudioIcon(false), 3000);
+
+        // Speak message if voice is enabled
+        if (voiceSettings.enabled) {
+          speakMessage(message);
+        }
+      }
+    }, cosmicMode ? 15 : 30); // Faster typing in cosmic mode
+  };
 
   const { data: oracleStatus } = useQuery({
     queryKey: ['/api/chat/oracle/status'],
@@ -338,43 +473,8 @@ export default function WaidesKIVisionPortal() {
   });
 
   const typeMessage = (message: string, source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error', confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
-    // Safety check for undefined message
-    if (!message || typeof message !== 'string' || message.trim() === '') {
-      console.warn('typeMessage called with invalid message:', message);
-      // Provide default fallback message
-      message = 'I am here to assist you with ETH trading and spiritual guidance. How may I help you?';
-    }
-    
-    setIsTyping(true);
-    setCurrentTypingMessage('');
-    
-    let index = 0;
-    const typeInterval = setInterval(() => {
-      if (index < message.length) {
-        setCurrentTypingMessage(prev => prev + message[index]);
-        index++;
-      } else {
-        clearInterval(typeInterval);
-        setIsTyping(false);
-        
-        const newMessage: ChatMessage = {
-          id: Date.now().toString(),
-          sender: 'waides',
-          message,
-          timestamp: new Date(),
-          source,
-          confidence,
-          konslangProcessing,
-          reasoning
-        };
-        
-        setMessages(prev => [...prev, newMessage]);
-        setCurrentTypingMessage('');
-        setIsProcessing(false);
-        setShowAudioIcon(true);
-        setTimeout(() => setShowAudioIcon(false), 3000);
-      }
-    }, 30);
+    // Use cosmic enhanced version
+    typeMessageCosmic(message, source, confidence, konslangProcessing, reasoning);
   };
 
   const sendMessage = async () => {
@@ -656,6 +756,70 @@ export default function WaidesKIVisionPortal() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
+          
+          {/* Cosmic AI Controls */}
+          <div className="flex items-center gap-2">
+            {/* AI Personality Selector */}
+            <Select value={aiPersonality} onValueChange={(value: any) => setAiPersonality(value)}>
+              <SelectTrigger className="w-24 h-8 bg-gray-800/60 border-gray-600 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-800 border-gray-600">
+                <SelectItem value="spiritual">
+                  <div className="flex items-center gap-2">
+                    <Star className="w-3 h-3" />
+                    Spiritual
+                  </div>
+                </SelectItem>
+                <SelectItem value="analytical">
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-3 h-3" />
+                    Analytical
+                  </div>
+                </SelectItem>
+                <SelectItem value="creative">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3 h-3" />
+                    Creative
+                  </div>
+                </SelectItem>
+                <SelectItem value="balanced">
+                  <div className="flex items-center gap-2">
+                    <Circle className="w-3 h-3" />
+                    Balanced
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Voice Controls */}
+            <Button
+              onClick={() => setVoiceSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
+              variant="ghost"
+              size="sm"
+              className={`w-8 h-8 p-0 ${
+                voiceSettings.enabled
+                  ? 'bg-purple-600 text-white' 
+                  : 'text-gray-400 hover:bg-gray-700/50'
+              }`}
+            >
+              {voiceSettings.enabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            </Button>
+
+            {/* Cosmic Mode Toggle */}
+            <Button
+              onClick={() => setCosmicMode(!cosmicMode)}
+              variant="ghost"
+              size="sm"
+              className={`w-8 h-8 p-0 ${
+                cosmicMode
+                  ? 'bg-purple-600 text-white animate-pulse' 
+                  : 'text-gray-400 hover:bg-gray-700/50'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+            </Button>
+          </div>
           
           {/* Enhanced Chat Mode Selection */}
           <div className="flex items-center gap-1 bg-gray-800/60 rounded-lg p-1">
