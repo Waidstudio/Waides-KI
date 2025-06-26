@@ -120,7 +120,7 @@ export class WaidesKICommandProcessor {
       waidesKIAutonomousTradeCore.enableAutonomousTrading();
       
       // Get current market data
-      const marketData = await waidesKILiveFeed.getCurrentMarketData();
+      const marketData = await waidesKILiveFeed.getDetailedMarketData();
       const ethPrice = marketData?.price || 2400;
       
       // Calculate trading parameters
