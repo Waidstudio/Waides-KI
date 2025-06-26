@@ -138,6 +138,10 @@ import { waidesKIGuardianFeedbackLoop } from './services/waidesKIGuardianFeedbac
 // WAIDES META-GUARDIAN NETWORK: Self-Governed ETH Holon
 import { waidesKIHolonCouncil } from './services/waidesKIHolonCouncil.js';
 import { waidesKIRoleManager } from './services/waidesKIRoleManager.js';
+// WAIDES FULL ENGINE: Smart Risk Management System
+import { waidesKIFullEngine } from './services/waidesKIFullEngine.js';
+import { waidesKIPerformanceTracker } from './services/waidesKIPerformanceTracker.js';
+import { waidesKIStopLossManager } from './services/waidesKIStopLossManager.js';
 
 
 let ethMonitor: EthMonitor;
