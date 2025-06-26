@@ -221,7 +221,7 @@ import { GamifiedLearningSystem } from './services/gamifiedLearning';
 import { konsLangMemoryController } from './services/konsLangMemoryController';
 import { biometricAuthService } from './services/biometricAuth';
 import { db } from './storage';
-import { wallets, memories, trades, users } from '../shared/schema';
+import { wallets, memories, trades, users, userSettings, userProfiles } from '../shared/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -18498,6 +18498,317 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     } catch (error) {
       console.error('Error updating settings:', error);
       res.status(500).json({ error: 'Failed to update settings' });
+    }
+  });
+
+  // Individual Settings Management Endpoints
+  
+  // Authentication Settings
+  app.put("/api/settings/biometric-auth", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { enabled } = req.body;
+      
+      await db.update(userSettings)
+        .set({ biometricEnabled: enabled, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        biometricEnabled: enabled,
+        message: `Biometric authentication ${enabled ? 'enabled' : 'disabled'}` 
+      });
+    } catch (error) {
+      console.error('Error updating biometric setting:', error);
+      res.status(500).json({ error: 'Failed to update biometric authentication setting' });
+    }
+  });
+
+  app.put("/api/settings/two-factor-auth", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { enabled } = req.body;
+      
+      await db.update(userSettings)
+        .set({ twoFactorEnabled: enabled, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        twoFactorEnabled: enabled,
+        message: `Two-factor authentication ${enabled ? 'enabled' : 'disabled'}` 
+      });
+    } catch (error) {
+      console.error('Error updating two-factor setting:', error);
+      res.status(500).json({ error: 'Failed to update two-factor authentication setting' });
+    }
+  });
+
+  // Session & Data Management
+  app.put("/api/settings/session-timeout", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { timeout } = req.body;
+      
+      // Validate timeout range (5-120 minutes)
+      if (timeout < 5 || timeout > 120) {
+        return res.status(400).json({ error: 'Session timeout must be between 5 and 120 minutes' });
+      }
+      
+      await db.update(userSettings)
+        .set({ sessionTimeout: timeout, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        sessionTimeout: timeout,
+        message: `Session timeout updated to ${timeout} minutes` 
+      });
+    } catch (error) {
+      console.error('Error updating session timeout:', error);
+      res.status(500).json({ error: 'Failed to update session timeout' });
+    }
+  });
+
+  app.put("/api/settings/data-retention", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { days } = req.body;
+      
+      // Validate retention period (7-3650 days)
+      if (days < 7 || days > 3650) {
+        return res.status(400).json({ error: 'Data retention must be between 7 and 3650 days' });
+      }
+      
+      await db.update(userSettings)
+        .set({ dataRetention: days, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        dataRetention: days,
+        message: `Data retention updated to ${days} days` 
+      });
+    } catch (error) {
+      console.error('Error updating data retention:', error);
+      res.status(500).json({ error: 'Failed to update data retention setting' });
+    }
+  });
+
+  // Notification Settings
+  app.put("/api/settings/email-notifications", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { enabled } = req.body;
+      
+      await db.update(userSettings)
+        .set({ emailNotifications: enabled, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        emailNotifications: enabled,
+        message: `Email notifications ${enabled ? 'enabled' : 'disabled'}` 
+      });
+    } catch (error) {
+      console.error('Error updating email notifications:', error);
+      res.status(500).json({ error: 'Failed to update email notifications setting' });
+    }
+  });
+
+  app.put("/api/settings/push-notifications", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { enabled } = req.body;
+      
+      await db.update(userSettings)
+        .set({ pushNotifications: enabled, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        pushNotifications: enabled,
+        message: `Push notifications ${enabled ? 'enabled' : 'disabled'}` 
+      });
+    } catch (error) {
+      console.error('Error updating push notifications:', error);
+      res.status(500).json({ error: 'Failed to update push notifications setting' });
+    }
+  });
+
+  app.put("/api/settings/news-alerts", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { enabled } = req.body;
+      
+      await db.update(userSettings)
+        .set({ newsAlerts: enabled, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        newsAlerts: enabled,
+        message: `News alerts ${enabled ? 'enabled' : 'disabled'}` 
+      });
+    } catch (error) {
+      console.error('Error updating news alerts:', error);
+      res.status(500).json({ error: 'Failed to update news alerts setting' });
+    }
+  });
+
+  // API Access Settings
+  app.put("/api/settings/api-access", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { enabled } = req.body;
+      
+      await db.update(userSettings)
+        .set({ apiAccess: enabled, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        apiAccess: enabled,
+        message: `API access ${enabled ? 'enabled' : 'disabled'}` 
+      });
+    } catch (error) {
+      console.error('Error updating API access:', error);
+      res.status(500).json({ error: 'Failed to update API access setting' });
+    }
+  });
+
+  app.put("/api/settings/webhook-url", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const { url } = req.body;
+      
+      // Validate URL format if provided
+      if (url && url.trim() !== '') {
+        try {
+          new URL(url);
+        } catch {
+          return res.status(400).json({ error: 'Invalid webhook URL format' });
+        }
+      }
+      
+      const webhookUrl = url && url.trim() !== '' ? url : null;
+      
+      await db.update(userSettings)
+        .set({ webhookUrl, updatedAt: new Date() })
+        .where(eq(userSettings.userId, userId));
+      
+      res.json({ 
+        success: true, 
+        webhookUrl,
+        message: webhookUrl ? 'Webhook URL updated' : 'Webhook URL removed' 
+      });
+    } catch (error) {
+      console.error('Error updating webhook URL:', error);
+      res.status(500).json({ error: 'Failed to update webhook URL' });
+    }
+  });
+
+  // Get individual setting values
+  app.get("/api/settings/security", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      
+      const settings = await db.select({
+        biometricEnabled: userSettings.biometricEnabled,
+        twoFactorEnabled: userSettings.twoFactorEnabled,
+        sessionTimeout: userSettings.sessionTimeout,
+        dataRetention: userSettings.dataRetention,
+        ipWhitelist: userSettings.ipWhitelist
+      }).from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
+      
+      res.json(settings[0] || {
+        biometricEnabled: false,
+        twoFactorEnabled: false,
+        sessionTimeout: 30,
+        dataRetention: 365,
+        ipWhitelist: []
+      });
+    } catch (error) {
+      console.error('Error fetching security settings:', error);
+      res.status(500).json({ error: 'Failed to fetch security settings' });
+    }
+  });
+
+  app.get("/api/settings/notifications", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      
+      const settings = await db.select({
+        emailNotifications: userSettings.emailNotifications,
+        pushNotifications: userSettings.pushNotifications,
+        tradeAlerts: userSettings.tradeAlerts,
+        priceAlerts: userSettings.priceAlerts,
+        newsAlerts: userSettings.newsAlerts
+      }).from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
+      
+      res.json(settings[0] || {
+        emailNotifications: true,
+        pushNotifications: true,
+        tradeAlerts: true,
+        priceAlerts: true,
+        newsAlerts: false
+      });
+    } catch (error) {
+      console.error('Error fetching notification settings:', error);
+      res.status(500).json({ error: 'Failed to fetch notification settings' });
+    }
+  });
+
+  app.get("/api/settings/api", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      
+      const settings = await db.select({
+        apiAccess: userSettings.apiAccess,
+        webhookUrl: userSettings.webhookUrl,
+        betaFeatures: userSettings.betaFeatures,
+        developerMode: userSettings.developerMode
+      }).from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
+      
+      res.json(settings[0] || {
+        apiAccess: false,
+        webhookUrl: null,
+        betaFeatures: false,
+        developerMode: false
+      });
+    } catch (error) {
+      console.error('Error fetching API settings:', error);
+      res.status(500).json({ error: 'Failed to fetch API settings' });
+    }
+  });
+
+  // Bulk update for multiple settings
+  app.put("/api/settings/bulk", async (req, res) => {
+    try {
+      const userId = 1; // This would come from authenticated session
+      const updates = req.body;
+      
+      // Remove protected fields
+      delete updates.id;
+      delete updates.userId;
+      delete updates.createdAt;
+      
+      updates.updatedAt = new Date();
+      
+      await db.update(userSettings)
+        .set(updates)
+        .where(eq(userSettings.userId, userId));
+      
+      const updatedSettings = await db.select().from(userSettings).where(eq(userSettings.userId, userId)).limit(1);
+      
+      res.json({ 
+        success: true, 
+        settings: updatedSettings[0],
+        message: 'Settings updated successfully' 
+      });
+    } catch (error) {
+      console.error('Error bulk updating settings:', error);
+      res.status(500).json({ error: 'Failed to bulk update settings' });
     }
   });
 
