@@ -17211,98 +17211,104 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
 
   // ========== WALLET MANAGEMENT API ==========
 
-  // Get wallet balance and status
+  // Get SmaiSika wallet balance and status
   app.get('/api/smai-wallet', auth, async (req, res) => {
     try {
       const userId = req.user.id;
       const walletResult = await db.select()
-        .from(wallets)
-        .where(eq(wallets.userId, userId))
+        .from(smaiWallets)
+        .where(eq(smaiWallets.userId, userId))
         .limit(1);
 
       if (!walletResult.length) {
-        // Create wallet if it doesn't exist
-        const newWallet = await db.insert(wallets)
+        // Create SmaiSika wallet if it doesn't exist
+        const newWallet = await db.insert(smaiWallets)
           .values({
             userId,
-            localBalance: "0.00",
-            smaiBalance: "1000.00", // Default starting balance
-            locked: "0.00"
+            balance: "1000.00", // Default starting balance
+            lockedAmount: "0.00",
+            tradeEnergy: 100,
+            karmaScore: 100,
+            spiritualLevel: 1,
+            divineApproval: 75
           })
           .returning();
         
         return res.json({
           success: true,
           wallet: {
-            localBalance: parseFloat(newWallet[0].localBalance || "0"),
-            smaiBalance: parseFloat(newWallet[0].smaiBalance || "0"),
-            locked: parseFloat(newWallet[0].locked || "0"),
-            lockedUntil: newWallet[0].lockedUntil,
-            karmaScore: newWallet[0].karmaScore,
+            balance: parseFloat(newWallet[0].balance),
+            lockedAmount: parseFloat(newWallet[0].lockedAmount),
+            available: parseFloat(newWallet[0].balance) - parseFloat(newWallet[0].lockedAmount),
             tradeEnergy: newWallet[0].tradeEnergy,
+            karmaScore: newWallet[0].karmaScore,
+            spiritualLevel: newWallet[0].spiritualLevel,
             divineApproval: newWallet[0].divineApproval
           }
         });
       }
 
       const wallet = walletResult[0];
+      const available = parseFloat(wallet.balance) - parseFloat(wallet.lockedAmount);
+      
       res.json({
         success: true,
         wallet: {
-          localBalance: parseFloat(wallet.localBalance || "0"),
-          smaiBalance: parseFloat(wallet.smaiBalance || "0"),
-          locked: parseFloat(wallet.locked || "0"),
-          lockedUntil: wallet.lockedUntil,
-          karmaScore: wallet.karmaScore,
+          balance: parseFloat(wallet.balance),
+          lockedAmount: parseFloat(wallet.lockedAmount),
+          available: Math.max(0, available),
           tradeEnergy: wallet.tradeEnergy,
+          karmaScore: wallet.karmaScore,
+          spiritualLevel: wallet.spiritualLevel,
           divineApproval: wallet.divineApproval
         }
       });
     } catch (error) {
-      console.error('Wallet fetch error:', error);
-      res.status(500).json({ error: 'Failed to fetch wallet data' });
+      console.error('SmaiWallet fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch SmaiSika wallet data' });
     }
   });
 
   // Lock funds for trading
-  app.post('/api/wallet/lock', auth, async (req, res) => {
+  app.post('/api/smai-wallet/lock', auth, async (req, res) => {
     try {
       const userId = req.user.id;
-      const { amount, until } = req.body;
+      const { amount } = req.body;
 
       if (!amount || amount <= 0) {
         return res.status(400).json({ error: 'Invalid amount' });
       }
 
       const walletResult = await db.select()
-        .from(wallets)
-        .where(eq(wallets.userId, userId))
+        .from(smaiWallets)
+        .where(eq(smaiWallets.userId, userId))
         .limit(1);
 
       if (!walletResult.length) {
-        return res.status(404).json({ error: 'Wallet not found' });
+        return res.status(404).json({ error: 'SmaiSika wallet not found' });
       }
 
       const wallet = walletResult[0];
-      const currentBalance = parseFloat(wallet.smaiBalance || "0");
+      const currentBalance = parseFloat(wallet.balance);
+      const currentLocked = parseFloat(wallet.lockedAmount);
+      const available = currentBalance - currentLocked;
       
-      if (currentBalance < amount) {
-        return res.status(400).json({ error: 'Insufficient balance' });
+      if (available < amount) {
+        return res.status(400).json({ error: 'Insufficient available balance' });
       }
 
       // Lock the funds
-      await db.update(wallets)
+      await db.update(smaiWallets)
         .set({
-          smaiBalance: (currentBalance - amount).toString(),
-          locked: (parseFloat(wallet.locked || "0") + amount).toString(),
-          lockedUntil: until ? new Date(until) : null
+          lockedAmount: (currentLocked + amount).toString()
         })
-        .where(eq(wallets.userId, userId));
+        .where(eq(smaiWallets.userId, userId));
 
       res.json({ 
         success: true, 
         message: `₭${amount} locked for trading`,
-        lockedAmount: amount
+        lockedAmount: amount,
+        remainingAvailable: available - amount
       });
     } catch (error) {
       console.error('Lock funds error:', error);
@@ -17310,48 +17316,39 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
-  // Unlock funds (if time has passed or emergency unlock)
-  app.post('/api/wallet/unlock', auth, async (req, res) => {
+  // Unlock funds
+  app.post('/api/smai-wallet/unlock', auth, async (req, res) => {
     try {
       const userId = req.user.id;
-      const now = new Date();
 
       const walletResult = await db.select()
-        .from(wallets)
-        .where(eq(wallets.userId, userId))
+        .from(smaiWallets)
+        .where(eq(smaiWallets.userId, userId))
         .limit(1);
 
       if (!walletResult.length) {
-        return res.status(404).json({ error: 'Wallet not found' });
+        return res.status(404).json({ error: 'SmaiSika wallet not found' });
       }
 
       const wallet = walletResult[0];
-      const lockedAmount = parseFloat(wallet.locked || "0");
+      const lockedAmount = parseFloat(wallet.lockedAmount);
       
-      // Check if unlock is allowed
-      if (wallet.lockedUntil && wallet.lockedUntil > now) {
-        return res.status(400).json({ 
-          error: 'Funds still locked until ' + wallet.lockedUntil.toISOString() 
-        });
-      }
-
       if (lockedAmount <= 0) {
         return res.status(400).json({ error: 'No funds are locked' });
       }
 
       // Unlock the funds
-      await db.update(wallets)
+      await db.update(smaiWallets)
         .set({
-          smaiBalance: (parseFloat(wallet.smaiBalance || "0") + lockedAmount).toString(),
-          locked: "0.00",
-          lockedUntil: null
+          lockedAmount: "0.00"
         })
-        .where(eq(wallets.userId, userId));
+        .where(eq(smaiWallets.userId, userId));
 
       res.json({ 
         success: true, 
         message: `₭${lockedAmount} unlocked`,
-        unlockedAmount: lockedAmount
+        unlockedAmount: lockedAmount,
+        newAvailable: parseFloat(wallet.balance)
       });
     } catch (error) {
       console.error('Unlock funds error:', error);
@@ -17362,7 +17359,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   // ========== MORAL TRADING ENGINE API ==========
 
   // Execute trade with moral and memory checks
-  app.post('/api/trade', auth, async (req, res) => {
+  app.post('/api/smai-trade', auth, async (req: any, res: any) => {
     try {
       const userId = req.user.id;
       const { amount, type = 'BUY', pair = 'ETH/USDT' } = req.body;
@@ -17372,12 +17369,12 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
       
       // Check if user has too many consecutive losses (moral block)
       if (memory?.trade?.consecutiveLosses >= 3) {
-        await konsLangMemoryController.appendMemory(userId, 'decision', {
+        await konsLangMemoryController.appendMemory(userId, 'decision', JSON.stringify({
           action: 'trade_blocked',
           reason: 'excessive_losses',
           moralityImpact: -10,
           timestamp: Date.now()
-        });
+        }));
         
         return res.json({ 
           status: 'blocked', 
@@ -17386,18 +17383,18 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
         });
       }
 
-      // Check wallet and locked funds
+      // Check SmaiSika wallet and locked funds
       const walletResult = await db.select()
-        .from(wallets)
-        .where(eq(wallets.userId, userId))
+        .from(smaiWallets)
+        .where(eq(smaiWallets.userId, userId))
         .limit(1);
 
       if (!walletResult.length) {
-        return res.status(404).json({ error: 'Wallet not found' });
+        return res.status(404).json({ error: 'SmaiSika wallet not found' });
       }
 
       const wallet = walletResult[0];
-      const lockedAmount = parseFloat(wallet.locked || "0");
+      const lockedAmount = parseFloat(wallet.lockedAmount);
 
       if (lockedAmount <= 0) {
         return res.status(400).json({ 
@@ -17421,37 +17418,33 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
       const profit = lockedAmount * profitMultiplier;
       const finalAmount = lockedAmount + profit;
 
-      // Record trade in database
-      const tradeRecord = await db.insert(trades)
+      // Record trade in trade history
+      await db.insert(tradeHistory)
         .values({
           userId,
           type,
           amount: lockedAmount.toString(),
-          pair,
-          confidence: Math.floor(spiritualAlignment * 100),
-          strategy: 'moral_trading',
+          symbol: pair,
           status: tradeSuccess ? 'completed' : 'failed',
           executedPrice: (2400 + Math.random() * 100).toString(),
-          profit: profit.toString(),
-          completedAt: new Date()
-        })
-        .returning();
+          profit: profit.toString()
+        });
 
-      // Update wallet with results
-      await db.update(wallets)
+      // Update SmaiSika wallet with results
+      const newBalance = Math.max(0, parseFloat(wallet.balance) - lockedAmount + finalAmount);
+      await db.update(smaiWallets)
         .set({
-          smaiBalance: Math.max(0, finalAmount).toString(),
-          locked: "0.00",
-          lockedUntil: null,
+          balance: newBalance.toString(),
+          lockedAmount: "0.00",
           karmaScore: tradeSuccess ? 
-            Math.min(150, (wallet.karmaScore || 100) + 5) : 
-            Math.max(50, (wallet.karmaScore || 100) - 3),
-          tradeEnergy: Math.max(20, (wallet.tradeEnergy || 100) - 10)
+            Math.min(150, wallet.karmaScore + 5) : 
+            Math.max(50, wallet.karmaScore - 3),
+          tradeEnergy: Math.max(20, wallet.tradeEnergy - 10)
         })
-        .where(eq(wallets.userId, userId));
+        .where(eq(smaiWallets.userId, userId));
 
       // Update memory with trade outcome
-      await konsLangMemoryController.appendMemory(userId, 'trade', {
+      await konsLangMemoryController.appendMemory(userId, 'trade', JSON.stringify({
         lastResult: tradeSuccess ? 'profit' : 'loss',
         consecutiveLosses: tradeSuccess ? 0 : (memory?.trade?.consecutiveLosses || 0) + 1,
         consecutiveWins: tradeSuccess ? (memory?.trade?.consecutiveWins || 0) + 1 : 0,
@@ -17460,14 +17453,14 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
         moralityScore: tradeSuccess ? 
           Math.min(150, (memory?.trade?.moralityScore || 100) + 2) : 
           Math.max(50, (memory?.trade?.moralityScore || 100) - 5)
-      });
+      }));
 
       res.json({ 
         status: 'completed', 
         success: tradeSuccess,
         profit: parseFloat(profit.toFixed(2)),
         finalAmount: parseFloat(finalAmount.toFixed(2)),
-        trade: tradeRecord[0],
+        newBalance: newBalance,
         karmaImpact: tradeSuccess ? '+5' : '-3',
         message: tradeSuccess ? 
           'Trade blessed by divine prosperity!' : 
@@ -17481,25 +17474,25 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // Get trading history
-  app.get('/api/trade/history', auth, async (req, res) => {
+  app.get('/api/smai-trade/history', auth, async (req: any, res: any) => {
     try {
       const userId = req.user.id;
       const { limit = 20, offset = 0 } = req.query;
 
-      const tradeHistory = await db.select()
-        .from(trades)
-        .where(eq(trades.userId, userId))
-        .orderBy(desc(trades.createdAt))
+      const history = await db.select()
+        .from(tradeHistory)
+        .where(eq(tradeHistory.userId, userId))
+        .orderBy(desc(tradeHistory.createdAt))
         .limit(parseInt(limit as string))
         .offset(parseInt(offset as string));
 
       const totalTrades = await db.select({ count: sql`COUNT(*)` })
-        .from(trades)
-        .where(eq(trades.userId, userId));
+        .from(tradeHistory)
+        .where(eq(tradeHistory.userId, userId));
 
       res.json({
         success: true,
-        trades: tradeHistory,
+        trades: history,
         total: totalTrades[0].count,
         pagination: {
           limit: parseInt(limit as string),
