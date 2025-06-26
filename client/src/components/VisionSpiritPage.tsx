@@ -422,9 +422,9 @@ Try the contextual suggestions below or ask me anything about ETH trading vision
           {/* Stats */}
           {visionStats && (
             <div className="flex items-center gap-4 text-sm text-gray-400">
-              <span>Total Visions: {visionStats.totalVisions}</span>
-              <span>Accuracy: {visionStats.accuracy.toFixed(1)}%</span>
-              <span>Avg Confidence: {visionStats.averageConfidence.toFixed(1)}%</span>
+              <span>Total Visions: {visionStats.totalVisions || 0}</span>
+              <span>Accuracy: {(visionStats.accuracy || 0).toFixed(1)}%</span>
+              <span>Avg Confidence: {(visionStats.averageConfidence || 0).toFixed(1)}%</span>
             </div>
           )}
         </div>
