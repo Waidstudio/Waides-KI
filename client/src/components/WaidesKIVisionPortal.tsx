@@ -379,7 +379,12 @@ export default function WaidesKIVisionPortal() {
         case 'spiritual':
           // Use local Memory Engine for instant responses
           const memoryResponse = getSmartAnswer(currentMessage);
-          typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
+          if (memoryResponse) {
+            typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
+          } else {
+            // Fallback to server-side spiritual intelligence
+            questionMutation.mutate(currentMessage);
+          }
           break;
         case 'oracle':
           if (oracleEnabled) {
@@ -389,7 +394,11 @@ export default function WaidesKIVisionPortal() {
           }
           break;
         default: // 'auto' mode
-          if (isSelfKnowledge || isETHQuestion) {
+          // First try UKC and Memory Engine for instant responses
+          const smartResponse = getSmartAnswer(currentMessage);
+          if (smartResponse) {
+            typeMessage(smartResponse, 'enhanced_bot_memory', 95);
+          } else if (isSelfKnowledge || isETHQuestion) {
             questionMutation.mutate(currentMessage);
           } else if (reasoningMode) {
             reasoningMutation.mutate(currentMessage);
