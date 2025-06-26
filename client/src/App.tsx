@@ -22,6 +22,7 @@ import { ETHEmpathNetworkGuardian } from "@/components/ETHEmpathNetworkGuardian"
 import MetaGuardianNetwork from "@/components/MetaGuardianNetwork";
 import WaidesFullEngine from "@/components/WaidesFullEngine";
 import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
+import MLLifecycleManager from "@/components/MLLifecycleManager";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,6 +33,7 @@ function Router() {
     { path: "/live-data", label: "Live Data" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/ml-lifecycle", label: "ML Lifecycle" },
     { path: "/risk-backtesting", label: "Risk Backtesting" },
     { path: "/reincarnation", label: "Reincarnation" },
     { path: "/spiritual-recall", label: "Spiritual Recall" },
@@ -97,6 +99,7 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
           <Route path="/reincarnation" component={ReincarnationLoop} />
           <Route path="/spiritual-recall" component={SpiritualRecall} />

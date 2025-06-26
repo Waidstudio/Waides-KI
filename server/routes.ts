@@ -13500,6 +13500,473 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============================================================================
+  // CI/CD MODEL LIFECYCLE MANAGEMENT API ENDPOINTS
+  // ============================================================================
+
+  // Model Trainer Endpoints
+  app.get('/api/model-trainer/metrics', (req, res) => {
+    try {
+      const metrics = waidesKIModelTrainer.getModelMetrics();
+      const stats = waidesKIModelTrainer.getTrainingStats();
+      
+      res.json({
+        success: true,
+        model_metrics: metrics,
+        training_statistics: stats,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Model trainer metrics retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get model metrics' });
+    }
+  });
+
+  app.post('/api/model-trainer/record-outcome', async (req, res) => {
+    try {
+      const { 
+        prediction, 
+        actual_outcome, 
+        market_conditions 
+      } = req.body;
+
+      if (typeof prediction !== 'number' || typeof actual_outcome !== 'number') {
+        return res.status(400).json({ error: 'Prediction and actual_outcome must be numbers (0 or 1)' });
+      }
+
+      waidesKIModelTrainer.recordTradeOutcome(
+        prediction,
+        actual_outcome,
+        market_conditions || {}
+      );
+
+      res.json({
+        success: true,
+        message: 'Trade outcome recorded successfully'
+      });
+    } catch (error) {
+      console.error('❌ Trade outcome recording failed:', error);
+      res.status(500).json({ error: 'Failed to record trade outcome' });
+    }
+  });
+
+  app.post('/api/model-trainer/force-retrain', async (req, res) => {
+    try {
+      const newMetrics = await waidesKIModelTrainer.forceRetrain();
+      
+      res.json({
+        success: true,
+        message: 'Model retrained successfully',
+        new_metrics: newMetrics
+      });
+    } catch (error) {
+      console.error('❌ Force retrain failed:', error);
+      res.status(500).json({ error: 'Failed to force retrain model' });
+    }
+  });
+
+  app.post('/api/model-trainer/update-config', (req, res) => {
+    try {
+      const config = req.body;
+      
+      if (!config || typeof config !== 'object') {
+        return res.status(400).json({ error: 'Valid configuration object required' });
+      }
+
+      waidesKIModelTrainer.updateRetrainingConfig(config);
+      
+      res.json({
+        success: true,
+        message: 'Retraining configuration updated successfully'
+      });
+    } catch (error) {
+      console.error('❌ Config update failed:', error);
+      res.status(500).json({ error: 'Failed to update configuration' });
+    }
+  });
+
+  app.get('/api/model-trainer/export-data', (req, res) => {
+    try {
+      const trainingData = waidesKIModelTrainer.exportTrainingData();
+      
+      res.json({
+        success: true,
+        training_data: trainingData,
+        sample_count: trainingData.length
+      });
+    } catch (error) {
+      console.error('❌ Training data export failed:', error);
+      res.status(500).json({ error: 'Failed to export training data' });
+    }
+  });
+
+  // Model Health Monitor Endpoints
+  app.get('/api/model-health/status', (req, res) => {
+    try {
+      const healthStats = waidesKIModelHealthMonitor.evaluateModelHealth();
+      const driftMetrics = waidesKIModelHealthMonitor.checkDataDrift();
+      const performanceTrend = waidesKIModelHealthMonitor.getPerformanceTrend();
+      
+      res.json({
+        success: true,
+        health_status: healthStats,
+        drift_metrics: driftMetrics,
+        performance_trend: performanceTrend
+      });
+    } catch (error) {
+      console.error('❌ Model health status retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get model health status' });
+    }
+  });
+
+  app.post('/api/model-health/record-prediction', (req, res) => {
+    try {
+      const { probability, actual_outcome } = req.body;
+
+      if (typeof probability !== 'number' || probability < 0 || probability > 1) {
+        return res.status(400).json({ error: 'Probability must be a number between 0 and 1' });
+      }
+
+      waidesKIModelHealthMonitor.recordPrediction(probability, actual_outcome);
+      
+      res.json({
+        success: true,
+        message: 'Prediction recorded successfully'
+      });
+    } catch (error) {
+      console.error('❌ Prediction recording failed:', error);
+      res.status(500).json({ error: 'Failed to record prediction' });
+    }
+  });
+
+  app.get('/api/model-health/drift-history', (req, res) => {
+    try {
+      const driftHistory = waidesKIModelHealthMonitor.getDriftHistory();
+      
+      res.json({
+        success: true,
+        drift_history: driftHistory,
+        alert_count: driftHistory.length
+      });
+    } catch (error) {
+      console.error('❌ Drift history retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get drift history' });
+    }
+  });
+
+  app.get('/api/model-health/report', (req, res) => {
+    try {
+      const healthReport = waidesKIModelHealthMonitor.getHealthReport();
+      
+      res.json({
+        success: true,
+        health_report: healthReport
+      });
+    } catch (error) {
+      console.error('❌ Health report generation failed:', error);
+      res.status(500).json({ error: 'Failed to generate health report' });
+    }
+  });
+
+  app.post('/api/model-health/reset-baseline', (req, res) => {
+    try {
+      waidesKIModelHealthMonitor.resetBaseline();
+      
+      res.json({
+        success: true,
+        message: 'Drift detection baseline reset successfully'
+      });
+    } catch (error) {
+      console.error('❌ Baseline reset failed:', error);
+      res.status(500).json({ error: 'Failed to reset baseline' });
+    }
+  });
+
+  app.post('/api/model-health/toggle-monitoring', (req, res) => {
+    try {
+      const { enabled } = req.body;
+      
+      if (typeof enabled !== 'boolean') {
+        return res.status(400).json({ error: 'Enabled must be a boolean value' });
+      }
+
+      waidesKIModelHealthMonitor.setMonitoring(enabled);
+      
+      res.json({
+        success: true,
+        message: `Monitoring ${enabled ? 'enabled' : 'disabled'} successfully`
+      });
+    } catch (error) {
+      console.error('❌ Monitoring toggle failed:', error);
+      res.status(500).json({ error: 'Failed to toggle monitoring' });
+    }
+  });
+
+  // A/B Testing Engine Endpoints
+  app.get('/api/ab-testing/dashboard', (req, res) => {
+    try {
+      const dashboard = waidesKIABTestingEngine.getABTestDashboard();
+      
+      res.json({
+        success: true,
+        ab_test_dashboard: dashboard
+      });
+    } catch (error) {
+      console.error('❌ A/B testing dashboard retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get A/B testing dashboard' });
+    }
+  });
+
+  app.post('/api/ab-testing/generate-prediction', async (req, res) => {
+    try {
+      const { features } = req.body;
+
+      if (!features || typeof features !== 'object') {
+        return res.status(400).json({ error: 'Features object required' });
+      }
+
+      const result = await waidesKIABTestingEngine.generatePrediction(features);
+      
+      res.json({
+        success: true,
+        ab_test_result: result
+      });
+    } catch (error) {
+      console.error('❌ A/B prediction generation failed:', error);
+      res.status(500).json({ error: 'Failed to generate A/B prediction' });
+    }
+  });
+
+  app.post('/api/ab-testing/record-trade-outcome', (req, res) => {
+    try {
+      const { 
+        variant_id, 
+        success, 
+        profit_loss, 
+        trade_return 
+      } = req.body;
+
+      if (!variant_id || typeof success !== 'boolean') {
+        return res.status(400).json({ error: 'Variant ID and success (boolean) are required' });
+      }
+
+      waidesKIABTestingEngine.recordTradeOutcome(
+        variant_id,
+        success,
+        profit_loss || 0,
+        trade_return || 0
+      );
+      
+      res.json({
+        success: true,
+        message: 'Trade outcome recorded successfully'
+      });
+    } catch (error) {
+      console.error('❌ Trade outcome recording failed:', error);
+      res.status(500).json({ error: 'Failed to record trade outcome' });
+    }
+  });
+
+  app.post('/api/ab-testing/record-prediction-outcome', (req, res) => {
+    try {
+      const { 
+        variant_id, 
+        predicted_class, 
+        actual_class, 
+        confidence 
+      } = req.body;
+
+      if (!variant_id || !predicted_class || !actual_class) {
+        return res.status(400).json({ error: 'Variant ID, predicted_class, and actual_class are required' });
+      }
+
+      waidesKIABTestingEngine.recordPredictionOutcome(
+        variant_id,
+        predicted_class,
+        actual_class,
+        confidence || 0.5
+      );
+      
+      res.json({
+        success: true,
+        message: 'Prediction outcome recorded successfully'
+      });
+    } catch (error) {
+      console.error('❌ Prediction outcome recording failed:', error);
+      res.status(500).json({ error: 'Failed to record prediction outcome' });
+    }
+  });
+
+  app.post('/api/ab-testing/start-test', (req, res) => {
+    try {
+      const { 
+        variant_a_id, 
+        variant_b_id, 
+        traffic_split, 
+        duration_hours 
+      } = req.body;
+
+      if (!variant_a_id || !variant_b_id) {
+        return res.status(400).json({ error: 'Both variant A and B IDs are required' });
+      }
+
+      waidesKIABTestingEngine.startABTest(
+        variant_a_id,
+        variant_b_id,
+        traffic_split || { a: 50, b: 50 },
+        duration_hours || 24
+      );
+      
+      res.json({
+        success: true,
+        message: 'A/B test started successfully'
+      });
+    } catch (error) {
+      console.error('❌ A/B test start failed:', error);
+      res.status(500).json({ error: 'Failed to start A/B test' });
+    }
+  });
+
+  app.post('/api/ab-testing/add-variant', (req, res) => {
+    try {
+      const variant = req.body;
+
+      if (!variant || !variant.id || !variant.name) {
+        return res.status(400).json({ error: 'Variant must have id and name' });
+      }
+
+      waidesKIABTestingEngine.addModelVariant(variant);
+      
+      res.json({
+        success: true,
+        message: 'Model variant added successfully'
+      });
+    } catch (error) {
+      console.error('❌ Variant addition failed:', error);
+      res.status(500).json({ error: 'Failed to add model variant' });
+    }
+  });
+
+  app.post('/api/ab-testing/update-traffic', (req, res) => {
+    try {
+      const { allocations } = req.body;
+
+      if (!allocations || typeof allocations !== 'object') {
+        return res.status(400).json({ error: 'Traffic allocations object required' });
+      }
+
+      waidesKIABTestingEngine.updateTrafficAllocation(allocations);
+      
+      res.json({
+        success: true,
+        message: 'Traffic allocation updated successfully'
+      });
+    } catch (error) {
+      console.error('❌ Traffic allocation update failed:', error);
+      res.status(500).json({ error: 'Failed to update traffic allocation' });
+    }
+  });
+
+  app.get('/api/ab-testing/variant-comparison', (req, res) => {
+    try {
+      const comparison = waidesKIABTestingEngine.getVariantComparison();
+      
+      res.json({
+        success: true,
+        variant_comparison: comparison
+      });
+    } catch (error) {
+      console.error('❌ Variant comparison retrieval failed:', error);
+      res.status(500).json({ error: 'Failed to get variant comparison' });
+    }
+  });
+
+  // Comprehensive CI/CD Demo Workflow
+  app.post('/api/ml-lifecycle/demo-workflow', async (req, res) => {
+    try {
+      console.log('🚀 Starting CI/CD Model Lifecycle Management demo workflow...');
+      
+      // 1. Record some training data
+      const sampleFeatures = {
+        rsi: 65.5,
+        ema_50: 2450.0,
+        ema_200: 2400.0,
+        price: 2475.0,
+        volume: 15000,
+        volatility: 0.025
+      };
+      
+      // Record successful trade
+      waidesKIModelTrainer.recordTradeOutcome(1, 1, sampleFeatures);
+      
+      // Record failed trade
+      waidesKIModelTrainer.recordTradeOutcome(1, 0, {
+        ...sampleFeatures,
+        rsi: 85.0,
+        volatility: 0.045
+      });
+      
+      // 2. Check if retraining is needed
+      const shouldRetrain = waidesKIModelTrainer.shouldRetrain();
+      
+      // 3. Get model health status
+      waidesKIModelHealthMonitor.recordPrediction(0.75, 1);
+      waidesKIModelHealthMonitor.recordPrediction(0.85, 0);
+      const healthStatus = waidesKIModelHealthMonitor.evaluateModelHealth();
+      const driftCheck = waidesKIModelHealthMonitor.checkDataDrift();
+      
+      // 4. Generate A/B test prediction
+      const abResult = await waidesKIABTestingEngine.generatePrediction(sampleFeatures);
+      
+      // 5. Record A/B test outcomes
+      waidesKIABTestingEngine.recordTradeOutcome(abResult.variant_id, true, 50.0, 0.025);
+      waidesKIABTestingEngine.recordPredictionOutcome(
+        abResult.variant_id,
+        abResult.prediction.prediction_class,
+        'BUY',
+        abResult.prediction.confidence
+      );
+      
+      // 6. Get comprehensive dashboard
+      const trainerMetrics = waidesKIModelTrainer.getModelMetrics();
+      const abDashboard = waidesKIABTestingEngine.getABTestDashboard();
+      const healthReport = waidesKIModelHealthMonitor.getHealthReport();
+      
+      const demoResult = {
+        step_1_training_data: {
+          samples_recorded: 2,
+          should_retrain: shouldRetrain,
+          current_metrics: trainerMetrics
+        },
+        step_2_health_monitoring: {
+          health_status: healthStatus,
+          drift_detection: driftCheck,
+          health_report: healthReport
+        },
+        step_3_ab_testing: {
+          prediction_result: abResult,
+          test_dashboard: abDashboard
+        },
+        step_4_system_integration: {
+          ml_pipeline_status: 'OPERATIONAL',
+          automated_retraining: shouldRetrain ? 'SCHEDULED' : 'NOT_NEEDED',
+          drift_monitoring: driftCheck.drift_detected ? 'ALERT' : 'NORMAL',
+          ab_testing: abDashboard.current_test ? 'ACTIVE' : 'READY'
+        },
+        conclusion: 'CI/CD Model Lifecycle Management system fully operational with automated retraining, health monitoring, and A/B testing capabilities'
+      };
+      
+      res.json({
+        success: true,
+        demo_workflow: demoResult,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ ML lifecycle demo workflow failed:', error);
+      res.status(500).json({ error: 'Failed to run ML lifecycle demo workflow' });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {
