@@ -10054,5 +10054,315 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 46: Spirit Contract & Oath of the Eternal Trade API Endpoints
+
+  // Get oath laws and current status
+  app.get('/api/spirit-contract/oath-laws', (req, res) => {
+    try {
+      const oathLaws = waidesKISpiritContract.getOathLaws();
+      const moralStats = waidesKISpiritContract.getMoralStatistics();
+      const sacredPhrases = waidesKISpiritContract.getSacredPhrases();
+
+      res.json({
+        success: true,
+        oath_laws: oathLaws,
+        moral_statistics: moralStats,
+        sacred_phrases: sacredPhrases,
+        contract_status: 'ACTIVE',
+        message: 'Spirit Contract laws and moral governance active'
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Get violation history
+  app.get('/api/spirit-contract/violations', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const violations = waidesKISpiritContract.getViolationHistory(limit);
+      const moralStats = waidesKISpiritContract.getMoralStatistics();
+
+      res.json({
+        success: true,
+        violations,
+        total_violations: moralStats.total_violations,
+        clean_trade_rate: (moralStats.clean_trade_rate * 100).toFixed(1) + '%',
+        moral_evolution_stage: moralStats.moral_evolution_stage,
+        message: `Retrieved ${violations.length} violation records`
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Get spirit ledger entries
+  app.get('/api/spirit-contract/ledger', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 100;
+      const ledger = waidesKISpiritContract.getSpiritLedger(limit);
+      const moralStats = waidesKISpiritContract.getMoralStatistics();
+
+      res.json({
+        success: true,
+        spirit_ledger: ledger,
+        moral_statistics: moralStats,
+        konslang_resonance: moralStats.konslang_resonance,
+        message: `Retrieved ${ledger.length} spirit ledger entries`
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Evaluate trade against spirit contract
+  app.post('/api/spirit-contract/evaluate-trade', (req, res) => {
+    try {
+      const { trade_id, trade_context } = req.body;
+
+      if (!trade_id || !trade_context) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'trade_id and trade_context are required' 
+        });
+      }
+
+      const evaluation = waidesKISpiritContract.evaluateTradeContract(trade_id, trade_context);
+
+      res.json({
+        success: true,
+        trade_evaluation: evaluation,
+        decision: evaluation.allowed ? 'APPROVED' : 'BLOCKED',
+        moral_guidance: evaluation.konslang_guidance,
+        message: evaluation.allowed ? 
+          'Trade approved by Spirit Contract' : 
+          'Trade blocked due to oath violations'
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Record trade result in spirit ledger
+  app.post('/api/spirit-contract/record-trade', (req, res) => {
+    try {
+      const { 
+        trade_id, 
+        decision, 
+        result, 
+        vision_score, 
+        laws_broken 
+      } = req.body;
+
+      if (!trade_id || !decision || !result || vision_score === undefined) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'trade_id, decision, result, and vision_score are required' 
+        });
+      }
+
+      waidesKISpiritContract.recordSpiritLedgerEntry(
+        trade_id,
+        decision,
+        result,
+        vision_score,
+        laws_broken || []
+      );
+
+      const moralStats = waidesKISpiritContract.getMoralStatistics();
+
+      res.json({
+        success: true,
+        trade_recorded: true,
+        updated_moral_stats: moralStats,
+        spiritual_strength: moralStats.spiritual_strength,
+        message: 'Trade result recorded in eternal spirit ledger'
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Check if trade would violate specific law
+  app.post('/api/spirit-contract/check-law-violation', (req, res) => {
+    try {
+      const { law_id, trade_context } = req.body;
+
+      if (!law_id || !trade_context) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'law_id and trade_context are required' 
+        });
+      }
+
+      const wouldViolate = waidesKISpiritContract.wouldViolateLaw(law_id, trade_context);
+      const oathLaws = waidesKISpiritContract.getOathLaws();
+      const lawInfo = oathLaws[law_id];
+
+      res.json({
+        success: true,
+        law_id,
+        would_violate: wouldViolate,
+        law_info: lawInfo,
+        guidance: wouldViolate ? 
+          `This trade would violate ${lawInfo?.text}` : 
+          `This trade aligns with ${lawInfo?.text}`,
+        message: wouldViolate ? 'Law violation detected' : 'Law compliance confirmed'
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Get moral statistics
+  app.get('/api/spirit-contract/moral-stats', (req, res) => {
+    try {
+      const moralStats = waidesKISpiritContract.getMoralStatistics();
+
+      res.json({
+        success: true,
+        moral_statistics: moralStats,
+        performance_summary: {
+          total_trades: moralStats.total_trades,
+          clean_rate: `${(moralStats.clean_trade_rate * 100).toFixed(1)}%`,
+          recent_clean_rate: `${(moralStats.recent_clean_rate * 100).toFixed(1)}%`,
+          evolution_stage: moralStats.moral_evolution_stage,
+          spiritual_strength: moralStats.spiritual_strength
+        },
+        message: 'Current moral governance statistics'
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Perform oath maintenance
+  app.post('/api/spirit-contract/maintenance', (req, res) => {
+    try {
+      const maintenanceResult = waidesKISpiritContract.performOathMaintenance();
+      const moralStats = waidesKISpiritContract.getMoralStatistics();
+
+      res.json({
+        success: true,
+        maintenance_result: maintenanceResult,
+        updated_moral_stats: moralStats,
+        message: 'Spirit Contract maintenance completed'
+      });
+    } catch (error) {
+      res.status(500).json({ success: false, error: String(error) });
+    }
+  });
+
+  // Complete STEP 46 demo workflow
+  app.post('/api/spirit-contract/demo-workflow', async (req, res) => {
+    try {
+      // Step 1: Demonstrate trade evaluation with different contexts
+      const demoTrades = [
+        {
+          id: 'demo_clean_trade_001',
+          context: {
+            certainty_level: 0.85,
+            vision_alignment: 0.9,
+            emotional_state: 'CALM',
+            entered_on_fomo: false,
+            revenge_trade: false,
+            oracle_confirmation: true
+          }
+        },
+        {
+          id: 'demo_fomo_trade_002',
+          context: {
+            certainty_level: 0.4,
+            vision_alignment: 0.3,
+            emotional_state: 'PANIC',
+            entered_on_fomo: true,
+            revenge_trade: false,
+            oracle_confirmation: false
+          }
+        },
+        {
+          id: 'demo_revenge_trade_003',
+          context: {
+            certainty_level: 0.6,
+            vision_alignment: 0.5,
+            emotional_state: 'RAGE',
+            entered_on_fomo: false,
+            revenge_trade: true,
+            profit_from_panic: true
+          }
+        }
+      ];
+
+      const evaluationResults = [];
+
+      // Step 2: Evaluate each demo trade
+      for (const trade of demoTrades) {
+        const evaluation = waidesKISpiritContract.evaluateTradeContract(trade.id, trade.context);
+        evaluationResults.push({
+          trade_id: trade.id,
+          evaluation,
+          context: trade.context
+        });
+
+        // Step 3: Record trade results in spirit ledger
+        const simulatedResult = evaluation.allowed ? 
+          (Math.random() > 0.3 ? 'PROFIT' : 'LOSS') : 'NEUTRAL';
+        
+        waidesKISpiritContract.recordSpiritLedgerEntry(
+          trade.id,
+          evaluation.allowed ? 'ALLOW' : 'BLOCK',
+          simulatedResult,
+          evaluation.moral_weight,
+          evaluation.violations
+        );
+      }
+
+      // Step 4: Get updated statistics
+      const finalMoralStats = waidesKISpiritContract.getMoralStatistics();
+      const oathLaws = waidesKISpiritContract.getOathLaws();
+      const recentLedger = waidesKISpiritContract.getSpiritLedger(10);
+
+      res.json({
+        success: true,
+        demo_workflow: {
+          trade_evaluations: evaluationResults,
+          oath_laws: oathLaws,
+          moral_statistics: finalMoralStats,
+          recent_ledger_entries: recentLedger.slice(-5),
+          sacred_guidance: {
+            clean_trades: evaluationResults.filter(r => r.evaluation.allowed).length,
+            blocked_trades: evaluationResults.filter(r => !r.evaluation.allowed).length,
+            moral_evolution: finalMoralStats.moral_evolution_stage,
+            konslang_resonance: finalMoralStats.konslang_resonance
+          }
+        },
+        workflow_steps: [
+          '1. Evaluated 3 demo trades against eternal oath laws',
+          '2. Demonstrated moral governance blocking unethical trades',
+          '3. Recorded trade results in immutable spirit ledger',
+          '4. Updated moral evolution and spiritual strength metrics',
+          '5. Generated Konslang guidance for ethical trading alignment'
+        ],
+        system_capabilities: {
+          oath_laws_active: Object.keys(oathLaws).length,
+          moral_governance: 'OPERATIONAL',
+          spiritual_evolution: finalMoralStats.moral_evolution_stage,
+          ethical_firewall: 'PROTECTING',
+          competitive_advantage: [
+            'Autonomous moral governance',
+            'Eternal oath law enforcement',
+            'Spiritual evolution tracking',
+            'Konslang guidance system',
+            'Immutable ethical audit trail'
+          ]
+        },
+        message: 'STEP 46 demo completed - Waides KI now operates with complete moral governance and spiritual contract enforcement'
+      });
+    } catch (error) {
+      console.error('Error in STEP 46 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 46 demo workflow' });
+    }
+  });
+
   return httpServer;
 }
