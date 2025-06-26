@@ -18,6 +18,7 @@ import {
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
 
+import { useLocation } from 'wouter';
 import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine.js';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
@@ -110,6 +111,7 @@ export default function WaidesKIVisionPortal() {
 
   const { smaiBalance, localBalance, transactions, canAffordTrade } = useSmaiWallet();
   const { toast } = useToast();
+  const [location, setLocation] = useLocation();
 
   // Handle page navigation from recommendations
   const handlePageNavigation = (route: string) => {
