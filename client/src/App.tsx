@@ -41,6 +41,7 @@ function Router() {
     { path: "/autonomous-wealth", label: "SmaiWallet" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/strategy-autogen", label: "Strategy Autogen" },
     { path: "/enhanced-waidbot", label: "Enhanced Controller" },
     { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
@@ -112,6 +113,7 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/strategy-autogen" component={StrategyAutogenPage} />
           <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
           <Route path="/autonomous-wealth" component={AutonomousWealthEngine} />
           <Route path="/learning" component={LearningPage} />
