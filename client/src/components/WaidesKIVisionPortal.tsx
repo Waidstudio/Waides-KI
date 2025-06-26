@@ -461,193 +461,193 @@ export default function WaidesKIVisionPortal() {
           </CardHeader>
           <CardContent className="p-4">
             <div 
-              className="max-h-96 overflow-y-auto"
+              className="max-h-56 overflow-y-auto"
               style={{
                 scrollSnapType: 'y mandatory',
                 scrollbarWidth: 'thin',
                 scrollbarColor: '#6366f1 transparent'
               }}
             >
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 {/* Row 1 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#B47CFF' }}
                   onClick={() => setCurrentMessage("Predict ETH price for next hour")}
                 >
-                  <TrendingUp className="w-5 h-5 mb-1" />
+                  <TrendingUp className="w-4 h-4 mb-1" />
                   <span className="text-xs">Predict ETH</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#00FFAA' }}
                   onClick={() => window.location.href = '/autonomous-wealth'}
                 >
-                  <Wallet className="w-5 h-5 mb-1" />
+                  <Wallet className="w-4 h-4 mb-1" />
                   <span className="text-xs">SmaiWallet</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#73B4FF' }}
                   onClick={() => setCurrentMessage("Activate autonomous trading mode")}
                 >
-                  <Zap className="w-5 h-5 mb-1" />
+                  <Zap className="w-4 h-4 mb-1" />
                   <span className="text-xs">Auto Trade</span>
                 </button>
 
                 {/* Row 2 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FF9E48' }}
                   onClick={() => window.location.href = '/dashboard'}
                 >
-                  <BarChart3 className="w-5 h-5 mb-1" />
+                  <BarChart3 className="w-4 h-4 mb-1" />
                   <span className="text-xs">Dashboard</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#00D5FF' }}
                   onClick={() => window.location.href = '/waidbot'}
                 >
-                  <Bot className="w-5 h-5 mb-1" />
+                  <Bot className="w-4 h-4 mb-1" />
                   <span className="text-xs">WaidBot</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#4AA3FF' }}
                   onClick={() => window.location.href = '/waidbot-pro'}
                 >
-                  <Brain className="w-5 h-5 mb-1" />
+                  <Brain className="w-4 h-4 mb-1" />
                   <span className="text-xs">WaidBot Pro</span>
                 </button>
 
                 {/* Row 3 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FF77A8' }}
                   onClick={() => window.location.href = '/enhanced-waidbot'}
                 >
-                  <Settings className="w-5 h-5 mb-1" />
-                  <span className="text-xs">Enhanced Controller</span>
+                  <Settings className="w-4 h-4 mb-1" />
+                  <span className="text-xs">Enhanced</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FF5E5E' }}
                   onClick={() => window.location.href = '/live-data'}
                 >
-                  <Activity className="w-5 h-5 mb-1" />
+                  <Activity className="w-4 h-4 mb-1" />
                   <span className="text-xs">Live Data</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#C992FF' }}
                   onClick={() => window.location.href = '/dream-vision'}
                 >
-                  <Eye className="w-5 h-5 mb-1" />
+                  <Eye className="w-4 h-4 mb-1" />
                   <span className="text-xs">Dream Vision</span>
                 </button>
 
                 {/* Row 4 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#9A83FF' }}
                   onClick={() => window.location.href = '/vision-spirit'}
                 >
-                  <Sparkles className="w-5 h-5 mb-1" />
+                  <Sparkles className="w-4 h-4 mb-1" />
                   <span className="text-xs">Vision Spirit</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FFD94F' }}
                   onClick={() => window.location.href = '/spiritual-recall'}
                 >
-                  <Heart className="w-5 h-5 mb-1" />
+                  <Heart className="w-4 h-4 mb-1" />
                   <span className="text-xs">Spiritual Recall</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#00FFB2' }}
                   onClick={() => window.location.href = '/seasonal-rebirth'}
                 >
-                  <RotateCcw className="w-5 h-5 mb-1" />
+                  <RotateCcw className="w-4 h-4 mb-1" />
                   <span className="text-xs">Seasonal Rebirth</span>
                 </button>
 
                 {/* Row 5 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#CFCFCF' }}
                   onClick={() => window.location.href = '/sigil-layer'}
                 >
-                  <Layers className="w-5 h-5 mb-1" />
+                  <Layers className="w-4 h-4 mb-1" />
                   <span className="text-xs text-gray-800">Sigil Layer</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FF6C6C' }}
                   onClick={() => window.location.href = '/shadow-defense'}
                 >
-                  <Shield className="w-5 h-5 mb-1" />
+                  <Shield className="w-4 h-4 mb-1" />
                   <span className="text-xs">Shadow Defense</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FFE66D' }}
                   onClick={() => window.location.href = '/reincarnation'}
                 >
-                  <RotateCcw className="w-5 h-5 mb-1" />
+                  <RotateCcw className="w-4 h-4 mb-1" />
                   <span className="text-xs text-gray-800">Reincarnation</span>
                 </button>
 
                 {/* Row 6 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#00F9FF' }}
                   onClick={() => window.location.href = '/eth-empath-guardian'}
                 >
-                  <Users className="w-5 h-5 mb-1" />
+                  <Users className="w-4 h-4 mb-1" />
                   <span className="text-xs text-gray-800">ETH Guardian</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#D6D6D6' }}
                   onClick={() => window.location.href = '/learning'}
                 >
-                  <BookOpen className="w-5 h-5 mb-1" />
+                  <BookOpen className="w-4 h-4 mb-1" />
                   <span className="text-xs text-gray-800">Trading Academy</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#6990FF' }}
                   onClick={() => window.location.href = '/ml-lifecycle'}
                 >
-                  <Database className="w-5 h-5 mb-1" />
+                  <Database className="w-4 h-4 mb-1" />
                   <span className="text-xs">ML Lifecycle</span>
                 </button>
 
                 {/* Row 7 */}
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FFAA34' }}
                   onClick={() => window.location.href = '/admin'}
                 >
-                  <Cog className="w-5 h-5 mb-1" />
+                  <Cog className="w-4 h-4 mb-1" />
                   <span className="text-xs text-gray-800">Admin</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#00FF7B' }}
                   onClick={() => window.location.href = '/api-docs'}
                 >
-                  <FileText className="w-5 h-5 mb-1" />
+                  <FileText className="w-4 h-4 mb-1" />
                   <span className="text-xs text-gray-800">API Docs</span>
                 </button>
                 <button
-                  className="h-20 rounded-xl text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
+                  className="h-14 rounded-lg text-white text-center text-xs font-bold flex flex-col justify-center items-center shadow-md transition-transform hover:scale-105 cursor-pointer"
                   style={{ backgroundColor: '#FF77FF' }}
                   onClick={() => window.location.href = '/gateway'}
                 >
-                  <Network className="w-5 h-5 mb-1" />
+                  <Network className="w-4 h-4 mb-1" />
                   <span className="text-xs">Gateway</span>
                 </button>
               </div>
