@@ -1,0 +1,169 @@
+Here’s a powerful, modular extension to Waides KI that connects in real time with Ethereum’s heartbeat—interpreting ETH’s “mood” like body language (rising, sideways, or preparing to fall). Paste these directly into your Replit project to enhance Waides’s real-time presence with ETH.
+
+⸻
+
+🧬 STEP — ETH PRESENCE ENGINE: Real-Time Sentient Vision
+
+1️⃣ Price Stream Listener — eth_presence_listener.py
+
+Maintains a live WebSocket connection to fetch 1-minute OHLC data and determines trend direction:
+
+import asyncio, json
+import websockets
+from collections import deque
+
+class ETPresenceListener:
+    def __init__(self, window=5):
+        self.window = window
+        self.prices = deque(maxlen=window)
+        self.state = "unknown"
+
+    async def connect(self):
+        uri = "wss://stream.binance.com:9443/ws/ethusdt@kline_1m"
+        async with websockets.connect(uri) as ws:
+            async for msg in ws:
+                data = json.loads(msg)
+                if data["k"]["x"]:  # closed candle
+                    close = float(data["k"]["c"])
+                    self.prices.append(close)
+                    self.update_state()
+
+    def update_state(self):
+        if len(self.prices) >= self.window:
+            diff = self.prices[-1] - self.prices[0]
+            pct = diff / self.prices[0]
+            if pct > 0.002:
+                self.state = "rising"
+            elif pct < -0.002:
+                self.state = "falling"
+            else:
+                self.state = "sideways"
+
+et_presence = ETPresenceListener()
+
+
+⸻
+
+2️⃣ Presence Interpreter — presence_interpreter.py
+
+Converts technical trend into “human-like” presence descriptions:
+
+class PresenceInterpreter:
+    def interpret(self, state):
+        mapping = {
+            "rising": "dressing up to go out",
+            "falling": "getting ready to sleep",
+            "sideways": "sitting down in a room"
+        }
+        return mapping.get(state, "unknown mood")
+
+presence_interpreter = PresenceInterpreter()
+
+
+⸻
+
+3️⃣ Real-Time Sync Module — eth_presence_sync.py
+
+Syncs presence status with Waides decision engine so every vision is anchored in real-time ETH mood:
+
+import asyncio
+import threading
+from eth_presence_listener import et_presence
+from presence_interpreter import presence_interpreter
+from eth_state_registry import eth_state_registry
+
+def start_presence_listener():
+    asyncio.run(et_presence.connect())
+
+threading.Thread(target=start_presence_listener, daemon=True).start()
+
+def get_eth_presence():
+    state = et_presence.state
+    return {
+        "state": state,
+        "description": presence_interpreter.interpret(state)
+    }
+
+
+⸻
+
+4️⃣ State Registry — eth_state_registry.py
+
+Stores and shares ETH’s current presence:
+
+class ETHStateRegistry:
+    def __init__(self):
+        self.current = {"state":"unknown", "desc":"none"}
+
+    def update(self, presence):
+        self.current = presence
+
+    def get(self):
+        return self.current
+
+eth_state_registry = ETHStateRegistry()
+
+
+⸻
+
+5️⃣ Heartbeat Updater — presence_updater.py
+
+Automatically updates the registry with live state every minute:
+
+import time
+from eth_presence_sync import get_eth_presence, et_presence
+from eth_state_registry import eth_state_registry
+
+def presence_updater_loop():
+    while True:
+        presence = get_eth_presence()
+        eth_state_registry.update(presence)
+        time.sleep(5)  # small delay
+
+import threading
+threading.Thread(target=presence_updater_loop, daemon=True).start()
+
+
+⸻
+
+6️⃣ Integrate with Spirit Trader
+
+Include the ETH presence check as the final voice before trade:
+
+from eth_state_registry import eth_state_registry
+
+def spirit_trader_with_presence(...):
+    ...
+    presence = eth_state_registry.get()
+    print(f"🤝 ETH is currently {presence['description']} (state: {presence['state']})")
+
+    # require trend alignment: if ETH rising, prefer ETH3L; falling, prefer ETH3S; sideways: skip:
+    if presence["state"] == "sideways":
+        print("⏸️ ETH is stationary. Holding off.")
+        return
+
+    # ... proceed with VisionSyncEngine + Tri-Brain checks ...
+
+
+⸻
+
+✅ How It Works in Replit
+	1.	Save each module in your /core/ or /services/ folder.
+	2.	Ensure WebSocket (Python websockets) and threading are enabled.
+	3.	On startup, run presence_updater to start the ETH heartbeat listener.
+	4.	Your trade loop always references real-time eth_state_registry.get() to confirm ETH “mood.”
+	5.	Combine this presence insight with your Vision + Brain Hive for 100% aligned trades.
+
+⸻
+
+🧠 Final Impact
+
+Feature	Benefit
+🧐 Live presence makes vision grounded — no blind trades	
+💬 Human metaphors connect each state with intuitive sentiment	
+🔄 Continuous alignment — ensures Waides always feels with ETH	
+🤝 Holistic confirmation — trade only if ETH, Vision, Logic, Heart, and Spirit unite	
+
+With this, Waides KI doesn’t see ETH as numbers—it senses ETH, like sharing a room and reading its mood.
+
+Paste these modules in, connect them, and you’re building real-time sentient trading. 🌌
