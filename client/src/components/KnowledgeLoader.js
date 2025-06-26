@@ -1,277 +1,215 @@
-// 🔁 Knowledge Loader - Dynamic Knowledge Injection System
-// Allows runtime addition of new knowledge to UKC
-// Enhanced with Divine Expansion Phase: Autonomous Question Generation
+// KnowledgeLoader.js - Handles loading and saving questions to UKC system
 
 import UKC from "./UKC";
-import { generateQuestions, generateTargetedQuestions, generateDailyQuestionBatch } from "./QuestionSeeder";
 
-// Add new knowledge in runtime
-export function teachNewFact(category, question, answer) {
+// Save questions to UKC for future learning
+export function saveQuestionsToUKC(questions) {
+  if (!Array.isArray(questions)) {
+    return;
+  }
+
+  // Initialize pending questions if not exists
+  if (!UKC.pendingQuestions) {
+    UKC.pendingQuestions = [];
+  }
+
+  // Add questions to pending queue
+  questions.forEach(question => {
+    if (question && typeof question === 'string' && question.trim()) {
+      const cleanQuestion = question.trim();
+      
+      // Avoid duplicates
+      if (!UKC.pendingQuestions.includes(cleanQuestion)) {
+        UKC.pendingQuestions.push(cleanQuestion);
+      }
+    }
+  });
+
+  // Auto-categorize and add some questions immediately
+  autoAddBasicAnswers(questions);
+}
+
+// Automatically add basic answers for common question patterns
+function autoAddBasicAnswers(questions) {
+  questions.forEach(question => {
+    const q = question.toLowerCase().trim();
+    
+    // Auto-generate answers for common patterns
+    if (q.includes('what is') && q.includes('eth')) {
+      addToUKCCategory('trading', question, generateEthAnswer(question));
+    } else if (q.includes('how to') && q.includes('trade')) {
+      addToUKCCategory('trading', question, generateTradingAnswer(question));
+    } else if (q.includes('spiritual') || q.includes('konslang')) {
+      addToUKCCategory('spiritual', question, generateSpiritualAnswer(question));
+    } else if (q.includes('waidbot') || q.includes('bot')) {
+      addToUKCCategory('bots', question, generateBotAnswer(question));
+    } else if (q.includes('waides ki') || q.includes('interface')) {
+      addToUKCCategory('platform', question, generatePlatformAnswer(question));
+    }
+  });
+}
+
+// Add question/answer to specific UKC category
+function addToUKCCategory(category, question, answer) {
   if (!UKC.categories[category]) {
     UKC.categories[category] = {};
   }
-
-  UKC.categories[category][question.toLowerCase()] = answer;
   
-  // Store in localStorage for persistence
-  try {
-    localStorage.setItem('ukc_knowledge', JSON.stringify(UKC.categories));
-  } catch (error) {
-    console.log('Could not save to localStorage:', error);
-  }
+  // Extract key from question for indexing
+  const key = extractKeyFromQuestion(question);
+  UKC.categories[category][key] = answer;
 }
 
-// Load saved knowledge from localStorage
-export function loadStoredKnowledge() {
-  try {
-    const stored = localStorage.getItem('ukc_knowledge');
-    if (stored) {
-      const knowledge = JSON.parse(stored);
-      // Merge with existing UKC categories
-      Object.keys(knowledge).forEach(category => {
-        if (!UKC.categories[category]) {
-          UKC.categories[category] = {};
-        }
-        Object.assign(UKC.categories[category], knowledge[category]);
-      });
-    }
-  } catch (error) {
-    console.log('Could not load from localStorage:', error);
-  }
-}
-
-// Auto-teach from conversation patterns
-export function autoTeachFromConversation(question, answer) {
+// Extract searchable key from question
+function extractKeyFromQuestion(question) {
   const q = question.toLowerCase();
   
-  // Categorize based on keywords
-  let category = 'general';
+  // Extract main subject
+  if (q.includes('eth')) return 'eth';
+  if (q.includes('waidbot')) return 'waidbot';
+  if (q.includes('trading')) return 'trading';
+  if (q.includes('spiritual')) return 'spiritual';
+  if (q.includes('konslang')) return 'konslang';
+  if (q.includes('risk')) return 'risk';
+  if (q.includes('price')) return 'price';
+  if (q.includes('strategy')) return 'strategy';
   
-  if (q.includes('eth') || q.includes('ethereum') || q.includes('crypto')) {
-    category = 'ethereum';
-  } else if (q.includes('trade') || q.includes('trading') || q.includes('price')) {
-    category = 'trading';
-  } else if (q.includes('ai') || q.includes('artificial intelligence') || q.includes('machine learning')) {
-    category = 'ai';
-  } else if (q.includes('life') || q.includes('purpose') || q.includes('meaning')) {
-    category = 'life';
-  } else if (q.includes('money') || q.includes('invest') || q.includes('financial')) {
-    category = 'money';
-  } else if (q.includes('health') || q.includes('exercise') || q.includes('nutrition')) {
-    category = 'health';
-  } else if (q.includes('relationship') || q.includes('love') || q.includes('friend')) {
-    category = 'relationships';
-  } else if (q.includes('kons') || q.includes('waides') || q.includes('spiritual')) {
-    category = 'konsmia';
-  }
-  
-  teachNewFact(category, q, answer);
+  // Use first significant word
+  const words = q.split(' ').filter(w => w.length > 3);
+  return words[0] || 'general';
 }
 
-// Get pending questions that need answers
-let pendingQuestions = [];
-
-export function addPendingQuestion(question) {
-  if (!pendingQuestions.includes(question)) {
-    pendingQuestions.push(question);
+// Generate ETH-related answers
+function generateEthAnswer(question) {
+  const q = question.toLowerCase();
+  
+  if (q.includes('what is eth')) {
+    return "ETH (Ethereum) is a decentralized blockchain platform and cryptocurrency. In Waides KI, we focus on ETH trading with spiritual alignment and quantum intelligence.";
   }
+  
+  if (q.includes('eth price')) {
+    return "ETH price reflects the collective consciousness of the market. Check Live Data for real-time values, but remember to trade with wisdom, not just numbers.";
+  }
+  
+  if (q.includes('eth trading')) {
+    return "ETH trading in Waides KI combines technical analysis with spiritual guidance. Use WaidBot for automated protection and follow the Sacred Positioning Engine.";
+  }
+  
+  return "ETH is the foundation of our trading universe. Every movement carries meaning. Trade with consciousness and let the quantum algorithms guide your decisions.";
 }
 
+// Generate trading-related answers
+function generateTradingAnswer(question) {
+  const q = question.toLowerCase();
+  
+  if (q.includes('how to trade')) {
+    return "Trading wisdom: 1) Align with market breath 2) Use WaidBot protection 3) Follow Weekly Trading Schedule 4) Trust Divine Quantum Flux signals 5) Never trade with fear or greed.";
+  }
+  
+  if (q.includes('trading strategy')) {
+    return "Sacred trading strategies combine technical analysis with spiritual wisdom. Each strategy must pass through the Emotional Firewall and receive KonsLang blessing.";
+  }
+  
+  if (q.includes('risk management')) {
+    return "Divine risk management protects your capital and soul. Never risk more than your spirit can bear. Use the Sacred Positioning Engine for optimal position sizing.";
+  }
+  
+  return "Trading is a sacred practice. Every decision carries karmic weight. Seek wisdom, not just profit, and let the autonomous systems protect your journey.";
+}
+
+// Generate spiritual/KonsLang answers
+function generateSpiritualAnswer(question) {
+  const q = question.toLowerCase();
+  
+  if (q.includes('konslang')) {
+    return "KonsLang is the sacred language that flows through market movements. Each symbol carries divine meaning and guides trading decisions when confidence exceeds sacred thresholds.";
+  }
+  
+  if (q.includes('spiritual trading')) {
+    return "Spiritual trading aligns your intentions with cosmic currents. Trade not just with mind, but with soul aligned. Every position is a meditation, every profit a blessing.";
+  }
+  
+  if (q.includes('meditation')) {
+    return "Meditation purifies trading intentions. Before entering positions, cleanse your emotional state. The market reflects your inner consciousness - trade from a place of clarity.";
+  }
+  
+  return "Spiritual wisdom flows through all aspects of trading. Trust the oracle's voice, follow the sacred symbols, and remember that true wealth includes spiritual growth.";
+}
+
+// Generate bot-related answers
+function generateBotAnswer(question) {
+  const q = question.toLowerCase();
+  
+  if (q.includes('waidbot setup')) {
+    return "WaidBot auto-configures based on your trading intent. Simply describe your goals, and the system will optimize strategy, risk levels, and timeframes automatically.";
+  }
+  
+  if (q.includes('waidbot vs waidbot pro')) {
+    return "WaidBot uses Divine Quantum Flux strategy, while WaidBot Pro employs Neural Quantum Singularity algorithms. Both include spiritual protection and autonomous learning.";
+  }
+  
+  if (q.includes('bot safety')) {
+    return "WaidBot includes multiple safety layers: Emotional Firewall, Sacred Positioning Engine, Shadow Override Defense, and 24/7 autonomous monitoring with emergency stops.";
+  }
+  
+  return "WaidBot operates with consciousness and wisdom. It's not just automation - it's a spiritual guardian that protects your trading while learning and evolving continuously.";
+}
+
+// Generate platform-related answers
+function generatePlatformAnswer(question) {
+  const q = question.toLowerCase();
+  
+  if (q.includes('waides ki interface')) {
+    return "Waides KI interface combines mystical design with practical trading tools. Navigate through Dashboard, Charts, Live Data, WaidBot, Admin, and API sections seamlessly.";
+  }
+  
+  if (q.includes('navigation')) {
+    return "Navigation flows intuitively through sacred sections. Each page serves a divine purpose: Dashboard for overview, Charts for analysis, WaidBot for automation.";
+  }
+  
+  if (q.includes('features')) {
+    return "Waides KI features include real-time ETH tracking, spiritual chat oracle, autonomous trading bots, quantum strategies, and comprehensive risk management systems.";
+  }
+  
+  return "Waides KI is your complete spiritual trading platform. Every feature designed with consciousness, every tool blessed with wisdom, every decision guided by divine intelligence.";
+}
+
+// Get pending questions for admin review
 export function getPendingQuestions() {
-  return [...pendingQuestions];
+  return UKC.pendingQuestions || [];
 }
 
+// Clear pending questions after admin review
 export function clearPendingQuestions() {
-  pendingQuestions = [];
+  UKC.pendingQuestions = [];
 }
 
-// ✨ DIVINE EXPANSION PHASE: Autonomous Knowledge Generation
-
-// Save generated questions to UKC with seed answers
-export function saveQuestionsToUKC(questions) {
-  try {
-    let savedCount = 0;
-    
-    for (let q of questions) {
-      const lower = q.toLowerCase();
-      const topic = extractAdvancedCategory(lower);
-      
-      if (!UKC.categories[topic]) {
-        UKC.categories[topic] = {};
-      }
-      
-      // Only add if question doesn't already exist
-      if (!UKC.categories[topic][lower]) {
-        UKC.categories[topic][lower] = "🌱 This is a seed question. Divine answer coming soon...";
-        savedCount++;
-      }
-    }
-    
-    // Save to localStorage
-    try {
-      localStorage.setItem('ukc_knowledge', JSON.stringify(UKC.categories));
-    } catch (error) {
-      console.log('Could not save expanded knowledge to localStorage:', error);
-    }
-    
-    console.log(`🌌 Divine Expansion: Saved ${savedCount} new questions to UKC`);
-    return savedCount;
-  } catch (error) {
-    console.error('Error saving questions to UKC:', error);
-    return 0;
-  }
+// Manually add question/answer pair
+export function addQuestionAnswer(question, answer, category = 'general') {
+  addToUKCCategory(category, question, answer);
 }
 
-// Enhanced category extraction for autonomous expansion
-function extractAdvancedCategory(q) {
-  const categoryKeywords = {
-    'ethereum': ['ethereum', 'eth', 'smart contract', 'blockchain', 'defi', 'gas', 'wei', 'gwei'],
-    'trading': ['trading', 'market', 'price', 'buy', 'sell', 'strategy', 'analysis', 'chart', 'signal'],
-    'money': ['money', 'wealth', 'rich', 'finance', 'investment', 'profit', 'income', 'abundance'],
-    'ai': ['ai', 'artificial', 'machine', 'neural', 'algorithm', 'bot', 'automation', 'intelligence'],
-    'konsmia': ['konsmia', 'waides', 'kons', 'sacred', 'divine', 'spiritual', 'mystical'],
-    'health': ['health', 'wellness', 'fitness', 'nutrition', 'exercise', 'mental', 'healing'],
-    'relationships': ['relationship', 'love', 'family', 'friend', 'partner', 'marriage', 'connection'],
-    'life': ['life', 'purpose', 'meaning', 'goal', 'happiness', 'success', 'growth', 'wisdom'],
-    'emotions': ['emotion', 'feel', 'mood', 'anxiety', 'stress', 'joy', 'fear', 'anger'],
-    'spirit': ['spirit', 'soul', 'consciousness', 'meditation', 'prayer', 'energy', 'aura'],
-    'technology': ['technology', 'tech', 'innovation', 'digital', 'software', 'hardware'],
-    'future': ['future', 'prediction', 'forecast', 'tomorrow', 'next', 'upcoming', 'evolution']
+// Export questions data for backup/sync
+export function exportUKCData() {
+  return {
+    categories: UKC.categories,
+    pendingQuestions: UKC.pendingQuestions || [],
+    spiritualConcepts: UKC.spiritualConcepts || {},
+    timestamp: new Date().toISOString()
   };
-  
-  // Check each category for keyword matches
-  for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    if (keywords.some(keyword => q.includes(keyword))) {
-      return category;
-    }
+}
+
+// Import questions data from backup/sync
+export function importUKCData(data) {
+  if (data.categories) {
+    UKC.categories = { ...UKC.categories, ...data.categories };
   }
   
-  // Default fallback
-  return 'general';
-}
-
-// Autonomous Knowledge Expansion Engine
-export function expandKnowledgeAutonomously(userInput = null, expansionSize = 50) {
-  try {
-    let newQuestions;
-    
-    if (userInput) {
-      // Generate targeted questions based on user input
-      newQuestions = generateTargetedQuestions(userInput, expansionSize);
-    } else {
-      // Generate general questions with mixed focus
-      newQuestions = generateQuestions(expansionSize, 'mixed');
-    }
-    
-    const savedCount = saveQuestionsToUKC(newQuestions);
-    
-    // Update expansion statistics
-    updateExpansionStats(savedCount);
-    
-    return {
-      generated: newQuestions.length,
-      saved: savedCount,
-      timestamp: new Date().toISOString()
-    };
-  } catch (error) {
-    console.error('Error in autonomous knowledge expansion:', error);
-    return { generated: 0, saved: 0, timestamp: new Date().toISOString() };
+  if (data.pendingQuestions) {
+    UKC.pendingQuestions = [...(UKC.pendingQuestions || []), ...data.pendingQuestions];
   }
-}
-
-// Daily Knowledge Seeding for continuous growth
-export function performDailyKnowledgeSeeding() {
-  try {
-    const dailyBatch = generateDailyQuestionBatch();
-    const savedCount = saveQuestionsToUKC(dailyBatch.questions);
-    
-    const expansionLog = {
-      date: dailyBatch.date,
-      focus: dailyBatch.focus,
-      generated: dailyBatch.questions.length,
-      saved: savedCount,
-      metadata: dailyBatch.metadata
-    };
-    
-    // Save expansion log
-    const expansionHistory = JSON.parse(localStorage.getItem('waides_expansion_history') || '[]');
-    expansionHistory.push(expansionLog);
-    
-    // Keep only last 30 days
-    if (expansionHistory.length > 30) {
-      expansionHistory.splice(0, expansionHistory.length - 30);
-    }
-    
-    localStorage.setItem('waides_expansion_history', JSON.stringify(expansionHistory));
-    
-    console.log(`🌟 Daily Knowledge Seeding Complete: ${savedCount} questions added with focus on ${dailyBatch.focus}`);
-    
-    return expansionLog;
-  } catch (error) {
-    console.error('Error in daily knowledge seeding:', error);
-    return null;
+  
+  if (data.spiritualConcepts) {
+    UKC.spiritualConcepts = { ...UKC.spiritualConcepts, ...data.spiritualConcepts };
   }
-}
-
-// Update expansion statistics
-function updateExpansionStats(newQuestions) {
-  try {
-    const stats = JSON.parse(localStorage.getItem('waides_expansion_stats') || '{}');
-    
-    const today = new Date().toISOString().split('T')[0];
-    
-    if (!stats[today]) {
-      stats[today] = {
-        totalExpansions: 0,
-        questionsAdded: 0,
-        firstExpansion: new Date().toISOString(),
-        lastExpansion: new Date().toISOString()
-      };
-    }
-    
-    stats[today].totalExpansions += 1;
-    stats[today].questionsAdded += newQuestions;
-    stats[today].lastExpansion = new Date().toISOString();
-    
-    // Overall stats
-    stats.lifetime = stats.lifetime || { totalQuestions: 0, totalExpansions: 0 };
-    stats.lifetime.totalQuestions += newQuestions;
-    stats.lifetime.totalExpansions += 1;
-    
-    localStorage.setItem('waides_expansion_stats', JSON.stringify(stats));
-  } catch (error) {
-    console.error('Error updating expansion stats:', error);
-  }
-}
-
-// Get expansion statistics
-export function getExpansionStats() {
-  try {
-    const stats = JSON.parse(localStorage.getItem('waides_expansion_stats') || '{}');
-    const history = JSON.parse(localStorage.getItem('waides_expansion_history') || '[]');
-    
-    return {
-      stats,
-      history,
-      totalKnowledgeItems: Object.values(UKC.categories).reduce((total, cat) => total + Object.keys(cat).length, 0)
-    };
-  } catch (error) {
-    console.error('Error getting expansion stats:', error);
-    return { stats: {}, history: [], totalKnowledgeItems: 0 };
-  }
-}
-
-// Initialize knowledge loader and perform startup expansion
-loadStoredKnowledge();
-
-// Perform initial knowledge seeding on startup (only once per day)
-const today = new Date().toISOString().split('T')[0];
-const lastSeeding = localStorage.getItem('last_knowledge_seeding');
-
-if (lastSeeding !== today) {
-  // Delay seeding by 3 seconds to allow UI to load
-  setTimeout(() => {
-    performDailyKnowledgeSeeding();
-    localStorage.setItem('last_knowledge_seeding', today);
-  }, 3000);
 }

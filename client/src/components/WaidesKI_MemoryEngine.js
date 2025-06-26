@@ -1,11 +1,12 @@
 import BotMemory from "./BotMemory";
 import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
 import UKC from './UKC';
-import { addPendingQuestion, autoTeachFromConversation, expandKnowledgeAutonomously } from './KnowledgeLoader';
+import { saveQuestionsToUKC, getPendingQuestions, addQuestionAnswer } from './KnowledgeLoader';
 import PageKnowledge from './PageKnowledge';
 import BehaviorTracker from './BehaviorTracker';
 import { getFlowRecommendation, generateFlowMessage, getFlowStepRoute } from './FlowComposer';
 import { autoConfigureBot, generateBotSetupMessage, getBotRecommendations } from './WaidBotAutoSetup';
+import { resolveQuestion } from './RealTimeResolver';
 
 // Dynamic memory for auto-learning - lives in runtime memory only
 let dynamicMemory = {};
@@ -81,6 +82,17 @@ function checkUKC(q) {
 // ✨ Very simple smart match function with Enhancement Plugins
 export default function getSmartAnswer(userInput, setBotState) {
   const q = userInput.toLowerCase().trim();
+
+  // 🚀 REAL-TIME DIVINE INTELLIGENCE LAYER - First Priority
+  // This layer provides instant responses without API delays
+  try {
+    const realtimeAnswer = resolveQuestion(q, 'user', setBotState);
+    if (realtimeAnswer) {
+      return realtimeAnswer;
+    }
+  } catch (error) {
+    console.log('Real-time intelligence processing...', error);
+  }
 
   // 🧠 Plugin 1: Behavior Tracker - Log page access and check preferences
   const currentUser = BehaviorTracker.sessionId;
@@ -234,18 +246,12 @@ export default function getSmartAnswer(userInput, setBotState) {
   if (q.includes("thank") || q.includes("grateful")) return "Your gratitude creates positive energy in the markets. This is the way of the spiritual trader.";
   if (q.includes("confused") || q.includes("lost")) return "Confusion is the beginning of understanding. Ask me specific questions and I will illuminate the path.";
 
-  // If no match found, add to pending questions for learning
-  addPendingQuestion(userInput);
-  
-  // ✨ DIVINE EXPANSION: Generate new questions while thinking
-  // This makes Waides KI literally birth new questions during conversations
+  // If no match found, save to UKC for learning
   try {
-    const expansionResult = expandKnowledgeAutonomously(userInput, 5);
-    if (expansionResult.saved > 0) {
-      console.log(`🌌 Divine Expansion: Generated ${expansionResult.saved} new questions while thinking about "${userInput}"`);
-    }
+    saveQuestionsToUKC([userInput]);
+    console.log(`🌌 Divine Expansion: Saved question "${userInput}" to Universal Knowledge Core`);
   } catch (error) {
-    console.log('Divine expansion encountered resistance:', error);
+    console.log('Knowledge expansion encountered resistance:', error);
   }
   
   // Store in dynamic memory with expansion notification
