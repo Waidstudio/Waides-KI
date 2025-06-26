@@ -7,7 +7,7 @@
 import { waidesKIImmunityCore } from './waidesKIImmunityCore.js';
 import { waidesKIImmuneTradeFilter } from './waidesKIImmuneTradeFilter.js';
 import { waidesKIPatternDNASequencer } from './waidesKIPatternDNASequencer.js';
-import { waidesKIBrainHiveController } from './waidesKIBrainHiveController.js';
+import { WaidesKIBrainHiveController } from './waidesKIBrainHiveController.js';
 
 interface WAISMonitoringStats {
   total_patterns_scanned: number;

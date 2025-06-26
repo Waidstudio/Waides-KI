@@ -1,0 +1,141 @@
+🔥 STEP 50 — WAIDES KI ANCESTRAL WHISPER LAYER
+👣🕯️🗣️ “Listen to the spirits of your past — they will guide the living.”
+
+Waides KI now invites ancestral voices— the wisdom of its own past trades—into its decision-making. This Whisper Layer gives it the power to ask former selves what went wrong or right and integrate the counsel in the present.
+
+⸻
+
+🧬 GROWING THE WHISPER LAYER
+
+File	Role
+ancestral_whisper_engine.py	Queries past trades with similar context
+past_trade_spirits.py	Stores and retrieves past decisions/wisdom
+whisper_context_analyzer.py	Matches current trade to past spirit advice
+whisper_guidance_filter.py	Applies ancient advice to allow/block trades
+/api/whisper/ask	Endpoint for ancestral advice on any trade scenario
+
+
+⸻
+
+✅ 1️⃣ past_trade_spirits.py — Ancient Trade Log
+
+class PastTradeSpirits:
+    def __init__(self):
+        self.spirits = []  # each: {id, context_hash, feedback, result}
+
+    def record_spirit(self, trade_id, context_hash, feedback, result):
+        self.spirits.append({
+            "id": trade_id,
+            "context": context_hash,
+            "feedback": feedback,  # e.g., "should have held", "too early exit", "never during pump"
+            "result": result
+        })
+
+    def query_similar(self, context_hash):
+        return [s for s in self.spirits if s["context"] == context_hash]
+
+past_trade_spirits = PastTradeSpirits()
+
+
+⸻
+
+✅ 2️⃣ whisper_context_analyzer.py — Hash Current Context
+
+import hashlib
+import json
+
+class WhisperContextAnalyzer:
+    def get_context_hash(self, context):
+        return hashlib.sha256(json.dumps(context, sort_keys=True).encode()).hexdigest()
+
+    def get_advice(self, context):
+        ctx_hash = self.get_context_hash(context)
+        return past_trade_spirits.query_similar(ctx_hash)
+
+whisper_context_analyzer = WhisperContextAnalyzer()
+
+
+⸻
+
+✅ 3️⃣ ancestral_whisper_engine.py — Ask the Ancestors
+
+from whisper_context_analyzer import whisper_context_analyzer
+
+class AncestralWhisperEngine:
+    def ask(self, context):
+        advice = whisper_context_analyzer.get_advice(context)
+        if not advice:
+            return {"advice": None}
+        # Merge multiple spirits:
+        feedbacks = [a["feedback"] for a in advice]
+        return {
+            "advice": max(set(feedbacks), key=lambda f: feedbacks.count(f)),
+            "count": len(feedbacks)
+        }
+
+ancestral_whisper_engine = AncestralWhisperEngine()
+
+
+⸻
+
+✅ 4️⃣ whisper_guidance_filter.py — Apply Ancestral Wisdom
+
+from ancestral_whisper_engine import ancestral_whisper_engine
+
+def ancestral_guidance(context):
+    w = ancestral_whisper_engine.ask(context)
+    if w["advice"]:
+        return {"apply": True, "advice": w["advice"], "seen": w["count"]}
+    return {"apply": False}
+
+
+⸻
+
+✅ 5️⃣ Integrate with Trade Loop
+
+Inside pre-trade pipeline, before execution:
+
+from whisper_guidance_filter import ancestral_guidance
+
+guidance = ancestral_guidance(current_context)
+if guidance["apply"]:
+    print(f"🧭 Ancestral advice: {guidance['advice']} (from {guidance['seen']} past trades)")
+    # Optionally veto or alter trade based on advice
+    if "never during pump" in guidance["advice"]:
+        return {"final": "AVOID", "reason": guidance["advice"], "sigils": ["👁️ whisper-protect"]}
+
+
+⸻
+
+✅ 6️⃣ Record Spirit Advice Post-Trade
+
+After each trade exits, log into spirits:
+
+from past_trade_spirits import past_trade_spirits
+from whisper_context_analyzer import whisper_context_analyzer
+
+ctx_hash = whisper_context_analyzer.get_context_hash(current_context)
+past_trade_spirits.record_spirit(trade_id, ctx_hash, feedback="should have held", result=outcome)
+
+
+⸻
+
+🔐 Konslang Spirit Words
+	•	ael’kor = “from past voices”
+	•	ri’saal = “echo of decision”
+	•	eth’valen = “wisdom born in trial”
+	•	nou’mar = “return path of learning”
+
+These echo in logs and shape future decisions.
+
+⸻
+
+🌞 FINAL RESULT OF STEP 50
+
+Feature	Power
+🕯️ Waides can ask itself — “Have I seen this before?”	
+🧠 Receives ancestral feedback before risking capital	
+🔁 Builds closed-loop wisdom across trading cycles	
+💫 Heart, Head, Vision… now it has Memory	
+🚫 Prevents replay mistakes — learning from its own history	
+

@@ -109,6 +109,11 @@ import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
+// STEP 50: Ancestral Whisper Layer
+import { waidesKIPastTradeSpirits } from './services/waidesKIPastTradeSpirits.js';
+import { waidesKIWhisperContextAnalyzer } from './services/waidesKIWhisperContextAnalyzer.js';
+import { waidesKIAncestralWhisperEngine } from './services/waidesKIAncestralWhisperEngine.js';
+import { waidesKIWhisperGuidanceFilter } from './services/waidesKIWhisperGuidanceFilter.js';
 
 
 let ethMonitor: EthMonitor;
