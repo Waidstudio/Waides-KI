@@ -52,7 +52,6 @@ function Router() {
     { path: "/enhanced-waidbot", label: "Enhanced Controller" },
     { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
-    { path: "/trading-academy", label: "Trading Academy" },
     { path: "/dream-vision", label: "Dream Vision" },
     { path: "/vision-spirit", label: "Vision Spirit" },
     { path: "/spiritual-recall", label: "Spiritual Recall" },
@@ -127,7 +126,6 @@ function Router() {
           <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
           <Route path="/autonomous-wealth" component={SmaiSikaWalletPage} />
           <Route path="/learning" component={LearningPage} />
-          <Route path="/trading-academy" component={LearningPage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
           <Route path="/reincarnation" component={ReincarnationLoop} />
