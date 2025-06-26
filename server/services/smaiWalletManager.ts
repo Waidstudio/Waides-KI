@@ -1,5 +1,5 @@
 import { db } from '../storage';
-import { smaiWallets, tradeHistory, botPerformance, executionLogs } from '../../shared/walletSchema';
+import { smaiWallets, tradeHistory, botPerformance, executionLogs } from '../../shared/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import crypto from 'crypto';
 

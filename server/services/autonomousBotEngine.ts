@@ -1,7 +1,7 @@
 import { SmaiWalletManager } from './smaiWalletManager';
 import { BasicWaidBot } from './basicWaidBot';
 import { WaidBotPro } from './waidBotPro';
-import { EnhancedWaidBotController } from './enhancedWaidBotController';
+import { EthMonitor } from './ethMonitor';
 
 /**
  * Autonomous Bot Engine - 24/7 Trading Intelligence
@@ -10,7 +10,6 @@ import { EnhancedWaidBotController } from './enhancedWaidBotController';
 export class AutonomousBotEngine {
   private static instance: AutonomousBotEngine;
   private walletManager: SmaiWalletManager;
-  private enhancedController: EnhancedWaidBotController;
   private basicWaidBot: BasicWaidBot;
   private waidBotPro: WaidBotPro;
   private isRunning: boolean = false;
@@ -26,7 +25,6 @@ export class AutonomousBotEngine {
 
   constructor() {
     this.walletManager = SmaiWalletManager.getInstance();
-    this.enhancedController = EnhancedWaidBotController.getInstance();
     this.basicWaidBot = new BasicWaidBot();
     this.waidBotPro = new WaidBotPro();
   }
@@ -141,21 +139,22 @@ export class AutonomousBotEngine {
    */
   private async getWaidesKISignal(botType: string): Promise<any> {
     try {
-      // Get current ETH price and market data
-      const ethPrice = this.enhancedController.getCurrentEthPrice();
-      const marketData = await this.enhancedController.getMarketData();
+      // Get current ETH price and market data from ETH monitor
+      const ethMonitor = new EthMonitor();
+      const marketData = await ethMonitor.fetchEthData();
+      const ethPrice = marketData?.price || 0;
 
       let signal;
       
       if (botType === 'Waidbot') {
         // Basic WaidBot - long-only ETH trading
-        signal = await this.basicWaidBot.generateTradingDecision();
+        signal = await this.basicWaidBot.generateDecision();
       } else if (botType === 'WaidbotPro') {
         // WaidBot Pro - advanced multi-strategy trading
-        signal = await this.waidBotPro.generateTradingDecision();
+        signal = await this.waidBotPro.generateDecision();
       } else {
         // Default to basic bot
-        signal = await this.basicWaidBot.generateTradingDecision();
+        signal = await this.basicWaidBot.generateDecision();
       }
 
       // Enhanced with Waides KI intelligence
