@@ -181,14 +181,41 @@ export default function WaidesKIVisionPortal() {
     setMessages(prev => [...prev, userMessage]);
     setIsProcessing(true);
 
-    // Check if it's a command
+    // Enhanced intelligent routing logic
+    const message = currentMessage.toLowerCase();
+    
+    // Command patterns
     const commandPrefixes = ['activate', 'start', 'stop', 'predict', 'analyze', 'get', 'show', 'enable', 'disable'];
-    const isCommand = commandPrefixes.some(prefix => currentMessage.toLowerCase().startsWith(prefix));
+    const isCommand = commandPrefixes.some(prefix => message.startsWith(prefix));
+    
+    // Waides KI self-knowledge patterns
+    const selfKnowledgePatterns = [
+      'who are you', 'what are you', 'tell me about yourself', 'about waides',
+      'your capabilities', 'what can you do', 'how do you work', 'your features',
+      'waides ki', 'consciousness', 'spiritual', 'layers', 'brain', 'intelligence'
+    ];
+    const isSelfKnowledge = selfKnowledgePatterns.some(pattern => message.includes(pattern));
+    
+    // ETH-based question patterns
+    const ethPatterns = [
+      'eth', 'ethereum', 'trading', 'market', 'price', 'strategy', 'buy', 'sell',
+      'investment', 'portfolio', 'blockchain', 'crypto', 'technical analysis'
+    ];
+    const isETHQuestion = ethPatterns.some(pattern => message.includes(pattern));
 
+    // Route to appropriate system
     if (isCommand) {
       commandMutation.mutate(currentMessage);
+    } else if (isSelfKnowledge || isETHQuestion) {
+      // Use enhanced bot memory for self-knowledge and ETH questions
+      questionMutation.mutate(currentMessage);
+    } else if (reasoningMode) {
+      reasoningMutation.mutate(currentMessage);
+    } else if (oracleEnabled) {
+      oracleMutation.mutate(currentMessage);
     } else {
-      chatMutation.mutate(currentMessage);
+      // Default to enhanced bot memory for comprehensive answers
+      questionMutation.mutate(currentMessage);
     }
 
     setCurrentMessage('');
@@ -233,12 +260,12 @@ export default function WaidesKIVisionPortal() {
   };
 
   const suggestions = [
-    "Create strategy",
-    "Predict ETH now", 
-    "Ask vision",
-    "Market analysis",
-    "Auto trade",
-    "Check balance"
+    "Who are you?",
+    "What can you do?", 
+    "Tell me about ETH trading",
+    "Your capabilities",
+    "Predict ETH now",
+    "Market analysis"
   ];
 
   const formatTime = (date: Date) => {
