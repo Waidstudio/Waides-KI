@@ -384,16 +384,16 @@ export default function WaidesFullEngine() {
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Win Rate:</span>
                       <span className="font-semibold">
-                        {(analytics.performance_analytics.win_rate * 100).toFixed(1)}%
+                        {((analytics.performance_analytics.win_rate || 0) * 100).toFixed(1)}%
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Total Return:</span>
                       <span className={`font-semibold ${
-                        analytics.performance_analytics.total_return_pct >= 0 
+                        (analytics.performance_analytics.total_return_pct || 0) >= 0 
                           ? 'text-green-500' : 'text-red-500'
                       }`}>
-                        {analytics.performance_analytics.total_return_pct.toFixed(2)}%
+                        {(analytics.performance_analytics.total_return_pct || 0).toFixed(2)}%
                       </span>
                     </div>
                     <div className="flex justify-between">

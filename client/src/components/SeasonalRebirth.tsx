@@ -495,7 +495,7 @@ export default function SeasonalRebirth() {
                 Memory Sigils + Time-Layered Training Engine
               </CardTitle>
               <CardDescription>
-                STEP 42: Waides KI builds "Sigils of Truth" from historical patterns with >75% win rates
+                STEP 42: Waides KI builds "Sigils of Truth" from historical patterns with &gt;75% win rates
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -517,7 +517,7 @@ export default function SeasonalRebirth() {
                       <span className="font-medium">Immortal Sigils</span>
                     </div>
                     <p className="text-2xl font-bold text-yellow-400">0</p>
-                    <p className="text-xs text-gray-400">>75% Win Rate</p>
+                    <p className="text-xs text-gray-400">&gt;75% Win Rate</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gray-700/30 border-gray-600/30">
@@ -656,7 +656,7 @@ export default function SeasonalRebirth() {
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                          <span>5. System builds "Sigils of Truth" (>75% win rate)</span>
+                          <span>5. System builds "Sigils of Truth" (&gt;75% win rate)</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
@@ -667,7 +667,7 @@ export default function SeasonalRebirth() {
                     <div className="mt-4 p-3 bg-gray-800/50 rounded border border-purple-500/20">
                       <p className="text-sm text-purple-200">
                         <strong>STEP 42 Innovation:</strong> Waides KI remembers every trading outcome and builds sacred "Sigils of Truth" 
-                        from patterns with >75% win rates. The system learns from time-layered historical data to predict future market movements 
+                        from patterns with greater than 75% win rates. The system learns from time-layered historical data to predict future market movements 
                         with increasing accuracy through continuous pattern recognition and spiritual memory evolution.
                       </p>
                     </div>
