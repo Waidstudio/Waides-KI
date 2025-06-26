@@ -4,7 +4,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mic, Send, Plus } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Mic, Send, Plus, Settings, Brain, Zap, TrendingUp, Eye, Sparkles, MicOff, Volume2, VolumeX, Moon, Sun, Star, Heart, Shield, Flame, Wand2, Gem, Compass } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -35,6 +41,14 @@ export default function WaidesKIVisionPortal() {
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [avatarGlow, setAvatarGlow] = useState(false);
+  const [activeTab, setActiveTab] = useState('chat');
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [spiritualEnergy, setSpiritualEnergy] = useState(75);
+  const [consciousnessLevel, setConsciousnessLevel] = useState(3);
+  const [auraIntensity, setAuraIntensity] = useState(50);
+  const [prophecyMode, setProphecyMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const chatWindowRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
@@ -158,7 +172,7 @@ export default function WaidesKIVisionPortal() {
     }
   };
 
-  const currentTime = new Date().toLocaleTimeString('en-US', { 
+  const timeString = new Date().toLocaleTimeString('en-US', { 
     hour: '2-digit', 
     minute: '2-digit',
     hour12: false 
@@ -176,7 +190,7 @@ export default function WaidesKIVisionPortal() {
 
       {/* Top Bar */}
       <div className="relative z-10 flex justify-between items-center p-4 text-white">
-        <span className="text-sm font-mono">{currentTime}</span>
+        <span className="text-sm font-mono">{timeString}</span>
         
         <div className="flex items-center gap-3">
           {/* Wallet Balance Bubble */}
