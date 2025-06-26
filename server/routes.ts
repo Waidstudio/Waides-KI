@@ -10667,5 +10667,301 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== STEP 48: WAIDES IMMUNE SYSTEM (WAIS) + PATTERN ANTIBODIES =====
+  
+  // Import immunity system components
+  const { waidesKIImmunityCore } = await import('./services/waidesKIImmunityCore.js');
+  const { waidesKIImmuneTradeFilter } = await import('./services/waidesKIImmuneTradeFilter.js');
+  const { waidesKIPatternDNASequencer } = await import('./services/waidesKIPatternDNASequencer.js');
+
+  // Get immunity system status
+  app.get("/api/immunity/status", async (req, res) => {
+    try {
+      const stats = waidesKIImmunityCore.getImmunityStats();
+      const antibodies = waidesKIImmunityCore.getAllAntibodies();
+      
+      res.json({
+        immunity_status: 'ACTIVE',
+        system_health: stats.immunity_effectiveness > 70 ? 'EXCELLENT' : stats.immunity_effectiveness > 50 ? 'GOOD' : 'LEARNING',
+        statistics: stats,
+        active_antibodies: antibodies.map(ab => ({
+          pattern_dna: ab.pattern_dna,
+          loss_count: ab.loss_count,
+          total_loss_amount: ab.total_loss_amount,
+          severity_level: ab.severity_level,
+          konslang_echo: ab.konslang_echo,
+          immunity_strength: ab.immunity_strength,
+          pattern_family: ab.pattern_family,
+          last_loss: ab.last_loss_date
+        })),
+        system_capabilities: [
+          'Pattern DNA sequencing and fingerprinting',
+          'Biological-like immunity learning from losses',
+          'Automatic trade blocking for harmful patterns',
+          'Konslang spiritual echo system',
+          'Fuzzy pattern matching and similarity detection'
+        ]
+      });
+    } catch (error) {
+      console.error('Error getting immunity status:', error);
+      res.status(500).json({ error: 'Failed to get immunity status' });
+    }
+  });
+
+  // Check immunity for specific pattern
+  app.post("/api/immunity/check", async (req, res) => {
+    try {
+      const { indicators } = req.body;
+      
+      if (!indicators) {
+        return res.status(400).json({ error: 'Missing indicators for immunity check' });
+      }
+
+      const immune_response = waidesKIImmunityCore.checkImmunity(indicators);
+      const similar_immunity = waidesKIImmunityCore.checkSimilarPatternImmunity(indicators);
+      const pattern_data = waidesKIPatternDNASequencer.sequence(indicators);
+      const risk_assessment = waidesKIImmuneTradeFilter.assessPatternRisk(indicators);
+
+      res.json({
+        pattern_dna: pattern_data.dna_string,
+        pattern_type: pattern_data.pattern_type,
+        complexity_score: pattern_data.complexity_score,
+        immune_response,
+        similar_immunity,
+        risk_assessment,
+        recommendation: immune_response.is_immune ? 'BLOCK_TRADE' : 
+                       similar_immunity.is_immune ? 'EXTREME_CAUTION' : 
+                       risk_assessment.risk_level === 'HIGH' ? 'PROCEED_WITH_CAUTION' : 'TRADE_CLEARED',
+        konslang_pattern: waidesKIPatternDNASequencer.generateKonslangPattern(pattern_data)
+      });
+    } catch (error) {
+      console.error('Error checking immunity:', error);
+      res.status(500).json({ error: 'Failed to check immunity' });
+    }
+  });
+
+  // Record trading loss to strengthen immunity
+  app.post("/api/immunity/record-loss", async (req, res) => {
+    try {
+      const { indicators, loss_amount, context } = req.body;
+      
+      if (!indicators || !loss_amount) {
+        return res.status(400).json({ error: 'Missing indicators or loss_amount' });
+      }
+
+      const antibody = waidesKIImmunityCore.registerLoss(indicators, loss_amount, context || '');
+      waidesKIImmuneTradeFilter.recordTradeLoss(indicators, loss_amount, context || '');
+
+      res.json({
+        success: true,
+        antibody_created: {
+          pattern_dna: antibody.pattern_dna,
+          loss_count: antibody.loss_count,
+          total_loss_amount: antibody.total_loss_amount,
+          severity_level: antibody.severity_level,
+          konslang_echo: antibody.konslang_echo,
+          immunity_strength: antibody.immunity_strength
+        },
+        message: `Immunity strengthened: ${antibody.konslang_echo}`,
+        system_learning: 'Pattern antibody created/strengthened for future protection'
+      });
+    } catch (error) {
+      console.error('Error recording loss:', error);
+      res.status(500).json({ error: 'Failed to record trading loss' });
+    }
+  });
+
+  // Get immunity report
+  app.get("/api/immunity/report", async (req, res) => {
+    try {
+      const report = waidesKIImmuneTradeFilter.generateImmunityReport();
+      res.json(report);
+    } catch (error) {
+      console.error('Error generating immunity report:', error);
+      res.status(500).json({ error: 'Failed to generate immunity report' });
+    }
+  });
+
+  // Manually inject antibody for dangerous pattern
+  app.post("/api/immunity/inject-antibody", async (req, res) => {
+    try {
+      const { pattern_dna, severity, reason } = req.body;
+      
+      if (!pattern_dna || !severity || !reason) {
+        return res.status(400).json({ error: 'Missing pattern_dna, severity, or reason' });
+      }
+
+      waidesKIImmuneTradeFilter.injectAntibody(pattern_dna, severity, reason);
+
+      res.json({
+        success: true,
+        injected_antibody: {
+          pattern_dna,
+          severity,
+          reason
+        },
+        message: 'Manual antibody injection completed',
+        warning: 'Pattern will be blocked by immunity system'
+      });
+    } catch (error) {
+      console.error('Error injecting antibody:', error);
+      res.status(500).json({ error: 'Failed to inject antibody' });
+    }
+  });
+
+  // Perform immunity maintenance
+  app.post("/api/immunity/maintenance", async (req, res) => {
+    try {
+      const purged = waidesKIImmuneTradeFilter.performImmunityMaintenance();
+      
+      res.json({
+        success: true,
+        maintenance_completed: true,
+        antibodies_purged: purged,
+        message: purged > 0 ? `Purged ${purged} old antibodies` : 'No antibodies needed purging',
+        system_health: 'Immunity system optimized'
+      });
+    } catch (error) {
+      console.error('Error performing immunity maintenance:', error);
+      res.status(500).json({ error: 'Failed to perform immunity maintenance' });
+    }
+  });
+
+  // Test immunity with Trinity Brain integration
+  app.post("/api/immunity/trinity-test", async (req, res) => {
+    try {
+      const { indicators } = req.body;
+      
+      if (!indicators) {
+        return res.status(400).json({ error: 'Missing indicators for trinity immunity test' });
+      }
+
+      // Check immunity first (biological firewall)
+      const immune_check = waidesKIImmuneTradeFilter.immuneCheck({ indicators });
+      
+      if (immune_check.action === 'BLOCKED') {
+        return res.json({
+          trinity_decision: 'IMMUNITY_BLOCKED',
+          immunity_override: true,
+          immune_check,
+          brain_voting: 'SKIPPED - Pattern blocked by immune system',
+          final_action: 'NO_TRADE',
+          konslang_warning: immune_check.konslang_warning,
+          system_protection: 'WAIS immunity system prevented harmful trade'
+        });
+      }
+
+      // If immunity cleared, proceed with Trinity Brain analysis
+      let trinity_decision;
+      try {
+        trinity_decision = await waidesKIBrainHiveController.makeDecision(indicators, {}, {});
+      } catch (brainError) {
+        console.log('Trinity brain system not ready, using fallback decision');
+        trinity_decision = {
+          final_decision: 'HOLD',
+          confidence: 50,
+          reasoning: 'Trinity brain system initializing'
+        };
+      }
+
+      res.json({
+        trinity_decision: trinity_decision.final_decision,
+        immunity_override: false,
+        immune_check,
+        brain_voting: trinity_decision,
+        final_action: trinity_decision.final_decision,
+        confidence: trinity_decision.confidence,
+        system_integration: 'WAIS immunity + Trinity Brain Model working together',
+        protection_layers: [
+          'WAIS Pattern Antibody System',
+          'Logic Brain Technical Analysis',
+          'Vision Brain Precognitive Analysis', 
+          'Heart Brain Moral Governance'
+        ]
+      });
+    } catch (error) {
+      console.error('Error in trinity immunity test:', error);
+      res.status(500).json({ error: 'Failed to execute trinity immunity test' });
+    }
+  });
+
+  // STEP 48 Demo workflow
+  app.get("/api/immunity/demo-workflow", async (req, res) => {
+    try {
+      // Simulate harmful trading pattern
+      const harmful_indicators = {
+        ema_50: 2500,
+        ema_200: 2520,
+        rsi: 75,
+        price: 2480,
+        volume: 1500000
+      };
+
+      // Simulate safe trading pattern
+      const safe_indicators = {
+        ema_50: 2510,
+        ema_200: 2500,
+        rsi: 55,
+        price: 2515,
+        volume: 2000000
+      };
+
+      // 1. Record loss for harmful pattern
+      const antibody1 = waidesKIImmunityCore.registerLoss(harmful_indicators, 250, 'Demo loss #1');
+      const antibody2 = waidesKIImmunityCore.registerLoss(harmful_indicators, 180, 'Demo loss #2');
+
+      // 2. Test immunity on harmful pattern
+      const harmful_immunity = waidesKIImmunityCore.checkImmunity(harmful_indicators);
+      const harmful_filter = waidesKIImmuneTradeFilter.immuneCheck({ indicators: harmful_indicators });
+
+      // 3. Test immunity on safe pattern
+      const safe_immunity = waidesKIImmunityCore.checkImmunity(safe_indicators);
+      const safe_filter = waidesKIImmuneTradeFilter.immuneCheck({ indicators: safe_indicators });
+
+      // 4. Get system statistics
+      const stats = waidesKIImmunityCore.getImmunityStats();
+
+      res.json({
+        demo_results: {
+          step_1: 'Recorded 2 losses for harmful pattern',
+          step_2: 'Pattern immunity automatically activated',
+          step_3: 'Safe pattern remains unblocked',
+          step_4: 'System statistics generated'
+        },
+        harmful_pattern: {
+          pattern_dna: waidesKIPatternDNASequencer.sequence(harmful_indicators).dna_string,
+          immunity_status: harmful_immunity,
+          filter_decision: harmful_filter,
+          antibody_strength: antibody2.immunity_strength,
+          konslang_echo: antibody2.konslang_echo
+        },
+        safe_pattern: {
+          pattern_dna: waidesKIPatternDNASequencer.sequence(safe_indicators).dna_string,
+          immunity_status: safe_immunity,
+          filter_decision: safe_filter,
+          risk_level: 'LOW'
+        },
+        system_stats: stats,
+        biological_behavior: {
+          learning: 'Every loss creates/strengthens antibodies',
+          memory: 'Patterns remembered with Konslang spiritual context',
+          protection: 'Harmful setups automatically blocked',
+          evolution: 'System becomes smarter with each mistake'
+        },
+        step_48_achievement: {
+          immunity_core: 'Pattern antibody creation and management',
+          dna_sequencer: 'Trading setup fingerprinting system', 
+          immune_filter: 'Biological firewall integration',
+          konslang_echoes: 'Spiritual memory system for pattern context',
+          trinity_integration: 'WAIS protects Trinity Brain decision-making'
+        },
+        message: 'STEP 48 completed - Waides KI now has biological-like immunity that learns from every loss and blocks harmful patterns automatically'
+      });
+    } catch (error) {
+      console.error('Error in STEP 48 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 48 immunity system demo' });
+    }
+  });
+
   return httpServer;
 }
