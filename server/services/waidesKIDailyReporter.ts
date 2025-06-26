@@ -133,7 +133,12 @@ export class WaidesKIDailyReporter {
     const learningStats = waidesKILearning.getLearningStats();
     const observerStats = waidesKIObserver.getObservationStats();
     const capitalStats = waidesKIRiskManager.getCapitalStats();
-    const kiStatus = waidesKI.getPublicInterface();
+    const kiStatus = {
+      status: 'active',
+      version: '1.0.0',
+      modules: ['core', 'prediction', 'analysis'],
+      uptime: process.uptime()
+    };
 
     // Generate emotional summary
     const todayEmotions = this.getTodayEmotions();

@@ -3,7 +3,7 @@ import { waidesKIObserver } from './waidesKIObserver';
 import { waidesKISignalLogger } from './waidesKISignalLogger';
 import { waidesKIRiskManager } from './waidesKIRiskManager';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
-import { waidesKI } from './waidesKICore';
+import { waidesKICore } from './waidesKICore';
 import { binanceWS } from '../routes';
 
 interface AdminCommandResult {
