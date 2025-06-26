@@ -79,7 +79,7 @@ export class WaidesKIMeshGuardianEngine {
       // Calculate guardian approval criteria
       const ok_consensus = consensus.should_execute && consensus.execution_confidence > 0.7;
       const ok_vision = vision.confidence > 0.6;
-      const ok_ethic = ethic.should_proceed;
+      const ok_ethic = ethic.approved;
       const ok_presence = presence.final_decision.confidence > 0.65;
       const ok_mesh = mesh.network_harmony > 0.6;
 
@@ -90,7 +90,7 @@ export class WaidesKIMeshGuardianEngine {
       const confidence = (
         consensus.execution_confidence * 0.25 +
         vision.confidence * 0.20 +
-        (ethic.should_proceed ? 0.8 : 0.2) * 0.20 +
+        (ethic.approved ? 0.8 : 0.2) * 0.20 +
         presence.final_decision.confidence * 0.20 +
         mesh.network_harmony * 0.15
       );
