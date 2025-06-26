@@ -5,8 +5,13 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
   biometricHash: text("biometric_hash"),
+  biometricPublicKey: text("biometric_public_key"),
+  lastBiometricAuth: timestamp("last_biometric_auth"),
+  moralityScore: integer("morality_score").default(100),
+  spiritualAlignment: integer("spiritual_alignment").default(100),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -35,16 +40,16 @@ export const memories = pgTable("memories", {
 export const trades = pgTable("trades", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  walletId: integer("wallet_id").notNull().references(() => wallets.id),
-  tradeType: text("trade_type").notNull(), // 'BUY', 'SELL'
-  symbol: text("symbol").notNull(), // 'ETH/USDT'
-  amount: numeric("amount", { precision: 15, scale: 8 }).notNull(),
-  price: numeric("price", { precision: 15, scale: 8 }).notNull(),
-  status: text("status").notNull().default("PENDING"), // 'PENDING', 'EXECUTED', 'FAILED', 'CANCELLED'
-  botEngine: text("bot_engine"), // 'WAIDBOT', 'WAIDBOT_PRO', 'MANUAL'
-  memorySignature: text("memory_signature"),
-  konsLangAdvice: text("konslang_advice"),
-  executedAt: timestamp("executed_at"),
+  type: text("type").notNull(), // 'BUY', 'SELL'
+  amount: text("amount").notNull(),
+  pair: text("pair").notNull(), // 'ETH/USDT'
+  confidence: integer("confidence").default(0),
+  strategy: text("strategy").default("manual"),
+  status: text("status").notNull().default("pending"), // 'pending', 'completed', 'failed', 'cancelled'
+  executedPrice: text("executed_price"),
+  fees: text("fees").default("0.00"),
+  profit: text("profit"),
+  completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

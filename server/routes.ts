@@ -219,6 +219,7 @@ import { waidesKIModelHealthMonitor } from './services/waidesKIModelHealthMonito
 import { waidesKIABTestingEngine } from './services/waidesKIABTestingEngine';
 import { GamifiedLearningSystem } from './services/gamifiedLearning';
 import { konsLangMemoryController } from './services/konsLangMemoryController';
+import { biometricAuthService } from './services/biometricAuth';
 import { db } from './storage';
 import { wallets, memories, trades, users } from '../shared/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
@@ -512,6 +513,570 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error unlocking funds:', error);
       res.status(500).json({ error: 'Failed to unlock funds' });
+    }
+  });
+
+  // ============================================================
+  // COMPREHENSIVE MEMORY & KONSLANG API ROUTES
+  // ============================================================
+
+  // GET /api/memory - Fetch user's KonsLang memories
+  app.get('/api/memory', auth, async (req: any, res: any) => {
+    try {
+      const { type } = req.query;
+      const memory = await konsLangMemoryController.fetchMemory(req.user.id, type);
+      res.json({ success: true, memory });
+    } catch (error) {
+      console.error('Error fetching memory:', error);
+      res.status(500).json({ error: 'Failed to fetch memory data' });
+    }
+  });
+
+  // POST /api/memory/record - Record new memory
+  app.post('/api/memory/record', auth, async (req: any, res: any) => {
+    try {
+      const { memoryType, memoryData } = req.body;
+      
+      if (!memoryType || !memoryData) {
+        return res.status(400).json({ error: 'Memory type and data required' });
+      }
+
+      await konsLangMemoryController.appendMemory(req.user.id, memoryType, memoryData);
+      res.json({ success: true, message: 'Memory recorded successfully' });
+    } catch (error) {
+      console.error('Error recording memory:', error);
+      res.status(500).json({ error: 'Failed to record memory' });
+    }
+  });
+
+  // GET /api/memory/stats - Get memory statistics
+  app.get('/api/memory/stats', auth, async (req: any, res: any) => {
+    try {
+      const stats = await konsLangMemoryController.getMemoryStatistics(req.user.id);
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error('Error fetching memory stats:', error);
+      res.status(500).json({ error: 'Failed to fetch memory statistics' });
+    }
+  });
+
+  // POST /api/memory/trade-outcome - Record trade outcome
+  app.post('/api/memory/trade-outcome', auth, async (req: any, res: any) => {
+    try {
+      const { tradeId, outcome, amount } = req.body;
+      
+      if (!tradeId || !outcome || !amount) {
+        return res.status(400).json({ error: 'Trade ID, outcome, and amount required' });
+      }
+
+      await konsLangMemoryController.recordTradeOutcome(req.user.id, tradeId, outcome, amount);
+      res.json({ success: true, message: 'Trade outcome recorded' });
+    } catch (error) {
+      console.error('Error recording trade outcome:', error);
+      res.status(500).json({ error: 'Failed to record trade outcome' });
+    }
+  });
+
+  // GET /api/memory/trade-permission - Check if trade is allowed
+  app.get('/api/memory/trade-permission', auth, async (req: any, res: any) => {
+    try {
+      const { amount, tradeType } = req.query;
+      
+      if (!amount || !tradeType) {
+        return res.status(400).json({ error: 'Amount and trade type required' });
+      }
+
+      const permission = await konsLangMemoryController.shouldAllowTrade(
+        req.user.id, 
+        parseFloat(amount), 
+        tradeType as 'BUY' | 'SELL'
+      );
+      
+      res.json({ success: true, permission });
+    } catch (error) {
+      console.error('Error checking trade permission:', error);
+      res.status(500).json({ error: 'Failed to check trade permission' });
+    }
+  });
+
+  // POST /api/memory/prune - Clean old memories
+  app.post('/api/memory/prune', auth, async (req: any, res: any) => {
+    try {
+      const { daysToKeep = 30 } = req.body;
+      await konsLangMemoryController.pruneOldMemories(req.user.id, daysToKeep);
+      res.json({ success: true, message: 'Old memories pruned successfully' });
+    } catch (error) {
+      console.error('Error pruning memories:', error);
+      res.status(500).json({ error: 'Failed to prune memories' });
+    }
+  });
+
+  // ============================================================
+  // TRADE MANAGEMENT API ROUTES
+  // ============================================================
+
+  // GET /api/trades - Fetch user's trade history
+  app.get('/api/trades', auth, async (req: any, res: any) => {
+    try {
+      const { limit = 50, offset = 0 } = req.query;
+      
+      const userTrades = await db.select()
+        .from(trades)
+        .where(eq(trades.userId, req.user.id))
+        .orderBy(desc(trades.createdAt))
+        .limit(parseInt(limit))
+        .offset(parseInt(offset));
+
+      res.json({ success: true, trades: userTrades });
+    } catch (error) {
+      console.error('Error fetching trades:', error);
+      res.status(500).json({ error: 'Failed to fetch trade history' });
+    }
+  });
+
+  // POST /api/trades/execute - Execute a new trade
+  app.post('/api/trades/execute', auth, async (req: any, res: any) => {
+    try {
+      const { type, amount, pair, confidence, strategy } = req.body;
+      
+      if (!type || !amount || !pair) {
+        return res.status(400).json({ error: 'Type, amount, and pair required' });
+      }
+
+      // Check if user has sufficient balance
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const smaiBalance = parseFloat(userWallet[0].smaiBalance!.toString());
+      const lockedAmount = parseFloat(userWallet[0].locked!.toString());
+      const availableBalance = smaiBalance - lockedAmount;
+
+      if (availableBalance < amount) {
+        return res.status(400).json({ error: 'Insufficient SMAI balance for trade' });
+      }
+
+      // Lock funds for the trade
+      await db.update(wallets)
+        .set({
+          locked: sql`locked + ${amount}`,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id));
+
+      // Record the trade
+      const newTrade = await db.insert(trades).values({
+        userId: req.user.id,
+        type,
+        amount: amount.toString(),
+        pair,
+        confidence: confidence || 0,
+        strategy: strategy || 'manual',
+        status: 'pending',
+        executedPrice: null,
+        fees: '0.00',
+        profit: null
+      }).returning();
+
+      res.json({ 
+        success: true, 
+        trade: newTrade[0],
+        message: 'Trade executed successfully'
+      });
+    } catch (error) {
+      console.error('Error executing trade:', error);
+      res.status(500).json({ error: 'Failed to execute trade' });
+    }
+  });
+
+  // PUT /api/trades/:id/complete - Complete a trade
+  app.put('/api/trades/:id/complete', auth, async (req: any, res: any) => {
+    try {
+      const { id } = req.params;
+      const { executedPrice, fees, profit } = req.body;
+      
+      const tradeToUpdate = await db.select()
+        .from(trades)
+        .where(and(eq(trades.id, parseInt(id)), eq(trades.userId, req.user.id)))
+        .limit(1);
+
+      if (!tradeToUpdate.length) {
+        return res.status(404).json({ error: 'Trade not found' });
+      }
+
+      const tradeAmount = parseFloat(tradeToUpdate[0].amount);
+      const tradeProfit = profit || 0;
+
+      // Update trade status
+      const updatedTrade = await db.update(trades)
+        .set({
+          status: 'completed',
+          executedPrice: executedPrice?.toString() || null,
+          fees: fees?.toString() || '0.00',
+          profit: tradeProfit.toString(),
+          completedAt: new Date()
+        })
+        .where(eq(trades.id, parseInt(id)))
+        .returning();
+
+      // Unlock funds and apply profit/loss
+      await db.update(wallets)
+        .set({
+          locked: sql`locked - ${tradeAmount}`,
+          smaiBalance: sql`smai_balance + ${tradeProfit}`,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id));
+
+      // Record trade outcome in memory
+      const outcome = tradeProfit > 0 ? 'profit' : (tradeProfit < 0 ? 'loss' : 'neutral');
+      await konsLangMemoryController.recordTradeOutcome(req.user.id, parseInt(id), outcome, Math.abs(tradeProfit));
+
+      res.json({ 
+        success: true, 
+        trade: updatedTrade[0],
+        message: 'Trade completed successfully'
+      });
+    } catch (error) {
+      console.error('Error completing trade:', error);
+      res.status(500).json({ error: 'Failed to complete trade' });
+    }
+  });
+
+  // ============================================================
+  // USER AUTHENTICATION API ROUTES
+  // ============================================================
+
+  // POST /api/auth/register - Register new user
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { username, email, password } = req.body;
+      
+      if (!username || !email || !password) {
+        return res.status(400).json({ error: 'Username, email, and password required' });
+      }
+
+      // Check if user already exists
+      const existingUser = await db.select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (existingUser.length > 0) {
+        return res.status(400).json({ error: 'User already exists' });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create user
+      const newUser = await db.insert(users).values({
+        username,
+        email,
+        password: hashedPassword
+      }).returning();
+
+      // Create default wallet
+      await db.insert(wallets).values({
+        userId: newUser[0].id,
+        localBalance: '1000.00',
+        smaiBalance: '500.00',
+        locked: '0.00',
+        karmaScore: 100,
+        tradeEnergy: 100,
+        divineApproval: true
+      });
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: newUser[0].id, username: newUser[0].username },
+        process.env.JWT_SECRET || 'waides-ki-secret',
+        { expiresIn: '24h' }
+      );
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          id: newUser[0].id,
+          username: newUser[0].username,
+          email: newUser[0].email
+        }
+      });
+    } catch (error) {
+      console.error('Error registering user:', error);
+      res.status(500).json({ error: 'Failed to register user' });
+    }
+  });
+
+  // POST /api/auth/login - Login user
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+      }
+
+      // Find user
+      const user = await db.select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (!user.length) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user[0].password);
+      
+      if (!validPassword) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user[0].id, username: user[0].username },
+        process.env.JWT_SECRET || 'waides-ki-secret',
+        { expiresIn: '24h' }
+      );
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          id: user[0].id,
+          username: user[0].username,
+          email: user[0].email
+        }
+      });
+    } catch (error) {
+      console.error('Error logging in:', error);
+      res.status(500).json({ error: 'Failed to login' });
+    }
+  });
+
+  // ============================================================
+  // INTEGRATION ENDPOINTS FOR FRONTEND COMPONENTS
+  // ============================================================
+
+  // Enhanced WaidBot activation with SMAI balance integration
+  app.post('/api/waidbot/activate', auth, async (req: any, res: any) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Valid amount required for WaidBot activation' });
+      }
+
+      // Check available SMAI balance
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const smaiBalance = parseFloat(userWallet[0].smaiBalance!.toString());
+      const lockedAmount = parseFloat(userWallet[0].locked!.toString());
+      const availableBalance = smaiBalance - lockedAmount;
+
+      if (availableBalance < amount) {
+        return res.status(400).json({ 
+          error: 'Insufficient SMAI balance', 
+          required: amount,
+          available: availableBalance 
+        });
+      }
+
+      // Check trade permission through KonsLang memory
+      const permission = await konsLangMemoryController.shouldAllowTrade(req.user.id, amount, 'BUY');
+      
+      if (!permission.allowed) {
+        return res.status(403).json({ 
+          error: 'Trade not permitted by KonsLang memory system',
+          reason: permission.reason 
+        });
+      }
+
+      // Lock funds for WaidBot trading
+      await db.update(wallets)
+        .set({
+          locked: sql`locked + ${amount}`,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id));
+
+      res.json({
+        success: true,
+        message: 'WaidBot activated successfully',
+        lockedAmount: amount,
+        availableBalance: availableBalance - amount
+      });
+    } catch (error) {
+      console.error('Error activating WaidBot:', error);
+      res.status(500).json({ error: 'Failed to activate WaidBot' });
+    }
+  });
+
+  // Enhanced WaidBot Pro activation with balance checking
+  app.post('/api/waidbot-pro/activate', auth, async (req: any, res: any) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Valid amount required for WaidBot Pro activation' });
+      }
+
+      // Check available SMAI balance
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const smaiBalance = parseFloat(userWallet[0].smaiBalance!.toString());
+      const lockedAmount = parseFloat(userWallet[0].locked!.toString());
+      const availableBalance = smaiBalance - lockedAmount;
+
+      if (availableBalance < amount) {
+        return res.status(400).json({ 
+          error: 'Insufficient SMAI balance', 
+          required: amount,
+          available: availableBalance 
+        });
+      }
+
+      // Lock funds for WaidBot Pro trading
+      await db.update(wallets)
+        .set({
+          locked: sql`locked + ${amount}`,
+          updatedAt: new Date()
+        })
+        .where(eq(wallets.userId, req.user.id));
+
+      res.json({
+        success: true,
+        message: 'WaidBot Pro activated successfully',
+        lockedAmount: amount,
+        availableBalance: availableBalance - amount
+      });
+    } catch (error) {
+      console.error('Error activating WaidBot Pro:', error);
+      res.status(500).json({ error: 'Failed to activate WaidBot Pro' });
+    }
+  });
+
+  // Chat interface integration endpoint
+  app.post('/api/chat/command', auth, async (req: any, res: any) => {
+    try {
+      const { message, type = 'general' } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message required' });
+      }
+
+      // Process command through WaidesKI Command Processor
+      const response = await waidesKICommandProcessor.processCommand(message, {
+        userId: req.user.id,
+        type,
+        timestamp: Date.now()
+      });
+
+      // Record interaction in memory system
+      await konsLangMemoryController.appendMemory(req.user.id, 'konslang', {
+        interaction: message,
+        response: response.message,
+        type,
+        timestamp: Date.now(),
+        confidence: response.confidence || 0
+      });
+
+      res.json({
+        success: true,
+        response: response.message,
+        type: response.type || 'info',
+        confidence: response.confidence || 0,
+        actions: response.actions || []
+      });
+    } catch (error) {
+      console.error('Error processing chat command:', error);
+      res.status(500).json({ error: 'Failed to process command' });
+    }
+  });
+
+  // Enhanced wallet balance endpoint for real-time updates
+  app.get('/api/wallet/balance', auth, async (req: any, res: any) => {
+    try {
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const wallet = userWallet[0];
+      const smaiBalance = parseFloat(wallet.smaiBalance!.toString());
+      const lockedAmount = parseFloat(wallet.locked!.toString());
+      const availableBalance = smaiBalance - lockedAmount;
+
+      // Check if any locks have expired
+      if (wallet.lockedUntil && new Date() > wallet.lockedUntil) {
+        await db.update(wallets)
+          .set({
+            locked: '0.00',
+            lockedUntil: null,
+            updatedAt: new Date()
+          })
+          .where(eq(wallets.userId, req.user.id));
+      }
+
+      res.json({
+        success: true,
+        smaiBalance,
+        localBalance: parseFloat(wallet.localBalance.toString()),
+        locked: lockedAmount,
+        available: availableBalance,
+        karmaScore: wallet.karmaScore,
+        tradeEnergy: wallet.tradeEnergy,
+        divineApproval: wallet.divineApproval
+      });
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      res.status(500).json({ error: 'Failed to fetch wallet balance' });
+    }
+  });
+
+  // Transaction history endpoint for wallet display
+  app.get('/api/wallet/transactions', auth, async (req: any, res: any) => {
+    try {
+      const { limit = 10 } = req.query;
+      
+      const transactions = await db.select()
+        .from(trades)
+        .where(eq(trades.userId, req.user.id))
+        .orderBy(desc(trades.createdAt))
+        .limit(parseInt(limit));
+
+      const formattedTransactions = transactions.map(trade => ({
+        id: trade.id,
+        type: trade.type,
+        amount: parseFloat(trade.amount),
+        pair: trade.pair,
+        status: trade.status,
+        profit: trade.profit ? parseFloat(trade.profit) : 0,
+        timestamp: trade.createdAt,
+        strategy: trade.strategy
+      }));
+
+      res.json({
+        success: true,
+        transactions: formattedTransactions
+      });
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ error: 'Failed to fetch transactions' });
     }
   });
 
@@ -16637,6 +17202,490 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
         error: 'Failed to start auto-evolution',
         details: error instanceof Error ? error.message : 'Unknown error'
       });
+    }
+  });
+
+  // ============================================================================
+  // SELF-DRIVING MORAL TRADING PLATFORM API ENDPOINTS
+  // ============================================================================
+
+  // ========== WALLET MANAGEMENT API ==========
+
+  // Get wallet balance and status
+  app.get('/api/smai-wallet', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const walletResult = await db.select()
+        .from(wallets)
+        .where(eq(wallets.userId, userId))
+        .limit(1);
+
+      if (!walletResult.length) {
+        // Create wallet if it doesn't exist
+        const newWallet = await db.insert(wallets)
+          .values({
+            userId,
+            localBalance: "0.00",
+            smaiBalance: "1000.00", // Default starting balance
+            locked: "0.00"
+          })
+          .returning();
+        
+        return res.json({
+          success: true,
+          wallet: {
+            localBalance: parseFloat(newWallet[0].localBalance || "0"),
+            smaiBalance: parseFloat(newWallet[0].smaiBalance || "0"),
+            locked: parseFloat(newWallet[0].locked || "0"),
+            lockedUntil: newWallet[0].lockedUntil,
+            karmaScore: newWallet[0].karmaScore,
+            tradeEnergy: newWallet[0].tradeEnergy,
+            divineApproval: newWallet[0].divineApproval
+          }
+        });
+      }
+
+      const wallet = walletResult[0];
+      res.json({
+        success: true,
+        wallet: {
+          localBalance: parseFloat(wallet.localBalance || "0"),
+          smaiBalance: parseFloat(wallet.smaiBalance || "0"),
+          locked: parseFloat(wallet.locked || "0"),
+          lockedUntil: wallet.lockedUntil,
+          karmaScore: wallet.karmaScore,
+          tradeEnergy: wallet.tradeEnergy,
+          divineApproval: wallet.divineApproval
+        }
+      });
+    } catch (error) {
+      console.error('Wallet fetch error:', error);
+      res.status(500).json({ error: 'Failed to fetch wallet data' });
+    }
+  });
+
+  // Lock funds for trading
+  app.post('/api/wallet/lock', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { amount, until } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      const walletResult = await db.select()
+        .from(wallets)
+        .where(eq(wallets.userId, userId))
+        .limit(1);
+
+      if (!walletResult.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const wallet = walletResult[0];
+      const currentBalance = parseFloat(wallet.smaiBalance || "0");
+      
+      if (currentBalance < amount) {
+        return res.status(400).json({ error: 'Insufficient balance' });
+      }
+
+      // Lock the funds
+      await db.update(wallets)
+        .set({
+          smaiBalance: (currentBalance - amount).toString(),
+          locked: (parseFloat(wallet.locked || "0") + amount).toString(),
+          lockedUntil: until ? new Date(until) : null
+        })
+        .where(eq(wallets.userId, userId));
+
+      res.json({ 
+        success: true, 
+        message: `₭${amount} locked for trading`,
+        lockedAmount: amount
+      });
+    } catch (error) {
+      console.error('Lock funds error:', error);
+      res.status(500).json({ error: 'Failed to lock funds' });
+    }
+  });
+
+  // Unlock funds (if time has passed or emergency unlock)
+  app.post('/api/wallet/unlock', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const now = new Date();
+
+      const walletResult = await db.select()
+        .from(wallets)
+        .where(eq(wallets.userId, userId))
+        .limit(1);
+
+      if (!walletResult.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const wallet = walletResult[0];
+      const lockedAmount = parseFloat(wallet.locked || "0");
+      
+      // Check if unlock is allowed
+      if (wallet.lockedUntil && wallet.lockedUntil > now) {
+        return res.status(400).json({ 
+          error: 'Funds still locked until ' + wallet.lockedUntil.toISOString() 
+        });
+      }
+
+      if (lockedAmount <= 0) {
+        return res.status(400).json({ error: 'No funds are locked' });
+      }
+
+      // Unlock the funds
+      await db.update(wallets)
+        .set({
+          smaiBalance: (parseFloat(wallet.smaiBalance || "0") + lockedAmount).toString(),
+          locked: "0.00",
+          lockedUntil: null
+        })
+        .where(eq(wallets.userId, userId));
+
+      res.json({ 
+        success: true, 
+        message: `₭${lockedAmount} unlocked`,
+        unlockedAmount: lockedAmount
+      });
+    } catch (error) {
+      console.error('Unlock funds error:', error);
+      res.status(500).json({ error: 'Failed to unlock funds' });
+    }
+  });
+
+  // ========== MORAL TRADING ENGINE API ==========
+
+  // Execute trade with moral and memory checks
+  app.post('/api/trade', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { amount, type = 'BUY', pair = 'ETH/USDT' } = req.body;
+
+      // Fetch user memory for moral assessment
+      const memory = await konsLangMemoryController.fetchMemory(userId);
+      
+      // Check if user has too many consecutive losses (moral block)
+      if (memory?.trade?.consecutiveLosses >= 3) {
+        await konsLangMemoryController.appendMemory(userId, 'decision', {
+          action: 'trade_blocked',
+          reason: 'excessive_losses',
+          moralityImpact: -10,
+          timestamp: Date.now()
+        });
+        
+        return res.json({ 
+          status: 'blocked', 
+          reason: 'Trading blocked due to excessive losses. Spiritual healing required.',
+          moralityScore: memory.trade?.moralityScore || 100
+        });
+      }
+
+      // Check wallet and locked funds
+      const walletResult = await db.select()
+        .from(wallets)
+        .where(eq(wallets.userId, userId))
+        .limit(1);
+
+      if (!walletResult.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      const wallet = walletResult[0];
+      const lockedAmount = parseFloat(wallet.locked || "0");
+
+      if (lockedAmount <= 0) {
+        return res.status(400).json({ 
+          error: 'No funds locked for trading. Lock funds first.' 
+        });
+      }
+
+      // Spiritual alignment check - random divine intervention
+      const spiritualAlignment = Math.random();
+      if (spiritualAlignment < 0.1) {
+        return res.json({ 
+          status: 'waiting', 
+          reason: 'Awaiting divine alignment. The spirits are not ready.',
+          spiritualEnergy: Math.floor(spiritualAlignment * 100)
+        });
+      }
+
+      // Simulate trade execution
+      const tradeSuccess = Math.random() > 0.4; // 60% success rate
+      const profitMultiplier = tradeSuccess ? (0.05 + Math.random() * 0.15) : -(0.02 + Math.random() * 0.08);
+      const profit = lockedAmount * profitMultiplier;
+      const finalAmount = lockedAmount + profit;
+
+      // Record trade in database
+      const tradeRecord = await db.insert(trades)
+        .values({
+          userId,
+          type,
+          amount: lockedAmount.toString(),
+          pair,
+          confidence: Math.floor(spiritualAlignment * 100),
+          strategy: 'moral_trading',
+          status: tradeSuccess ? 'completed' : 'failed',
+          executedPrice: (2400 + Math.random() * 100).toString(),
+          profit: profit.toString(),
+          completedAt: new Date()
+        })
+        .returning();
+
+      // Update wallet with results
+      await db.update(wallets)
+        .set({
+          smaiBalance: Math.max(0, finalAmount).toString(),
+          locked: "0.00",
+          lockedUntil: null,
+          karmaScore: tradeSuccess ? 
+            Math.min(150, (wallet.karmaScore || 100) + 5) : 
+            Math.max(50, (wallet.karmaScore || 100) - 3),
+          tradeEnergy: Math.max(20, (wallet.tradeEnergy || 100) - 10)
+        })
+        .where(eq(wallets.userId, userId));
+
+      // Update memory with trade outcome
+      await konsLangMemoryController.appendMemory(userId, 'trade', {
+        lastResult: tradeSuccess ? 'profit' : 'loss',
+        consecutiveLosses: tradeSuccess ? 0 : (memory?.trade?.consecutiveLosses || 0) + 1,
+        consecutiveWins: tradeSuccess ? (memory?.trade?.consecutiveWins || 0) + 1 : 0,
+        lastTradeTime: Date.now(),
+        emotionalState: tradeSuccess ? 'excited' : 'fearful',
+        moralityScore: tradeSuccess ? 
+          Math.min(150, (memory?.trade?.moralityScore || 100) + 2) : 
+          Math.max(50, (memory?.trade?.moralityScore || 100) - 5)
+      });
+
+      res.json({ 
+        status: 'completed', 
+        success: tradeSuccess,
+        profit: parseFloat(profit.toFixed(2)),
+        finalAmount: parseFloat(finalAmount.toFixed(2)),
+        trade: tradeRecord[0],
+        karmaImpact: tradeSuccess ? '+5' : '-3',
+        message: tradeSuccess ? 
+          'Trade blessed by divine prosperity!' : 
+          'Loss absorbed for spiritual growth.'
+      });
+
+    } catch (error) {
+      console.error('Trade execution error:', error);
+      res.status(500).json({ error: 'Failed to execute trade' });
+    }
+  });
+
+  // Get trading history
+  app.get('/api/trade/history', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { limit = 20, offset = 0 } = req.query;
+
+      const tradeHistory = await db.select()
+        .from(trades)
+        .where(eq(trades.userId, userId))
+        .orderBy(desc(trades.createdAt))
+        .limit(parseInt(limit as string))
+        .offset(parseInt(offset as string));
+
+      const totalTrades = await db.select({ count: sql`COUNT(*)` })
+        .from(trades)
+        .where(eq(trades.userId, userId));
+
+      res.json({
+        success: true,
+        trades: tradeHistory,
+        total: totalTrades[0].count,
+        pagination: {
+          limit: parseInt(limit as string),
+          offset: parseInt(offset as string)
+        }
+      });
+    } catch (error) {
+      console.error('Trade history error:', error);
+      res.status(500).json({ error: 'Failed to fetch trade history' });
+    }
+  });
+
+  // ========== BIOMETRIC AUTHENTICATION API ==========
+
+  // Generate biometric challenge
+  app.get('/api/auth/biometric/challenge', (req, res) => {
+    try {
+      const challenge = biometricAuthService.generateChallenge();
+      res.json({ 
+        success: true, 
+        challenge,
+        message: 'Biometric challenge generated'
+      });
+    } catch (error) {
+      console.error('Challenge generation error:', error);
+      res.status(500).json({ error: 'Failed to generate challenge' });
+    }
+  });
+
+  // Register biometric credential
+  app.post('/api/auth/biometric/register', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { publicKey } = req.body;
+
+      if (!publicKey) {
+        return res.status(400).json({ error: 'Public key required' });
+      }
+
+      const success = await biometricAuthService.registerBiometric(userId, publicKey);
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: 'Biometric authentication registered successfully'
+        });
+      } else {
+        res.status(500).json({ error: 'Failed to register biometric' });
+      }
+    } catch (error) {
+      console.error('Biometric registration error:', error);
+      res.status(500).json({ error: 'Failed to register biometric' });
+    }
+  });
+
+  // Verify biometric authentication
+  app.post('/api/auth/biometric/verify', async (req, res) => {
+    try {
+      const { credential } = req.body;
+
+      if (!credential) {
+        return res.status(400).json({ error: 'Credential required' });
+      }
+
+      const result = await biometricAuthService.verifyBiometric(credential);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          token: result.token,
+          user: result.user,
+          message: 'Biometric authentication successful'
+        });
+      } else {
+        res.status(401).json({ 
+          success: false, 
+          error: result.error || 'Biometric verification failed'
+        });
+      }
+    } catch (error) {
+      console.error('Biometric verification error:', error);
+      res.status(500).json({ error: 'Failed to verify biometric' });
+    }
+  });
+
+  // Check biometric status
+  app.get('/api/auth/biometric/status', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const hasBiometric = await biometricAuthService.hasBiometric(userId);
+      
+      res.json({
+        success: true,
+        hasBiometric,
+        message: hasBiometric ? 'Biometric enabled' : 'Biometric not configured'
+      });
+    } catch (error) {
+      console.error('Biometric status error:', error);
+      res.status(500).json({ error: 'Failed to check biometric status' });
+    }
+  });
+
+  // Remove biometric authentication
+  app.delete('/api/auth/biometric', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const success = await biometricAuthService.removeBiometric(userId);
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: 'Biometric authentication removed successfully'
+        });
+      } else {
+        res.status(500).json({ error: 'Failed to remove biometric' });
+      }
+    } catch (error) {
+      console.error('Biometric removal error:', error);
+      res.status(500).json({ error: 'Failed to remove biometric' });
+    }
+  });
+
+  // ========== MEMORY & MORALITY API ==========
+
+  // Get user memory and morality stats
+  app.get('/api/memory/stats', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const stats = await konsLangMemoryController.getMemoryStatistics(userId);
+      
+      res.json({
+        success: true,
+        memoryStats: stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Memory stats error:', error);
+      res.status(500).json({ error: 'Failed to fetch memory statistics' });
+    }
+  });
+
+  // Record decision or action in memory
+  app.post('/api/memory/record', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { type, data } = req.body;
+
+      if (!type || !data) {
+        return res.status(400).json({ error: 'Type and data required' });
+      }
+
+      await konsLangMemoryController.appendMemory(userId, type, {
+        ...data,
+        timestamp: Date.now()
+      });
+
+      res.json({
+        success: true,
+        message: `${type} memory recorded successfully`
+      });
+    } catch (error) {
+      console.error('Memory record error:', error);
+      res.status(500).json({ error: 'Failed to record memory' });
+    }
+  });
+
+  // Check if trade should be allowed based on memory
+  app.post('/api/memory/check-trade', auth, async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { amount, type } = req.body;
+
+      const decision = await konsLangMemoryController.shouldAllowTrade(
+        userId, 
+        amount, 
+        type
+      );
+
+      res.json({
+        success: true,
+        decision,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Trade check error:', error);
+      res.status(500).json({ error: 'Failed to check trade eligibility' });
     }
   });
 
