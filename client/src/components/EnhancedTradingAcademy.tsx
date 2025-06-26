@@ -139,6 +139,370 @@ export default function EnhancedTradingAcademy() {
     }
   ];
 
+  // Detailed Course Lessons - Technical Analysis Mastery
+  const technicalAnalysisLessons = [
+    {
+      id: 1,
+      title: 'Introduction to Technical Analysis',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the core principles of technical analysis',
+          'Learn the difference between technical and fundamental analysis',
+          'Identify key assumptions and limitations of technical analysis'
+        ],
+        keyPoints: [
+          'Price action reflects all available information',
+          'Market trends tend to persist over time',
+          'History repeats itself in market behavior',
+          'Technical analysis works across all timeframes and markets'
+        ],
+        summary: 'Technical analysis is the study of price action and market behavior to predict future price movements. It relies on the principle that all market information is reflected in price, making chart analysis a powerful tool for trading decisions.'
+      }
+    },
+    {
+      id: 2,
+      title: 'Chart Types and Timeframes',
+      duration: '30 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Master different chart types: line, bar, and candlestick charts',
+          'Understand how to select appropriate timeframes for analysis',
+          'Learn the advantages and disadvantages of each chart type'
+        ],
+        keyPoints: [
+          'Candlestick charts provide the most information about price action',
+          'Higher timeframes show stronger trends and support/resistance',
+          'Multiple timeframe analysis improves trading accuracy',
+          'Line charts are best for identifying long-term trends'
+        ],
+        summary: 'Chart selection and timeframe analysis are fundamental skills in technical analysis. Candlestick charts offer the most detailed view of price action, while proper timeframe selection helps align trades with market trends.'
+      }
+    },
+    {
+      id: 3,
+      title: 'Support and Resistance Fundamentals',
+      duration: '35 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Identify horizontal support and resistance levels',
+          'Understand the psychology behind support and resistance',
+          'Learn how support becomes resistance and vice versa'
+        ],
+        keyPoints: [
+          'Support levels act as price floors where buying interest emerges',
+          'Resistance levels act as price ceilings where selling pressure increases',
+          'Broken support often becomes new resistance',
+          'Volume confirmation strengthens support/resistance levels'
+        ],
+        summary: 'Support and resistance levels are the foundation of technical analysis. These price levels represent areas where supply and demand forces create significant price reactions, forming the basis for entry and exit decisions.'
+      }
+    },
+    {
+      id: 4,
+      title: 'Trend Lines and Channels',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Draw accurate trend lines using swing highs and lows',
+          'Identify uptrends, downtrends, and sideways trends',
+          'Construct trend channels for range-bound trading'
+        ],
+        keyPoints: [
+          'Trend lines connect at least two significant price points',
+          'Steeper trend lines are less reliable than gradual ones',
+          'Trend line breaks often signal trend reversals',
+          'Channels help identify optimal entry and exit points'
+        ],
+        summary: 'Trend lines and channels are essential tools for identifying market direction and potential reversal points. Proper trend line construction requires connecting significant swing points and understanding market structure.'
+      }
+    },
+    {
+      id: 5,
+      title: 'Moving Averages: Simple and Exponential',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand Simple Moving Average (SMA) and Exponential Moving Average (EMA)',
+          'Learn how to use moving averages for trend identification',
+          'Master moving average crossover strategies'
+        ],
+        keyPoints: [
+          'SMAs give equal weight to all periods in the calculation',
+          'EMAs give more weight to recent prices, making them more responsive',
+          'Moving average crossovers can signal trend changes',
+          'Price above/below MA indicates bullish/bearish bias'
+        ],
+        summary: 'Moving averages smooth price data to identify trends and provide dynamic support/resistance levels. EMAs react faster to price changes, while SMAs provide more stable trend identification.'
+      }
+    },
+    {
+      id: 6,
+      title: 'RSI: Momentum and Divergence Analysis',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Calculate and interpret RSI values for momentum analysis',
+          'Identify overbought and oversold conditions',
+          'Spot bullish and bearish divergences for reversal signals'
+        ],
+        keyPoints: [
+          'RSI ranges from 0 to 100, with 70+ overbought and 30- oversold',
+          'RSI divergence often precedes price reversals',
+          'RSI trendlines can provide additional confirmation signals',
+          'RSI works best in ranging markets, less effective in strong trends'
+        ],
+        summary: 'The Relative Strength Index (RSI) measures momentum and helps identify potential reversal points. Divergence analysis using RSI provides early warning signals for trend changes.'
+      }
+    },
+    {
+      id: 7,
+      title: 'MACD: Trend and Momentum Convergence',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand MACD line, signal line, and histogram components',
+          'Learn MACD crossover signals and their implications',
+          'Use MACD for trend confirmation and momentum analysis'
+        ],
+        keyPoints: [
+          'MACD line crossing above signal line suggests bullish momentum',
+          'MACD histogram shows the strength of momentum changes',
+          'MACD works best in trending markets',
+          'Zero line crossovers indicate potential trend changes'
+        ],
+        summary: 'MACD combines trend-following and momentum characteristics, making it versatile for both trend identification and timing entry/exit points. The histogram provides additional insight into momentum strength.'
+      }
+    },
+    {
+      id: 8,
+      title: 'Bollinger Bands: Volatility and Mean Reversion',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand Bollinger Band construction and interpretation',
+          'Use bands for volatility measurement and trading signals',
+          'Identify squeeze patterns and expansion phases'
+        ],
+        keyPoints: [
+          'Bands expand during high volatility and contract during low volatility',
+          'Price touching bands suggests potential reversal opportunities',
+          'Bollinger squeezes often precede significant price moves',
+          'Middle band (20 SMA) acts as dynamic support/resistance'
+        ],
+        summary: 'Bollinger Bands adapt to market volatility, providing dynamic support and resistance levels. Band squeezes and expansions help identify optimal trading opportunities in different market conditions.'
+      }
+    },
+    {
+      id: 9,
+      title: 'Volume Analysis and Price-Volume Relationships',
+      duration: '35 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the relationship between price and volume',
+          'Learn volume confirmation patterns for trend validation',
+          'Identify volume divergences and their implications'
+        ],
+        keyPoints: [
+          'Volume should increase in the direction of the trend',
+          'High volume breakouts are more reliable than low volume ones',
+          'Volume divergence can signal potential trend weakness',
+          'Volume spikes often occur at reversal points'
+        ],
+        summary: 'Volume analysis confirms the strength behind price movements. Understanding price-volume relationships helps validate trend direction and identify potential reversal points.'
+      }
+    },
+    {
+      id: 10,
+      title: 'Classic Chart Patterns: Triangles and Flags',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Identify ascending, descending, and symmetrical triangles',
+          'Recognize flag and pennant continuation patterns',
+          'Calculate price targets for pattern breakouts'
+        ],
+        keyPoints: [
+          'Triangles typically resolve in the direction of the prior trend',
+          'Flags and pennants are short-term continuation patterns',
+          'Volume should decrease during pattern formation',
+          'Breakout volume confirms pattern validity'
+        ],
+        summary: 'Chart patterns provide visual representations of market psychology and help predict future price movements. Triangle and flag patterns are among the most reliable continuation patterns in technical analysis.'
+      }
+    },
+    {
+      id: 11,
+      title: 'Reversal Patterns: Head and Shoulders, Double Tops/Bottoms',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Identify head and shoulders reversal patterns',
+          'Recognize double top and double bottom formations',
+          'Calculate pattern targets and risk management levels'
+        ],
+        keyPoints: [
+          'Head and shoulders patterns signal major trend reversals',
+          'Neckline breaks confirm pattern completion',
+          'Volume should increase on neckline breakouts',
+          'Failed patterns often lead to strong moves in the opposite direction'
+        ],
+        summary: 'Reversal patterns indicate potential trend changes and provide high-probability trading opportunities. Proper pattern identification and confirmation are crucial for successful reversal trading.'
+      }
+    },
+    {
+      id: 12,
+      title: 'Fibonacci Retracements and Extensions',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Apply Fibonacci retracement levels to identify support/resistance',
+          'Use Fibonacci extensions for profit target calculation',
+          'Combine Fibonacci with other technical analysis tools'
+        ],
+        keyPoints: [
+          'Key Fibonacci levels: 23.6%, 38.2%, 50%, 61.8%, 78.6%',
+          '61.8% retracement is often the deepest pullback in strong trends',
+          'Fibonacci extensions help project price targets',
+          'Confluence with other levels increases reliability'
+        ],
+        summary: 'Fibonacci retracements help identify potential reversal levels within trends, while extensions project profit targets. These mathematical ratios appear frequently in financial markets.'
+      }
+    },
+    {
+      id: 13,
+      title: 'Candlestick Patterns: Single and Multiple Candle Formations',
+      duration: '45 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master single candlestick patterns: doji, hammer, shooting star',
+          'Identify multiple candlestick patterns: engulfing, morning/evening star',
+          'Apply candlestick analysis for entry and exit timing'
+        ],
+        keyPoints: [
+          'Candlestick patterns show market sentiment and potential reversals',
+          'Patterns are more reliable at key support/resistance levels',
+          'Volume confirmation strengthens candlestick signals',
+          'Context matters more than individual pattern formation'
+        ],
+        summary: 'Candlestick patterns provide insight into market psychology and help time entries and exits. Understanding both single and multiple candle formations improves trading precision.'
+      }
+    },
+    {
+      id: 14,
+      title: 'Multiple Timeframe Analysis',
+      duration: '35 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Implement top-down analysis using multiple timeframes',
+          'Align short-term trades with longer-term trends',
+          'Identify optimal entry points using timeframe confluence'
+        ],
+        keyPoints: [
+          'Higher timeframes determine overall market direction',
+          'Lower timeframes provide precise entry and exit points',
+          'Trade in the direction of the higher timeframe trend',
+          'Look for confluence between different timeframe signals'
+        ],
+        summary: 'Multiple timeframe analysis improves trading accuracy by aligning trades with the broader market trend while using lower timeframes for precise timing.'
+      }
+    },
+    {
+      id: 15,
+      title: 'Market Structure and Smart Money Concepts',
+      duration: '40 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand market structure: higher highs, higher lows, lower highs, lower lows',
+          'Identify institutional order flow and smart money movements',
+          'Recognize liquidity zones and market manipulation patterns'
+        ],
+        keyPoints: [
+          'Market structure defines the current trend direction',
+          'Break of structure signals potential trend changes',
+          'Smart money often moves opposite to retail sentiment',
+          'Liquidity grabs often precede significant moves'
+        ],
+        summary: 'Understanding market structure and smart money concepts provides insight into institutional trading behavior and helps identify high-probability trading opportunities.'
+      }
+    },
+    {
+      id: 16,
+      title: 'Advanced Pattern Recognition',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Identify complex patterns: cup and handle, wedges, diamonds',
+          'Recognize harmonic patterns: ABCD, Gartley, butterfly',
+          'Apply advanced pattern trading strategies'
+        ],
+        keyPoints: [
+          'Complex patterns often provide higher probability setups',
+          'Harmonic patterns use Fibonacci ratios for precise reversal levels',
+          'Pattern failure can provide strong counter-trend opportunities',
+          'Combine patterns with other technical indicators for confirmation'
+        ],
+        summary: 'Advanced pattern recognition expands trading opportunities and provides more sophisticated entry and exit techniques for experienced traders.'
+      }
+    },
+    {
+      id: 17,
+      title: 'Momentum Oscillators: Stochastic and Williams %R',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Apply Stochastic oscillator for momentum analysis',
+          'Use Williams %R for overbought/oversold identification',
+          'Combine oscillators with trend analysis for optimal timing'
+        ],
+        keyPoints: [
+          'Stochastic compares closing price to recent price range',
+          'Williams %R measures momentum from a different perspective',
+          'Oscillators work best in ranging or corrective markets',
+          'Divergence signals often precede price reversals'
+        ],
+        summary: 'Momentum oscillators provide additional confirmation for trading decisions and help identify optimal entry and exit timing within established trends.'
+      }
+    },
+    {
+      id: 18,
+      title: 'Building a Complete Technical Analysis Trading System',
+      duration: '45 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Integrate multiple technical tools into a cohesive trading system',
+          'Develop entry and exit criteria using technical analysis',
+          'Create a systematic approach to market analysis and trade execution'
+        ],
+        keyPoints: [
+          'Combine trend, momentum, and volume analysis for comprehensive view',
+          'Use multiple confirmations before entering trades',
+          'Develop systematic rules for risk management and position sizing',
+          'Backtest and refine your technical analysis system'
+        ],
+        summary: 'A complete technical analysis system integrates multiple tools and techniques to create consistent, rule-based trading decisions. Systematic approach reduces emotional trading and improves long-term results.'
+      }
+    }
+  ];
+
   // Detailed Course Lessons - Trading Fundamentals
   const tradingFundamentalsLessons = [
     {
@@ -765,6 +1129,214 @@ export default function EnhancedTradingAcademy() {
                 ))}
               </div>
             </>
+          )}
+
+          {/* Technical Analysis Mastery Course Detail View */}
+          {selectedCourse === 'technical-analysis' && (
+            <div className="space-y-6">
+              {/* Course Header with Back Button */}
+              <Card className="bg-gradient-to-r from-purple-900 to-indigo-900 border-purple-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-white text-2xl flex items-center space-x-3">
+                        <BarChart3 className="h-8 w-8" />
+                        <span>Technical Analysis Mastery</span>
+                        <Badge className="bg-orange-600 text-white">INTERMEDIATE</Badge>
+                      </CardTitle>
+                      <CardDescription className="text-purple-200 mt-2">
+                        Master chart patterns, indicators, and technical trading strategies
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCourse(null);
+                        setSelectedLesson(null);
+                      }}
+                      className="text-white border-white hover:bg-white hover:text-purple-900"
+                    >
+                      ← Back to Courses
+                    </Button>
+                  </div>
+                  <div className="flex items-center space-x-6 mt-4 text-purple-200">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>6 hours total</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="h-4 w-4" />
+                      <span>18 lessons</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>{Object.keys(lessonProgress).length}/18 completed</span>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Lesson List or Lesson Detail */}
+              {!selectedLesson && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {technicalAnalysisLessons.map((lesson) => (
+                    <Card 
+                      key={lesson.id} 
+                      className={`bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-300 cursor-pointer ${
+                        lessonProgress[lesson.id] ? 'border-green-500' : ''
+                      }`}
+                      onClick={() => setSelectedLesson(lesson.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-white text-lg flex items-center space-x-2">
+                              <span className="text-purple-500">#{lesson.id}</span>
+                              <span>{lesson.title}</span>
+                              {lessonProgress[lesson.id] && <Badge className="bg-green-600">✓ Completed</Badge>}
+                            </CardTitle>
+                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{lesson.duration}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.type}
+                              </Badge>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Individual Lesson Detail */}
+              {selectedLesson && (
+                <div className="space-y-6">
+                  {(() => {
+                    const lesson = technicalAnalysisLessons.find(l => l.id === selectedLesson);
+                    if (!lesson) return null;
+                    
+                    return (
+                      <>
+                        <Card className="bg-gray-800 border-gray-700">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <CardTitle className="text-white text-xl flex items-center space-x-2">
+                                  <span className="text-purple-500">Lesson {lesson.id}:</span>
+                                  <span>{lesson.title}</span>
+                                </CardTitle>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{lesson.duration}</span>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {lesson.type}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedLesson(null)}
+                                className="text-white border-gray-600 hover:bg-gray-700"
+                              >
+                                ← Back to Lessons
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Learning Objectives */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                                <span>Learning Objectives</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.objectives.map((objective, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-purple-500 mt-1">•</span>
+                                    <span>{objective}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Key Points */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Eye className="h-5 w-5 text-green-500" />
+                                <span>Key Points</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.keyPoints.map((point, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-green-500 mt-1">✓</span>
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Summary */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <FileText className="h-5 w-5 text-purple-500" />
+                                <span>Summary</span>
+                              </h3>
+                              <p className="text-gray-300 leading-relaxed">
+                                {lesson.content.summary}
+                              </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                              <div className="flex items-center space-x-3">
+                                {lesson.id > 1 && (
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedLesson(lesson.id - 1)}
+                                    className="text-white border-gray-600 hover:bg-gray-700"
+                                  >
+                                    ← Previous Lesson
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Button
+                                  onClick={() => {
+                                    setLessonProgress(prev => ({ ...prev, [lesson.id]: true }));
+                                  }}
+                                  className={`${
+                                    lessonProgress[lesson.id] 
+                                      ? 'bg-green-600 hover:bg-green-700' 
+                                      : 'bg-purple-600 hover:bg-purple-700'
+                                  }`}
+                                >
+                                  {lessonProgress[lesson.id] ? '✓ Completed' : 'Mark Complete'}
+                                </Button>
+                                {lesson.id < technicalAnalysisLessons.length && (
+                                  <Button
+                                    onClick={() => setSelectedLesson(lesson.id + 1)}
+                                    className="bg-indigo-600 hover:bg-indigo-700"
+                                  >
+                                    Next Lesson →
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Trading Fundamentals Course Detail View */}
