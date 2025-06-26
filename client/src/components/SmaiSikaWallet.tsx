@@ -19,45 +19,55 @@ interface Transaction {
 }
 
 export default function SmaiSikaWallet() {
-  const [smaiBalance, setSmaiBalance] = useState(1250.00);
-  const [localBalance, setLocalBalance] = useState(75000.00);
+  const [smaiBalance, setSmaiBalance] = useState(0);
+  const [localBalance, setLocalBalance] = useState(0);
   const [fundAmount, setFundAmount] = useState('');
   const [convertAmount, setConvertAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('paystack');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const conversionRate = 500; // 1 ₭ = ₦500
   const convertedAmount = convertAmount ? (parseFloat(convertAmount) / conversionRate).toFixed(2) : '0.00';
 
-  useEffect(() => {
-    // Load initial transaction history
-    setTransactions([
-      {
-        id: '1',
-        type: 'deposit',
-        amount: '₦50,000.00',
-        date: '2025-06-24',
-        status: 'completed',
-        description: 'Wallet funding via Paystack'
-      },
-      {
-        id: '2',
-        type: 'conversion',
-        amount: '₦10,000 → ₭20.00',
-        date: '2025-06-25',
-        status: 'completed',
-        description: 'Local to SmaiSika conversion'
-      },
-      {
-        id: '3',
-        type: 'trade',
-        amount: '₭15.50',
-        date: '2025-06-25',
-        status: 'completed',
-        description: 'ETH trading with WaidBot Pro'
+  // Fetch wallet data from backend
+  const fetchWalletData = async () => {
+    try {
+      const response = await fetch('/api/wallet/balance');
+      const data = await response.json();
+      if (data.success) {
+        setSmaiBalance(data.smaiBalance);
+        setLocalBalance(data.localBalance);
       }
-    ]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch wallet balance",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch('/api/wallet/transactions');
+      const data = await response.json();
+      if (data.success) {
+        setTransactions(data.transactions);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch transactions",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchWalletData();
+    fetchTransactions();
   }, []);
 
   const handleFundWallet = async () => {
@@ -65,23 +75,44 @@ export default function SmaiSikaWallet() {
     if (amount > 0) {
       setIsLoading(true);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setLocalBalance(prev => prev + amount);
-      
-      const newTransaction: Transaction = {
-        id: Date.now().toString(),
-        type: 'deposit',
-        amount: `₦${amount.toLocaleString()}.00`,
-        date: new Date().toLocaleDateString(),
-        status: 'completed',
-        description: `Wallet funding via ${paymentMethod}`
-      };
-      
-      setTransactions(prev => [newTransaction, ...prev]);
-      setFundAmount('');
-      setIsLoading(false);
+      try {
+        const response = await fetch('/api/wallet/fund', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount,
+            paymentMethod
+          }),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          setLocalBalance(data.newBalance);
+          setTransactions(prev => [data.transaction, ...prev]);
+          setFundAmount('');
+          toast({
+            title: "Success",
+            description: data.message,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: data.error || "Failed to fund wallet",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fund wallet",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -90,25 +121,46 @@ export default function SmaiSikaWallet() {
     if (amount > 0 && amount <= localBalance) {
       setIsLoading(true);
       
-      // Simulate conversion processing
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const smaiAmount = amount / conversionRate;
-      setSmaiBalance(prev => prev + smaiAmount);
-      setLocalBalance(prev => prev - amount);
-      
-      const newTransaction: Transaction = {
-        id: Date.now().toString(),
-        type: 'conversion',
-        amount: `₦${amount.toLocaleString()} → ₭${smaiAmount.toFixed(2)}`,
-        date: new Date().toLocaleDateString(),
-        status: 'completed',
-        description: 'Local to SmaiSika conversion'
-      };
-      
-      setTransactions(prev => [newTransaction, ...prev]);
-      setConvertAmount('');
-      setIsLoading(false);
+      try {
+        const response = await fetch('/api/wallet/convert', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            amount,
+            fromCurrency: 'local',
+            toCurrency: 'smai'
+          }),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          setSmaiBalance(data.newSmaiBalance);
+          setLocalBalance(data.newLocalBalance);
+          setTransactions(prev => [data.transaction, ...prev]);
+          setConvertAmount('');
+          toast({
+            title: "Success",
+            description: data.message,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: data.error || "Failed to convert currency",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to convert currency",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
