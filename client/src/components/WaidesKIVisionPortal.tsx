@@ -67,6 +67,12 @@ export default function WaidesKIVisionPortal() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
+
+  // Handle page navigation from recommendations
+  const handlePageNavigation = (route: string) => {
+    setLocation(route);
+  };
 
   // Update time every minute
   useEffect(() => {
@@ -343,7 +349,23 @@ export default function WaidesKIVisionPortal() {
     // Enhanced intelligent routing logic
     const message = currentMessage.toLowerCase();
     
-    // First, check for WaidBot summoning commands
+    // First, check for page recommendations
+    const pageRecommendation = detectPageRecommendation(currentMessage, setBotState);
+    if (pageRecommendation) {
+      typeMessage(pageRecommendation, 'enhanced_bot_memory', 95);
+      setCurrentMessage('');
+      return;
+    }
+    
+    // Check for command triggers  
+    const commandResponse = detectCommandTrigger(currentMessage, setBotState);
+    if (commandResponse) {
+      typeMessage(commandResponse, 'enhanced_bot_memory', 95);
+      setCurrentMessage('');
+      return;
+    }
+    
+    // Check for WaidBot summoning commands
     summonCheckMutation.mutate(currentMessage);
     
     // WaidBot activation patterns
@@ -843,6 +865,21 @@ export default function WaidesKIVisionPortal() {
                 {message.konslangProcessing && (
                   <div className="mt-2 text-xs text-purple-400 italic">
                     🔮 {message.konslangProcessing}
+                  </div>
+                )}
+                
+                {/* Display page recommendation button */}
+                {message.sender === 'waides' && botState.action === 'open-page' && botState.page && botState.route && (
+                  <div className="mt-3">
+                    <button
+                      onClick={() => handlePageNavigation(botState.route!)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105"
+                    >
+                      <span>Open {botState.page}</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </button>
                   </div>
                 )}
               </div>
