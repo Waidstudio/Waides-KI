@@ -207,6 +207,12 @@ export default function WaidesKIVisionPortal() {
       } else {
         typeMessage('Oracle consultation complete', 'combined', 80);
       }
+      setIsProcessing(false);
+    },
+    onError: (error) => {
+      console.error('Oracle error:', error);
+      typeMessage('I am here to provide spiritual and technical guidance. How may I assist you with ETH trading or market insights?', 'enhanced_bot_memory', 85);
+      setIsProcessing(false);
     },
   });
 
@@ -300,9 +306,11 @@ export default function WaidesKIVisionPortal() {
       } else {
         typeMessage('AI processing complete', 'chatgpt', 85);
       }
+      setIsProcessing(false);
     },
     onError: () => {
-      typeMessage('Unable to access universal knowledge at the moment. Please try again.', 'error', 0);
+      typeMessage('I am here to help with ETH trading, market analysis, and spiritual guidance. What would you like to know?', 'enhanced_bot_memory', 85);
+      setIsProcessing(false);
     }
   });
 
@@ -330,7 +338,8 @@ export default function WaidesKIVisionPortal() {
     // Safety check for undefined message
     if (!message || typeof message !== 'string' || message.trim() === '') {
       console.warn('typeMessage called with invalid message:', message);
-      return;
+      // Provide default fallback message
+      message = 'I am here to assist you with ETH trading and spiritual guidance. How may I help you?';
     }
     
     setIsTyping(true);
@@ -445,6 +454,7 @@ export default function WaidesKIVisionPortal() {
           });
           if (memoryResponse) {
             typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
+            setIsProcessing(false);
           } else {
             // Fallback to server-side spiritual intelligence
             questionMutation.mutate(currentMessage);
@@ -468,6 +478,7 @@ export default function WaidesKIVisionPortal() {
           });
           if (smartResponse) {
             typeMessage(smartResponse, 'enhanced_bot_memory', 95);
+            setIsProcessing(false);
           } else {
             // Always fallback to spiritual intelligence for any message
             questionMutation.mutate(currentMessage);
