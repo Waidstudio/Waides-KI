@@ -92,6 +92,9 @@ import { WaidesKIEthicalCompass } from './services/waidesKIEthicalCompass.js';
 import { WaidesKISoulWeightFilter } from './services/waidesKISoulWeightFilter.js';
 import { WaidesKIMarketClarityChecker } from './services/waidesKIMarketClarityChecker.js';
 import { WaidesKITradeConscience } from './services/waidesKITradeConscience.js';
+// STEP 45: Multi-Strategy Ensemble + Self-Optimizing Risk Management
+import { WaidesKIMultiStrategyEnsemble } from './services/waidesKIMultiStrategyEnsemble.js';
+import { WaidesKISelfOptimizingRiskManager } from './services/waidesKISelfOptimizingRiskManager.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
@@ -132,6 +135,9 @@ let waidesKIEthicalCompass: WaidesKIEthicalCompass;
 let waidesKISoulWeightFilter: WaidesKISoulWeightFilter;
 let waidesKIMarketClarityChecker: WaidesKIMarketClarityChecker;
 let waidesKITradeConscience: WaidesKITradeConscience;
+// STEP 45: Multi-Strategy Ensemble + Self-Optimizing Risk Management services
+let waidesKIMultiStrategyEnsemble: WaidesKIMultiStrategyEnsemble;
+let waidesKISelfOptimizingRiskManager: WaidesKISelfOptimizingRiskManager;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -189,6 +195,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   waidesKISoulWeightFilter = new WaidesKISoulWeightFilter();
   waidesKIMarketClarityChecker = new WaidesKIMarketClarityChecker();
   waidesKITradeConscience = new WaidesKITradeConscience();
+
+  // Initialize STEP 45: Multi-Strategy Ensemble + Self-Optimizing Risk Management
+  waidesKIMultiStrategyEnsemble = new WaidesKIMultiStrategyEnsemble();
+  waidesKISelfOptimizingRiskManager = new WaidesKISelfOptimizingRiskManager();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
