@@ -101,6 +101,8 @@ import { WaidesKIDivineVisionMap } from './services/waidesKIDivineVisionMap.js';
 import { WaidesKISpiritContract } from './services/waidesKISpiritContract.js';
 // STEP 47: Trinity Brain Model
 import { WaidesKIBrainHiveController } from './services/waidesKIBrainHiveController.js';
+// STEP 48: WAIS Autonomous Engine
+import { waidesKIWAISAutonomousEngine } from './services/waidesKIWAISAutonomousEngine.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';

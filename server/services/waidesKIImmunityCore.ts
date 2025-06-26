@@ -90,10 +90,13 @@ export class WaidesKIImmunityCore {
         severity_level: this.calculateSeverityLevel({ total_loss_amount: loss_amount, loss_count: 1 } as PatternAntibody),
         konslang_echo,
         pattern_family: waidesKIPatternDNASequencer.getPatternFamily(pattern_data),
-        immunity_strength: this.calculateImmunityStrength({ loss_count: 1, total_loss_amount: loss_amount } as PatternAntibody),
+        immunity_strength: 0,
         notes: [`Initial loss: $${loss_amount} - ${context}`]
       };
 
+      // Calculate immunity strength after antibody is complete
+      new_antibody.immunity_strength = this.calculateImmunityStrength(new_antibody);
+      
       this.antibodies.set(pattern_dna, new_antibody);
       console.log(`⚠️ New antibody created for pattern: ${pattern_dna} - ${konslang_echo}`);
       return new_antibody;
