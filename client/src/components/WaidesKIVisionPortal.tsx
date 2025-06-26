@@ -235,6 +235,31 @@ export default function WaidesKIVisionPortal() {
     }
   });
 
+  // OpenAI Chat mutation for universal answers
+  const openAIChatMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/chat/openai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      if (!response.ok) throw new Error('Failed to get OpenAI response');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.answer) {
+        typeMessage(data.answer, 'chatgpt', data.confidence || 90);
+      } else if (data && data.fallback) {
+        typeMessage(data.fallback, 'error', 50);
+      } else {
+        typeMessage('AI processing complete', 'chatgpt', 85);
+      }
+    },
+    onError: () => {
+      typeMessage('Unable to access universal knowledge at the moment. Please try again.', 'error', 0);
+    }
+  });
+
   // WaidBot summon check mutation
   const summonCheckMutation = useMutation({
     mutationFn: async (message: string) => {

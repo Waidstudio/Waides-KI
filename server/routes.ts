@@ -11790,6 +11790,64 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
+  // OpenAI Chat endpoint - Real-time universal answers
+  app.post('/api/chat/openai', async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      // Use OpenAI for universal chat responses
+      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: 'system', 
+              content: 'You are Waides KI, an advanced AI trading oracle with deep understanding of cryptocurrency markets, especially Ethereum. You combine mystical wisdom with technical analysis. Be helpful, insightful, and maintain a spiritual yet professional tone. You can answer any question about trading, markets, technology, or general knowledge.'
+            },
+            {
+              role: 'user',
+              content: message
+            }
+          ],
+          max_tokens: 1000,
+          temperature: 0.7
+        })
+      });
+
+      if (!openaiResponse.ok) {
+        throw new Error(`OpenAI API error: ${openaiResponse.status}`);
+      }
+
+      const openaiData = await openaiResponse.json();
+      const answer = openaiData.choices[0]?.message?.content || 'I received your message but couldn\'t generate a response.';
+
+      res.json({
+        success: true,
+        answer,
+        source: 'chatgpt',
+        confidence: 90,
+        model: 'gpt-4o'
+      });
+
+    } catch (error: any) {
+      console.error('OpenAI chat error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to get AI response',
+        fallback: 'I\'m having trouble accessing my universal knowledge right now. Please try again.'
+      });
+    }
+  });
+
   // Get Chat Oracle API status
   app.get('/api/chat/oracle/status', (req, res) => {
     try {
