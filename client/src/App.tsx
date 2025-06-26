@@ -4,6 +4,16 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "./lib/utils";
+import { Bell, User, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
@@ -110,6 +120,64 @@ function Router() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Right side - Notifications and User Profile */}
+            <div className="flex items-center space-x-4">
+              {/* Notifications */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="relative text-slate-400 hover:text-slate-100 hover:bg-slate-700"
+              >
+                <Bell className="h-5 w-5" />
+                <Badge 
+                  variant="destructive" 
+                  className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0 bg-red-500"
+                >
+                  3
+                </Badge>
+              </Button>
+
+              {/* User Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-400 hover:text-slate-100 hover:bg-slate-700"
+                  >
+                    <User className="h-5 w-5 mr-2" />
+                    <span className="hidden sm:inline">Profile</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile & Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/biometric-trading" className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Trading Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/autonomous-wealth" className="cursor-pointer">
+                      <span className="mr-2">💰</span>
+                      <span>SmaiSika Wallet</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-400 cursor-pointer">
+                    <span className="mr-2">🚪</span>
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
