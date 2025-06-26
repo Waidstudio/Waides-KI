@@ -2385,9 +2385,9 @@ export default function EnhancedTradingAcademy() {
                 </CardHeader>
               </Card>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {tradingCourses.map((course) => (
-                  <Card key={course.id} className={`bg-gray-800 border-2 ${getCategoryColor(course.category)} hover:border-opacity-100 border-opacity-50 transition-all duration-300 hover:scale-105`}>
+                  <Card key={course.id} className={`bg-gray-800/80 backdrop-blur-sm border-2 ${getCategoryColor(course.category)} hover:border-opacity-100 border-opacity-50 transition-all duration-300 hover:scale-105 hover:shadow-2xl shadow-lg`}>
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-3">
@@ -2495,12 +2495,12 @@ export default function EnhancedTradingAcademy() {
 
               {/* Lesson List or Lesson Detail */}
               {!selectedLesson && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
                   {riskManagementLessons.map((lesson) => (
                     <Card 
                       key={lesson.id} 
-                      className={`bg-gray-800 border-gray-700 hover:border-red-500 transition-all duration-300 cursor-pointer ${
-                        lessonProgress[lesson.id] ? 'border-green-500' : ''
+                      className={`bg-gray-800/90 backdrop-blur-sm border-gray-700 hover:border-red-500 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl hover:scale-105 ${
+                        lessonProgress[lesson.id] ? 'border-green-500 bg-green-900/20' : ''
                       }`}
                       onClick={() => setSelectedLesson(lesson.id)}
                     >
