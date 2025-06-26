@@ -30,6 +30,7 @@ import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
 import AdminConfigPanel from "@/components/AdminConfigPanel";
 import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
+import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -118,7 +119,7 @@ function Router() {
           <Route path="/strategy-autogen" component={StrategyAutogenPage} />
           <Route path="/voice-command" component={VoiceCommandPage} />
           <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
-          <Route path="/autonomous-wealth" component={AutonomousWealthEngine} />
+          <Route path="/autonomous-wealth" component={SmaiSikaWalletPage} />
           <Route path="/learning" component={LearningPage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />

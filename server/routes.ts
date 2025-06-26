@@ -10919,6 +10919,177 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =============================================================================
+  // SmaiSika Wallet API Endpoints
+  // =============================================================================
+
+  // In-memory wallet storage (replace with database in production)
+  let walletData = {
+    smaiBalance: 1250.00,
+    localBalance: 75000.00,
+    transactions: [
+      {
+        id: '1',
+        type: 'deposit',
+        amount: '₦50,000.00',
+        date: '2025-06-24',
+        status: 'completed',
+        description: 'Wallet funding via Paystack'
+      },
+      {
+        id: '2',
+        type: 'conversion',
+        amount: '₦10,000 → ₭20.00',
+        date: '2025-06-25',
+        status: 'completed',
+        description: 'Local to SmaiSika conversion'
+      }
+    ]
+  };
+
+  // Get wallet balance and data
+  app.get("/api/wallet/balance", async (req, res) => {
+    try {
+      res.json({
+        success: true,
+        smaiBalance: walletData.smaiBalance,
+        localBalance: walletData.localBalance,
+        conversionRate: 500 // 1 ₭ = ₦500
+      });
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      res.status(500).json({ error: 'Failed to fetch wallet balance' });
+    }
+  });
+
+  // Fund wallet (add local currency)
+  app.post("/api/wallet/fund", async (req, res) => {
+    try {
+      const { amount, paymentMethod } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      // Simulate payment processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Update wallet balance
+      walletData.localBalance += parseFloat(amount);
+      
+      // Add transaction record
+      const newTransaction = {
+        id: Date.now().toString(),
+        type: 'deposit',
+        amount: `₦${parseFloat(amount).toLocaleString()}.00`,
+        date: new Date().toLocaleDateString(),
+        status: 'completed',
+        description: `Wallet funding via ${paymentMethod}`
+      };
+      
+      walletData.transactions.unshift(newTransaction);
+      
+      res.json({
+        success: true,
+        message: 'Wallet funded successfully',
+        newBalance: walletData.localBalance,
+        transaction: newTransaction
+      });
+    } catch (error) {
+      console.error('Error funding wallet:', error);
+      res.status(500).json({ error: 'Failed to fund wallet' });
+    }
+  });
+
+  // Convert local currency to SmaiSika
+  app.post("/api/wallet/convert", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const conversionRate = 500; // 1 ₭ = ₦500
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      if (amount > walletData.localBalance) {
+        return res.status(400).json({ error: 'Insufficient local balance' });
+      }
+
+      // Simulate conversion processing
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      const smaiAmount = parseFloat(amount) / conversionRate;
+      
+      // Update balances
+      walletData.localBalance -= parseFloat(amount);
+      walletData.smaiBalance += smaiAmount;
+      
+      // Add transaction record
+      const newTransaction = {
+        id: Date.now().toString(),
+        type: 'conversion',
+        amount: `₦${parseFloat(amount).toLocaleString()} → ₭${smaiAmount.toFixed(2)}`,
+        date: new Date().toLocaleDateString(),
+        status: 'completed',
+        description: 'Local to SmaiSika conversion'
+      };
+      
+      walletData.transactions.unshift(newTransaction);
+      
+      res.json({
+        success: true,
+        message: 'Conversion completed successfully',
+        smaiBalance: walletData.smaiBalance,
+        localBalance: walletData.localBalance,
+        convertedAmount: smaiAmount,
+        transaction: newTransaction
+      });
+    } catch (error) {
+      console.error('Error converting currency:', error);
+      res.status(500).json({ error: 'Failed to convert currency' });
+    }
+  });
+
+  // Get transaction history
+  app.get("/api/wallet/transactions", async (req, res) => {
+    try {
+      res.json({
+        success: true,
+        transactions: walletData.transactions
+      });
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+  });
+
+  // Add trading transaction (for WaidBot integration)
+  app.post("/api/wallet/trade-transaction", async (req, res) => {
+    try {
+      const { amount, type, description } = req.body;
+      
+      const newTransaction = {
+        id: Date.now().toString(),
+        type: 'trade',
+        amount: `₭${parseFloat(amount).toFixed(2)}`,
+        date: new Date().toLocaleDateString(),
+        status: 'completed',
+        description: description || 'ETH trading operation'
+      };
+      
+      walletData.transactions.unshift(newTransaction);
+      
+      res.json({
+        success: true,
+        message: 'Trade transaction recorded',
+        transaction: newTransaction
+      });
+    } catch (error) {
+      console.error('Error recording trade transaction:', error);
+      res.status(500).json({ error: 'Failed to record trade transaction' });
+    }
+  });
+
   // Test immunity with Trinity Brain integration
   app.post("/api/immunity/trinity-test", async (req, res) => {
     try {

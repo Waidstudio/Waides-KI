@@ -1,0 +1,151 @@
+
+
+### 🌞 **SmaiSika Wallet Page — Core Features**
+
+Here’s the full breakdown of what the page should include:
+
+---
+
+### ✅ **Main Sections of the Wallet Page**
+
+1. **SmaiSika Wallet Balance**
+
+   * Shows current balance in SmaiSika currency (₭)
+2. **Local Wallet Balance**
+
+   * Shows local currency balance (₦, \$, €, etc.)
+3. **Fund Wallet**
+
+   * User can fund using local payment methods (Flutterwave, Paystack, or manual)
+4. **Convert Local to SmaiSika**
+
+   * Converts local currency into SmaiSika (fixed or floating rate)
+5. **Transaction History**
+
+   * View all past deposits, conversions, trades
+6. **Use in Trade**
+
+   * Balance is visible and usable by Waides KI bots (WaidBot, WaidBot Pro)
+
+---
+
+### 🖼️ **UX/UI Layout Sketch**
+
+```
+-------------------------------------------------------
+|                🪙 SmaiSika Wallet Page              |
+-------------------------------------------------------
+| 🪙 SmaiSika Balance:        ₭ 1,250.00               |
+| 💵 Local Wallet Balance:     ₦ 75,000.00             |
+-------------------------------------------------------
+| 🔼 FUND WALLET                                     |
+| [ ₦ Amount ]  [Select Method: Paystack / Manual]   |
+| [Fund Wallet Button]                               |
+-------------------------------------------------------
+| 🔄 CONVERT TO SMAISIKA                             |
+| [ ₦ Amount ] -> ₭ [Auto Calculated]                |
+| [Convert Button]                                   |
+-------------------------------------------------------
+| 📜 Transaction History                             |
+| [Table of history with date, amount, type]         |
+-------------------------------------------------------
+```
+
+---
+
+### ⚙️ **Tech Stack Setup**
+
+For **Replit**, let's use:
+
+* **Frontend**: React (or HTML + JS)
+* **Backend**: Node.js + Express
+* **Database**: JSON for now, can later move to PostgreSQL or Holochain later
+* **Currency Rate**: mock for now (`1₭ = ₦500`) or set by Kons Powa
+
+---
+
+### 🧩 Let’s Start with Frontend Code (React)
+
+#### 🔹 `/components/SmaiSikaWallet.js`
+
+```jsx
+import React, { useState, useEffect } from 'react';
+
+export default function SmaiSikaWallet() {
+  const [smaiBalance, setSmaiBalance] = useState(0);
+  const [localBalance, setLocalBalance] = useState(0);
+  const [fundAmount, setFundAmount] = useState('');
+  const [convertAmount, setConvertAmount] = useState('');
+  const [transactions, setTransactions] = useState([]);
+
+  const conversionRate = 500; // 1 ₭ = ₦500
+
+  useEffect(() => {
+    // Load user balances (replace with real API call)
+    setSmaiBalance(1250);
+    setLocalBalance(75000);
+    setTransactions([
+      { type: 'Deposit', amount: '₦50,000', date: '2025-06-24' },
+      { type: 'Conversion', amount: '₦10,000 -> ₭20', date: '2025-06-25' }
+    ]);
+  }, []);
+
+  const handleFundWallet = () => {
+    const amount = parseFloat(fundAmount);
+    if (amount > 0) {
+      setLocalBalance(localBalance + amount);
+      setTransactions([{ type: 'Deposit', amount: `₦${amount}`, date: new Date().toLocaleDateString() }, ...transactions]);
+      setFundAmount('');
+    }
+  };
+
+  const handleConvert = () => {
+    const amount = parseFloat(convertAmount);
+    if (amount > 0 && amount <= localBalance) {
+      const smaiAmount = amount / conversionRate;
+      setSmaiBalance(smaiBalance + smaiAmount);
+      setLocalBalance(localBalance - amount);
+      setTransactions([{ type: 'Conversion', amount: `₦${amount} -> ₭${smaiAmount.toFixed(2)}`, date: new Date().toLocaleDateString() }, ...transactions]);
+      setConvertAmount('');
+    }
+  };
+
+  return (
+    <div style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+      <h2>💰 SmaiSika Wallet</h2>
+      <p><strong>🪙 SmaiSika Balance:</strong> ₭ {smaiBalance.toFixed(2)}</p>
+      <p><strong>💵 Local Balance:</strong> ₦ {localBalance.toFixed(2)}</p>
+
+      <hr />
+
+      <h3>🔼 Fund Wallet</h3>
+      <input type="number" value={fundAmount} onChange={e => setFundAmount(e.target.value)} placeholder="₦ Amount" />
+      <button onClick={handleFundWallet}>Fund Wallet</button>
+
+      <h3>🔄 Convert Local to SmaiSika</h3>
+      <input type="number" value={convertAmount} onChange={e => setConvertAmount(e.target.value)} placeholder="₦ Amount to Convert" />
+      <button onClick={handleConvert}>Convert to ₭</button>
+
+      <hr />
+
+      <h3>📜 Transaction History</h3>
+      <ul>
+        {transactions.map((tx, index) => (
+          <li key={index}>{tx.date} - {tx.type}: {tx.amount}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+---
+
+### 🧠 Backend (Optional — Later Expansion)
+
+For now, frontend logic is enough. Later we can:
+
+* Create `/api/wallet` for persistent storage
+* Add real-time currency fetcher
+* Store transaction logs in a secure DB
+* Notify Waides KI of new wallet activity via webhook or direct sync
