@@ -12,6 +12,7 @@ import AdminPage from "@/pages/AdminPage";
 import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
 import LearningPage from "@/pages/learning";
+import EnhancedWaidBotPage from "@/pages/enhanced-waidbot";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
