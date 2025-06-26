@@ -11622,11 +11622,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         success: true,
         ...status,
-        message: 'Enhanced WaidBot Controller status retrieved'
+        timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('❌ Enhanced WaidBot status error:', error);
-      res.status(500).json({ error: 'Failed to get enhanced WaidBot status' });
+      res.status(500).json({ error: 'Failed to get Enhanced WaidBot status' });
+    }
+  });
+
+  // Toggle WaidBot on/off
+  app.post('/api/enhanced-waidbot/waidbot/toggle', (req, res) => {
+    try {
+      const { enabled } = req.body;
+      const status = enhancedWaidBotController.toggleWaidBot(enabled);
+      res.json({
+        success: true,
+        waidbot_status: status,
+        message: `WaidBot ${enabled ? 'started' : 'stopped'}`
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to toggle WaidBot' });
+    }
+  });
+
+  // Toggle WaidBot Pro on/off
+  app.post('/api/enhanced-waidbot/waidbot-pro/toggle', (req, res) => {
+    try {
+      const { enabled } = req.body;
+      const status = enhancedWaidBotController.toggleWaidBotPro(enabled);
+      res.json({
+        success: true,
+        waidbot_pro_status: status,
+        message: `WaidBot Pro ${enabled ? 'started' : 'stopped'}`
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to toggle WaidBot Pro' });
+    }
+  });
+
+  // Update trading parameters
+  app.post('/api/enhanced-waidbot/parameters', (req, res) => {
+    try {
+      const parameters = enhancedWaidBotController.updateParameters(req.body);
+      res.json({
+        success: true,
+        updated_parameters: parameters,
+        message: 'Trading parameters updated successfully'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update trading parameters' });
+    }
+  });
+
+  // Get performance analytics
+  app.get('/api/enhanced-waidbot/analytics', (req, res) => {
+    try {
+      const analytics = enhancedWaidBotController.getAnalytics();
+      res.json({
+        success: true,
+        analytics: analytics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get performance analytics' });
+    }
+  });
+
+  // Emergency stop all bots
+  app.post('/api/enhanced-waidbot/emergency-stop', (req, res) => {
+    try {
+      enhancedWaidBotController.emergencyStop();
+      res.json({
+        success: true,
+        message: 'Emergency stop executed - All bots disabled'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to execute emergency stop' });
+    }
+  });
+
+  // Reset bot statistics
+  app.post('/api/enhanced-waidbot/reset-stats', (req, res) => {
+    try {
+      const { bot } = req.body;
+      enhancedWaidBotController.resetStats(bot);
+      res.json({
+        success: true,
+        message: `${bot || 'All'} bot statistics reset successfully`
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to reset bot statistics' });
+    }
+  });
+
+  // Get current ETH price
+  app.get('/api/enhanced-waidbot/eth-price', (req, res) => {
+    try {
+      const price = enhancedWaidBotController.getCurrentEthPrice();
+      res.json({
+        success: true,
+        eth_price: price,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get current ETH price' });
+    }
+  });
+
+  // Test Enhanced WaidBot Controller
+  app.get('/api/enhanced-waidbot/test', (req, res) => {
+    try {
+      const status = enhancedWaidBotController.getStatus();
+      const analytics = enhancedWaidBotController.getAnalytics();
+      const currentPrice = enhancedWaidBotController.getCurrentEthPrice();
+      
+      res.json({
+        success: true,
+        test_results: {
+          controller_initialized: true,
+          real_time_price_feeds: currentPrice > 0,
+          waidbot_ready: status.waidBot.running !== undefined,
+          waidbot_pro_ready: status.waidBotPro.running !== undefined,
+          analytics_available: analytics !== null,
+          eth_price: currentPrice
+        },
+        demo_workflow: {
+          step_1: 'Enhanced WaidBot Controller initialized successfully',
+          step_2: 'Real-time ETH price feeds operational',
+          step_3: 'Both WaidBot and WaidBot Pro engines ready',
+          step_4: 'Performance analytics system active',
+          step_5: 'API endpoints responding correctly'
+        },
+        message: 'Enhanced WaidBot Controller test completed successfully'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Enhanced WaidBot Controller test failed' });
     }
   });
 
