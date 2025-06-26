@@ -74,8 +74,16 @@ export default function WaidesKIVisionPortal() {
   
   // Vision Spirit floating panel states (only show on /vision-spirit route)
   const isVisionSpiritRoute = location === '/vision-spirit';
-  const [showVisionSpirit, setShowVisionSpirit] = useState(false);
+  const [showVisionSpirit, setShowVisionSpirit] = useState(isVisionSpiritRoute);
   const [activeVisionPanel, setActiveVisionPanel] = useState<'current' | 'validation' | 'stats' | 'history' | 'controls'>('current');
+
+  // Auto-show Vision Spirit panels when on the vision-spirit route
+  useEffect(() => {
+    if (isVisionSpiritRoute && !showVisionSpirit) {
+      setShowVisionSpirit(true);
+      setActiveVisionPanel('current');
+    }
+  }, [isVisionSpiritRoute, showVisionSpirit]);
   
   // Cosmic AI Enhancement States
   const [aiPersonality, setAiPersonality] = useState({
