@@ -370,7 +370,7 @@ export class WaidesKICollectiveTradeConductor {
       proposal,
       should_execute: shouldExecute,
       execution_confidence: Math.round(executionConfidence),
-      collective_support,
+      collective_support: collectiveSupport,
       risk_assessment: riskAssessment
     };
   }

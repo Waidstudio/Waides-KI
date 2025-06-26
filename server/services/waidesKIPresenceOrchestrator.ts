@@ -395,8 +395,8 @@ export class WaidesKIPresenceOrchestrator {
     average_confidence: number;
     decision_breakdown: Record<string, number>;
   } {
-    const alignmentDistribution = this.evaluationHistory.reduce((acc, eval) => {
-      acc[eval.overall_alignment] = (acc[eval.overall_alignment] || 0) + 1;
+    const alignmentDistribution = this.evaluationHistory.reduce((acc, evaluation) => {
+      acc[evaluation.overall_alignment] = (acc[evaluation.overall_alignment] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 

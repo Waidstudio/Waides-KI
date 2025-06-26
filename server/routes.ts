@@ -11598,6 +11598,301 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ========================================
+  // STEP 57: ADVANCED MULTI-NODE SENTIENCE & ORDER FLOW SYNC API ENDPOINTS
+  // ========================================
+
+  // Multi-Node Order Consensus Endpoints
+  app.get('/api/multi_node_consensus/status', async (req, res) => {
+    try {
+      const consensus = await waidesKIMultiNodeOrderConsensus.calculateConsensus();
+      const interpretation = await waidesKIMultiNodeOrderConsensus.getConsensusWithInterpretation();
+      const networkStats = waidesKIMultiNodeOrderConsensus.getPeerNetworkStats();
+      
+      res.json({
+        consensus,
+        interpretation,
+        network_stats: networkStats
+      });
+    } catch (error) {
+      console.error('Error getting multi-node consensus:', error);
+      res.status(500).json({ error: 'Failed to get consensus data' });
+    }
+  });
+
+  app.get('/api/multi_node_consensus/trends', async (req, res) => {
+    try {
+      const trends = waidesKIMultiNodeOrderConsensus.getConsensusTrends();
+      const history = waidesKIMultiNodeOrderConsensus.getConsensusHistory(20);
+      
+      res.json({
+        trends,
+        recent_history: history
+      });
+    } catch (error) {
+      console.error('Error getting consensus trends:', error);
+      res.status(500).json({ error: 'Failed to get consensus trends' });
+    }
+  });
+
+  app.post('/api/multi_node_consensus/add_peer', async (req, res) => {
+    try {
+      const { peerUrl, weight = 1.0 } = req.body;
+      const success = waidesKIMultiNodeOrderConsensus.addPeer(peerUrl, weight);
+      
+      res.json({ success, message: success ? 'Peer added successfully' : 'Peer already exists' });
+    } catch (error) {
+      console.error('Error adding peer:', error);
+      res.status(500).json({ error: 'Failed to add peer' });
+    }
+  });
+
+  // ETH Sentiment Tracker Endpoints
+  app.get('/api/eth_sentiment/current', async (req, res) => {
+    try {
+      const currentSentiment = waidesKIETHSentimentTracker.getCurrentSentiment();
+      const tradingSignal = waidesKIETHSentimentTracker.getSentimentForTrading();
+      
+      res.json({
+        current_sentiment: currentSentiment,
+        trading_signal: tradingSignal
+      });
+    } catch (error) {
+      console.error('Error getting sentiment data:', error);
+      res.status(500).json({ error: 'Failed to get sentiment data' });
+    }
+  });
+
+  app.get('/api/eth_sentiment/statistics', async (req, res) => {
+    try {
+      const stats = waidesKIETHSentimentTracker.getSentimentStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting sentiment statistics:', error);
+      res.status(500).json({ error: 'Failed to get sentiment statistics' });
+    }
+  });
+
+  app.post('/api/eth_sentiment/refresh', async (req, res) => {
+    try {
+      const freshSentiment = await waidesKIETHSentimentTracker.fetchSentimentData();
+      res.json({ sentiment: freshSentiment, updated_at: Date.now() });
+    } catch (error) {
+      console.error('Error refreshing sentiment:', error);
+      res.status(500).json({ error: 'Failed to refresh sentiment data' });
+    }
+  });
+
+  // Presence Orchestrator Endpoints
+  app.get('/api/presence_orchestrator/evaluation', async (req, res) => {
+    try {
+      const evaluation = await waidesKIPresenceOrchestrator.evaluate();
+      const holisticIntelligence = await waidesKIPresenceOrchestrator.getHolisticIntelligence();
+      
+      res.json({
+        current_evaluation: evaluation,
+        holistic_intelligence: holisticIntelligence
+      });
+    } catch (error) {
+      console.error('Error getting presence evaluation:', error);
+      res.status(500).json({ error: 'Failed to get presence evaluation' });
+    }
+  });
+
+  app.get('/api/presence_orchestrator/trends', async (req, res) => {
+    try {
+      const trends = waidesKIPresenceOrchestrator.getEvaluationTrends();
+      const stats = waidesKIPresenceOrchestrator.getOrchestratorStatistics();
+      
+      res.json({
+        trends,
+        statistics: stats
+      });
+    } catch (error) {
+      console.error('Error getting orchestrator trends:', error);
+      res.status(500).json({ error: 'Failed to get orchestrator trends' });
+    }
+  });
+
+  // Entangled Presence Mesh Endpoints
+  app.get('/api/entangled_mesh/collective_consciousness', async (req, res) => {
+    try {
+      const consciousness = waidesKIEntangledPresenceMesh.getCollectiveConsciousness();
+      const collectivePresence = waidesKIEntangledPresenceMesh.gatherCollectivePresence();
+      
+      res.json({
+        collective_consciousness: consciousness,
+        collective_presence: collectivePresence
+      });
+    } catch (error) {
+      console.error('Error getting collective consciousness:', error);
+      res.status(500).json({ error: 'Failed to get collective consciousness' });
+    }
+  });
+
+  app.get('/api/entangled_mesh/statistics', async (req, res) => {
+    try {
+      const stats = waidesKIEntangledPresenceMesh.getMeshStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting mesh statistics:', error);
+      res.status(500).json({ error: 'Failed to get mesh statistics' });
+    }
+  });
+
+  app.post('/api/entangled_mesh/receive_entanglement', async (req, res) => {
+    try {
+      const entanglementData = req.body;
+      const result = waidesKIEntangledPresenceMesh.receiveEntanglement(entanglementData);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error receiving entanglement:', error);
+      res.status(500).json({ error: 'Failed to process entanglement' });
+    }
+  });
+
+  // Collective Trade Conductor Endpoints
+  app.get('/api/collective_conductor/current_proposal', async (req, res) => {
+    try {
+      const proposal = waidesKICollectiveTradeConductor.getCurrentProposal();
+      const decision = waidesKICollectiveTradeConductor.getCollectiveTradingDecision();
+      
+      res.json({
+        current_proposal: proposal,
+        trading_decision: decision
+      });
+    } catch (error) {
+      console.error('Error getting collective proposal:', error);
+      res.status(500).json({ error: 'Failed to get collective proposal' });
+    }
+  });
+
+  app.get('/api/collective_conductor/statistics', async (req, res) => {
+    try {
+      const stats = waidesKICollectiveTradeConductor.getConductorStatistics();
+      const trends = waidesKICollectiveTradeConductor.getProposalTrends();
+      
+      res.json({
+        statistics: stats,
+        trends
+      });
+    } catch (error) {
+      console.error('Error getting conductor statistics:', error);
+      res.status(500).json({ error: 'Failed to get conductor statistics' });
+    }
+  });
+
+  app.post('/api/collective_conductor/generate_proposal', async (req, res) => {
+    try {
+      const proposal = await waidesKICollectiveTradeConductor.proposeCollectiveTrade();
+      res.json({ proposal, generated_at: Date.now() });
+    } catch (error) {
+      console.error('Error generating proposal:', error);
+      res.status(500).json({ error: 'Failed to generate collective proposal' });
+    }
+  });
+
+  app.post('/api/collective_conductor/update_node_score', async (req, res) => {
+    try {
+      const { nodeId, success, performance } = req.body;
+      
+      if (!nodeId || typeof success !== 'boolean' || typeof performance !== 'number') {
+        return res.status(400).json({ error: 'Invalid parameters: nodeId, success (boolean), and performance (number) required' });
+      }
+      
+      waidesKICollectiveTradeConductor.updateNodeScore(nodeId, success, performance);
+      res.json({ success: true, message: 'Node score updated successfully' });
+    } catch (error) {
+      console.error('Error updating node score:', error);
+      res.status(500).json({ error: 'Failed to update node score' });
+    }
+  });
+
+  // Advanced Sentience Integration Endpoint
+  app.get('/api/advanced_sentience/full_analysis', async (req, res) => {
+    try {
+      // Gather data from all systems
+      const [
+        orderPresence,
+        consensus,
+        sentiment,
+        orchestratorEvaluation,
+        collectiveConsciousness,
+        conductorDecision
+      ] = await Promise.all([
+        waidesKIETHOrderPresenceRegistry.get(),
+        waidesKIMultiNodeOrderConsensus.getConsensusWithInterpretation(),
+        waidesKIETHSentimentTracker.getSentimentForTrading(),
+        waidesKIPresenceOrchestrator.evaluate(),
+        waidesKIEntangledPresenceMesh.getCollectiveConsciousness(),
+        waidesKICollectiveTradeConductor.getCollectiveTradingDecision()
+      ]);
+
+      // Create comprehensive analysis
+      const fullAnalysis = {
+        timestamp: Date.now(),
+        order_book_presence: {
+          local_pressure: orderPresence.pressure,
+          strength: orderPresence.strength,
+          confidence: orderPresence.confidence
+        },
+        network_consensus: {
+          consensus_pressure: consensus.consensus.consensus_pressure,
+          confidence: consensus.consensus.confidence,
+          participating_nodes: consensus.consensus.participating_nodes.length,
+          should_trade: consensus.should_trade
+        },
+        market_sentiment: {
+          overall_sentiment: sentiment.sentiment.overall_sentiment,
+          score: sentiment.sentiment.score,
+          confidence: sentiment.sentiment.confidence,
+          trading_signal: sentiment.trading_signal
+        },
+        presence_orchestration: {
+          overall_alignment: orchestratorEvaluation.overall_alignment,
+          alignment_score: orchestratorEvaluation.alignment_score,
+          recommendation: orchestratorEvaluation.recommendation,
+          risk_level: orchestratorEvaluation.risk_level
+        },
+        collective_consciousness: {
+          network_harmony: collectiveConsciousness.network_harmony,
+          consciousness_level: collectiveConsciousness.consciousness_level,
+          active_entanglements: collectiveConsciousness.active_entanglements,
+          mesh_health: collectiveConsciousness.mesh_health
+        },
+        collective_decision: {
+          proposed_action: conductorDecision.proposal.action,
+          execution_confidence: conductorDecision.execution_confidence,
+          should_execute: conductorDecision.should_execute,
+          collective_support: conductorDecision.collective_support
+        },
+        unified_recommendation: {
+          action: conductorDecision.proposal.action,
+          confidence: Math.round(
+            (consensus.consensus.confidence * 0.3 + 
+             sentiment.sentiment.confidence * 0.2 + 
+             Math.abs(orchestratorEvaluation.alignment_score) * 0.3 + 
+             conductorDecision.execution_confidence * 0.2)
+          ),
+          reasoning: `Advanced sentience analysis: ${orchestratorEvaluation.recommendation}. Network consensus: ${consensus.interpretation}. Collective decision: ${conductorDecision.collective_support} support.`,
+          risk_assessment: orchestratorEvaluation.risk_level,
+          systems_aligned: [
+            consensus.should_trade,
+            sentiment.confidence_level !== 'low',
+            orchestratorEvaluation.overall_alignment !== 'conflicted',
+            conductorDecision.should_execute
+          ].filter(Boolean).length
+        }
+      };
+
+      res.json(fullAnalysis);
+    } catch (error) {
+      console.error('Error getting full sentience analysis:', error);
+      res.status(500).json({ error: 'Failed to get comprehensive analysis' });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {
