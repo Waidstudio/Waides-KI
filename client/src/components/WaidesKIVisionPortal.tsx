@@ -13,7 +13,7 @@ interface ChatMessage {
   message: string;
   timestamp: Date;
   personality?: string;
-  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning';
+  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error';
   confidence?: number;
   konslangProcessing?: string;
   reasoning?: any[];
@@ -181,9 +181,12 @@ export default function WaidesKIVisionPortal() {
     },
     onSuccess: (data) => {
       if (data && data.answer) {
-        typeMessage(data.answer, data.source || 'oracle', data.confidence, data.konslangProcessing);
+        const validSource = ['incite', 'chatgpt', 'konslang', 'combined', 'reasoning'].includes(data.source) 
+          ? data.source as 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' 
+          : 'combined';
+        typeMessage(data.answer, validSource, data.confidence, data.konslangProcessing);
       } else {
-        typeMessage('Oracle consultation complete', 'oracle', 80);
+        typeMessage('Oracle consultation complete', 'combined', 80);
       }
     },
   });
@@ -208,7 +211,7 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
-  const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
+  const typeMessage = (message: string, source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error', confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     // Safety check for undefined message
     if (!message || typeof message !== 'string') {
       console.warn('typeMessage called with invalid message:', message);
@@ -360,7 +363,9 @@ export default function WaidesKIVisionPortal() {
 
   const getMemoryStatus = () => {
     if (isDivineLoading) return "🧠 Waides KI Loading...";
-    if (divineReading?.ethData) return "🧠 Waides KI Memory Full";
+    if (divineReading && typeof divineReading === 'object') {
+      return "🧠 Waides KI Memory Full";
+    }
     return "🧠 Waides KI Offline";
   };
 
