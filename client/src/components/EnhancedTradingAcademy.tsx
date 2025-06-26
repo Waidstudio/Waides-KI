@@ -46,6 +46,8 @@ import {
 // Enhanced Trading Academy with KonsAi Integration
 export default function EnhancedTradingAcademy() {
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<number | null>(null);
+  const [lessonProgress, setLessonProgress] = useState<{[key: number]: boolean}>({});
   const [konsAiChat, setKonsAiChat] = useState<string>('');
   const [chatHistory, setChatHistory] = useState<Array<{role: 'user' | 'konsai', message: string, timestamp: number}>>([]);
   const [activeSimulation, setActiveSimulation] = useState<string | null>(null);
@@ -134,6 +136,250 @@ export default function EnhancedTradingAcademy() {
       category: 'STRATEGIES',
       icon: <Crown className="h-6 w-6" />,
       topics: ['Arbitrage', 'Options Trading', 'Algorithmic Trading', 'Market Making', 'Derivatives']
+    }
+  ];
+
+  // Detailed Course Lessons - Trading Fundamentals
+  const tradingFundamentalsLessons = [
+    {
+      id: 1,
+      title: 'Introduction to Financial Markets',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand what financial markets are and how they work',
+          'Learn the difference between primary and secondary markets',
+          'Identify major market participants and their roles'
+        ],
+        keyPoints: [
+          'Markets facilitate the exchange of financial instruments',
+          'Price discovery mechanism through supply and demand',
+          'Market makers provide liquidity for smoother trading',
+          'Retail vs institutional traders have different advantages'
+        ],
+        summary: 'Financial markets are complex ecosystems where buyers and sellers meet to trade securities. Understanding the basic structure and participants helps you navigate trading more effectively.'
+      }
+    },
+    {
+      id: 2,
+      title: 'Market Types and Sessions',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Distinguish between stock, forex, commodity, and crypto markets',
+          'Understand trading sessions and market hours',
+          'Learn about market volatility and liquidity patterns'
+        ],
+        keyPoints: [
+          'Each market type has unique characteristics and trading hours',
+          'Overlapping sessions create higher volatility opportunities',
+          'Cryptocurrency markets trade 24/7 with no closing times',
+          'Volume and volatility vary significantly across different sessions'
+        ],
+        summary: 'Different markets operate on different schedules and have varying levels of volatility. Timing your trades according to market sessions can improve your success rate.'
+      }
+    },
+    {
+      id: 3,
+      title: 'Order Types Mastery',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master market orders, limit orders, and stop orders',
+          'Learn advanced order types like stop-limit and trailing stops',
+          'Understand when to use each order type effectively'
+        ],
+        keyPoints: [
+          'Market orders execute immediately at current price',
+          'Limit orders control your entry/exit price precisely',
+          'Stop orders help manage risk and protect profits',
+          'Advanced orders provide automation and risk management'
+        ],
+        summary: 'Proper order management is crucial for trading success. Each order type serves a specific purpose in your trading strategy and risk management plan.'
+      }
+    },
+    {
+      id: 4,
+      title: 'Risk vs Reward Fundamentals',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Calculate risk-reward ratios for potential trades',
+          'Understand the importance of positive expectancy',
+          'Learn to assess trade probability and position sizing'
+        ],
+        keyPoints: [
+          'Risk-reward ratio should typically be 1:2 or better',
+          'Win rate and risk-reward ratio determine profitability',
+          'Never risk more than you can afford to lose',
+          'Position sizing affects overall portfolio risk'
+        ],
+        summary: 'Successful trading requires favorable risk-reward ratios. Understanding this relationship helps you make profitable trading decisions over time.'
+      }
+    },
+    {
+      id: 5,
+      title: 'Understanding Market Psychology',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Recognize common psychological biases in trading',
+          'Understand crowd behavior and market sentiment',
+          'Learn to control emotions during trading'
+        ],
+        keyPoints: [
+          'Fear and greed drive most market movements',
+          'Confirmation bias leads to poor decision making',
+          'FOMO causes entry at poor price levels',
+          'Discipline separates successful traders from failures'
+        ],
+        summary: 'Trading psychology is often more important than technical analysis. Controlling your emotions and understanding market sentiment gives you a significant edge.'
+      }
+    },
+    {
+      id: 6,
+      title: 'Basic Chart Reading',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Read and interpret candlestick charts',
+          'Understand timeframes and their significance',
+          'Identify basic trend patterns'
+        ],
+        keyPoints: [
+          'Candlesticks show open, high, low, and close prices',
+          'Green/white candles indicate bullish price action',
+          'Red/black candles show bearish price movement',
+          'Multiple timeframe analysis provides better context'
+        ],
+        summary: 'Chart reading is the foundation of technical analysis. Learning to interpret price action through candlesticks is essential for timing entries and exits.'
+      }
+    },
+    {
+      id: 7,
+      title: 'Support and Resistance Basics',
+      duration: '25 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Identify horizontal support and resistance levels',
+          'Understand how these levels affect price movement',
+          'Learn to trade bounces and breakouts'
+        ],
+        keyPoints: [
+          'Support acts as a floor where buying interest emerges',
+          'Resistance acts as a ceiling where selling pressure increases',
+          'Volume confirms the strength of these levels',
+          'Broken support often becomes new resistance'
+        ],
+        summary: 'Support and resistance levels are among the most reliable trading concepts. These psychological price levels provide excellent entry and exit opportunities.'
+      }
+    },
+    {
+      id: 8,
+      title: 'Volume Analysis Introduction',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the relationship between price and volume',
+          'Learn to spot volume confirmation and divergence',
+          'Use volume to validate trading signals'
+        ],
+        keyPoints: [
+          'Volume confirms the strength of price movements',
+          'High volume breakouts are more reliable',
+          'Low volume moves often lack conviction',
+          'Volume precedes price in many market moves'
+        ],
+        summary: 'Volume is the fuel behind price movements. Understanding volume patterns helps you distinguish between strong and weak trading signals.'
+      }
+    },
+    {
+      id: 9,
+      title: 'Position Sizing Strategies',
+      duration: '25 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Calculate appropriate position sizes for your account',
+          'Understand the 1% and 2% risk rules',
+          'Learn fixed fractional and Kelly Criterion methods'
+        ],
+        keyPoints: [
+          'Never risk more than 1-2% of your account per trade',
+          'Position size should be based on your stop loss distance',
+          'Larger accounts can use smaller percentage risks',
+          'Proper position sizing prevents catastrophic losses'
+        ],
+        summary: 'Position sizing is the most important aspect of risk management. Proper sizing ensures you can survive losing streaks and compound profits effectively.'
+      }
+    },
+    {
+      id: 10,
+      title: 'Money Management Rules',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Establish clear money management guidelines',
+          'Learn about maximum drawdown limits',
+          'Understand when to increase or decrease position sizes'
+        ],
+        keyPoints: [
+          'Set maximum daily and monthly loss limits',
+          'Scale position sizes based on recent performance',
+          'Keep detailed records of all trading activity',
+          'Regular performance reviews identify areas for improvement'
+        ],
+        summary: 'Money management rules protect your capital during difficult periods. Having clear guidelines helps you stay disciplined and trade consistently.'
+      }
+    },
+    {
+      id: 11,
+      title: 'Creating a Trading Plan',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Develop a comprehensive trading plan',
+          'Set clear entry and exit criteria',
+          'Establish daily and weekly routines'
+        ],
+        keyPoints: [
+          'A trading plan removes emotions from decision making',
+          'Include specific setups you will trade',
+          'Define your risk management rules clearly',
+          'Regular plan reviews and updates are essential'
+        ],
+        summary: 'A well-defined trading plan is your roadmap to success. It provides structure and helps you stay disciplined during both winning and losing periods.'
+      }
+    },
+    {
+      id: 12,
+      title: 'Record Keeping and Performance Analysis',
+      duration: '25 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Set up effective trade journaling systems',
+          'Learn to analyze your trading performance',
+          'Identify strengths and weaknesses in your trading'
+        ],
+        keyPoints: [
+          'Document every trade with entry/exit reasons',
+          'Track both winning and losing trades',
+          'Look for patterns in your trading mistakes',
+          'Use performance metrics to guide improvements'
+        ],
+        summary: 'Keeping detailed records is essential for continuous improvement. Regular analysis of your trading performance helps you evolve and become more profitable.'
+      }
     }
   ];
 
@@ -444,78 +690,290 @@ export default function EnhancedTradingAcademy() {
 
         {/* Trading Courses */}
         <TabsContent value="courses" className="space-y-6">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center space-x-2">
-                <BookOpen className="h-6 w-6" />
-                <span>Comprehensive Trading Courses</span>
-              </CardTitle>
-              <CardDescription className="text-gray-400">
-                Structured learning paths from beginner to expert level
-              </CardDescription>
-            </CardHeader>
-          </Card>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tradingCourses.map((course) => (
-              <Card key={course.id} className={`bg-gray-800 border-2 ${getCategoryColor(course.category)} hover:border-opacity-100 border-opacity-50 transition-all duration-300 hover:scale-105`}>
+          {!selectedCourse && (
+            <>
+              <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-gray-700">
-                        {course.icon}
-                      </div>
-                      <div>
-                        <CardTitle className="text-white text-lg">{course.title}</CardTitle>
-                        <Badge className={`${getLevelColor(course.level)} text-white mt-1`}>
-                          {course.level}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                  <CardDescription className="text-gray-400 mt-3">{course.description}</CardDescription>
+                  <CardTitle className="text-white flex items-center space-x-2">
+                    <BookOpen className="h-6 w-6" />
+                    <span>Comprehensive Trading Courses</span>
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Structured learning paths from beginner to expert level
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm text-gray-400">
-                      <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4" />
-                        <span>{course.duration}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <BookOpen className="h-4 w-4" />
-                        <span>{course.lessons} lessons</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="text-sm font-medium text-gray-300">Key Topics:</div>
-                      <div className="flex flex-wrap gap-1">
-                        {course.topics.slice(0, 3).map((topic, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {topic}
-                          </Badge>
-                        ))}
-                        {course.topics.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{course.topics.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+              </Card>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {tradingCourses.map((course) => (
+                  <Card key={course.id} className={`bg-gray-800 border-2 ${getCategoryColor(course.category)} hover:border-opacity-100 border-opacity-50 transition-all duration-300 hover:scale-105`}>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 rounded-lg bg-gray-700">
+                            {course.icon}
+                          </div>
+                          <div>
+                            <CardTitle className="text-white text-lg">{course.title}</CardTitle>
+                            <Badge className={`${getLevelColor(course.level)} text-white mt-1`}>
+                              {course.level}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <CardDescription className="text-gray-400 mt-3">{course.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between text-sm text-gray-400">
+                          <div className="flex items-center space-x-2">
+                            <Clock className="h-4 w-4" />
+                            <span>{course.duration}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <BookOpen className="h-4 w-4" />
+                            <span>{course.lessons} lessons</span>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-gray-300">Key Topics:</div>
+                          <div className="flex flex-wrap gap-1">
+                            {course.topics.slice(0, 3).map((topic, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {topic}
+                              </Badge>
+                            ))}
+                            {course.topics.length > 3 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{course.topics.length - 3} more
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => setSelectedCourse(course.id)}
+                          className="w-full bg-blue-600 hover:bg-blue-700"
+                        >
+                          <PlayCircle className="h-4 w-4 mr-2" />
+                          Start Course
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Trading Fundamentals Course Detail View */}
+          {selectedCourse === 'fundamentals' && (
+            <div className="space-y-6">
+              {/* Course Header with Back Button */}
+              <Card className="bg-gradient-to-r from-blue-900 to-purple-900 border-blue-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-white text-2xl flex items-center space-x-3">
+                        <BookOpen className="h-8 w-8" />
+                        <span>Trading Fundamentals</span>
+                        <Badge className="bg-green-600 text-white">BEGINNER</Badge>
+                      </CardTitle>
+                      <CardDescription className="text-blue-200 mt-2">
+                        Master the core concepts of trading, market mechanics, and financial instruments
+                      </CardDescription>
+                    </div>
                     <Button
-                      onClick={() => setSelectedCourse(course.id)}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCourse(null);
+                        setSelectedLesson(null);
+                      }}
+                      className="text-white border-white hover:bg-white hover:text-blue-900"
                     >
-                      <PlayCircle className="h-4 w-4 mr-2" />
-                      Start Course
+                      ← Back to Courses
                     </Button>
                   </div>
-                </CardContent>
+                  <div className="flex items-center space-x-6 mt-4 text-blue-200">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>4 hours total</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="h-4 w-4" />
+                      <span>12 lessons</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>{Object.keys(lessonProgress).length}/12 completed</span>
+                    </div>
+                  </div>
+                </CardHeader>
               </Card>
-            ))}
-          </div>
+
+              {/* Lesson List or Lesson Detail */}
+              {!selectedLesson && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {tradingFundamentalsLessons.map((lesson) => (
+                    <Card 
+                      key={lesson.id} 
+                      className={`bg-gray-800 border-gray-700 hover:border-blue-500 transition-all duration-300 cursor-pointer ${
+                        lessonProgress[lesson.id] ? 'border-green-500' : ''
+                      }`}
+                      onClick={() => setSelectedLesson(lesson.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-white text-lg flex items-center space-x-2">
+                              <span className="text-blue-500">#{lesson.id}</span>
+                              <span>{lesson.title}</span>
+                              {lessonProgress[lesson.id] && <Badge className="bg-green-600">✓ Completed</Badge>}
+                            </CardTitle>
+                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{lesson.duration}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.type}
+                              </Badge>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Individual Lesson Detail */}
+              {selectedLesson && (
+                <div className="space-y-6">
+                  {(() => {
+                    const lesson = tradingFundamentalsLessons.find(l => l.id === selectedLesson);
+                    if (!lesson) return null;
+                    
+                    return (
+                      <>
+                        <Card className="bg-gray-800 border-gray-700">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <CardTitle className="text-white text-xl flex items-center space-x-2">
+                                  <span className="text-blue-500">Lesson {lesson.id}:</span>
+                                  <span>{lesson.title}</span>
+                                </CardTitle>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{lesson.duration}</span>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {lesson.type}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedLesson(null)}
+                                className="text-white border-gray-600 hover:bg-gray-700"
+                              >
+                                ← Back to Lessons
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Learning Objectives */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                                <span>Learning Objectives</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.objectives.map((objective, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-blue-500 mt-1">•</span>
+                                    <span>{objective}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Key Points */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Eye className="h-5 w-5 text-green-500" />
+                                <span>Key Points</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.keyPoints.map((point, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-green-500 mt-1">✓</span>
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Summary */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <FileText className="h-5 w-5 text-purple-500" />
+                                <span>Summary</span>
+                              </h3>
+                              <p className="text-gray-300 leading-relaxed">
+                                {lesson.content.summary}
+                              </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                              <div className="flex items-center space-x-3">
+                                {lesson.id > 1 && (
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedLesson(lesson.id - 1)}
+                                    className="text-white border-gray-600 hover:bg-gray-700"
+                                  >
+                                    ← Previous Lesson
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Button
+                                  onClick={() => {
+                                    setLessonProgress(prev => ({ ...prev, [lesson.id]: true }));
+                                  }}
+                                  className={`${
+                                    lessonProgress[lesson.id] 
+                                      ? 'bg-green-600 hover:bg-green-700' 
+                                      : 'bg-blue-600 hover:bg-blue-700'
+                                  }`}
+                                >
+                                  {lessonProgress[lesson.id] ? '✓ Completed' : 'Mark Complete'}
+                                </Button>
+                                {lesson.id < tradingFundamentalsLessons.length && (
+                                  <Button
+                                    onClick={() => setSelectedLesson(lesson.id + 1)}
+                                    className="bg-purple-600 hover:bg-purple-700"
+                                  >
+                                    Next Lesson →
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          )}
         </TabsContent>
 
         {/* KonsAi Tutor */}
