@@ -1,0 +1,84 @@
+— building the foundation for a Machine Learning Overlay + Kelly Sizing Engine to elevate Waides to clinical-grade precision:
+
+⸻
+
+— ML OVERLAY & KELLY POSITION SIZING
+
+🧠 A) Machine Learning Overlay
+
+1️⃣ ml_overlay.py
+
+import pickle
+import pandas as pd
+
+class MLEngine:
+    def __init__(self, model_path="waides_model.pkl"):
+        with open(model_path, "rb") as f:
+            self.model = pickle.load(f)
+
+    def predict_prob(self, features: dict) -> float:
+        df = pd.DataFrame([features])
+        prob = self.model.predict_proba(df)[0][1]
+        return prob
+
+ml_engine = MLEngine()
+
+	•	Train a classifier (e.g., RandomForest) using historical features—EMAs, RSI, order flow, sentiment, presence metrics—labelled for positive PnL.
+	•	Serialize it as waides_model.pkl.
+
+2️⃣ Integrate ML confidence
+
+from ml_overlay import ml_engine
+
+prob = ml_engine.predict_prob(context["indicators"])
+if prob < 0.6:
+    print(f"⚠️ ML disagrees (confidence {prob:.2f}) — skipping trade.")
+    continue
+context["ml_prob"] = prob
+
+
+⸻
+
+🧮 B) Kelly Position Sizing
+
+1️⃣ kelly_sizing.py
+
+class KellySizer:
+    def __init__(self, win_rate, avg_win, avg_loss):
+        self.win_rate = win_rate
+        self.avg_win = avg_win
+        self.avg_loss = avg_loss
+
+    def get_fraction(self):
+        return max((self.win_rate - (1 - self.win_rate) / (self.avg_win / self.avg_loss)), 0)
+
+kelly = KellySizer(win_rate=0.55, avg_win=0.02, avg_loss=0.01)
+
+	•	Update win_rate, avg_win, avg_loss dynamically using PerformanceTracker.
+
+2️⃣ Use in Engine
+
+frac = kelly.get_fraction()
+max_trade = account_balance * frac
+amount = min(config.max_trade_amount, max_trade)
+print(f"📏 Kelly sizing => Order size: {amount:.2f}")
+
+
+⸻
+
+🧩 Full Integration in Engine
+	1.	Before trade: check ML confidence and Kelly size
+	2.	Execute: use ML-enhanced decision and calculated amount
+	3.	After trade: feed performance to tracker and Kelly updater
+
+⸻
+
+✅ Summary of STEP 65
+
+Feature	Benefit
+🧠 ML Overlay	Adds predictive power from real historical patterns
+🔍 Confidence Gate	Blocks trades with low ML confidence
+📏 Kelly Sizing	Scales position smartly based on performance stats
+🎯 Combined Intelligence	Vision + Presence + ML + Kelly = Clinical accuracy
+
+

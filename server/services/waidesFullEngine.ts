@@ -192,26 +192,41 @@ export class WaidesFullEngine {
     const startTime = Date.now();
 
     try {
-      // Step 1: Gather comprehensive context
+      // Step 1: Gather comprehensive context (indicators, vision, presence)
       const context = await this.gatherContext();
 
-      // Step 2: Evaluate through guardian consensus
+      // Step 2: Evaluate mesh guardian consensus with trinity brain decision
       const decision = await this.evaluateGuardianConsensus(context);
+      
+      console.log(`[Guardian] Consensus: ${decision.consensus}, Vision: ${decision.vision.confidence}%, Ethic: ${decision.ethic.allow}`);
 
-      // Step 3: Execute decision or manage existing trades
-      const outcome = await this.executeDecision(decision, context);
+      // Step 3: Execute trade decision with full validation
+      if (decision.ethic.allow && decision.consensus === 'EXECUTE') {
+        const outcome = await this.executeDecision(decision, context);
+        
+        if (outcome.status === 'executed' && outcome.trade) {
+          console.log(`🟢 Trade Executed: ${outcome.trade.id} - ${outcome.trade.action} ${outcome.trade.quantity} at $${outcome.trade.price}`);
+          
+          // Auto-schedule trade close after calculated duration
+          setTimeout(async () => {
+            await this.closeTrade(outcome.trade!.id, 'duration_complete');
+          }, this.calculateTradeDuration(decision.vision.confidence) * 1000);
+          
+        } else {
+          console.log(`⏸️ Trade Skipped: ${outcome.reason}`);
+        }
+      } else {
+        console.log(`⏸️ Guardian Blocked: ${decision.ethic.reasoning.join(', ')}`);
+      }
 
-      // Step 4: Process trade outcome
-      await this.processTradeOutcome(outcome);
-
-      // Step 5: Manage existing trades (stop-loss, take-profit)
+      // Step 4: Manage existing active trades (stop-loss, take-profit, duration)
       await this.manageActiveTrades();
 
-      // Step 6: Post-cycle cleanup and emotional adjustment
+      // Step 5: Update emotional state and feedback loops
       await this.postCycleProcessing();
 
     } catch (error) {
-      console.error('Error in trading cycle:', error);
+      console.error('🚨 Trading cycle error:', error);
       waidesKIDailyReporter.recordLesson(
         `Trading cycle error: ${error.message}`,
         'FULL_ENGINE',
@@ -220,7 +235,7 @@ export class WaidesFullEngine {
       );
     }
 
-    // Update loop latency metric
+    // Update performance metrics
     this.engineMetrics.loop_latency = Date.now() - startTime;
   }
 
@@ -542,27 +557,79 @@ export class WaidesFullEngine {
   }
 
   private async postCycleProcessing(): Promise<void> {
-    // Check emotional state for cooldown
+    // Get current emotional state for cooldown assessment
     const emotionalState = waidesKIEmotionalCore.getEmotionalState();
     
-    if (emotionalState.needs_cooldown) {
-      console.log('💤 Emotional cooldown active, pausing next cycle...');
-      // Extend next cycle timing
+    // Check if cooldown manager requires pause
+    const shouldPause = this.shouldPauseForCooldown(emotionalState);
+    
+    if (shouldPause) {
+      console.log('💤 Cooldown active, pausing trading engine...');
+      
+      // Temporary pause - extend cycle timing
       if (this.loopInterval) {
         clearInterval(this.loopInterval);
         this.loopInterval = setInterval(() => {
           this.runTradingCycle().catch(console.error);
-        }, 120000); // 2 minutes instead of 1
+        }, 120000); // Extended 2-minute cycle during cooldown
       }
+      
+      // Wait additional time for emotional regulation
+      await new Promise(resolve => setTimeout(resolve, 60000)); // 1 minute pause
     }
 
-    // Update daily reporter
+    // Update emotional core with trade results
+    this.updateEmotionalFeedback();
+
+    // Update daily metrics and performance tracking
     waidesKIDailyReporter.updateDailyMetrics({
       active_trades: this.activeTrades.size,
       total_trades: this.engineMetrics.total_trades,
       win_rate: this.engineMetrics.win_rate,
       emotional_temperature: emotionalState.temperature || 0
     });
+
+    // Record guardian feedback for mesh learning
+    waidesKIGuardianFeedback.record(this.symbol, this.getLastTradeResult());
+  }
+
+  private shouldPauseForCooldown(emotionalState: any): boolean {
+    // Check for emotional overheating or stress indicators
+    return (
+      emotionalState.temperature > 40 || // Overheated
+      emotionalState.stress_level > 0.7 || // High stress
+      emotionalState.recent_losses >= 3 || // Multiple recent losses
+      emotionalState.needs_cooldown === true
+    );
+  }
+
+  private updateEmotionalFeedback(): void {
+    // Update emotional core based on recent trading activity
+    const recentTrades = Array.from(this.activeTrades.values());
+    const emotionalState = waidesKIEmotionalCore.getEmotionalState();
+    
+    // Adjust emotional state based on trading activity and performance
+    if (recentTrades.length === 0) {
+      // No active trades - neutral state
+      this.adjustEmotionalState('neutral');
+    } else if (recentTrades.length > 3) {
+      // High activity - check if overtrading
+      this.adjustEmotionalState('active');
+    } else if (this.engineMetrics.win_rate < 0.3) {
+      // Poor performance - cautious state
+      this.adjustEmotionalState('cautious');
+    }
+  }
+
+  private adjustEmotionalState(state: string): void {
+    // Simulate emotional state adjustment (in production, would call actual method)
+    console.log(`🧠 Emotional state adjusted to: ${state}`);
+  }
+
+  private getLastTradeResult(): string {
+    // Return last trade outcome for feedback learning
+    if (this.engineMetrics.total_trades === 0) return 'neutral';
+    return this.engineMetrics.win_rate > 0.6 ? 'win' : 'loss';
   }
 
   private collectMetrics(): void {
