@@ -176,6 +176,9 @@ import { quantumTradingEngine } from './services/quantumTradingEngine';
 import { konsLangAI } from './services/konsLangAI';
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Create HTTP server
+  const httpServer = createServer(app);
+
   // Initialize services
   ethMonitor = new EthMonitor();
   signalAnalyzer = new SignalAnalyzer();
@@ -1019,8 +1022,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to get trade history' });
     }
   });
-
-  const httpServer = createServer(app);
 
   // Real-time automated trading engine
   let realTimeTrading = false;
@@ -11317,6 +11318,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }, 60000); // Every minute
 
-  const httpServer = createServer(app);
   return httpServer;
 }
