@@ -29,6 +29,7 @@ import MLLifecycleManager from "@/components/MLLifecycleManager";
 import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
 import AdminConfigPanel from "@/components/AdminConfigPanel";
 import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
+import VoiceCommandPage from "@/pages/VoiceCommandPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -42,6 +43,7 @@ function Router() {
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
+    { path: "/voice-command", label: "Voice Command" },
     { path: "/enhanced-waidbot", label: "Enhanced Controller" },
     { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
@@ -114,6 +116,7 @@ function Router() {
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
           <Route path="/strategy-autogen" component={StrategyAutogenPage} />
+          <Route path="/voice-command" component={VoiceCommandPage} />
           <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
           <Route path="/autonomous-wealth" component={AutonomousWealthEngine} />
           <Route path="/learning" component={LearningPage} />

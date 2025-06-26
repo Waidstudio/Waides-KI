@@ -11110,6 +11110,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Voice Command Processing endpoints
+  app.post('/api/voice/process', async (req, res) => {
+    try {
+      const { command, sessionId } = req.body;
+      
+      if (!command) {
+        return res.status(400).json({ error: 'Voice command is required' });
+      }
+
+      const response = await voiceProcessor.processVoiceCommand(command, sessionId);
+      
+      res.json({
+        success: true,
+        response,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error processing voice command:', error);
+      res.status(500).json({ error: 'Failed to process voice command' });
+    }
+  });
+
+  // Voice Command Demo endpoint
+  app.post('/api/voice/demo', async (req, res) => {
+    try {
+      const demoCommands = [
+        "start autonomous trading",
+        "check eth price",
+        "get trading signals",
+        "activate waidbot",
+        "show portfolio status"
+      ];
+
+      const results = [];
+      
+      for (const command of demoCommands) {
+        const response = await voiceProcessor.processVoiceCommand(command, 'demo-session');
+        results.push({
+          command,
+          response: response.text,
+          action: response.action,
+          confidence: response.confidence
+        });
+      }
+
+      res.json({
+        success: true,
+        demo_results: results,
+        total_commands: results.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error in voice demo:', error);
+      res.status(500).json({ error: 'Failed to run voice demo' });
+    }
+  });
+
   app.post('/api/wais/emergency-reset', async (req, res) => {
     try {
       const reset_success = waidesKIWAISAutonomousEngine.emergencyReset();

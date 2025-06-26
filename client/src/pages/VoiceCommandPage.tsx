@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mic, Brain, Zap, TrendingUp, Shield, Settings, Volume2, Waveform } from 'lucide-react';
+import { Mic, Brain, Zap, TrendingUp, Shield, Settings, Volume2, Activity } from 'lucide-react';
 import VoiceInterface from '@/components/VoiceInterface';
 import { useQuery } from '@tanstack/react-query';
 
@@ -139,7 +139,7 @@ export default function VoiceCommandPage() {
 
               <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-600/20">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                  <Waveform className="w-5 h-5 mr-2 text-emerald-400" />
+                  <Activity className="w-5 h-5 mr-2 text-emerald-400" />
                   Voice Patterns
                 </h3>
                 
