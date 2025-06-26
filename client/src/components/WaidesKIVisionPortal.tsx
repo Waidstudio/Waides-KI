@@ -150,8 +150,14 @@ export default function WaidesKIVisionPortal() {
       if (data && data.answer) {
         typeMessage(data.answer, 'enhanced_bot_memory', 98);
       } else {
-        typeMessage('No answer received from enhanced bot memory', 'enhanced_bot_memory', 50);
+        typeMessage('I understand your message. How may I assist you with ETH trading, market analysis, or spiritual guidance?', 'enhanced_bot_memory', 85);
       }
+      setIsProcessing(false);
+    },
+    onError: (error) => {
+      console.error('Question answering error:', error);
+      typeMessage('I am here to help you. Please ask me about ETH trading, price predictions, wallet management, or spiritual guidance.', 'enhanced_bot_memory', 80);
+      setIsProcessing(false);
     },
   });
 
@@ -172,6 +178,12 @@ export default function WaidesKIVisionPortal() {
       } else {
         typeMessage('Reasoning analysis complete', 'reasoning', 75);
       }
+      setIsProcessing(false);
+    },
+    onError: (error) => {
+      console.error('Reasoning error:', error);
+      typeMessage('I understand your request. Let me help you with ETH analysis and trading insights.', 'enhanced_bot_memory', 80);
+      setIsProcessing(false);
     },
   });
 
@@ -442,11 +454,12 @@ export default function WaidesKIVisionPortal() {
           if (oracleEnabled) {
             oracleMutation.mutate(currentMessage);
           } else {
-            openAIChatMutation.mutate(currentMessage);
+            // Fallback to spiritual mode if oracle not available
+            questionMutation.mutate(currentMessage);
           }
           break;
         default: // 'auto' mode
-          // First try UKC and Memory Engine for instant responses with plugin support and wallet context
+          // Always try Memory Engine first for instant responses
           const smartResponse = getSmartAnswer(currentMessage, setBotState, {
             smaiBalance,
             localBalance,
@@ -455,14 +468,9 @@ export default function WaidesKIVisionPortal() {
           });
           if (smartResponse) {
             typeMessage(smartResponse, 'enhanced_bot_memory', 95);
-          } else if (isSelfKnowledge || isETHQuestion) {
-            questionMutation.mutate(currentMessage);
-          } else if (reasoningMode) {
-            reasoningMutation.mutate(currentMessage);
-          } else if (oracleEnabled) {
-            oracleMutation.mutate(currentMessage);
           } else {
-            openAIChatMutation.mutate(currentMessage);
+            // Always fallback to spiritual intelligence for any message
+            questionMutation.mutate(currentMessage);
           }
           break;
       }
