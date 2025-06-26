@@ -443,6 +443,290 @@ export default function EnhancedTradingAcademy() {
     }
   ];
 
+  // Detailed Course Lessons - Cryptocurrency Trading Strategies
+  const cryptoTradingLessons = [
+    {
+      id: 1,
+      title: 'Introduction to Cryptocurrency Markets',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the unique characteristics of cryptocurrency markets',
+          'Learn the differences between crypto and traditional markets',
+          'Identify key market participants and their impact'
+        ],
+        keyPoints: [
+          'Crypto markets operate 24/7 with no closing times',
+          'Higher volatility provides both opportunity and risk',
+          'Market is influenced by technology, regulation, and sentiment',
+          'Liquidity varies significantly between different cryptocurrencies'
+        ],
+        summary: 'Cryptocurrency markets present unique opportunities and challenges compared to traditional financial markets. Understanding the 24/7 nature, extreme volatility, and diverse factors that drive price movements is essential for developing effective trading strategies in this dynamic environment.'
+      }
+    },
+    {
+      id: 2,
+      title: 'Understanding Crypto Market Cycles',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Learn to identify crypto market cycles and phases',
+          'Understand Bitcoin\'s influence on the broader crypto market',
+          'Recognize accumulation, markup, distribution, and markdown phases'
+        ],
+        keyPoints: [
+          'Crypto markets follow predictable cycles of boom and bust',
+          'Bitcoin typically leads market cycles with altcoins following',
+          'Market cycles are influenced by halving events and adoption waves',
+          'Each cycle tends to be longer and less volatile than the previous'
+        ],
+        summary: 'Crypto market cycles follow patterns of accumulation, growth, euphoria, and correction. Understanding these cycles helps traders position themselves advantageously, recognizing when to accumulate during bear markets and when to take profits during bull markets.'
+      }
+    },
+    {
+      id: 3,
+      title: 'Bitcoin Dominance and Market Correlation',
+      duration: '18 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand Bitcoin dominance and its market implications',
+          'Learn how altcoins correlate with Bitcoin movements',
+          'Develop strategies based on dominance trends'
+        ],
+        keyPoints: [
+          'Bitcoin dominance indicates market sentiment and risk appetite',
+          'Rising dominance often signals risk-off behavior in crypto',
+          'Falling dominance can indicate altcoin season opportunities',
+          'Use dominance as a macro indicator for portfolio allocation'
+        ],
+        summary: 'Bitcoin dominance is a crucial metric for understanding crypto market dynamics. When dominance rises, capital flows into Bitcoin as a safer crypto asset. When it falls, traders become more willing to take risks with altcoins, creating opportunities for diversified crypto strategies.'
+      }
+    },
+    {
+      id: 4,
+      title: 'Altcoin Analysis and Selection',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn frameworks for analyzing and selecting altcoins',
+          'Understand fundamental analysis for cryptocurrency projects',
+          'Develop criteria for evaluating altcoin investment potential'
+        ],
+        keyPoints: [
+          'Evaluate team experience, technology innovation, and use cases',
+          'Analyze tokenomics, supply distribution, and inflation schedules',
+          'Consider market cap, trading volume, and exchange listings',
+          'Assess community strength, developer activity, and partnerships'
+        ],
+        summary: 'Successful altcoin trading requires thorough fundamental analysis beyond just technical charts. Evaluating the project\'s technology, team, tokenomics, and market position helps identify altcoins with genuine long-term potential versus speculative plays.'
+      }
+    },
+    {
+      id: 5,
+      title: 'Layer 1 vs Layer 2 Investment Strategies',
+      duration: '22 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the differences between Layer 1 and Layer 2 solutions',
+          'Learn investment strategies for each blockchain layer',
+          'Identify opportunities in the blockchain ecosystem'
+        ],
+        keyPoints: [
+          'Layer 1 blockchains offer base layer security and decentralization',
+          'Layer 2 solutions provide scalability and reduced transaction costs',
+          'Layer 1 investments tend to be more stable with network effects',
+          'Layer 2 tokens can offer higher growth but with execution risk'
+        ],
+        summary: 'Understanding the blockchain technology stack helps inform investment decisions. Layer 1 blockchains like Ethereum provide foundational value, while Layer 2 solutions offer scalability innovations with different risk-reward profiles for traders.'
+      }
+    },
+    {
+      id: 6,
+      title: 'DeFi Trading Fundamentals',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn the basics of decentralized finance trading',
+          'Understand key DeFi protocols and their tokens',
+          'Develop strategies for trading DeFi assets'
+        ],
+        keyPoints: [
+          'DeFi protocols offer lending, borrowing, and trading without intermediaries',
+          'Token values are driven by protocol usage, fees, and governance rights',
+          'Yield farming and liquidity mining create additional earning opportunities',
+          'Smart contract risks and impermanent loss must be considered'
+        ],
+        summary: 'DeFi trading involves protocols that recreate traditional financial services on blockchain. Understanding how protocols generate value through fees and usage helps traders identify opportunities in lending protocols, DEXs, and yield farming platforms.'
+      }
+    },
+    {
+      id: 7,
+      title: 'Yield Farming and Liquidity Mining',
+      duration: '28 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand yield farming mechanics and opportunities',
+          'Learn to calculate and compare yields across protocols',
+          'Manage risks associated with liquidity provision'
+        ],
+        keyPoints: [
+          'Yield farming involves providing liquidity to earn token rewards',
+          'APY can fluctuate dramatically based on token prices and demand',
+          'Impermanent loss risk increases with asset price divergence',
+          'Consider gas fees and lock-up periods when calculating returns'
+        ],
+        summary: 'Yield farming allows traders to earn returns by providing liquidity to DeFi protocols. While potentially profitable, it requires careful analysis of impermanent loss, token emission schedules, and protocol sustainability to achieve consistent returns.'
+      }
+    },
+    {
+      id: 8,
+      title: 'NFT Trading and Digital Collectibles',
+      duration: '25 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn NFT market dynamics and trading strategies',
+          'Understand valuation factors for digital collectibles',
+          'Develop approaches for NFT portfolio management'
+        ],
+        keyPoints: [
+          'NFT value is driven by rarity, utility, community, and creator reputation',
+          'Floor price movements often indicate collection health and demand',
+          'Utility NFTs with gaming or access rights can have sustained value',
+          'Market cycles for NFTs can be independent of broader crypto trends'
+        ],
+        summary: 'NFT trading requires understanding digital scarcity, community dynamics, and utility value. Success comes from identifying strong communities, authentic creators, and NFTs with real utility beyond just collectible value.'
+      }
+    },
+    {
+      id: 9,
+      title: 'Meme Coin Trading Psychology',
+      duration: '20 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the psychology behind meme coin movements',
+          'Learn risk management for highly speculative assets',
+          'Recognize social media signals and trends'
+        ],
+        keyPoints: [
+          'Meme coins are driven primarily by social sentiment and viral trends',
+          'Price movements can be extreme and disconnected from fundamentals',
+          'Social media influence and celebrity endorsements drive demand',
+          'Exit strategies are crucial due to pump and dump risks'
+        ],
+        summary: 'Meme coin trading is pure speculation based on social trends and community sentiment. While potentially profitable, it requires strict risk management, quick decision-making, and understanding of social media dynamics driving these assets.'
+      }
+    },
+    {
+      id: 10,
+      title: 'Cross-Chain Trading Opportunities',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn about trading opportunities across different blockchains',
+          'Understand bridge technologies and cross-chain protocols',
+          'Identify arbitrage opportunities between chains'
+        ],
+        keyPoints: [
+          'Different blockchains can have price discrepancies for same assets',
+          'Bridge technologies enable asset movement between chains',
+          'Transaction fees and bridge risks must be factored into profits',
+          'Emerging chains often offer higher yields but with greater risks'
+        ],
+        summary: 'Cross-chain trading involves moving assets between different blockchains to capture price differences or access unique opportunities. Understanding bridge technologies and calculating all associated costs is essential for profitable cross-chain strategies.'
+      }
+    },
+    {
+      id: 11,
+      title: 'Governance Token Strategies',
+      duration: '22 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand governance tokens and their value proposition',
+          'Learn strategies for trading protocol governance rights',
+          'Evaluate governance participation rewards and risks'
+        ],
+        keyPoints: [
+          'Governance tokens provide voting rights in protocol decisions',
+          'Token value can increase with protocol growth and fee generation',
+          'Governance participation can earn additional token rewards',
+          'Regulatory risks around governance tokens are evolving'
+        ],
+        summary: 'Governance tokens represent ownership stakes in DeFi protocols, giving holders voting rights and often fee-sharing benefits. Trading these tokens requires understanding protocol fundamentals, governance processes, and the evolving regulatory landscape.'
+      }
+    },
+    {
+      id: 12,
+      title: 'Crypto Derivatives and Futures Trading',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn about cryptocurrency futures and perpetual contracts',
+          'Understand leverage and margin requirements in crypto',
+          'Develop risk management for leveraged crypto positions'
+        ],
+        keyPoints: [
+          'Crypto futures allow leveraged exposure with limited capital',
+          'Perpetual contracts have funding rates that affect holding costs',
+          'Liquidation risks are higher due to crypto market volatility',
+          'Futures can be used for hedging existing spot positions'
+        ],
+        summary: 'Crypto derivatives provide leveraged exposure and hedging opportunities but come with significant risks. Understanding funding rates, liquidation mechanics, and proper position sizing is crucial for safely trading crypto futures and perpetuals.'
+      }
+    },
+    {
+      id: 13,
+      title: 'Regulatory Impact on Crypto Trading',
+      duration: '18 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand how regulation affects crypto markets',
+          'Learn to anticipate regulatory impact on different assets',
+          'Develop strategies for regulatory risk management'
+        ],
+        keyPoints: [
+          'Regulatory announcements can cause immediate and dramatic price moves',
+          'Different jurisdictions have varying approaches to crypto regulation',
+          'Securities classification affects which assets can be traded where',
+          'Regulatory clarity often leads to institutional adoption and price appreciation'
+        ],
+        summary: 'Regulatory developments significantly impact crypto markets, often causing major price movements. Staying informed about regulatory trends and understanding how different cryptocurrencies might be classified helps traders anticipate and position for regulatory changes.'
+      }
+    },
+    {
+      id: 14,
+      title: 'Building a Crypto Trading Portfolio',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn portfolio construction strategies for crypto assets',
+          'Understand diversification within the crypto ecosystem',
+          'Develop rebalancing strategies for volatile assets'
+        ],
+        keyPoints: [
+          'Diversify across different crypto sectors and use cases',
+          'Balance between established coins and emerging opportunities',
+          'Regular rebalancing captures gains and manages risk',
+          'Consider correlation with traditional markets and Bitcoin'
+        ],
+        summary: 'Building a successful crypto portfolio requires diversification across different blockchain ecosystems, use cases, and risk levels. This final lesson integrates all previous concepts to create a comprehensive approach to crypto trading and investment that balances opportunity with risk management.'
+      }
+    }
+  ];
+
   // Detailed Course Lessons - Risk Management & Capital Preservation
   const riskManagementLessons = [
     {
@@ -2039,6 +2323,214 @@ export default function EnhancedTradingAcademy() {
                                   <Button
                                     onClick={() => setSelectedLesson(lesson.id + 1)}
                                     className="bg-pink-600 hover:bg-pink-700"
+                                  >
+                                    Next Lesson →
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Cryptocurrency Trading Strategies Course Detail View */}
+          {selectedCourse === 'crypto-strategies' && (
+            <div className="space-y-6">
+              {/* Course Header with Back Button */}
+              <Card className="bg-gradient-to-r from-orange-900 to-yellow-900 border-orange-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-white text-2xl flex items-center space-x-3">
+                        <Zap className="h-8 w-8" />
+                        <span>Cryptocurrency Trading Strategies</span>
+                        <Badge className="bg-yellow-600 text-white">INTERMEDIATE</Badge>
+                      </CardTitle>
+                      <CardDescription className="text-orange-200 mt-2">
+                        Navigate the crypto markets with specialized strategies and insights
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedCourse(null);
+                        setSelectedLesson(null);
+                      }}
+                      className="text-white border-white hover:bg-white hover:text-orange-900"
+                    >
+                      ← Back to Courses
+                    </Button>
+                  </div>
+                  <div className="flex items-center space-x-6 mt-4 text-orange-200">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="h-4 w-4" />
+                      <span>4 hours total</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="h-4 w-4" />
+                      <span>14 lessons</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>{Object.keys(lessonProgress).length}/14 completed</span>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              {/* Lesson List or Lesson Detail */}
+              {!selectedLesson && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {cryptoTradingLessons.map((lesson) => (
+                    <Card 
+                      key={lesson.id} 
+                      className={`bg-gray-800 border-gray-700 hover:border-orange-500 transition-all duration-300 cursor-pointer ${
+                        lessonProgress[lesson.id] ? 'border-green-500' : ''
+                      }`}
+                      onClick={() => setSelectedLesson(lesson.id)}
+                    >
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <CardTitle className="text-white text-lg flex items-center space-x-2">
+                              <span className="text-orange-500">#{lesson.id}</span>
+                              <span>{lesson.title}</span>
+                              {lessonProgress[lesson.id] && <Badge className="bg-green-600">✓ Completed</Badge>}
+                            </CardTitle>
+                            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                              <div className="flex items-center space-x-1">
+                                <Clock className="h-4 w-4" />
+                                <span>{lesson.duration}</span>
+                              </div>
+                              <Badge variant="outline" className="text-xs">
+                                {lesson.type}
+                              </Badge>
+                            </div>
+                          </div>
+                          <ChevronRight className="h-5 w-5 text-gray-400" />
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              {/* Individual Lesson Detail */}
+              {selectedLesson && (
+                <div className="space-y-6">
+                  {(() => {
+                    const lesson = cryptoTradingLessons.find(l => l.id === selectedLesson);
+                    if (!lesson) return null;
+                    
+                    return (
+                      <>
+                        <Card className="bg-gray-800 border-gray-700">
+                          <CardHeader>
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <CardTitle className="text-white text-xl flex items-center space-x-2">
+                                  <span className="text-orange-500">Lesson {lesson.id}:</span>
+                                  <span>{lesson.title}</span>
+                                </CardTitle>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
+                                  <div className="flex items-center space-x-1">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{lesson.duration}</span>
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {lesson.type}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedLesson(null)}
+                                className="text-white border-gray-600 hover:bg-gray-700"
+                              >
+                                ← Back to Lessons
+                              </Button>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="space-y-6">
+                            {/* Learning Objectives */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                                <span>Learning Objectives</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.objectives.map((objective, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-orange-500 mt-1">•</span>
+                                    <span>{objective}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Key Points */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <Eye className="h-5 w-5 text-green-500" />
+                                <span>Key Points</span>
+                              </h3>
+                              <ul className="space-y-2">
+                                {lesson.content.keyPoints.map((point, index) => (
+                                  <li key={index} className="flex items-start space-x-2 text-gray-300">
+                                    <span className="text-green-500 mt-1">✓</span>
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+
+                            {/* Summary */}
+                            <div>
+                              <h3 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
+                                <FileText className="h-5 w-5 text-orange-500" />
+                                <span>Summary</span>
+                              </h3>
+                              <p className="text-gray-300 leading-relaxed">
+                                {lesson.content.summary}
+                              </p>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                              <div className="flex items-center space-x-3">
+                                {lesson.id > 1 && (
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedLesson(lesson.id - 1)}
+                                    className="text-white border-gray-600 hover:bg-gray-700"
+                                  >
+                                    ← Previous Lesson
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="flex items-center space-x-3">
+                                <Button
+                                  onClick={() => {
+                                    setLessonProgress(prev => ({ ...prev, [lesson.id]: true }));
+                                  }}
+                                  className={`${
+                                    lessonProgress[lesson.id] 
+                                      ? 'bg-green-600 hover:bg-green-700' 
+                                      : 'bg-orange-600 hover:bg-orange-700'
+                                  }`}
+                                >
+                                  {lessonProgress[lesson.id] ? '✓ Completed' : 'Mark Complete'}
+                                </Button>
+                                {lesson.id < cryptoTradingLessons.length && (
+                                  <Button
+                                    onClick={() => setSelectedLesson(lesson.id + 1)}
+                                    className="bg-yellow-600 hover:bg-yellow-700"
                                   >
                                     Next Lesson →
                                   </Button>
