@@ -10,26 +10,16 @@ export interface WaidDecision {
   reasoning: string;
   confidence: number;
   konsWisdom: string;
-  ethPosition: 'LONG' | 'NEUTRAL';
+  ethPosition: 'LONG' | 'NEUTRAL'; // WaidBot only: LONG positions during uptrends
   tradingPair: 'ETH/USDT' | 'NONE';
   quantity: number;
   urgency: 'IMMEDIATE' | 'WITHIN_HOUR' | 'WHEN_READY' | 'PATIENCE';
   mlPrediction?: any;
   portfolioRisk?: string;
   executionStatus?: 'PENDING' | 'EXECUTED' | 'FAILED' | 'CANCELLED';
-  microMovementCapture?: boolean;
-  nextGenStrategy?: string;
-  // Confirmation signals from other assets for analysis only
-  btcConfirmation?: {
-    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
-    strength: number;
-    supportLevel: number;
-  };
-  solConfirmation?: {
-    trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
-    strength: number;
-    momentum: number;
-  };
+  trendDirection: 'UPWARD' | 'DOWNWARD' | 'SIDEWAYS'; // WaidBot focuses on UPWARD trends only
+  botType: 'WAIDBOT' | 'WAIDBOT_PRO';
+  autoTradingEnabled: boolean;
 }
 
 export interface KonsLangAnalysis {
@@ -43,7 +33,8 @@ export interface KonsLangAnalysis {
 export class WaidBotEngine {
   private lastDecision: WaidDecision | null = null;
   private decisionHistory: WaidDecision[] = [];
-  private tradingEnabled: boolean = false;
+  private autoTradingEnabled: boolean = false;
+  private botType: 'WAIDBOT' = 'WAIDBOT'; // Basic bot for long-only ETH trading
   
   constructor() {
     this.initializeKonsLang();

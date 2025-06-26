@@ -148,6 +148,9 @@ import { waidesKIRoleManager } from './services/waidesKIRoleManager.js';
 import { waidesKIFullEngine } from './services/waidesKIFullEngine.js';
 import { waidesKIPerformanceTracker } from './services/waidesKIPerformanceTracker.js';
 import { waidesKIStopLossManager } from './services/waidesKIStopLossManager.js';
+// WAIDBOT SERVICES: Basic and Pro Trading Bots
+import { basicWaidBot } from './services/basicWaidBot.js';
+import { waidBotPro } from './services/waidBotPro.js';
 
 
 let ethMonitor: EthMonitor;
@@ -13964,6 +13967,152 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('❌ ML lifecycle demo workflow failed:', error);
       res.status(500).json({ error: 'Failed to run ML lifecycle demo workflow' });
+    }
+  });
+
+  // =============================================================================
+  // WAIDBOT API ENDPOINTS - Basic Long-Only ETH Trading Bot
+  // =============================================================================
+
+  // Get WaidBot status and current position
+  app.get("/api/waidbot/status", (req, res) => {
+    try {
+      const status = basicWaidBot.getStatus();
+      res.json({ success: true, status });
+    } catch (error) {
+      console.error('❌ WaidBot status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot status' });
+    }
+  });
+
+  // Enable/disable WaidBot auto-trading
+  app.post("/api/waidbot/toggle", (req, res) => {
+    try {
+      const { enabled } = req.body;
+      basicWaidBot.setAutoTrading(enabled);
+      const status = basicWaidBot.getStatus();
+      res.json({ 
+        success: true, 
+        message: `WaidBot auto-trading ${enabled ? 'enabled' : 'disabled'}`,
+        status 
+      });
+    } catch (error) {
+      console.error('❌ WaidBot toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle WaidBot auto-trading' });
+    }
+  });
+
+  // Generate WaidBot trading decision
+  app.post("/api/waidbot/decision", async (req, res) => {
+    try {
+      const ethData = await ethMonitor.fetchEthData();
+      const decision = await basicWaidBot.generateDecision(ethData);
+      
+      // Execute trade if auto-trading is enabled
+      if (decision.action === 'BUY_ETH' || decision.action === 'SELL_ETH') {
+        await basicWaidBot.executeTrade(decision);
+      }
+      
+      res.json({ success: true, decision });
+    } catch (error) {
+      console.error('❌ WaidBot decision error:', error);
+      res.status(500).json({ error: 'Failed to generate WaidBot decision' });
+    }
+  });
+
+  // Get WaidBot decision history
+  app.get("/api/waidbot/history", (req, res) => {
+    try {
+      const history = basicWaidBot.getDecisionHistory();
+      res.json({ success: true, history });
+    } catch (error) {
+      console.error('❌ WaidBot history error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot history' });
+    }
+  });
+
+  // =============================================================================
+  // WAIDBOT PRO API ENDPOINTS - Advanced Long/Short ETH Trading Bot
+  // =============================================================================
+
+  // Get WaidBot Pro status and current position
+  app.get("/api/waidbot-pro/status", (req, res) => {
+    try {
+      const status = waidBotPro.getStatus();
+      res.json({ success: true, status });
+    } catch (error) {
+      console.error('❌ WaidBot Pro status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot Pro status' });
+    }
+  });
+
+  // Enable/disable WaidBot Pro auto-trading
+  app.post("/api/waidbot-pro/toggle", (req, res) => {
+    try {
+      const { enabled } = req.body;
+      waidBotPro.setAutoTrading(enabled);
+      const status = waidBotPro.getStatus();
+      res.json({ 
+        success: true, 
+        message: `WaidBot Pro auto-trading ${enabled ? 'enabled' : 'disabled'}`,
+        status 
+      });
+    } catch (error) {
+      console.error('❌ WaidBot Pro toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle WaidBot Pro auto-trading' });
+    }
+  });
+
+  // Generate WaidBot Pro trading decision
+  app.post("/api/waidbot-pro/decision", async (req, res) => {
+    try {
+      const ethData = await ethMonitor.fetchEthData();
+      const decision = await waidBotPro.generateDecision(ethData);
+      
+      // Execute trade if auto-trading is enabled
+      if (decision.action === 'BUY_ETH' || decision.action === 'SELL_ETH') {
+        await waidBotPro.executeTrade(decision);
+      }
+      
+      res.json({ success: true, decision });
+    } catch (error) {
+      console.error('❌ WaidBot Pro decision error:', error);
+      res.status(500).json({ error: 'Failed to generate WaidBot Pro decision' });
+    }
+  });
+
+  // Get WaidBot Pro decision history
+  app.get("/api/waidbot-pro/history", (req, res) => {
+    try {
+      const history = waidBotPro.getDecisionHistory();
+      res.json({ success: true, history });
+    } catch (error) {
+      console.error('❌ WaidBot Pro history error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot Pro history' });
+    }
+  });
+
+  // Get WaidBot Pro technical analysis
+  app.get("/api/waidbot-pro/analysis", async (req, res) => {
+    try {
+      const ethData = await ethMonitor.fetchEthData();
+      const decision = await waidBotPro.generateDecision(ethData);
+      
+      res.json({ 
+        success: true, 
+        analysis: {
+          currentPrice: ethData.price,
+          trendDirection: decision.trendDirection,
+          strategy: decision.strategy,
+          confidence: decision.confidence,
+          riskLevel: decision.riskLevel,
+          volume: ethData.volume,
+          priceChange24h: ethData.priceChange24h
+        }
+      });
+    } catch (error) {
+      console.error('❌ WaidBot Pro analysis error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot Pro analysis' });
     }
   });
 
