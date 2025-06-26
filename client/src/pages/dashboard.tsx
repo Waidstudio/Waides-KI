@@ -14,7 +14,7 @@ import RealTimeCandlestickChart from "@/components/RealTimeCandlestickChart";
 import WeeklyTradingSchedule from "@/components/WeeklyTradingSchedule";
 import TradingBrainPanel from "@/components/TradingBrainPanel";
 import RealTimeTrading from "@/components/RealTimeTrading";
-import ChatOracleSystem from "@/components/ChatOracleSystem";
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Wifi, WifiOff, Menu, Brain, Bot } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -259,9 +259,8 @@ export default function Dashboard() {
               <>
                 {/* Tabs Container */}
                 <Tabs defaultValue="realtime" className="w-full">
-                  <TabsList className="grid w-full grid-cols-7 bg-slate-800 border-slate-700">
+                  <TabsList className="grid w-full grid-cols-6 bg-slate-800 border-slate-700">
                     <TabsTrigger value="realtime" className="data-[state=active]:bg-slate-700">Divine Trading</TabsTrigger>
-                    <TabsTrigger value="oracle" className="data-[state=active]:bg-slate-700">Chat Oracle</TabsTrigger>
                     <TabsTrigger value="brain" className="data-[state=active]:bg-slate-700">Trading Brain</TabsTrigger>
                     <TabsTrigger value="schedule" className="data-[state=active]:bg-slate-700">Weekly Schedule</TabsTrigger>
                     <TabsTrigger value="charts" className="data-[state=active]:bg-slate-700">Real-time Charts</TabsTrigger>
@@ -449,23 +448,7 @@ export default function Dashboard() {
                     </div>
                     </TabsContent>
 
-                    <TabsContent value="oracle" className="space-y-6">
-                      <div className="space-y-6">
-                        {/* Chat Oracle Header */}
-                        <div className="text-center space-y-4">
-                          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                            Waides KI Chat Oracle
-                          </h2>
-                          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-                            Advanced AI system combining Incite AI, ChatGPT, and KonsLang processing. 
-                            Ask anything about trading, market analysis, or technical strategies.
-                          </p>
-                        </div>
 
-                        {/* Chat Oracle System */}
-                        <ChatOracleSystem />
-                      </div>
-                    </TabsContent>
 
                     <TabsContent value="brain" className="space-y-6">
                       <TradingBrainPanel />
