@@ -1,4 +1,5 @@
 import BotMemory from "./BotMemory";
+import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
 
 // Dynamic memory for auto-learning - lives in runtime memory only
 let dynamicMemory = {};
@@ -36,6 +37,17 @@ export default function getSmartAnswer(userInput) {
   // Check dynamic memory first (auto-learning module)
   if (dynamicMemory[q]) {
     return dynamicMemory[q];
+  }
+
+  // Moral Layer Processing (Emotion + Behavior Sensing)
+  const emotionalResponse = detectEmotion(q);
+  if (emotionalResponse) return emotionalResponse;
+
+  // Vision Flow Module (Spiritual ETH Prediction)
+  if (q.includes("vision") || q.includes("predict eth") || q.includes("dream") || 
+      q.includes("activate dream vision") || q.includes("predict eth like a prophet") || 
+      q.includes("give me eth foresight") || q.includes("spiritual forecast")) {
+    return getVisionProphecy() + "\n" + timeMood();
   }
 
   // Live ETH Data Reader Module
