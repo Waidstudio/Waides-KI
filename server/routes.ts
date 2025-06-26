@@ -92,9 +92,12 @@ import { WaidesKIEthicalCompass } from './services/waidesKIEthicalCompass.js';
 import { WaidesKISoulWeightFilter } from './services/waidesKISoulWeightFilter.js';
 import { WaidesKIMarketClarityChecker } from './services/waidesKIMarketClarityChecker.js';
 import { WaidesKITradeConscience } from './services/waidesKITradeConscience.js';
-// STEP 45: Multi-Strategy Ensemble + Self-Optimizing Risk Management
+// STEP 45: Divine Vision Map + Pre-Cognition Engine + Multi-Strategy Ensemble
 import { WaidesKIMultiStrategyEnsemble } from './services/waidesKIMultiStrategyEnsemble.js';
 import { WaidesKISelfOptimizingRiskManager } from './services/waidesKISelfOptimizingRiskManager.js';
+import { WaidesKIVisionMemoryMap } from './services/waidesKIVisionMemoryMap.js';
+import { WaidesKIPreCognitionEngine } from './services/waidesKIPreCognitionEngine.js';
+import { WaidesKIDivineVisionMap } from './services/waidesKIDivineVisionMap.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
@@ -135,9 +138,12 @@ let waidesKIEthicalCompass: WaidesKIEthicalCompass;
 let waidesKISoulWeightFilter: WaidesKISoulWeightFilter;
 let waidesKIMarketClarityChecker: WaidesKIMarketClarityChecker;
 let waidesKITradeConscience: WaidesKITradeConscience;
-// STEP 45: Multi-Strategy Ensemble + Self-Optimizing Risk Management services
+// STEP 45: Divine Vision Map + Pre-Cognition Engine + Multi-Strategy Ensemble services
 let waidesKIMultiStrategyEnsemble: WaidesKIMultiStrategyEnsemble;
 let waidesKISelfOptimizingRiskManager: WaidesKISelfOptimizingRiskManager;
+let waidesKIVisionMemoryMap: WaidesKIVisionMemoryMap;
+let waidesKIPreCognitionEngine: WaidesKIPreCognitionEngine;
+let waidesKIDivineVisionMap: WaidesKIDivineVisionMap;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -196,9 +202,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   waidesKIMarketClarityChecker = new WaidesKIMarketClarityChecker();
   waidesKITradeConscience = new WaidesKITradeConscience();
 
-  // Initialize STEP 45: Multi-Strategy Ensemble + Self-Optimizing Risk Management
+  // Initialize STEP 45: Divine Vision Map + Pre-Cognition Engine + Multi-Strategy Ensemble
   waidesKIMultiStrategyEnsemble = new WaidesKIMultiStrategyEnsemble();
   waidesKISelfOptimizingRiskManager = new WaidesKISelfOptimizingRiskManager();
+  waidesKIVisionMemoryMap = new WaidesKIVisionMemoryMap();
+  waidesKIPreCognitionEngine = new WaidesKIPreCognitionEngine();
+  waidesKIDivineVisionMap = new WaidesKIDivineVisionMap();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
