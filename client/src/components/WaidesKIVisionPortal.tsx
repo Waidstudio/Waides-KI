@@ -203,6 +203,38 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
+  // Voice command processing mutation
+  const voiceProcessingMutation = useMutation({
+    mutationFn: async (command: string) => {
+      const response = await fetch('/api/voice/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command, sessionId: 'main-portal' }),
+      });
+      if (!response.ok) throw new Error('Failed to process voice command');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setIsVoiceProcessing(false);
+      if (data.success && data.response) {
+        typeMessage(`🎤 ${data.response.text}`, 'konslang', data.response.confidence || 80);
+        
+        // Execute action if provided
+        if (data.response.action) {
+          setTimeout(() => {
+            typeMessage(`⚡ Executing: ${data.response.action}`, 'waidbot_summon', 90);
+          }, 1000);
+        }
+      } else {
+        typeMessage('🎤 Voice command processed', 'konslang', 70);
+      }
+    },
+    onError: () => {
+      setIsVoiceProcessing(false);
+      typeMessage('🎤 Voice processing error - please try again', 'error', 0);
+    }
+  });
+
   // WaidBot summon check mutation
   const summonCheckMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -388,6 +420,68 @@ export default function WaidesKIVisionPortal() {
     return "🧠 Waides KI Offline";
   };
 
+  // Initialize speech recognition
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+    }
+  }, []);
+
+  // Enhanced voice recognition for command processing
+  const startVoiceCommandRecognition = () => {
+    if (!speechSupported) {
+      typeMessage('🎤 Voice recognition not supported in this browser', 'error', 0);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setVoiceEnabled(true);
+      setIsVoiceProcessing(true);
+      typeMessage('🎤 Listening for Konsmik voice command...', 'konslang', 90);
+    };
+
+    recognition.onresult = (event: any) => {
+      const command = event.results[0][0].transcript;
+      setVoiceCommand(command);
+      typeMessage(`🎤 Voice detected: "${command}"`, 'konslang', 95);
+      
+      // Process the voice command through Waides KI
+      voiceProcessingMutation.mutate(command);
+    };
+
+    recognition.onerror = (event: any) => {
+      setVoiceEnabled(false);
+      setIsVoiceProcessing(false);
+      typeMessage(`🎤 Voice recognition error: ${event.error}`, 'error', 0);
+    };
+
+    recognition.onend = () => {
+      setVoiceEnabled(false);
+      if (!isVoiceProcessing) {
+        typeMessage('🎤 Voice recognition complete', 'konslang', 70);
+      }
+    };
+
+    recognition.start();
+    recognitionRef.current = recognition;
+  };
+
+  const stopVoiceRecognition = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setVoiceEnabled(false);
+      setIsVoiceProcessing(false);
+    }
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, currentTypingMessage]);
@@ -485,6 +579,30 @@ export default function WaidesKIVisionPortal() {
               Reasoning 🧠
             </Button>
           </div>
+
+          {/* Voice Control Module */}
+          <div className="flex items-center gap-2 bg-gray-800/60 rounded-lg p-1">
+            <Button
+              onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+              variant="ghost"
+              size="sm"
+              className={`text-xs px-3 py-1 transition-all ${
+                voiceEnabled
+                  ? 'bg-red-600 text-white animate-pulse'
+                  : speechSupported
+                  ? 'bg-green-600/80 text-white hover:bg-green-600'
+                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+              }`}
+              disabled={!speechSupported}
+            >
+              {voiceEnabled ? '🎤 Listening...' : speechSupported ? '🎤 Voice' : '🎤 Not Supported'}
+            </Button>
+            {isVoiceProcessing && (
+              <div className="text-xs text-purple-300 animate-pulse">
+                Processing voice command...
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -493,18 +611,18 @@ export default function WaidesKIVisionPortal() {
         <>
           {/* Chat Suggestions */}
           <div className="relative z-10 flex flex-wrap gap-2 p-4">
-        {suggestions.map((suggestion, index) => (
-          <Button
-            key={index}
-            variant="outline"
-            size="sm"
-            className="bg-gray-800/60 border-gray-600 text-gray-300 hover:bg-gray-700/60 hover:text-white text-xs rounded-lg backdrop-blur-sm"
-            onClick={() => handleSuggestionClick(suggestion)}
-          >
-            {suggestion}
-          </Button>
-        ))}
-      </div>
+            {suggestions.map((suggestion, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="bg-gray-800/60 border-gray-600 text-gray-300 hover:bg-gray-700/60 hover:text-white text-xs rounded-lg backdrop-blur-sm"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </Button>
+            ))}
+          </div>
 
       {/* Chat Window */}
       <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 h-[calc(100vh-300px)] overflow-hidden">
@@ -650,14 +768,16 @@ export default function WaidesKIVisionPortal() {
                 variant="ghost"
                 size="sm"
                 className={`p-2 rounded-full transition-all ${
-                  isListening 
+                  voiceEnabled 
                     ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                    : 'hover:bg-purple-500/20 text-purple-400'
+                    : speechSupported
+                    ? 'hover:bg-purple-500/20 text-purple-400'
+                    : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
                 }`}
-                onClick={startVoiceRecognition}
-                disabled={isProcessing}
+                onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+                disabled={isProcessing || !speechSupported}
               >
-                {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </Button>
               
               <Button
