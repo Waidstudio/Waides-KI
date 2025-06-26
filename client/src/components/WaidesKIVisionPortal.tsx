@@ -425,8 +425,8 @@ export default function WaidesKIVisionPortal() {
           }
           break;
         default: // 'auto' mode
-          // First try UKC and Memory Engine for instant responses
-          const smartResponse = getSmartAnswer(currentMessage);
+          // First try UKC and Memory Engine for instant responses with plugin support
+          const smartResponse = getSmartAnswer(currentMessage, setBotState);
           if (smartResponse) {
             typeMessage(smartResponse, 'enhanced_bot_memory', 95);
           } else if (isSelfKnowledge || isETHQuestion) {
@@ -884,6 +884,65 @@ export default function WaidesKIVisionPortal() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
                     </button>
+                  </div>
+                )}
+
+                {/* Behavior Suggestion Enhancement */}
+                {message.sender === 'waides' && botState.action === 'behavior-suggestion' && botState.recommendations && (
+                  <div className="mt-3 p-3 bg-green-900/30 border border-green-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Brain className="w-4 h-4 text-green-400" />
+                      <span className="text-green-300 font-medium">Smart Recommendations</span>
+                    </div>
+                    <div className="space-y-2">
+                      {botState.recommendations.map((rec, index) => (
+                        <div key={index} className="text-green-200 text-sm bg-green-900/20 p-2 rounded">
+                          {rec}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Flow Composer Enhancement */}
+                {message.sender === 'waides' && botState.action === 'flow' && botState.flow && (
+                  <div className="mt-3 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-blue-400" />
+                      <span className="text-blue-300 font-medium">Optimized Flow</span>
+                    </div>
+                    <p className="text-blue-200 text-sm mb-2">{botState.flow.message}</p>
+                    {botState.steps && botState.steps.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-blue-300 text-xs font-medium">Suggested Steps:</span>
+                        {botState.steps.map((step, index) => (
+                          <div key={index} className="text-blue-200 text-xs bg-blue-900/20 p-1 rounded">
+                            {index + 1}. {step}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Bot Setup Enhancement */}
+                {message.sender === 'waides' && botState.action === 'bot-setup' && botState.config && (
+                  <div className="mt-3 p-3 bg-orange-900/30 border border-orange-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Bot className="w-4 h-4 text-orange-400" />
+                      <span className="text-orange-300 font-medium">Auto Bot Configuration</span>
+                    </div>
+                    <p className="text-orange-200 text-sm mb-2">{botState.config.message}</p>
+                    {botState.recommendations && botState.recommendations.length > 0 && (
+                      <div className="space-y-1">
+                        <span className="text-orange-300 text-xs font-medium">Configuration:</span>
+                        {botState.recommendations.map((rec, index) => (
+                          <div key={index} className="text-orange-200 text-xs bg-orange-900/20 p-1 rounded">
+                            • {rec}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
