@@ -78,6 +78,11 @@ import { waidesKISpiritTrader } from './services/waidesKISpiritTrader.js';
 // STEP 41: Waides Global Lightnet + Spirit Echo Link
 import { WaidesKILightnetBroadcaster } from './services/waidesKILightnetBroadcaster.js';
 import { WaidesKILightnetListener } from './services/waidesKILightnetListener.js';
+// STEP 42: Memory Sigils + Time-Layered Training Engine
+import { WaidesKIMemorySigilVault } from './services/waidesKIMemorySigilVault.js';
+import { WaidesKISymbolTimeTrainer } from './services/waidesKISymbolTimeTrainer.js';
+import { WaidesKISigilPredictor } from './services/waidesKISigilPredictor.js';
+import { WaidesKISigilResultTracker } from './services/waidesKISigilResultTracker.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
@@ -103,6 +108,11 @@ let waidesKILightnetListener: WaidesKILightnetListener;
 let waidesKIVisionAlignmentIndex: WaidesKIVisionAlignmentIndex;
 let waidesKIKonsFieldAnalyzer: WaidesKIKonsFieldAnalyzer;
 let waidesKIGlobalEthEchoMap: WaidesKIGlobalEthEchoMap;
+// STEP 42: Memory Sigils + Time-Layered Training Engine services
+let waidesKIMemorySigilVault: WaidesKIMemorySigilVault;
+let waidesKISymbolTimeTrainer: WaidesKISymbolTimeTrainer;
+let waidesKISigilPredictor: WaidesKISigilPredictor;
+let waidesKISigilResultTracker: WaidesKISigilResultTracker;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
