@@ -3,6 +3,9 @@ import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
 import UKC from './UKC';
 import { addPendingQuestion, autoTeachFromConversation, expandKnowledgeAutonomously } from './KnowledgeLoader';
 import PageKnowledge from './PageKnowledge';
+import BehaviorTracker from './BehaviorTracker';
+import { getFlowRecommendation, generateFlowMessage, getFlowStepRoute } from './FlowComposer';
+import { autoConfigureBot, generateBotSetupMessage, getBotRecommendations } from './WaidBotAutoSetup';
 
 // Dynamic memory for auto-learning - lives in runtime memory only
 let dynamicMemory = {};
@@ -75,9 +78,49 @@ function checkUKC(q) {
   return null;
 }
 
-// ✨ Very simple smart match function
-export default function getSmartAnswer(userInput) {
+// ✨ Very simple smart match function with Enhancement Plugins
+export default function getSmartAnswer(userInput, setBotState) {
   const q = userInput.toLowerCase().trim();
+
+  // 🧠 Plugin 1: Behavior Tracker - Log page access and check preferences
+  const currentUser = BehaviorTracker.sessionId;
+  
+  // Check for user behavior-based recommendations
+  const userPreference = BehaviorTracker.getUserPreferenceRecommendation(currentUser);
+  if (userPreference && Math.random() < 0.3) { // 30% chance to suggest favorite page
+    setBotState && setBotState({ action: "behavior-suggestion", page: userPreference.page });
+    return userPreference.message;
+  }
+
+  // 🧩 Plugin 2: Flow Composer - Check for multi-page workflow recommendations
+  const flowRecommendation = getFlowRecommendation(userInput);
+  if (flowRecommendation) {
+    setBotState && setBotState({ 
+      action: "flow", 
+      flow: flowRecommendation,
+      steps: flowRecommendation.steps 
+    });
+    return generateFlowMessage(flowRecommendation);
+  }
+
+  // 🤖 Plugin 3: Auto WaidBot Setup - Detect bot configuration intent
+  if (q.includes("setup bot") || q.includes("configure bot") || q.includes("start bot") || 
+      q.includes("create bot") || q.includes("waidbot setup")) {
+    const botConfig = autoConfigureBot(userInput);
+    const recommendations = getBotRecommendations(userInput);
+    
+    setBotState && setBotState({ 
+      action: "bot-setup", 
+      config: botConfig,
+      recommendations: recommendations
+    });
+    
+    let message = generateBotSetupMessage(botConfig);
+    if (recommendations.length > 0) {
+      message += `\n\n💡 **Recommendations:**\n${recommendations.map(r => `• ${r}`).join('\n')}`;
+    }
+    return message;
+  }
 
   // Check dynamic memory first (auto-learning module)
   if (dynamicMemory[q]) {

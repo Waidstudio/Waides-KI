@@ -58,10 +58,14 @@ export default function WaidesKIVisionPortal() {
   const [voiceCommand, setVoiceCommand] = useState('');
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   const [botState, setBotState] = useState<{
-    action?: 'wallet' | 'trade' | 'price' | 'open-page';
+    action?: 'wallet' | 'trade' | 'price' | 'open-page' | 'behavior-suggestion' | 'flow' | 'bot-setup';
     page?: string;
     route?: string;
     description?: string;
+    flow?: any;
+    steps?: string[];
+    config?: any;
+    recommendations?: string[];
   }>({});
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -404,8 +408,8 @@ export default function WaidesKIVisionPortal() {
           openAIChatMutation.mutate(currentMessage);
           break;
         case 'spiritual':
-          // Use local Memory Engine for instant responses
-          const memoryResponse = getSmartAnswer(currentMessage);
+          // Use local Memory Engine for instant responses with plugin support
+          const memoryResponse = getSmartAnswer(currentMessage, setBotState);
           if (memoryResponse) {
             typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
           } else {
