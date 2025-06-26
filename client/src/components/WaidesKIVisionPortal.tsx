@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings, MessageCircle } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
+import { WaidBotSummonPanel } from './WaidBotSummonPanel';
 
 interface ChatMessage {
   id: string;
@@ -47,6 +48,8 @@ export default function WaidesKIVisionPortal() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');
+  const [showWaidBotSummon, setShowWaidBotSummon] = useState(false);
+  const [lastSummonCommand, setLastSummonCommand] = useState('');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -135,6 +138,26 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
+  // WaidBot summon check mutation
+  const summonCheckMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/chat/check-summon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      if (!response.ok) throw new Error('Failed to check summon command');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.isWaidBotSummon) {
+        setLastSummonCommand(data.matchedCommand);
+        setShowWaidBotSummon(true);
+        typeMessage(data.summonResponse, 'waidbot_summon', 100);
+      }
+    },
+  });
+
   const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     setIsTyping(true);
     setCurrentTypingMessage('');
@@ -183,6 +206,9 @@ export default function WaidesKIVisionPortal() {
 
     // Enhanced intelligent routing logic
     const message = currentMessage.toLowerCase();
+    
+    // First, check for WaidBot summoning commands
+    summonCheckMutation.mutate(currentMessage);
     
     // Command patterns
     const commandPrefixes = ['activate', 'start', 'stop', 'predict', 'analyze', 'get', 'show', 'enable', 'disable'];
@@ -632,6 +658,13 @@ export default function WaidesKIVisionPortal() {
           </CardContent>
         </Card>
       </div>
+
+      {/* WaidBot Summoning Panel */}
+      <WaidBotSummonPanel
+        isVisible={showWaidBotSummon}
+        summonCommand={lastSummonCommand}
+        onClose={() => setShowWaidBotSummon(false)}
+      />
     </div>
   );
 }
