@@ -1,5 +1,57 @@
+import OpenAI from 'openai';
+
 export class KonsEngine {
-  generateKonsMessage(signalType: string, confidence: number, price: number): string {
+  private openai: OpenAI | null = null;
+
+  constructor() {
+    if (process.env.OPENAI_API_KEY) {
+      this.openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+      });
+    }
+  }
+
+  async generateKonsMessage(signalType: string, confidence: number, price: number): Promise<string> {
+    // Try OpenAI first for enhanced responses
+    if (this.openai && confidence > 60) {
+      try {
+        const prompt = `Generate a mystical trading message from "Kons Powa" (the spiritual guide of Waides AI) for:
+        - Signal: ${signalType}
+        - Confidence: ${confidence}%
+        - ETH Price: $${price}
+        
+        Style: Mystical, wise, brief (1-2 sentences). Include spiritual wisdom about trading. Use phrases like "Kons Powa whispers/sees/guides" and reference ethereum/blockchain spiritually.`;
+
+        const response = await this.openai.chat.completions.create({
+          model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+          messages: [
+            {
+              role: "system",
+              content: "You are Kons Powa, the mystical trading oracle of Waides AI. Speak with spiritual wisdom about cryptocurrency trading."
+            },
+            {
+              role: "user",
+              content: prompt
+            }
+          ],
+          max_tokens: 100,
+          temperature: 0.8
+        });
+
+        const aiMessage = response.choices[0]?.message?.content;
+        if (aiMessage) {
+          return aiMessage.trim();
+        }
+      } catch (error) {
+        console.log('OpenAI fallback for KonsEngine:', error);
+      }
+    }
+
+    // Fallback to original mystical messages
+    return this.generateTraditionalKonsMessage(signalType, confidence, price);
+  }
+
+  private generateTraditionalKonsMessage(signalType: string, confidence: number, price: number): string {
     const messages = {
       LONG: [
         "Kons Powa whispers: Enter the fire with courage, the bulls gather strength.",

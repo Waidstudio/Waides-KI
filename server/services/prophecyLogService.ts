@@ -1,6 +1,6 @@
 import { db } from "../storage";
 import { InsertProphecyLog, ProphecyLog } from "../../shared/schema";
-import { eq, desc, and, like } from "drizzle-orm";
+import { eq, desc, and, like, gte } from "drizzle-orm";
 import { prophecyLogs } from "../../shared/schema";
 import crypto from "crypto";
 
@@ -31,7 +31,6 @@ export interface ProphecyOfTheDay {
 
 export class WaidesKIProphecyLogService {
   constructor() {}
-}
 
   // Save prophecy to log
   async saveProphecy(prophecyData: InsertProphecyLog): Promise<ProphecyLog> {
@@ -41,7 +40,7 @@ export class WaidesKIProphecyLogService {
         ? crypto.randomBytes(16).toString('hex')
         : null;
 
-      const prophecy = await this.storage.db.insert(prophecyLogs).values({
+      const prophecy = await db.insert(prophecyLogs).values({
         ...prophecyData,
         shareToken,
         createdAt: new Date(),
@@ -55,72 +54,86 @@ export class WaidesKIProphecyLogService {
     }
   }
 
-  // Get user's prophecy log with filters
+  // Get user prophecies with filtering and pagination
   async getUserProphecies(
-    userId: string, 
+    userId: string,
     filters: ProphecySearchFilters = {},
-    limit: number = 50,
-    offset: number = 0
-  ): Promise<ProphecyLog[]> {
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{ prophecies: ProphecyLog[], total: number }> {
     try {
-      let whereConditions = [eq(prophecyLogs.userId, userId)];
+      const offset = (page - 1) * limit;
+      let whereCondition = eq(prophecyLogs.userId, userId);
 
       // Apply filters
       if (filters.category) {
-        whereConditions.push(eq(prophecyLogs.category, filters.category));
+        whereCondition = and(whereCondition, eq(prophecyLogs.category, filters.category));
       }
       if (filters.source) {
-        whereConditions.push(eq(prophecyLogs.source, filters.source));
+        whereCondition = and(whereCondition, eq(prophecyLogs.source, filters.source));
       }
       if (filters.pinned !== undefined) {
-        whereConditions.push(eq(prophecyLogs.pinned, filters.pinned));
+        whereCondition = and(whereCondition, eq(prophecyLogs.pinned, filters.pinned));
       }
       if (filters.shared !== undefined) {
-        whereConditions.push(eq(prophecyLogs.shared, filters.shared));
+        whereCondition = and(whereCondition, eq(prophecyLogs.shared, filters.shared));
+      }
+      if (filters.minConfidence) {
+        whereCondition = and(whereCondition, gte(prophecyLogs.confidence, filters.minConfidence));
       }
       if (filters.searchText) {
-        whereConditions.push(like(prophecyLogs.content, `%${filters.searchText}%`));
+        whereCondition = and(whereCondition, like(prophecyLogs.content, `%${filters.searchText}%`));
       }
 
-      const prophecies = await this.storage.db
+      const prophecies = await db
         .select()
         .from(prophecyLogs)
-        .where(and(...whereConditions))
-        .orderBy(desc(prophecyLogs.pinned), desc(prophecyLogs.createdAt))
+        .where(whereCondition)
+        .orderBy(desc(prophecyLogs.createdAt))
         .limit(limit)
         .offset(offset);
 
-      return prophecies;
+      const totalResult = await db
+        .select()
+        .from(prophecyLogs)
+        .where(whereCondition);
+
+      return {
+        prophecies,
+        total: totalResult.length
+      };
     } catch (error) {
-      console.error('Error fetching prophecies:', error);
-      throw new Error('Failed to fetch prophecies');
+      console.error('Error getting user prophecies:', error);
+      throw new Error('Failed to get prophecies');
     }
   }
 
   // Get prophecy by ID
   async getProphecyById(id: number, userId?: string): Promise<ProphecyLog | null> {
     try {
-      const whereConditions = userId 
-        ? [eq(prophecyLogs.id, id), eq(prophecyLogs.userId, userId)]
-        : [eq(prophecyLogs.id, id)];
+      let whereCondition = eq(prophecyLogs.id, id);
+      
+      if (userId) {
+        whereCondition = and(whereCondition, eq(prophecyLogs.userId, userId));
+      }
 
-      const prophecy = await this.storage.db
+      const prophecy = await db
         .select()
         .from(prophecyLogs)
-        .where(and(...whereConditions))
+        .where(whereCondition)
         .limit(1);
 
       return prophecy[0] || null;
     } catch (error) {
-      console.error('Error fetching prophecy by ID:', error);
-      return null;
+      console.error('Error getting prophecy by ID:', error);
+      throw new Error('Failed to get prophecy');
     }
   }
 
   // Get shared prophecy by token
   async getSharedProphecy(shareToken: string): Promise<ProphecyLog | null> {
     try {
-      const prophecy = await this.storage.db
+      const prophecy = await db
         .select()
         .from(prophecyLogs)
         .where(and(
@@ -131,35 +144,31 @@ export class WaidesKIProphecyLogService {
 
       return prophecy[0] || null;
     } catch (error) {
-      console.error('Error fetching shared prophecy:', error);
-      return null;
+      console.error('Error getting shared prophecy:', error);
+      throw new Error('Failed to get shared prophecy');
     }
   }
 
   // Update prophecy
   async updateProphecy(
-    id: number, 
-    userId: string, 
-    updates: Partial<ProphecyLog>
+    id: number,
+    userId: string,
+    updates: Partial<InsertProphecyLog>
   ): Promise<ProphecyLog | null> {
     try {
-      // Generate new share token if sharing is enabled
-      if (updates.shared && !updates.shareToken) {
-        updates.shareToken = crypto.randomBytes(16).toString('hex');
-      }
-
-      updates.updatedAt = new Date();
-
-      const updatedProphecy = await this.storage.db
+      const prophecy = await db
         .update(prophecyLogs)
-        .set(updates)
+        .set({
+          ...updates,
+          updatedAt: new Date()
+        })
         .where(and(
           eq(prophecyLogs.id, id),
           eq(prophecyLogs.userId, userId)
         ))
         .returning();
 
-      return updatedProphecy[0] || null;
+      return prophecy[0] || null;
     } catch (error) {
       console.error('Error updating prophecy:', error);
       throw new Error('Failed to update prophecy');
@@ -169,17 +178,17 @@ export class WaidesKIProphecyLogService {
   // Delete prophecy
   async deleteProphecy(id: number, userId: string): Promise<boolean> {
     try {
-      const result = await this.storage.db
+      const result = await db
         .delete(prophecyLogs)
         .where(and(
           eq(prophecyLogs.id, id),
           eq(prophecyLogs.userId, userId)
         ));
 
-      return result.rowCount > 0;
+      return true;
     } catch (error) {
       console.error('Error deleting prophecy:', error);
-      return false;
+      throw new Error('Failed to delete prophecy');
     }
   }
 
@@ -194,151 +203,134 @@ export class WaidesKIProphecyLogService {
       });
     } catch (error) {
       console.error('Error toggling pin:', error);
-      return null;
+      throw new Error('Failed to toggle pin');
     }
   }
 
   // Get prophecy statistics
   async getProphecyStats(userId: string): Promise<ProphecyLogStats> {
     try {
-      const prophecies = await this.getUserProphecies(userId, {}, 1000);
+      const userProphecies = await db
+        .select()
+        .from(prophecyLogs)
+        .where(eq(prophecyLogs.userId, userId));
 
-      const stats: ProphecyLogStats = {
-        totalProphecies: prophecies.length,
-        pinnedProphecies: prophecies.filter(p => p.pinned).length,
-        sharedProphecies: prophecies.filter(p => p.shared).length,
-        categoryCounts: {},
-        recentActivity: prophecies.filter(p => {
-          const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-          return new Date(p.createdAt!) > dayAgo;
-        }).length,
-        averageConfidence: 0
-      };
+      const categoryCounts: Record<string, number> = {};
+      let totalConfidence = 0;
+      let pinnedCount = 0;
+      let sharedCount = 0;
 
-      // Calculate category counts
-      prophecies.forEach(p => {
-        const category = p.category || 'general';
-        stats.categoryCounts[category] = (stats.categoryCounts[category] || 0) + 1;
+      userProphecies.forEach(prophecy => {
+        // Category counts
+        categoryCounts[prophecy.category] = (categoryCounts[prophecy.category] || 0) + 1;
+        
+        // Confidence sum
+        totalConfidence += prophecy.confidence;
+        
+        // Pin and share counts
+        if (prophecy.pinned) pinnedCount++;
+        if (prophecy.shared) sharedCount++;
       });
 
-      // Calculate average confidence
-      const confidenceValues = prophecies
-        .filter(p => p.confidence !== null)
-        .map(p => p.confidence!);
-      
-      if (confidenceValues.length > 0) {
-        stats.averageConfidence = confidenceValues.reduce((a, b) => a + b, 0) / confidenceValues.length;
-      }
+      // Recent activity (last 7 days)
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const recentProphecies = userProphecies.filter(p => 
+        new Date(p.createdAt) > weekAgo
+      );
+
+      const stats: ProphecyLogStats = {
+        totalProphecies: userProphecies.length,
+        pinnedProphecies: pinnedCount,
+        sharedProphecies: sharedCount,
+        categoryCounts,
+        recentActivity: recentProphecies.length,
+        averageConfidence: userProphecies.length > 0 ? totalConfidence / userProphecies.length : 0
+      };
 
       return stats;
     } catch (error) {
-      console.error('Error calculating prophecy stats:', error);
-      throw new Error('Failed to calculate prophecy statistics');
+      console.error('Error getting prophecy stats:', error);
+      throw new Error('Failed to get prophecy statistics');
     }
   }
 
   // Get prophecy of the day
   async getProphecyOfTheDay(userId: string): Promise<ProphecyOfTheDay | null> {
     try {
-      const prophecies = await this.getUserProphecies(userId, {}, 100);
-      if (prophecies.length === 0) return null;
+      const userProphecies = await db
+        .select()
+        .from(prophecyLogs)
+        .where(eq(prophecyLogs.userId, userId))
+        .orderBy(desc(prophecyLogs.confidence));
 
-      // Select prophecy based on various criteria
-      const pinnedProphecies = prophecies.filter(p => p.pinned);
-      const highConfidenceProphecies = prophecies.filter(p => p.confidence && p.confidence > 0.8);
-      const tradingProphecies = prophecies.filter(p => p.category === 'trading');
+      if (userProphecies.length === 0) return null;
 
+      // Select highest confidence prophecy or random high-confidence one
       let selectedProphecy: ProphecyLog;
-      let reason: string;
-
-      if (pinnedProphecies.length > 0) {
-        selectedProphecy = pinnedProphecies[Math.floor(Math.random() * pinnedProphecies.length)];
-        reason = "This is one of your pinned prophecies - clearly important to you.";
-      } else if (highConfidenceProphecies.length > 0) {
-        selectedProphecy = highConfidenceProphecies[Math.floor(Math.random() * highConfidenceProphecies.length)];
-        reason = "This prophecy had high confidence when it was created.";
-      } else if (tradingProphecies.length > 0) {
-        selectedProphecy = tradingProphecies[Math.floor(Math.random() * tradingProphecies.length)];
-        reason = "This trading insight might be relevant for today's market.";
+      const highConfidenceProphecies = userProphecies.filter(p => p.confidence >= 80);
+      
+      if (highConfidenceProphecies.length > 0) {
+        const randomIndex = Math.floor(Math.random() * highConfidenceProphecies.length);
+        selectedProphecy = highConfidenceProphecies[randomIndex];
       } else {
-        selectedProphecy = prophecies[Math.floor(Math.random() * prophecies.length)];
-        reason = "A random prophecy from your collection to inspire your day.";
+        selectedProphecy = userProphecies[0];
       }
 
-      const reflectionMessage = this.generateReflectionMessage(selectedProphecy);
+      const reason = selectedProphecy.confidence >= 80 
+        ? "Selected for its exceptional spiritual clarity and high confidence"
+        : "Chosen as your most confident prophecy for guidance";
 
       return {
         prophecy: selectedProphecy,
         reason,
-        reflectionMessage
+        reflectionMessage: this.generateReflectionMessage(selectedProphecy)
       };
     } catch (error) {
       console.error('Error getting prophecy of the day:', error);
-      return null;
+      throw new Error('Failed to get prophecy of the day');
     }
   }
 
-  // Generate reflection message
   private generateReflectionMessage(prophecy: ProphecyLog): string {
-    const timeSince = Date.now() - new Date(prophecy.createdAt!).getTime();
-    const daysSince = Math.floor(timeSince / (1000 * 60 * 60 * 24));
-
-    const reflections = [
-      `This wisdom from ${daysSince} days ago still resonates. How has your understanding evolved?`,
-      `Looking back at this ${prophecy.source} insight, what new patterns do you see?`,
-      `This ${prophecy.category} guidance from your past self - what would you add to it now?`,
-      `${daysSince} days later, how accurate was this prediction? What did you learn?`,
-      `This insight carries ${prophecy.confidence ? Math.round(prophecy.confidence * 100) : 'unknown'}% confidence. Time to validate it.`
+    const messages = [
+      `The spirits spoke through "${prophecy.source}" with profound wisdom.`,
+      `This ${prophecy.category} prophecy carries ${prophecy.confidence}% certainty from the divine realm.`,
+      `Meditate upon these words and let their truth guide your path.`,
+      `The universe has aligned to bring you this message at the perfect time.`,
+      `Trust in the wisdom that flows through this sacred prophecy.`
     ];
-
-    return reflections[Math.floor(Math.random() * reflections.length)];
+    
+    return messages[Math.floor(Math.random() * messages.length)];
   }
 
-  // Export prophecies as formatted text
+  // Export prophecies
   async exportProphecies(userId: string, format: 'json' | 'text' = 'json'): Promise<string> {
     try {
-      const prophecies = await this.getUserProphecies(userId, {}, 1000);
-      
+      const prophecies = await db
+        .select()
+        .from(prophecyLogs)
+        .where(eq(prophecyLogs.userId, userId))
+        .orderBy(desc(prophecyLogs.createdAt));
+
       if (format === 'json') {
         return JSON.stringify(prophecies, null, 2);
+      } else {
+        return prophecies.map(p => 
+          `[${p.createdAt}] ${p.category} - ${p.source}\n${p.content}\n(Confidence: ${p.confidence}%)\n${'='.repeat(50)}\n`
+        ).join('\n');
       }
-
-      // Text format
-      let exportText = `🔮 WAIDES KI PROPHECY LOG\n`;
-      exportText += `📅 Generated: ${new Date().toLocaleDateString()}\n`;
-      exportText += `📊 Total Prophecies: ${prophecies.length}\n\n`;
-      exportText += `${'='.repeat(50)}\n\n`;
-
-      prophecies.forEach((prophecy, index) => {
-        exportText += `📜 PROPHECY #${index + 1}\n`;
-        exportText += `🕐 Date: ${new Date(prophecy.createdAt!).toLocaleDateString()}\n`;
-        exportText += `🔍 Source: ${prophecy.source}\n`;
-        exportText += `📂 Category: ${prophecy.category}\n`;
-        if (prophecy.confidence) {
-          exportText += `🎯 Confidence: ${Math.round(prophecy.confidence * 100)}%\n`;
-        }
-        if (prophecy.pinned) {
-          exportText += `📌 PINNED\n`;
-        }
-        exportText += `\n💭 Content:\n${prophecy.content}\n\n`;
-        if (prophecy.konslangProcessing) {
-          exportText += `🔮 KonsLang Processing: ${prophecy.konslangProcessing}\n\n`;
-        }
-        exportText += `${'-'.repeat(30)}\n\n`;
-      });
-
-      return exportText;
     } catch (error) {
       console.error('Error exporting prophecies:', error);
       throw new Error('Failed to export prophecies');
     }
   }
 
-  // Bulk operations
+  // Bulk update prophecies
   async bulkUpdateProphecies(
-    userId: string, 
-    prophecyIds: number[], 
-    updates: Partial<ProphecyLog>
+    prophecyIds: number[],
+    userId: string,
+    updates: Partial<InsertProphecyLog>
   ): Promise<number> {
     try {
       let updatedCount = 0;
@@ -347,7 +339,7 @@ export class WaidesKIProphecyLogService {
         const result = await this.updateProphecy(id, userId, updates);
         if (result) updatedCount++;
       }
-
+      
       return updatedCount;
     } catch (error) {
       console.error('Error bulk updating prophecies:', error);
@@ -361,31 +353,39 @@ export class WaidesKIProphecyLogService {
       const prophecy = await this.getProphecyById(id, userId);
       if (!prophecy) return null;
 
-      const existingTags = (prophecy.tags as string[]) || [];
-      const newTags = Array.from(new Set([...existingTags, ...tags]));
+      const existingTags = prophecy.tags || [];
+      const newTags = [...new Set([...existingTags, ...tags])];
 
       return await this.updateProphecy(id, userId, { tags: newTags });
     } catch (error) {
       console.error('Error adding tags:', error);
-      return null;
+      throw new Error('Failed to add tags');
     }
   }
 
-  // Get all tags for user
+  // Get all user tags
   async getUserTags(userId: string): Promise<string[]> {
     try {
-      const prophecies = await this.getUserProphecies(userId, {}, 1000);
+      const prophecies = await db
+        .select()
+        .from(prophecyLogs)
+        .where(eq(prophecyLogs.userId, userId));
+
       const allTags = new Set<string>();
 
       prophecies.forEach(prophecy => {
-        const tags = (prophecy.tags as string[]) || [];
-        tags.forEach(tag => allTags.add(tag));
+        if (prophecy.tags) {
+          prophecy.tags.forEach(tag => allTags.add(tag));
+        }
       });
 
-      return Array.from(allTags).sort();
+      return Array.from(allTags);
     } catch (error) {
       console.error('Error getting user tags:', error);
       return [];
     }
   }
 }
+
+// Export singleton instance
+export const prophecyLogService = new WaidesKIProphecyLogService();
