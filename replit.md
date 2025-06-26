@@ -782,6 +782,17 @@ Changelog:
 - June 26, 2025. Implemented Waides KI Full Engine: Complete Smart Risk Management System
   - Created WaidesKIFullEngine orchestrating integrated stop-loss management, performance tracking, and auto-tuning capabilities
   - Built WaidesKIStopLossManager with dynamic trailing stop-loss, position management, and risk-based exit strategies
+- June 26, 2025. Completed Machine Learning Overlay + Kelly Sizing Engine for Clinical-Grade Precision Trading
+  - Created WaidesKIMLEngine with sophisticated machine learning prediction system using feature weighting and confidence scoring
+  - Built comprehensive pattern recognition analyzing RSI, EMA alignment, volume surges, volatility, and market phases
+  - Implemented WaidesKIKellySizer with optimal position sizing calculations based on Kelly Criterion mathematics
+  - Added Kelly fraction calculation with win rate analysis, profit/loss averaging, and conservative safety factors
+  - Integrated ML confidence gating system blocking trades below 60% confidence threshold for risk management
+  - Enhanced WaidesFullEngine with ML prediction consultation and Kelly sizing validation before trade execution
+  - Added comprehensive API endpoints: /api/ml/predict, /api/ml/stats, /api/kelly/calculate, /api/kelly/performance, /api/ml-kelly/integrated-analysis
+  - Built complete ML + Kelly monitoring dashboard in WaidesFullEngine frontend with pattern recognition, regime detection, and position sizing displays
+  - System now operates with institutional-grade precision combining machine learning intelligence with optimal mathematical position sizing
+  - All ML predictions and Kelly calculations integrated seamlessly into existing autonomous trading infrastructure while maintaining complete transparency
 - June 26, 2025. Enhanced WaidesFullEngine with Autonomous Trading Orchestration
   - Implemented complete autonomous trading loop with emotional regulation and mesh consensus decision-making
   - Added comprehensive trade lifecycle management: entering, adjusting, closing trades with stop-loss automation
