@@ -85,9 +85,71 @@ function checkUKC(q) {
   return null;
 }
 
+// Wallet Integration Module - Waides KI knows your wallet balance
+function getWalletInsights(q, walletContext) {
+  if (!walletContext) return null;
+  
+  const { 
+    smaiBalance, 
+    localBalance, 
+    lockedForTrade, 
+    karmaScore, 
+    tradeEnergy, 
+    moralIndicator, 
+    divineApproval, 
+    isTradeAllowed 
+  } = walletContext;
+
+  // Wallet balance queries
+  if (q.includes('balance') || q.includes('money') || q.includes('wallet') || q.includes('smai')) {
+    return `🔐 **SmaiSika Wallet Status:**
+- Available: ₭${smaiBalance?.toLocaleString() || 0} SMAI
+- Locked for Trading: ₭${lockedForTrade?.toLocaleString() || 0}
+- Local Currency: ₦${localBalance?.toLocaleString() || 0}
+
+💫 **Konsmic Intelligence:**
+- Karma Score: ${karmaScore}/200 (${moralIndicator})
+- Trade Energy: ${tradeEnergy}/100
+- Divine Approval: ${divineApproval ? 'Granted ✨' : 'Pending 🙏'}
+- Trading Status: ${isTradeAllowed() ? 'Enabled 🟢' : 'Restricted 🔴'}`;
+  }
+
+  // Trading readiness check
+  if (q.includes('can i trade') || q.includes('ready to trade') || q.includes('trading status')) {
+    if (isTradeAllowed()) {
+      return `✅ **Trading is ENABLED!** Your karma score of ${karmaScore}/200 and trade energy of ${tradeEnergy}/100 allow trading. Divine approval: ${divineApproval ? 'Granted' : 'Pending'}.`;
+    } else {
+      const reasons = [];
+      if (karmaScore < 30) reasons.push('Low karma score');
+      if (tradeEnergy < 10) reasons.push('Insufficient trade energy');
+      if (moralIndicator === 'blocked') reasons.push('Moral alignment blocked');
+      if (!divineApproval) reasons.push('Awaiting divine approval');
+      
+      return `🚫 **Trading is RESTRICTED** due to: ${reasons.join(', ')}. Focus on building karma and trade energy first.`;
+    }
+  }
+
+  // Karma and energy guidance
+  if (q.includes('karma') || q.includes('improve') || q.includes('energy')) {
+    return `🌟 **Konsmic Intelligence Guidance:**
+- Your karma score is ${karmaScore}/200 (${moralIndicator} alignment)
+- Trade energy: ${tradeEnergy}/100
+- To improve: Make profitable trades, avoid revenge trading, practice patience
+- High karma unlocks better trading opportunities and divine protection`;
+  }
+
+  return null;
+}
+
 // ✨ Very simple smart match function with Enhancement Plugins
 export default function getSmartAnswer(userInput, setBotState, walletContext = null) {
   const q = userInput.toLowerCase().trim();
+
+  // 💎 WALLET INTELLIGENCE LAYER - Priority for wallet-related queries
+  const walletInsight = getWalletInsights(q, walletContext);
+  if (walletInsight) {
+    return walletInsight;
+  }
 
   // 🚀 REAL-TIME DIVINE INTELLIGENCE LAYER - First Priority
   // This layer provides instant responses without API delays

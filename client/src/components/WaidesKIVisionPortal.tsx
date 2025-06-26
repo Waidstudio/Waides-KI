@@ -48,6 +48,9 @@ export default function WaidesKIVisionPortal() {
   const [isListening, setIsListening] = useState(false);
   const [oracleEnabled, setOracleEnabled] = useState(false);
   const [reasoningMode, setReasoningMode] = useState(false);
+  
+  // Wallet context integration
+  const walletContext = useSmaiWallet();
   const [chatMode, setChatMode] = useState<'auto' | 'openai' | 'spiritual' | 'oracle'>('auto');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
@@ -446,12 +449,7 @@ export default function WaidesKIVisionPortal() {
           break;
         case 'spiritual':
           // Use local Memory Engine for instant responses with plugin support and wallet context
-          const memoryResponse = getSmartAnswer(currentMessage, setBotState, {
-            smaiBalance,
-            localBalance,
-            totalTransactions: transactions.length,
-            canAfford: canAffordTrade
-          });
+          const memoryResponse = getSmartAnswer(currentMessage, setBotState, walletContext);
           if (memoryResponse) {
             typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
             setIsProcessing(false);
@@ -469,13 +467,8 @@ export default function WaidesKIVisionPortal() {
           }
           break;
         default: // 'auto' mode
-          // Always try Memory Engine first for instant responses
-          const smartResponse = getSmartAnswer(currentMessage, setBotState, {
-            smaiBalance,
-            localBalance,
-            totalTransactions: transactions.length,
-            canAfford: canAffordTrade
-          });
+          // Always try Memory Engine first for instant responses with full wallet context
+          const smartResponse = getSmartAnswer(currentMessage, setBotState, walletContext);
           if (smartResponse) {
             typeMessage(smartResponse, 'enhanced_bot_memory', 95);
             setIsProcessing(false);
