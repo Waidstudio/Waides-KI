@@ -18,6 +18,7 @@ import DreamLayerVision from "@/components/DreamLayerVision";
 import VisionSpirit from "@/components/VisionSpirit";
 import { SpiritualRecall } from "@/components/SpiritualRecall";
 import SeasonalRebirth from "@/components/SeasonalRebirth";
+import { ETHEmpathNetworkGuardian } from "@/components/ETHEmpathNetworkGuardian";
 import NotFound from "@/pages/not-found";
 
 function Router() {

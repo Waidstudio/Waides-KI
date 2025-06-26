@@ -131,6 +131,10 @@ import { waidesKIETHSentimentTracker } from './services/waidesKIETHSentimentTrac
 import { waidesKIPresenceOrchestrator } from './services/waidesKIPresenceOrchestrator.js';
 import { waidesKIEntangledPresenceMesh } from './services/waidesKIEntangledPresenceMesh.js';
 import { waidesKICollectiveTradeConductor } from './services/waidesKICollectiveTradeConductor.js';
+// STEP 58: ETH Empath Network - Sentient Trade Execution & Guardian Code
+import { waidesKIMeshGuardianEngine } from './services/waidesKIMeshGuardianEngine.js';
+import { waidesKIGuardianTradeExecutor } from './services/waidesKIGuardianTradeExecutor.js';
+import { waidesKIGuardianFeedbackLoop } from './services/waidesKIGuardianFeedbackLoop.js';
 
 
 let ethMonitor: EthMonitor;
@@ -11890,6 +11894,256 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting full sentience analysis:', error);
       res.status(500).json({ error: 'Failed to get comprehensive analysis' });
+    }
+  });
+
+  // ========================================
+  // STEP 58: ETH EMPATH NETWORK - GUARDIAN MESH EXECUTION API ENDPOINTS
+  // ========================================
+
+  // Mesh Guardian Engine Endpoints
+  app.post('/api/mesh/execute_trade', async (req, res) => {
+    try {
+      const { symbol, action, amount, setup, meta, indicators } = req.body;
+      
+      if (!symbol || !action || !amount || !setup) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: symbol, action, amount, setup' 
+        });
+      }
+
+      const context = {
+        symbol,
+        action: action.toUpperCase(),
+        amount: parseFloat(amount),
+        setup,
+        meta: meta || {},
+        indicators: indicators || {}
+      };
+
+      const guardianDecision = await waidesKIMeshGuardianEngine.evaluate(context);
+      const executionResult = await waidesKIGuardianTradeExecutor.execute(context);
+
+      res.json({
+        guardian_decision: guardianDecision,
+        execution_result: executionResult,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error executing mesh trade:', error);
+      res.status(500).json({ error: 'Failed to execute mesh trade' });
+    }
+  });
+
+  app.get('/api/mesh/guardian_status', async (req, res) => {
+    try {
+      const guardianStats = waidesKIMeshGuardianEngine.getGuardianStatistics();
+      const guardianHealth = waidesKIMeshGuardianEngine.getGuardianHealth();
+      const executionStats = waidesKIGuardianTradeExecutor.getExecutionStatistics();
+      const executionHealth = waidesKIGuardianTradeExecutor.getExecutionHealth();
+
+      res.json({
+        guardian: {
+          statistics: guardianStats,
+          health: guardianHealth
+        },
+        executor: {
+          statistics: executionStats,
+          health: executionHealth
+        }
+      });
+    } catch (error) {
+      console.error('Error getting guardian status:', error);
+      res.status(500).json({ error: 'Failed to get guardian status' });
+    }
+  });
+
+  app.get('/api/mesh/trust_status', async (req, res) => {
+    try {
+      const nodeTrustScores = waidesKIGuardianFeedbackLoop.getNodeTrustScores();
+      const meshMetrics = waidesKIGuardianFeedbackLoop.getMeshFeedbackMetrics();
+      const feedbackHealth = waidesKIGuardianFeedbackLoop.getFeedbackLoopHealth();
+
+      res.json({
+        node_trust_scores: nodeTrustScores,
+        mesh_metrics: meshMetrics,
+        feedback_health: feedbackHealth
+      });
+    } catch (error) {
+      console.error('Error getting trust status:', error);
+      res.status(500).json({ error: 'Failed to get trust status' });
+    }
+  });
+
+  app.post('/api/mesh/record_outcome', async (req, res) => {
+    try {
+      const { 
+        tradeId, 
+        symbol, 
+        action, 
+        outcome, 
+        profitLoss, 
+        guardianConfidence, 
+        meshConsensus,
+        durationMinutes 
+      } = req.body;
+
+      if (!tradeId || !symbol || !action || !outcome || profitLoss === undefined) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: tradeId, symbol, action, outcome, profitLoss' 
+        });
+      }
+
+      waidesKIGuardianFeedbackLoop.recordTradeOutcome(
+        tradeId,
+        symbol,
+        action,
+        outcome,
+        parseFloat(profitLoss),
+        guardianConfidence || 0.5,
+        meshConsensus || 0.5,
+        durationMinutes || 60
+      );
+
+      res.json({ 
+        success: true, 
+        message: 'Trade outcome recorded successfully',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error recording trade outcome:', error);
+      res.status(500).json({ error: 'Failed to record trade outcome' });
+    }
+  });
+
+  app.get('/api/mesh/node_trust/:nodeId', async (req, res) => {
+    try {
+      const { nodeId } = req.params;
+      const nodeScore = waidesKIGuardianFeedbackLoop.getNodeTrustScore(nodeId);
+
+      if (!nodeScore) {
+        return res.status(404).json({ error: 'Node not found' });
+      }
+
+      res.json(nodeScore);
+    } catch (error) {
+      console.error('Error getting node trust score:', error);
+      res.status(500).json({ error: 'Failed to get node trust score' });
+    }
+  });
+
+  app.post('/api/mesh/reset_node_trust/:nodeId', async (req, res) => {
+    try {
+      const { nodeId } = req.params;
+      const success = waidesKIGuardianFeedbackLoop.resetNodeTrustScore(nodeId);
+
+      if (!success) {
+        return res.status(404).json({ error: 'Node not found' });
+      }
+
+      res.json({ 
+        success: true, 
+        message: `Trust score reset for node: ${nodeId}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error resetting node trust score:', error);
+      res.status(500).json({ error: 'Failed to reset node trust score' });
+    }
+  });
+
+  app.post('/api/mesh/guardian_control', async (req, res) => {
+    try {
+      const { action, duration } = req.body;
+
+      switch (action) {
+        case 'enable_execution':
+          waidesKIGuardianTradeExecutor.setExecutionEnabled(true);
+          res.json({ success: true, message: 'Guardian execution enabled' });
+          break;
+
+        case 'disable_execution':
+          waidesKIGuardianTradeExecutor.setExecutionEnabled(false);
+          res.json({ success: true, message: 'Guardian execution disabled' });
+          break;
+
+        case 'activate_safety_lock':
+          const lockDuration = duration || 3600000; // Default 1 hour
+          waidesKIGuardianTradeExecutor.activateSafetyLock(lockDuration);
+          res.json({ 
+            success: true, 
+            message: `Safety lock activated for ${Math.round(lockDuration / 1000)} seconds` 
+          });
+          break;
+
+        default:
+          res.status(400).json({ 
+            error: 'Invalid action. Valid actions: enable_execution, disable_execution, activate_safety_lock' 
+          });
+      }
+    } catch (error) {
+      console.error('Error controlling guardian:', error);
+      res.status(500).json({ error: 'Failed to control guardian' });
+    }
+  });
+
+  app.get('/api/mesh/trade_records', async (req, res) => {
+    try {
+      const tradeRecords = waidesKIGuardianTradeExecutor.getTradeRecords();
+      const lastTrade = waidesKIGuardianTradeExecutor.getLastTrade();
+
+      res.json({
+        trade_records: tradeRecords,
+        last_trade: lastTrade,
+        total_trades: tradeRecords.length
+      });
+    } catch (error) {
+      console.error('Error getting trade records:', error);
+      res.status(500).json({ error: 'Failed to get trade records' });
+    }
+  });
+
+  // Guardian System Demo Endpoint
+  app.post('/api/mesh/demo_execution', async (req, res) => {
+    try {
+      // Demo guardian evaluation and execution process
+      const demoContext = {
+        symbol: 'ETH/USDT',
+        action: 'BUY',
+        amount: 0.1,
+        setup: 'Guardian demo trade',
+        meta: { demo: true },
+        indicators: {
+          rsi: 45,
+          ema_alignment: 'bullish',
+          volume_trend: 'increasing'
+        }
+      };
+
+      const guardianDecision = await waidesKIMeshGuardianEngine.evaluate(demoContext);
+      
+      // Simulate execution result
+      const simulatedResult = {
+        status: guardianDecision.ok ? 'executed' : 'blocked',
+        trade_id: guardianDecision.ok ? `DEMO-${Date.now()}` : undefined,
+        reason: guardianDecision.message,
+        guardian_decision: guardianDecision,
+        safety_measures: ['DEMO_MODE'],
+        timestamp: Date.now()
+      };
+
+      res.json({
+        demo_execution: simulatedResult,
+        guardian_protection: guardianDecision.guardian_protection,
+        mesh_alignment: {
+          consensus_confidence: guardianDecision.consensus?.execution_confidence || 0,
+          vision_confidence: guardianDecision.vision?.confidence || 0,
+          ethical_approval: guardianDecision.ethic?.should_proceed || false
+        }
+      });
+    } catch (error) {
+      console.error('Error running guardian demo:', error);
+      res.status(500).json({ error: 'Failed to run guardian demo' });
     }
   });
 
