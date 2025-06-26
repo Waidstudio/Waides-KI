@@ -727,6 +727,490 @@ export default function EnhancedTradingAcademy() {
     }
   ];
 
+  // Detailed Course Lessons - Advanced Trading Strategies
+  const advancedTradingLessons = [
+    {
+      id: 1,
+      title: 'Introduction to Advanced Trading Concepts',
+      duration: '25 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand the difference between retail and institutional trading approaches',
+          'Learn the foundations of alpha generation and market inefficiencies',
+          'Identify opportunities for advanced strategy development'
+        ],
+        keyPoints: [
+          'Advanced trading requires understanding market microstructure and participant behavior',
+          'Alpha generation comes from exploiting temporary market inefficiencies',
+          'Successful strategies combine multiple edge sources for consistent returns',
+          'Risk-adjusted returns are more important than absolute returns'
+        ],
+        summary: 'Advanced trading moves beyond basic buy/sell decisions to sophisticated strategies that exploit market inefficiencies. This foundation lesson establishes the mindset and framework needed to develop, test, and implement complex trading strategies that can generate consistent alpha in competitive markets.'
+      }
+    },
+    {
+      id: 2,
+      title: 'Market Microstructure and Order Flow Analysis',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand how market makers and takers interact',
+          'Learn to read order flow and market depth',
+          'Analyze bid-ask spreads and liquidity patterns'
+        ],
+        keyPoints: [
+          'Order flow reveals the true intentions of market participants',
+          'Market depth and liquidity provide insights into potential price movements',
+          'Time and sales data shows actual transaction patterns',
+          'Understanding market makers vs takers helps predict short-term movements'
+        ],
+        summary: 'Market microstructure analysis provides the foundation for advanced trading strategies. By understanding how orders are processed, filled, and how liquidity flows through markets, traders can identify short-term opportunities and avoid being adversely selected by more sophisticated participants.'
+      }
+    },
+    {
+      id: 3,
+      title: 'Statistical Arbitrage Fundamentals',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn the principles of statistical arbitrage',
+          'Understand pairs trading and mean reversion strategies',
+          'Develop correlation and cointegration analysis skills'
+        ],
+        keyPoints: [
+          'Statistical arbitrage exploits temporary price divergences between related assets',
+          'Pairs trading involves long/short positions in correlated securities',
+          'Cointegration is more reliable than simple correlation for pairs selection',
+          'Risk management is crucial due to the leverage typically employed'
+        ],
+        summary: 'Statistical arbitrage represents one of the most systematic approaches to trading, using mathematical models to identify and exploit pricing inefficiencies. This lesson covers the foundational concepts needed to build stat-arb strategies that can generate consistent returns while maintaining controlled risk exposure.'
+      }
+    },
+    {
+      id: 4,
+      title: 'Options Trading Strategies for Advanced Portfolios',
+      duration: '45 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master complex options strategies beyond basic calls and puts',
+          'Learn volatility trading and options Greeks management',
+          'Understand how to structure asymmetric risk/reward profiles'
+        ],
+        keyPoints: [
+          'Advanced options strategies can profit from volatility, time decay, and directional moves',
+          'Greeks (Delta, Gamma, Theta, Vega) must be actively managed',
+          'Implied volatility often differs from realized volatility, creating opportunities',
+          'Options can be used to create synthetic positions and hedge complex exposures'
+        ],
+        summary: 'Advanced options trading goes beyond directional bets to include volatility trading, income generation, and portfolio hedging. Understanding options Greeks and volatility dynamics allows traders to construct sophisticated strategies with precisely defined risk parameters and profit targets.'
+      }
+    },
+    {
+      id: 5,
+      title: 'Volatility Trading and VIX Strategies',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand volatility as a tradeable asset class',
+          'Learn VIX trading strategies and volatility term structure',
+          'Develop skills in volatility forecasting and mean reversion'
+        ],
+        keyPoints: [
+          'Volatility exhibits mean-reverting characteristics over time',
+          'VIX contango and backwardation create systematic trading opportunities',
+          'Volatility clustering suggests persistence in market stress periods',
+          'Cross-asset volatility correlations can be exploited for diversification'
+        ],
+        summary: 'Volatility trading treats market fear and uncertainty as a separate asset class. By understanding volatility term structure, mean reversion properties, and the behavior of volatility instruments like VIX, traders can build strategies that profit from changes in market sentiment and uncertainty levels.'
+      }
+    },
+    {
+      id: 6,
+      title: 'Algorithmic Trading System Architecture',
+      duration: '50 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Design robust algorithmic trading system architecture',
+          'Learn about latency, execution algorithms, and order management',
+          'Understand the technology stack for automated trading'
+        ],
+        keyPoints: [
+          'System architecture must handle data feeds, signal generation, and order execution',
+          'Latency management is crucial for high-frequency strategies',
+          'Risk controls and circuit breakers prevent catastrophic losses',
+          'Backtesting frameworks must avoid look-ahead bias and survivorship bias'
+        ],
+        summary: 'Building algorithmic trading systems requires careful attention to architecture, risk management, and execution quality. This lesson covers the technical infrastructure needed to translate trading ideas into robust, automated systems that can operate reliably in live market conditions.'
+      }
+    },
+    {
+      id: 7,
+      title: 'High-Frequency Trading Concepts and Market Making',
+      duration: '35 min',
+      type: 'theory',
+      content: {
+        objectives: [
+          'Understand high-frequency trading strategies and market making',
+          'Learn about latency arbitrage and co-location advantages',
+          'Explore the regulatory and ethical considerations of HFT'
+        ],
+        keyPoints: [
+          'HFT strategies profit from tiny price discrepancies across very short timeframes',
+          'Market making provides liquidity while capturing bid-ask spreads',
+          'Technology infrastructure and speed advantages are critical competitive factors',
+          'Regulatory oversight continues to evolve in response to HFT growth'
+        ],
+        summary: 'High-frequency trading represents the cutting edge of algorithmic trading, where microseconds matter and technology infrastructure provides competitive advantages. Understanding HFT concepts helps traders appreciate market dynamics and identify opportunities in longer-timeframe strategies.'
+      }
+    },
+    {
+      id: 8,
+      title: 'Cross-Asset Momentum and Trend Following',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Develop sophisticated momentum strategies across multiple asset classes',
+          'Learn trend identification and momentum persistence analysis',
+          'Build portfolio-level momentum allocation systems'
+        ],
+        keyPoints: [
+          'Momentum effects persist across different asset classes and timeframes',
+          'Cross-asset momentum can provide diversification and enhanced returns',
+          'Momentum strategies require careful attention to transaction costs and capacity',
+          'Risk management must account for momentum crashes and reversals'
+        ],
+        summary: 'Advanced momentum strategies go beyond single-asset trend following to exploit persistence patterns across global markets. By understanding how momentum manifests in different asset classes and time horizons, traders can build diversified systematic strategies with superior risk-adjusted returns.'
+      }
+    },
+    {
+      id: 9,
+      title: 'Mean Reversion Strategies and Range Trading',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master mean reversion identification and trade timing',
+          'Learn range-bound market exploitation strategies',
+          'Develop oscillator-based and statistical mean reversion systems'
+        ],
+        keyPoints: [
+          'Mean reversion strategies profit from temporary price dislocations',
+          'Range identification requires understanding support and resistance dynamics',
+          'Statistical measures can quantify how far prices have deviated from fair value',
+          'Mean reversion timing is critical - early entry can result in significant losses'
+        ],
+        summary: 'Mean reversion strategies capitalize on the tendency of prices to return to fundamental value after temporary dislocations. Successful implementation requires sophisticated timing models, robust risk management, and deep understanding of what drives temporary price inefficiencies.'
+      }
+    },
+    {
+      id: 10,
+      title: 'Event-Driven Trading and Special Situations',
+      duration: '45 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn to trade around corporate events and announcements',
+          'Understand merger arbitrage and special situation investing',
+          'Develop frameworks for event impact assessment'
+        ],
+        keyPoints: [
+          'Corporate events create temporary mispricings and trading opportunities',
+          'Merger arbitrage involves capturing spreads in announced deals',
+          'Earnings announcements, splits, and spin-offs require specific trading approaches',
+          'Event probability and timing analysis are crucial for success'
+        ],
+        summary: 'Event-driven trading capitalizes on corporate actions and special situations that create temporary pricing inefficiencies. Success requires deep fundamental analysis, probability assessment, and understanding of how different types of events typically impact security prices.'
+      }
+    },
+    {
+      id: 11,
+      title: 'Multi-Timeframe Analysis and Strategy Synthesis',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Integrate analysis across multiple timeframes',
+          'Learn to combine different strategy types for enhanced performance',
+          'Develop hierarchical decision-making frameworks'
+        ],
+        keyPoints: [
+          'Different timeframes reveal different market dynamics and opportunities',
+          'Combining strategies can improve risk-adjusted returns through diversification',
+          'Position sizing should reflect confidence levels from multiple timeframe analysis',
+          'Strategy correlation and capacity constraints must be considered in combination'
+        ],
+        summary: 'Advanced traders integrate insights from multiple timeframes and strategy types to create robust trading approaches. This synthesis requires understanding how different analytical frameworks complement each other and how to weight decisions based on confluent signals across timeframes.'
+      }
+    },
+    {
+      id: 12,
+      title: 'Portfolio Construction and Risk Budgeting',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn advanced portfolio construction techniques',
+          'Understand risk budgeting and capital allocation frameworks',
+          'Master correlation analysis and diversification optimization'
+        ],
+        keyPoints: [
+          'Risk budgeting allocates capital based on expected risk-adjusted returns',
+          'Correlation matrices must be dynamic and account for changing market regimes',
+          'Portfolio construction should consider strategy capacity and liquidity constraints',
+          'Regular rebalancing and risk monitoring are essential for maintaining target allocations'
+        ],
+        summary: 'Advanced portfolio construction goes beyond simple diversification to optimize risk-adjusted returns through sophisticated allocation frameworks. Understanding how to budget risk across strategies and maintain optimal exposures is crucial for institutional-quality portfolio management.'
+      }
+    },
+    {
+      id: 13,
+      title: 'Alternative Data Sources and Signal Generation',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Explore alternative data sources for trading alpha',
+          'Learn to process and analyze non-traditional market data',
+          'Develop frameworks for signal extraction from alternative datasets'
+        ],
+        keyPoints: [
+          'Alternative data includes satellite imagery, social media, credit card transactions',
+          'Data processing and cleaning are crucial for reliable signal extraction',
+          'Alternative data often provides leading indicators of traditional metrics',
+          'Regulatory and ethical considerations apply to alternative data usage'
+        ],
+        summary: 'Alternative data represents the frontier of trading signal generation, providing insights unavailable through traditional market data. Success requires sophisticated data processing capabilities, statistical analysis skills, and understanding of how to convert raw information into tradeable signals.'
+      }
+    },
+    {
+      id: 14,
+      title: 'Machine Learning Applications in Trading',
+      duration: '50 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Apply machine learning techniques to trading strategy development',
+          'Learn feature engineering and model selection for financial data',
+          'Understand the challenges of ML in non-stationary financial markets'
+        ],
+        keyPoints: [
+          'Machine learning can identify complex patterns in large datasets',
+          'Feature engineering is often more important than algorithm selection',
+          'Overfitting is a major risk when applying ML to financial data',
+          'Model ensemble approaches can improve robustness and reduce overfitting'
+        ],
+        summary: 'Machine learning offers powerful tools for pattern recognition and prediction in financial markets, but requires careful application to avoid common pitfalls. Understanding how to properly prepare data, select features, and validate models is essential for successful ML-driven trading strategies.'
+      }
+    },
+    {
+      id: 15,
+      title: 'Quantitative Risk Management and VaR Models',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master Value at Risk (VaR) calculation and interpretation',
+          'Learn stress testing and scenario analysis techniques',
+          'Develop comprehensive risk monitoring frameworks'
+        ],
+        keyPoints: [
+          'VaR provides statistical estimates of potential losses over specific time horizons',
+          'Multiple VaR methodologies (historical, parametric, Monte Carlo) have different strengths',
+          'Stress testing reveals portfolio vulnerabilities under extreme scenarios',
+          'Risk monitoring must be continuous and adaptive to changing market conditions'
+        ],
+        summary: 'Quantitative risk management provides the mathematical foundation for controlling portfolio risk in advanced trading strategies. Understanding VaR models, stress testing, and continuous risk monitoring is essential for maintaining consistent performance and avoiding catastrophic losses.'
+      }
+    },
+    {
+      id: 16,
+      title: 'Derivatives Strategy Design and Implementation',
+      duration: '45 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Design complex derivatives strategies for specific market views',
+          'Learn advanced options combinations and exotic derivatives',
+          'Master hedging techniques using derivatives instruments'
+        ],
+        keyPoints: [
+          'Derivatives strategies can be tailored to specific risk/reward profiles',
+          'Complex strategies require careful Greeks management and monitoring',
+          'Exotic derivatives offer unique payoff structures but carry additional risks',
+          'Hedging with derivatives requires understanding correlation and basis risk'
+        ],
+        summary: 'Advanced derivatives strategies allow traders to express sophisticated market views with precisely defined risk parameters. Mastering complex options strategies, exotic instruments, and hedging techniques enables the creation of asymmetric risk/reward profiles not achievable through directional trading alone.'
+      }
+    },
+    {
+      id: 17,
+      title: 'Fixed Income Arbitrage and Curve Trading',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Understand yield curve analysis and fixed income relative value',
+          'Learn curve steepening/flattening strategies',
+          'Master credit spread and basis trading techniques'
+        ],
+        keyPoints: [
+          'Yield curve shape changes create opportunities for relative value trades',
+          'Credit spreads reflect both default risk and liquidity premiums',
+          'Basis trades exploit pricing differences between related fixed income instruments',
+          'Interest rate derivatives enable precise curve positioning and hedging'
+        ],
+        summary: 'Fixed income arbitrage strategies exploit pricing relationships within bond markets, offering opportunities for consistent returns with controlled risk. Understanding yield curve dynamics, credit spreads, and basis relationships enables sophisticated relative value trading in fixed income markets.'
+      }
+    },
+    {
+      id: 18,
+      title: 'Currency Carry Trades and FX Strategies',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Master currency carry trade strategies and interest rate differentials',
+          'Learn FX momentum and mean reversion patterns',
+          'Understand central bank policy impact on currency markets'
+        ],
+        keyPoints: [
+          'Carry trades profit from interest rate differentials between currencies',
+          'FX markets exhibit both momentum and mean reversion depending on timeframe',
+          'Central bank interventions and policy changes create trading opportunities',
+          'Currency volatility and correlation patterns shift with market regimes'
+        ],
+        summary: 'Foreign exchange markets offer unique opportunities through carry trades, momentum strategies, and policy-driven moves. Understanding interest rate differentials, central bank behavior, and currency correlation dynamics enables sophisticated FX trading strategies with global diversification benefits.'
+      }
+    },
+    {
+      id: 19,
+      title: 'Commodities Trading and Calendar Spreads',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn commodity-specific trading strategies and seasonality patterns',
+          'Master calendar spread and inter-commodity spread trading',
+          'Understand storage costs, convenience yields, and contango/backwardation'
+        ],
+        keyPoints: [
+          'Commodities exhibit unique supply/demand dynamics and seasonal patterns',
+          'Calendar spreads exploit differences in forward curve pricing',
+          'Storage costs and convenience yields affect commodity pricing relationships',
+          'Weather, geopolitics, and economic cycles drive commodity price movements'
+        ],
+        summary: 'Commodity markets offer distinct trading opportunities through seasonal patterns, supply/demand imbalances, and unique pricing relationships. Understanding commodity-specific factors, calendar spreads, and cross-commodity relationships enables specialized strategies not available in financial markets.'
+      }
+    },
+    {
+      id: 20,
+      title: 'Strategy Performance Attribution and Analysis',
+      duration: '30 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn to decompose strategy performance into component sources',
+          'Master risk-adjusted performance metrics and benchmarking',
+          'Develop frameworks for ongoing strategy evaluation and improvement'
+        ],
+        keyPoints: [
+          'Performance attribution identifies which elements of a strategy generate returns',
+          'Risk-adjusted metrics like Sharpe ratio and information ratio enable proper comparison',
+          'Regular performance analysis reveals strategy decay and changing market dynamics',
+          'Benchmark selection should reflect strategy objectives and risk characteristics'
+        ],
+        summary: 'Performance attribution and analysis provide crucial feedback for strategy improvement and risk management. Understanding how to decompose returns, calculate risk-adjusted metrics, and evaluate performance against appropriate benchmarks enables continuous strategy refinement and optimization.'
+      }
+    },
+    {
+      id: 21,
+      title: 'Strategy Development Framework and Backtesting',
+      duration: '45 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Develop systematic approach to strategy creation and testing',
+          'Learn robust backtesting methodologies and bias avoidance',
+          'Master walk-forward analysis and out-of-sample testing'
+        ],
+        keyPoints: [
+          'Strategy development requires systematic hypothesis testing and validation',
+          'Backtesting must avoid look-ahead bias, survivorship bias, and overfitting',
+          'Walk-forward analysis tests strategy robustness across different market periods',
+          'Out-of-sample testing provides unbiased estimate of future performance'
+        ],
+        summary: 'Robust strategy development follows systematic frameworks that minimize bias and maximize the probability of future success. Understanding proper backtesting methodologies, bias avoidance, and validation techniques is essential for translating trading ideas into profitable strategies.'
+      }
+    },
+    {
+      id: 22,
+      title: 'Live Trading Implementation and Execution',
+      duration: '40 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn best practices for transitioning from backtest to live trading',
+          'Master execution algorithms and transaction cost analysis',
+          'Develop monitoring and adjustment protocols for live strategies'
+        ],
+        keyPoints: [
+          'Live trading introduces execution costs, slippage, and latency not present in backtests',
+          'Execution algorithms help minimize market impact and transaction costs',
+          'Continuous monitoring is required to detect strategy degradation or market changes',
+          'Position sizing and risk controls must be more conservative in live trading'
+        ],
+        summary: 'Successfully implementing strategies in live markets requires careful attention to execution quality, transaction costs, and ongoing monitoring. Understanding the differences between backtested and live performance enables realistic expectations and proper risk management in real trading.'
+      }
+    },
+    {
+      id: 23,
+      title: 'Strategy Combination and Ensemble Methods',
+      duration: '35 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Learn to combine multiple strategies for enhanced risk-adjusted returns',
+          'Master correlation analysis and strategy allocation optimization',
+          'Develop dynamic weighting and rebalancing frameworks'
+        ],
+        keyPoints: [
+          'Strategy combination can reduce volatility while maintaining returns',
+          'Correlation between strategies changes over time and market regimes',
+          'Dynamic allocation adjusts strategy weights based on recent performance and market conditions',
+          'Ensemble methods can improve robustness and reduce single-strategy risk'
+        ],
+        summary: 'Combining multiple strategies creates more robust trading approaches with superior risk-adjusted returns. Understanding correlation dynamics, allocation optimization, and dynamic weighting enables the construction of strategy portfolios that outperform individual components.'
+      }
+    },
+    {
+      id: 24,
+      title: 'Building Your Personal Trading Strategy Framework',
+      duration: '50 min',
+      type: 'practical',
+      content: {
+        objectives: [
+          'Synthesize all course concepts into a personal strategy development framework',
+          'Learn to identify your edge and competitive advantages',
+          'Develop a systematic approach to ongoing strategy research and development'
+        ],
+        keyPoints: [
+          'Successful traders develop systematic frameworks tailored to their strengths and constraints',
+          'Edge identification requires honest assessment of skills, resources, and market access',
+          'Strategy development should be an ongoing process of research, testing, and refinement',
+          'Personal framework must account for risk tolerance, capital constraints, and time availability'
+        ],
+        summary: 'This capstone lesson integrates all advanced trading concepts into a personalized framework for ongoing strategy development. By understanding your competitive advantages, resource constraints, and market opportunities, you can build a systematic approach to creating and implementing profitable trading strategies that align with your specific situation and goals.'
+      }
+    }
+  ];
+
   // Detailed Course Lessons - Risk Management & Capital Preservation
   const riskManagementLessons = [
     {
