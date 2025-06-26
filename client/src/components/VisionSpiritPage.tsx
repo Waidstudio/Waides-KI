@@ -136,18 +136,18 @@ export function VisionSpiritPage() {
   // Chat mutations
   const chatMutation = useMutation({
     mutationFn: (message: string) => 
-      apiRequest('/api/chat/konsai', {
+      apiRequest('/api/waides-ki/konsai-chat', {
         method: 'POST',
-        body: { message, mode: 'konsai', reasoning: true }
+        body: { question: message }
       }),
     onSuccess: (data) => {
       const response: Message = {
         id: Date.now().toString(),
-        message: data.response || data.message || 'No response received',
+        message: data.response || data.answer || 'No response received',
         sender: 'konsai',
         timestamp: Date.now(),
-        source: data.source || 'konsai',
-        confidence: data.confidence,
+        source: 'konsai',
+        confidence: data.confidence || 85,
         reasoning: data.reasoning,
         konslangProcessing: data.konslangProcessing
       };
