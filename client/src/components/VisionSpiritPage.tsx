@@ -110,6 +110,7 @@ export function VisionSpiritPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const [typewriterMessage, setTypewriterMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   
@@ -310,6 +311,8 @@ Try the contextual suggestions below or ask me anything about ETH trading vision
 
     setMessages(prev => [...prev, userMessage]);
     setIsProcessing(true);
+    // Show suggestions again after user sends a message
+    setShowSuggestions(true);
     
     const messageToSend = currentMessage;
     setCurrentMessage('');
@@ -509,32 +512,42 @@ Try the contextual suggestions below or ask me anything about ETH trading vision
             </div>
           )}
           
+          {/* Contextual Suggestions in Chat */}
+          {!isProcessing && showSuggestions && contextualSuggestions.length > 0 && (
+            <div className="px-4 py-2">
+              <Card className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border-purple-500/20">
+                <CardContent className="p-3">
+                  <div className="mb-2 text-xs text-purple-300 flex items-center gap-2">
+                    <Sparkles className="h-3 w-3" />
+                    Contextual Suggestions
+                  </div>
+                  <div className="grid grid-cols-1 gap-2">
+                    {contextualSuggestions.map((suggestion, index) => (
+                      <Button
+                        key={index}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          handleContextualAction(suggestion.action);
+                          // Hide suggestions after selection
+                          setShowSuggestions(false);
+                        }}
+                        className="justify-start h-auto p-2 text-white hover:bg-purple-700/30 border border-purple-500/20"
+                      >
+                        <div className="flex items-center gap-2">
+                          {suggestion.icon}
+                          <span className="text-xs">{suggestion.text}</span>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Contextual Suggestions */}
-        {!isProcessing && contextualSuggestions.length > 0 && (
-          <div className="p-4 border-t border-purple-500/30">
-            <div className="mb-2 text-sm text-gray-400">Contextual Suggestions:</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {contextualSuggestions.map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleContextualAction(suggestion.action)}
-                  className={`${suggestion.color} border-transparent text-white text-left justify-start h-auto p-3`}
-                  disabled={receiveVisionMutation.isPending}
-                >
-                  <div className="flex items-center gap-2">
-                    {suggestion.icon}
-                    <span className="text-xs">{suggestion.text}</span>
-                  </div>
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Input Area */}
         <div className="p-4 border-t border-purple-500/30">
