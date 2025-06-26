@@ -135,6 +135,9 @@ import { waidesKICollectiveTradeConductor } from './services/waidesKICollectiveT
 import { waidesKIMeshGuardianEngine } from './services/waidesKIMeshGuardianEngine.js';
 import { waidesKIGuardianTradeExecutor } from './services/waidesKIGuardianTradeExecutor.js';
 import { waidesKIGuardianFeedbackLoop } from './services/waidesKIGuardianFeedbackLoop.js';
+// WAIDES META-GUARDIAN NETWORK: Self-Governed ETH Holon
+import { waidesKIHolonCouncil } from './services/waidesKIHolonCouncil.js';
+import { waidesKIRoleManager } from './services/waidesKIRoleManager.js';
 
 
 let ethMonitor: EthMonitor;
@@ -12144,6 +12147,265 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error running guardian demo:', error);
       res.status(500).json({ error: 'Failed to run guardian demo' });
+    }
+  });
+
+  // ========================================
+  // WAIDES META-GUARDIAN NETWORK: SELF-GOVERNED ETH HOLON API ENDPOINTS
+  // ========================================
+
+  // Holon Council Governance Endpoints
+  app.post('/api/holon/propose', async (req, res) => {
+    try {
+      const { prop_id, title, description, changes, quorum_required, approval_threshold } = req.body;
+      
+      if (!prop_id || !title || !description || !changes) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: prop_id, title, description, changes' 
+        });
+      }
+
+      const result = await waidesKIHolonCouncil.propose(
+        prop_id, 
+        title, 
+        description, 
+        changes, 
+        quorum_required || 0.6, 
+        approval_threshold || 0.7
+      );
+
+      if (result.success) {
+        res.json({ 
+          status: 'proposed', 
+          proposal: result.proposal 
+        });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error creating proposal:', error);
+      res.status(500).json({ error: 'Failed to create proposal' });
+    }
+  });
+
+  app.post('/api/holon/vote', async (req, res) => {
+    try {
+      const { prop_id, vote, node_id } = req.body;
+      
+      if (!prop_id || !vote) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: prop_id, vote' 
+        });
+      }
+
+      if (!['yes', 'no', 'abstain'].includes(vote)) {
+        return res.status(400).json({ 
+          error: 'Invalid vote. Must be: yes, no, or abstain' 
+        });
+      }
+
+      const result = await waidesKIHolonCouncil.vote(prop_id, vote, node_id);
+
+      if (result.success) {
+        res.json({ 
+          status: 'voted', 
+          tally: result.tally 
+        });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error casting vote:', error);
+      res.status(500).json({ error: 'Failed to cast vote' });
+    }
+  });
+
+  app.get('/api/holon/status', async (req, res) => {
+    try {
+      const status = waidesKIHolonCouncil.getProposals();
+      const networkStats = waidesKIHolonCouncil.getNetworkStats();
+      
+      res.json({
+        proposals: status.proposals,
+        network_status: status.network_status,
+        network_stats: networkStats
+      });
+    } catch (error) {
+      console.error('Error getting holon status:', error);
+      res.status(500).json({ error: 'Failed to get holon status' });
+    }
+  });
+
+  app.get('/api/holon/proposal/:prop_id', async (req, res) => {
+    try {
+      const { prop_id } = req.params;
+      const result = waidesKIHolonCouncil.getProposal(prop_id);
+      
+      if (result.proposal) {
+        res.json(result);
+      } else {
+        res.status(404).json({ error: 'Proposal not found' });
+      }
+    } catch (error) {
+      console.error('Error getting proposal:', error);
+      res.status(500).json({ error: 'Failed to get proposal' });
+    }
+  });
+
+  app.post('/api/holon/execute/:prop_id', async (req, res) => {
+    try {
+      const { prop_id } = req.params;
+      const result = await waidesKIHolonCouncil.executeProposal(prop_id);
+      
+      if (result.success) {
+        res.json({ status: 'executed' });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error executing proposal:', error);
+      res.status(500).json({ error: 'Failed to execute proposal' });
+    }
+  });
+
+  app.post('/api/holon/register_node', async (req, res) => {
+    try {
+      const { node_id } = req.body;
+      
+      if (!node_id) {
+        return res.status(400).json({ error: 'Missing node_id parameter' });
+      }
+
+      const success = waidesKIHolonCouncil.registerNode(node_id);
+      
+      if (success) {
+        res.json({ status: 'registered', node_id });
+      } else {
+        res.json({ status: 'already_registered', node_id });
+      }
+    } catch (error) {
+      console.error('Error registering node:', error);
+      res.status(500).json({ error: 'Failed to register node' });
+    }
+  });
+
+  // Role Manager Endpoints
+  app.post('/api/holon/assign_role', async (req, res) => {
+    try {
+      const { node_id, suggested_role } = req.body;
+      
+      if (!node_id) {
+        return res.status(400).json({ error: 'Missing node_id parameter' });
+      }
+
+      const result = await waidesKIRoleManager.assignRole(node_id, suggested_role);
+      
+      if (result.success) {
+        res.json({
+          status: 'assigned',
+          assigned_role: result.assigned_role,
+          previous_role: result.previous_role
+        });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error assigning role:', error);
+      res.status(500).json({ error: 'Failed to assign role' });
+    }
+  });
+
+  app.post('/api/holon/update_performance', async (req, res) => {
+    try {
+      const { node_id, metrics } = req.body;
+      
+      if (!node_id || !metrics) {
+        return res.status(400).json({ 
+          error: 'Missing required parameters: node_id, metrics' 
+        });
+      }
+
+      waidesKIRoleManager.updateNodePerformance(node_id, metrics);
+      
+      res.json({ status: 'updated', node_id });
+    } catch (error) {
+      console.error('Error updating performance:', error);
+      res.status(500).json({ error: 'Failed to update performance' });
+    }
+  });
+
+  app.get('/api/holon/roles', async (req, res) => {
+    try {
+      const assignments = waidesKIRoleManager.getAllRoleAssignments();
+      const health = waidesKIRoleManager.getNetworkRoleHealth();
+      
+      res.json({
+        assignments: assignments.assignments,
+        role_distribution: assignments.role_distribution,
+        network_health: health
+      });
+    } catch (error) {
+      console.error('Error getting roles:', error);
+      res.status(500).json({ error: 'Failed to get roles' });
+    }
+  });
+
+  app.get('/api/holon/role/:node_id', async (req, res) => {
+    try {
+      const { node_id } = req.params;
+      const role = waidesKIRoleManager.getRole(node_id);
+      const assignment = waidesKIRoleManager.getRoleAssignment(node_id);
+      
+      res.json({
+        node_id,
+        current_role: role,
+        assignment_details: assignment
+      });
+    } catch (error) {
+      console.error('Error getting node role:', error);
+      res.status(500).json({ error: 'Failed to get node role' });
+    }
+  });
+
+  app.post('/api/holon/demote/:node_id', async (req, res) => {
+    try {
+      const { node_id } = req.params;
+      const { reason } = req.body;
+      
+      const result = await waidesKIRoleManager.demoteNode(node_id, reason || 'Manual demotion');
+      
+      if (result.success) {
+        res.json({
+          status: 'demoted',
+          new_role: result.new_role
+        });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error demoting node:', error);
+      res.status(500).json({ error: 'Failed to demote node' });
+    }
+  });
+
+  app.get('/api/holon/nodes_by_role/:role', async (req, res) => {
+    try {
+      const { role } = req.params;
+      
+      if (!['leader', 'validator', 'mediator', 'observer', 'sentinel', 'guardian'].includes(role)) {
+        return res.status(400).json({ error: 'Invalid role specified' });
+      }
+
+      const nodes = waidesKIRoleManager.getNodesByRole(role as any);
+      
+      res.json({
+        role,
+        nodes,
+        count: nodes.length
+      });
+    } catch (error) {
+      console.error('Error getting nodes by role:', error);
+      res.status(500).json({ error: 'Failed to get nodes by role' });
     }
   });
 
