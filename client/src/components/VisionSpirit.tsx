@@ -73,42 +73,45 @@ export default function VisionSpirit({
 
   // Queries
   const { data: currentVision, isLoading: currentVisionLoading } = useQuery({
-    queryKey: ['/api/vision-spirit/current'],
+    queryKey: ['/api/waides-ki/vision-spirit/current'],
     refetchInterval: 30000
   });
 
   const { data: visionStats } = useQuery({
-    queryKey: ['/api/vision-spirit/stats'],
+    queryKey: ['/api/waides-ki/vision-spirit/stats'],
     refetchInterval: 30000
   });
 
   const { data: visionHistory } = useQuery({
-    queryKey: ['/api/vision-spirit/history'],
+    queryKey: ['/api/waides-ki/vision-spirit/history'],
     refetchInterval: 60000
   });
 
   // Mutations
   const receiveMutation = useMutation({
-    mutationFn: () => apiRequest('/api/vision-spirit/receive'),
+    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/receive', {}),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/current'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
     }
   });
 
   const verifyVisionMutation = useMutation({
-    mutationFn: () => apiRequest('/api/vision-spirit/verify'),
+    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/verify', {}),
     onSuccess: (data) => {
       setValidationResult(data);
-      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/stats'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
     }
   });
 
   const completeWorkflowMutation = useMutation({
-    mutationFn: () => apiRequest('/api/vision-spirit/complete-workflow'),
+    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/receive', {}).then(() => 
+      apiRequest('/api/waides-ki/vision-spirit/verify', {})),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
     }
   });
 
@@ -141,7 +144,9 @@ export default function VisionSpirit({
     }
   };
 
-  const stats: VisionStats = visionStats?.stats || {
+  // Extract data from API responses properly
+  const currentVisionData = currentVision?.currentVision || null;
+  const statsData: VisionStats = visionStats?.stats || {
     total_visions: 0,
     confirmed_visions: 0,
     accuracy_rate: 0,
@@ -149,6 +154,7 @@ export default function VisionSpirit({
     last_validation: null,
     vision_history: []
   };
+  const historyData = visionHistory?.history || [];
 
   if (!isFloatingVisible) {
     return (
@@ -201,17 +207,17 @@ export default function VisionSpirit({
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {currentVision?.currentVision ? (
+                  {currentVisionData ? (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          {getVisionIcon(currentVision.currentVision.vision)}
-                          <Badge className={getVisionColor(currentVision.currentVision.vision)}>
-                            {currentVision.currentVision.vision.toUpperCase()}
+                          {getVisionIcon(currentVisionData.vision)}
+                          <Badge className={getVisionColor(currentVisionData.vision)}>
+                            {currentVisionData.vision.toUpperCase()}
                           </Badge>
                         </div>
                         <span className="text-slate-400 text-sm">
-                          {formatTimestamp(currentVision.currentVision.timestamp)}
+                          {formatTimestamp(currentVisionData.timestamp)}
                         </span>
                       </div>
                       
@@ -220,11 +226,11 @@ export default function VisionSpirit({
                           <label className="text-sm font-medium text-slate-300">Energy Level</label>
                           <div className="flex items-center gap-2">
                             <Progress 
-                              value={currentVision.currentVision.energy_level * 100} 
+                              value={currentVisionData.energy_level * 100} 
                               className="flex-1 bg-slate-600"
                             />
                             <span className="text-sm text-slate-400">
-                              {(currentVision.currentVision.energy_level * 100).toFixed(0)}%
+                              {(currentVisionData.energy_level * 100).toFixed(0)}%
                             </span>
                           </div>
                         </div>
@@ -233,11 +239,11 @@ export default function VisionSpirit({
                           <label className="text-sm font-medium text-slate-300">Confidence</label>
                           <div className="flex items-center gap-2">
                             <Progress 
-                              value={currentVision.currentVision.confidence * 100} 
+                              value={currentVisionData.confidence * 100} 
                               className="flex-1 bg-slate-600"
                             />
                             <span className="text-sm text-slate-400">
-                              {(currentVision.currentVision.confidence * 100).toFixed(0)}%
+                              {(currentVisionData.confidence * 100).toFixed(0)}%
                             </span>
                           </div>
                         </div>
