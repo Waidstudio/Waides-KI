@@ -34,7 +34,12 @@ export class WaidesKICommandProcessor {
     'set stop loss',
     'close all trades',
     'trading performance',
-    'wallet status'
+    'wallet status',
+    'predict eth',
+    'eth prediction',
+    'analyze market',
+    'get signals',
+    'market analysis'
   ];
 
   async processCommand(input: string, userId: string = 'user123'): Promise<CommandResult> {
@@ -82,6 +87,25 @@ export class WaidesKICommandProcessor {
         return await this.getTradingPerformance(userId);
       }
       
+      // ETH prediction commands
+      if (normalizedInput.includes('predict') && normalizedInput.includes('eth')) {
+        return await this.predictETH(userId);
+      }
+      
+      if (normalizedInput.includes('eth prediction')) {
+        return await this.predictETH(userId);
+      }
+      
+      // Market analysis
+      if (normalizedInput.includes('analyze market') || normalizedInput.includes('market analysis')) {
+        return await this.analyzeMarket(userId);
+      }
+      
+      // Get signals
+      if (normalizedInput.includes('get signals') || normalizedInput.includes('signals')) {
+        return await this.getSignals(userId);
+      }
+      
       // Default response for unrecognized commands
       return {
         success: false,
@@ -121,7 +145,7 @@ export class WaidesKICommandProcessor {
       
       // Get current market data
       const marketData = await waidesKILiveFeed.getDetailedMarketData();
-      const ethPrice = marketData?.price || 2400;
+      const ethPrice = marketData?.liveData?.price || 2400;
       
       // Calculate trading parameters
       const riskAmount = balance * 0.02; // 2% risk per trade
@@ -217,7 +241,8 @@ export class WaidesKICommandProcessor {
   private async getTradingStatus(userId: string): Promise<CommandResult> {
     try {
       const stats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
-      const isActive = waidesKIAutonomousTradeCore.isAutonomousActive();
+      const autonomousStatus = waidesKIAutonomousTradeCore.getAutonomousStatus();
+      const isActive = autonomousStatus.is_active;
       const walletManager = SmaiWalletManager.getInstance();
       const walletResult = await walletManager.getWallet(userId);
       const balance = walletResult?.wallet?.balance ? parseFloat(walletResult.wallet.balance) : 0;
