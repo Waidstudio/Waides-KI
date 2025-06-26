@@ -15002,6 +15002,45 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
+  // Check if message contains WaidBot summon commands
+  app.post('/api/chat/check-summon', async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const q = message.toLowerCase().trim();
+      const summonCommands = BotMemory.summonCommands;
+      
+      // Check if message contains any summon command
+      let isWaidBotSummon = false;
+      let matchedCommand = '';
+      let summonResponse = '';
+      
+      for (const [cmd, response] of Object.entries(summonCommands)) {
+        if (q.includes(cmd)) {
+          isWaidBotSummon = true;
+          matchedCommand = cmd;
+          summonResponse = response;
+          break;
+        }
+      }
+
+      res.json({
+        success: true,
+        isWaidBotSummon,
+        matchedCommand,
+        summonResponse,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Summon check error:', error);
+      res.status(500).json({ error: 'Failed to check summon command' });
+    }
+  });
+
   // ==========================================================================
   // REAL-TIME COMMAND EXECUTION SYSTEM - Action Menu Integration
   // ==========================================================================
