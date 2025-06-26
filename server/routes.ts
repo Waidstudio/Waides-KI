@@ -83,6 +83,10 @@ import { WaidesKIMemorySigilVault } from './services/waidesKIMemorySigilVault.js
 import { WaidesKISymbolTimeTrainer } from './services/waidesKISymbolTimeTrainer.js';
 import { WaidesKISigilPredictor } from './services/waidesKISigilPredictor.js';
 import { WaidesKISigilResultTracker } from './services/waidesKISigilResultTracker.js';
+import { WaidesKIHealingPrayerEngine } from './services/waidesKIHealingPrayerEngine.js';
+import { WaidesKIDreamfirePurifier } from './services/waidesKIDreamfirePurifier.js';
+import { WaidesKISpiritualExhaustionMonitor } from './services/waidesKISpiritualExhaustionMonitor.js';
+import { WaidesKIHealingGlyphs } from './services/waidesKIHealingGlyphs.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
@@ -113,6 +117,11 @@ let waidesKIMemorySigilVault: WaidesKIMemorySigilVault;
 let waidesKISymbolTimeTrainer: WaidesKISymbolTimeTrainer;
 let waidesKISigilPredictor: WaidesKISigilPredictor;
 let waidesKISigilResultTracker: WaidesKISigilResultTracker;
+// STEP 43: Echo Prayer + Spirit Healing Protocols services
+let waidesKIHealingPrayerEngine: WaidesKIHealingPrayerEngine;
+let waidesKIDreamfirePurifier: WaidesKIDreamfirePurifier;
+let waidesKISpiritualExhaustionMonitor: WaidesKISpiritualExhaustionMonitor;
+let waidesKIHealingGlyphs: WaidesKIHealingGlyphs;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -153,6 +162,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   waidesKISymbolTimeTrainer = new WaidesKISymbolTimeTrainer(waidesKIMemorySigilVault);
   waidesKISigilPredictor = new WaidesKISigilPredictor(waidesKISymbolTimeTrainer);
   waidesKISigilResultTracker = new WaidesKISigilResultTracker(waidesKIMemorySigilVault, waidesKISigilPredictor);
+
+  // Initialize STEP 43: Echo Prayer + Spirit Healing Protocols
+  waidesKIHealingGlyphs = new WaidesKIHealingGlyphs();
+  waidesKISpiritualExhaustionMonitor = new WaidesKISpiritualExhaustionMonitor();
+  waidesKIDreamfirePurifier = new WaidesKIDreamfirePurifier(waidesKIMemorySigilVault);
+  waidesKIHealingPrayerEngine = new WaidesKIHealingPrayerEngine(
+    waidesKIDreamfirePurifier,
+    waidesKIHealingGlyphs,
+    waidesKIMemorySigilVault,
+    waidesKISpiritualExhaustionMonitor
+  );
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
