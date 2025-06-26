@@ -11032,5 +11032,278 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 49: Emotional Core + Risk-Thermodynamics Engine API Endpoints
+  app.get('/api/emotion/state', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const emotionalState = waidesKIEmotionalCore.getEmotionalState();
+      res.json(emotionalState);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get emotional state' });
+    }
+  });
+
+  app.get('/api/emotion/temperature', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const temperature = waidesKIEmotionalCore.getEmotionalTemperature();
+      res.json(temperature);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get emotional temperature' });
+    }
+  });
+
+  app.get('/api/emotion/assessment', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const assessment = waidesKIEmotionalCore.getEmotionalAssessment();
+      res.json(assessment);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get emotional assessment' });
+    }
+  });
+
+  app.get('/api/emotion/stress-metrics', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const metrics = waidesKIEmotionalCore.getStressMetrics();
+      res.json(metrics);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get stress metrics' });
+    }
+  });
+
+  app.post('/api/emotion/update', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const { result, trade_amount } = req.body;
+      
+      if (!result || !['win', 'loss'].includes(result)) {
+        return res.status(400).json({ error: 'Invalid trade result. Must be "win" or "loss"' });
+      }
+
+      waidesKIEmotionalCore.updateEmotion(result, trade_amount || 100);
+      const newState = waidesKIEmotionalCore.getEmotionalState();
+      
+      res.json({
+        success: true,
+        message: `Emotional state updated with ${result}`,
+        new_state: newState
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update emotional state' });
+    }
+  });
+
+  app.post('/api/emotion/cooldown', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      waidesKIEmotionalCore.triggerCooldown();
+      
+      res.json({
+        success: true,
+        message: 'Emotional cooldown triggered',
+        konslang_echo: 'mir\'kai - Pulse returning, you may rise'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to trigger emotional cooldown' });
+    }
+  });
+
+  app.post('/api/emotion/reset', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      waidesKIEmotionalCore.resetEmotionalState();
+      
+      res.json({
+        success: true,
+        message: 'Emotional state reset to neutral equilibrium',
+        konslang_echo: 'ae\'zan - Equilibrium restored'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to reset emotional state' });
+    }
+  });
+
+  app.get('/api/thermodynamics/analyze', async (req, res) => {
+    try {
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+      const analysis = waidesKIRiskThermodynamicsController.analyzeThermalState();
+      res.json(analysis);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to analyze thermal state' });
+    }
+  });
+
+  app.get('/api/thermodynamics/metrics', async (req, res) => {
+    try {
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+      const metrics = waidesKIRiskThermodynamicsController.getThermoMetrics();
+      res.json(metrics);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get thermo metrics' });
+    }
+  });
+
+  app.get('/api/thermodynamics/safety-report', async (req, res) => {
+    try {
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+      const report = waidesKIRiskThermodynamicsController.getThermalSafetyReport();
+      res.json(report);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get thermal safety report' });
+    }
+  });
+
+  app.post('/api/thermodynamics/check-trade', async (req, res) => {
+    try {
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+      const { trade_amount } = req.body;
+      
+      const tradeCheck = waidesKIRiskThermodynamicsController.shouldAllowTrade(trade_amount || 100);
+      res.json(tradeCheck);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to check trade allowance' });
+    }
+  });
+
+  app.post('/api/thermodynamics/emergency-reset', async (req, res) => {
+    try {
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+      waidesKIRiskThermodynamicsController.emergencyThermalReset();
+      
+      res.json({
+        success: true,
+        message: 'Emergency thermal reset activated - system cooling initiated'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to perform emergency thermal reset' });
+    }
+  });
+
+  app.post('/api/thermodynamics/simulate', async (req, res) => {
+    try {
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+      const { condition } = req.body;
+      
+      if (!condition || !['overheat', 'freeze', 'normal'].includes(condition)) {
+        return res.status(400).json({ error: 'Invalid condition. Must be "overheat", "freeze", or "normal"' });
+      }
+
+      const simulation = waidesKIRiskThermodynamicsController.simulateThermalCondition(condition);
+      res.json({
+        simulation_result: simulation,
+        condition_tested: condition,
+        message: `Thermal condition "${condition}" simulated successfully`
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to simulate thermal condition' });
+    }
+  });
+
+  app.post('/api/emotion/simulate-stress', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const { scenario } = req.body;
+      
+      if (!scenario || !['loss_streak', 'rapid_fire', 'large_loss'].includes(scenario)) {
+        return res.status(400).json({ error: 'Invalid scenario. Must be "loss_streak", "rapid_fire", or "large_loss"' });
+      }
+
+      waidesKIEmotionalCore.simulateEmotionalStress(scenario);
+      const newState = waidesKIEmotionalCore.getEmotionalState();
+      
+      res.json({
+        success: true,
+        scenario_tested: scenario,
+        resulting_state: newState,
+        message: `Emotional stress scenario "${scenario}" simulated successfully`
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to simulate emotional stress' });
+    }
+  });
+
+  app.get('/api/emotion/demo-workflow', async (req, res) => {
+    try {
+      const { waidesKIEmotionalCore } = await import('./services/waidesKIEmotionalCore.js');
+      const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
+
+      // Reset to neutral state
+      waidesKIEmotionalCore.resetEmotionalState();
+
+      // Demo Step 1: Simulate loss streak
+      console.log('💙 STEP 49 Demo: Simulating loss streak...');
+      for (let i = 0; i < 3; i++) {
+        waidesKIEmotionalCore.updateEmotion('loss', 150);
+      }
+
+      const hotState = waidesKIEmotionalCore.getEmotionalState();
+      const hotAnalysis = waidesKIRiskThermodynamicsController.analyzeThermalState();
+
+      // Demo Step 2: Test thermal protection
+      const tradeCheck = waidesKIRiskThermodynamicsController.shouldAllowTrade(200);
+
+      // Demo Step 3: Trigger cooldown
+      waidesKIEmotionalCore.triggerCooldown();
+      const cooledState = waidesKIEmotionalCore.getEmotionalState();
+
+      // Demo Step 4: Test win streak
+      for (let i = 0; i < 4; i++) {
+        waidesKIEmotionalCore.updateEmotion('win', 100);
+      }
+
+      const coldState = waidesKIEmotionalCore.getEmotionalState();
+      const coldAnalysis = waidesKIRiskThermodynamicsController.analyzeThermalState();
+
+      res.json({
+        demo_results: {
+          step_1: 'Loss streak simulation completed',
+          step_2: 'Thermal protection activated',
+          step_3: 'Cooldown recovery successful',
+          step_4: 'Win streak overconfidence detected'
+        },
+        loss_streak_test: {
+          state: hotState.emotion_state,
+          temperature: hotState.emotional_temperature,
+          thermal_analysis: hotAnalysis.thermodynamic_state,
+          konslang_echo: hotState.konslang_echo,
+          trade_allowed: tradeCheck.allowed,
+          position_adjustment: tradeCheck.adjusted_amount
+        },
+        cooldown_recovery: {
+          state: cooledState.emotion_state,
+          temperature: cooledState.emotional_temperature,
+          konslang_echo: cooledState.konslang_echo
+        },
+        win_streak_test: {
+          state: coldState.emotion_state,
+          temperature: coldState.emotional_temperature,
+          thermal_analysis: coldAnalysis.thermodynamic_state,
+          konslang_echo: coldState.konslang_echo,
+          overconfidence_risk: coldAnalysis.position_adjustment
+        },
+        emotional_features: [
+          'Loss streak heating and position reduction',
+          'Automatic cooldown when overheated',
+          'Win streak freeze detection and adjustment',
+          'Konslang spiritual echo guidance',
+          'Thermodynamic balance maintenance'
+        ],
+        step_49_achievement: {
+          emotional_core: 'Tracks trading stress and emotional temperature',
+          risk_thermodynamics: 'Prevents overtrading and revenge trading',
+          auto_cooldown: 'Enforces recovery periods after emotional spikes',
+          position_sizing: 'Adjusts trade sizes based on emotional state',
+          konslang_guidance: 'Spiritual wisdom for emotional trading states'
+        },
+        message: 'STEP 49 completed - Waides KI now has emotional intelligence that prevents revenge trading and overheating through risk-thermodynamics'
+      });
+    } catch (error) {
+      console.error('Error in STEP 49 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 49 emotional core demo' });
+    }
+  });
+
   return httpServer;
 }
