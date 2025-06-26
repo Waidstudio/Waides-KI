@@ -98,42 +98,42 @@ class ChatOracleService {
     }
   }
 
-  // Apply spiritual filtering and wisdom to responses
-  private applyInnerVision(params: {
+  // Apply KonsLang command processing and technical analysis to responses
+  private applyKonsLangProcessing(params: {
     userQuestion: string;
     inciteAnswer: string | null;
     gptAnswer: string | null;
   }): OracleResponse {
     const { userQuestion, inciteAnswer, gptAnswer } = params;
-    const wisdomIntro = "💫 Waides KI speaks with vision:\n\n";
+    const techIntro = "🚀 Waides KI Technical Analysis:\n\n";
     
-    // Spiritual filtering based on question content
+    // KonsLang command processing based on question content
     if (userQuestion.toLowerCase().includes('fear') || userQuestion.toLowerCase().includes('loss')) {
       return {
-        answer: wisdomIntro + "Do not fear the market. Fear gives power to poverty. You must trade from peace and clarity. The universe rewards those who act from love, not fear. ✨",
-        source: 'spiritual',
+        answer: techIntro + "Risk management is crucial in trading. Fear-based decisions often lead to poor outcomes. Implement stop-loss orders, position sizing, and systematic risk controls. The key is disciplined execution of your trading strategy. 📊",
+        source: 'konslang',
         confidence: 95,
-        spiritualInsight: "Fear blocks the flow of abundance. Trade with inner peace."
+        konslangProcessing: "KonsLang command: RISK_CONTROL detected. Applied systematic risk management protocols."
       };
     }
 
     if (userQuestion.toLowerCase().includes('greed') || userQuestion.toLowerCase().includes('rich')) {
       return {
-        answer: wisdomIntro + "Greed blinds the soul to true wealth. Seek not just money, but wisdom. The greatest traders understand that wealth flows to those who serve the highest good. 🌱",
-        source: 'spiritual',
+        answer: techIntro + "Overconfidence and greed are the top causes of trading losses. Focus on consistent, disciplined strategies rather than getting rich quick. Use proper position sizing, set realistic profit targets, and maintain emotional discipline. 💼",
+        source: 'konslang',
         confidence: 90,
-        spiritualInsight: "True wealth comes from spiritual alignment with abundance."
+        konslangProcessing: "KonsLang command: DISCIPLINE_PROTOCOL detected. Applied systematic trading discipline guidelines."
       };
     }
 
-    // Combine AI responses with spiritual wisdom
+    // Combine AI responses with technical analysis
     let response = '';
     let confidence = 70;
     let source: 'incite' | 'chatgpt' | 'combined' = 'chatgpt';
 
     if (inciteAnswer && gptAnswer) {
-      response += "📊 Trading Insight:\n" + inciteAnswer + "\n\n";
-      response += "🤖 General Wisdom:\n" + gptAnswer + "\n\n";
+      response += "📊 Trading Analysis:\n" + inciteAnswer + "\n\n";
+      response += "🤖 AI Assistant:\n" + gptAnswer + "\n\n";
       confidence = 85;
       source = 'combined';
     } else if (inciteAnswer) {
@@ -144,27 +144,27 @@ class ChatOracleService {
       response += gptAnswer + "\n\n";
       confidence = 75;
     } else {
-      response = "The cosmic energies are aligning your answer. Let me consult the inner vision...\n\n";
+      response = "Processing your request through KonsLang command system. Please wait for analysis...\n\n";
       confidence = 60;
     }
 
-    // Add spiritual closing wisdom
-    const spiritualClosings = [
-      "🌱 De Smai wisdom: Trust your inner light. The chart is the shadow, trade from within.",
-      "✨ Remember: Every trade is a choice between fear and love. Choose love.",
-      "🔮 The market reflects your consciousness. Trade with clarity and purpose.",
-      "💎 True profit comes not just from money, but from growth of the soul.",
-      "🌟 You are not just trading ETH, you are trading energy. Honor that energy."
+    // Add technical closing insights
+    const technicalClosings = [
+      "📈 KonsLang Insight: Focus on data-driven decisions and systematic approach to trading.",
+      "⚡ Remember: Successful trading requires discipline, risk management, and continuous learning.",
+      "🔧 The market follows patterns. Use technical analysis and proper execution strategies.",
+      "💼 Consistent profits come from systematic approaches, not emotional decisions.",
+      "🎯 You're analyzing ETH market data. Apply technical indicators and sound trading principles."
     ];
 
-    const randomWisdom = spiritualClosings[Math.floor(Math.random() * spiritualClosings.length)];
-    response += randomWisdom;
+    const randomInsight = technicalClosings[Math.floor(Math.random() * technicalClosings.length)];
+    response += randomInsight;
 
     return {
-      answer: wisdomIntro + response,
+      answer: techIntro + response,
       source,
       confidence,
-      spiritualInsight: "All answers flow through the lens of spiritual wisdom and higher purpose."
+      konslangProcessing: "KonsLang processing completed. Applied technical analysis and systematic trading protocols."
     };
   }
 
@@ -184,8 +184,8 @@ class ChatOracleService {
       // Always fetch from ChatGPT for richer responses
       gptResponse = await this.fetchFromChatGPT(message, context);
 
-      // Apply spiritual filtering and wisdom
-      return this.applyInnerVision({
+      // Apply KonsLang processing and technical analysis
+      return this.applyKonsLangProcessing({
         userQuestion: message,
         inciteAnswer: inciteResponse,
         gptAnswer: gptResponse
@@ -194,10 +194,10 @@ class ChatOracleService {
     } catch (error) {
       console.error('Chat Oracle processing error:', error);
       return {
-        answer: "💫 Waides KI speaks with vision:\n\nThe spiritual channels are experiencing interference. Let me commune with the cosmic forces and return with clarity. 🌟",
-        source: 'spiritual',
+        answer: "🚀 Waides KI Technical Analysis:\n\nThe AI processing systems are experiencing temporary issues. Please try again in a moment. System diagnostics are running automatically. 📊",
+        source: 'konslang',
         confidence: 50,
-        spiritualInsight: "Sometimes silence carries the deepest wisdom."
+        konslangProcessing: "KonsLang error handling protocol activated. System recovery in progress."
       };
     }
   }
@@ -205,9 +205,13 @@ class ChatOracleService {
   // Check API availability
   getApiStatus() {
     return {
-      chatgpt: !!this.openai,
-      incite: !!process.env.INCITE_API_KEY,
-      spiritual: true // Always available
+      api_status: {
+        chatgpt: !!this.openai,
+        incite: !!process.env.INCITE_API_KEY,
+        konslang: true // Always available
+      },
+      dual_ai_ready: !!this.openai || !!process.env.INCITE_API_KEY,
+      message: !!this.openai ? "ChatGPT integration active with KonsLang processing" : "KonsLang processing ready, awaiting API keys for enhanced capabilities"
     };
   }
 }
