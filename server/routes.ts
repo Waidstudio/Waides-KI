@@ -10837,7 +10837,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check immunity first (biological firewall)
-      const immune_check = waidesKIImmuneTradeFilter.immuneCheck({ indicators });
+      const immune_check = waidesKIImmuneTradeFilter.immuneCheck({ 
+        indicators, 
+        market_conditions: { volatility: 'normal', trend: 'neutral' } 
+      });
       
       if (immune_check.action === 'BLOCKED') {
         return res.json({
@@ -10854,23 +10857,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // If immunity cleared, proceed with Trinity Brain analysis
       let trinity_decision;
       try {
-        trinity_decision = await waidesKIBrainHiveController.makeDecision(indicators, {}, {});
+        trinity_decision = await waidesKIBrainHiveController.makeDecision(indicators, {});
       } catch (brainError) {
         console.log('Trinity brain system not ready, using fallback decision');
         trinity_decision = {
-          final_decision: 'HOLD',
+          decision: 'HOLD',
           confidence: 50,
           reasoning: 'Trinity brain system initializing'
         };
       }
 
       res.json({
-        trinity_decision: trinity_decision.final_decision,
+        trinity_decision: trinity_decision.decision || 'HOLD',
         immunity_override: false,
         immune_check,
         brain_voting: trinity_decision,
-        final_action: trinity_decision.final_decision,
-        confidence: trinity_decision.confidence,
+        final_action: trinity_decision.decision || 'HOLD',
+        confidence: trinity_decision.confidence || 50,
         system_integration: 'WAIS immunity + Trinity Brain Model working together',
         protection_layers: [
           'WAIS Pattern Antibody System',
@@ -10912,11 +10915,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // 2. Test immunity on harmful pattern
       const harmful_immunity = waidesKIImmunityCore.checkImmunity(harmful_indicators);
-      const harmful_filter = waidesKIImmuneTradeFilter.immuneCheck({ indicators: harmful_indicators });
+      const harmful_filter = waidesKIImmuneTradeFilter.immuneCheck({ 
+        indicators: harmful_indicators, 
+        market_conditions: { volatility: 'high', trend: 'bearish' } 
+      });
 
       // 3. Test immunity on safe pattern
       const safe_immunity = waidesKIImmunityCore.checkImmunity(safe_indicators);
-      const safe_filter = waidesKIImmuneTradeFilter.immuneCheck({ indicators: safe_indicators });
+      const safe_filter = waidesKIImmuneTradeFilter.immuneCheck({ 
+        indicators: safe_indicators, 
+        market_conditions: { volatility: 'normal', trend: 'bullish' } 
+      });
 
       // 4. Get system statistics
       const stats = waidesKIImmunityCore.getImmunityStats();

@@ -19,7 +19,7 @@ interface PatternAntibody {
   notes: string[];
 }
 
-interface ImmuneResponse {
+export interface ImmuneResponse {
   is_immune: boolean;
   antibody?: PatternAntibody;
   immune_strength: number;
@@ -308,6 +308,7 @@ export class WaidesKIImmunityCore {
   }
 
   private calculateRecencyFactor(last_loss_date: Date): number {
+    if (!last_loss_date) return 0.5; // Default factor if no date
     const days_ago = (Date.now() - last_loss_date.getTime()) / (1000 * 60 * 60 * 24);
     return Math.max(0, 10 - days_ago);
   }
