@@ -56,6 +56,7 @@ function Router() {
     { path: "/risk-backtesting", label: "Risk Backtesting" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
+    { path: "/config", label: "Configuration" },
     { path: "/api-docs", label: "API Docs" },
   ];
 
@@ -126,6 +127,7 @@ function Router() {
           <Route path="/full-engine" component={WaidesFullEngine} />
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/admin" component={AdminPage} />
+          <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />
           <Route component={NotFound} />
         </Switch>

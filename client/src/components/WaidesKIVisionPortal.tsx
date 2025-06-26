@@ -44,6 +44,7 @@ export default function WaidesKIVisionPortal() {
   const [activeTab, setActiveTab] = useState('chat');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [autoVoiceActivation, setAutoVoiceActivation] = useState(false);
   const [spiritualEnergy, setSpiritualEnergy] = useState(75);
   const [consciousnessLevel, setConsciousnessLevel] = useState(3);
   const [auraIntensity, setAuraIntensity] = useState(50);
@@ -68,17 +69,64 @@ export default function WaidesKIVisionPortal() {
   // Chat message mutation
   const chatMutation = useMutation({
     mutationFn: async (data: { message: string; personality: string }) => {
-      const response = await fetch('/api/waides-chat', {
+      const response = await fetch('/api/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          message: data.message,
+          personality: data.personality,
+          spiritualEnergy,
+          consciousnessLevel,
+          auraIntensity,
+          prophecyMode
+        })
       });
       return response.json();
     },
-    onSuccess: (data) => {
-      if (data.response) {
-        typeWaidesResponse(data.response);
+    onSuccess: async (data) => {
+      if (data.success && data.response) {
+        // Apply energy shift
+        if (data.energyShift) {
+          setSpiritualEnergy(prev => Math.max(0, Math.min(100, prev + data.energyShift)));
+        }
+        
+        // Type the AI response
+        await typeWaidesResponse(data.response);
+        
+        // Add spiritual insight if present
+        if (data.spiritualInsight) {
+          setTimeout(() => {
+            const insightMessage: ChatMessage = {
+              id: (Date.now() + 1).toString(),
+              sender: 'waides',
+              message: `✨ Spiritual Insight: ${data.spiritualInsight}`,
+              timestamp: new Date(),
+              personality
+            };
+            setMessages(prev => [...prev, insightMessage]);
+          }, 2000);
+        }
+        
+        // Add prophecy if present
+        if (data.prophecy) {
+          setTimeout(() => {
+            const prophecyMessage: ChatMessage = {
+              id: (Date.now() + 2).toString(),
+              sender: 'waides',
+              message: `🔮 Prophecy: ${data.prophecy}`,
+              timestamp: new Date(),
+              personality
+            };
+            setMessages(prev => [...prev, prophecyMessage]);
+          }, 4000);
+        }
+      } else {
+        // Fallback response
+        await typeWaidesResponse(data.fallback || "The cosmic energies are temporarily disrupted. Please try again in a moment.");
       }
+    },
+    onError: () => {
+      typeWaidesResponse("The spiritual channels are experiencing interference. Let me commune with the cosmic forces...");
     }
   });
 
@@ -144,9 +192,32 @@ export default function WaidesKIVisionPortal() {
   };
 
   const startVoiceInput = () => {
-    if (recognitionRef.current && !isListening) {
+    if (recognitionRef.current && !isListening && voiceEnabled) {
       setIsListening(true);
+      setAvatarGlow(true);
       recognitionRef.current.start();
+      
+      // Play sound feedback if enabled
+      if (soundEnabled) {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1O'); // Short beep
+        audio.volume = 0.3;
+        audio.play().catch(() => {}); // Ignore errors
+      }
+    }
+  };
+
+  const stopVoiceInput = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      setAvatarGlow(false);
+    }
+  };
+
+  const toggleVoiceActivation = () => {
+    setVoiceEnabled(!voiceEnabled);
+    if (isListening) {
+      stopVoiceInput();
     }
   };
 
