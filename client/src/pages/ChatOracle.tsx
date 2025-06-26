@@ -10,8 +10,8 @@ export default function ChatOracle() {
             Waides KI Chat Oracle
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Experience the fusion of Incite AI, ChatGPT, and De Smai's spiritual wisdom. 
-            Ask anything about trading, life, or the deeper mysteries of the market.
+            Advanced AI system combining Incite AI, ChatGPT, and KonsLang processing. 
+            Ask anything about trading, market analysis, or technical strategies.
           </p>
         </div>
 

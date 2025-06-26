@@ -7,9 +7,9 @@ export interface ChatMessage {
 
 export interface OracleResponse {
   answer: string;
-  source: 'incite' | 'chatgpt' | 'spiritual' | 'combined';
+  source: 'incite' | 'chatgpt' | 'konslang' | 'combined';
   confidence: number;
-  spiritualInsight?: string;
+  konslangProcessing?: string;
 }
 
 class ChatOracleService {

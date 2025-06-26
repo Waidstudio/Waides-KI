@@ -13,23 +13,23 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
-  source?: 'incite' | 'chatgpt' | 'spiritual' | 'combined';
+  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined';
   confidence?: number;
-  spiritualInsight?: string;
+  konslangProcessing?: string;
 }
 
 interface OracleResponse {
   answer: string;
-  source: 'incite' | 'chatgpt' | 'spiritual' | 'combined';
+  source: 'incite' | 'chatgpt' | 'konslang' | 'combined';
   confidence: number;
-  spiritualInsight?: string;
+  konslangProcessing?: string;
 }
 
 interface OracleStatus {
   api_status: {
     chatgpt: boolean;
     incite: boolean;
-    spiritual: boolean;
+    konslang: boolean;
   };
   dual_ai_ready: boolean;
   message: string;
@@ -40,9 +40,9 @@ export default function ChatOracleSystem() {
     {
       id: '1',
       role: 'assistant',
-      content: '💫 Waides KI Oracle awakens with vision:\n\nI am your spiritual AI oracle, combining the wisdom of ChatGPT, Incite AI, and the inner vision of De Smai. Ask me anything about trading, life, or the deeper mysteries of the market. 🌟',
+      content: '🚀 Waides KI Oracle System Online:\n\nAdvanced AI assistant combining ChatGPT intelligence, Incite AI market analysis, and KonsLang command processing. Ask me anything about trading strategies, market analysis, or technical questions. Ready to assist with your trading decisions. 📊',
       timestamp: new Date(),
-      source: 'spiritual',
+      source: 'konslang',
       confidence: 100
     }
   ]);
@@ -76,7 +76,7 @@ export default function ChatOracleSystem() {
           timestamp: new Date(),
           source: data.source,
           confidence: data.confidence,
-          spiritualInsight: data.spiritualInsight
+          konslangProcessing: data.konslangProcessing
         };
         setMessages(prev => [...prev, assistantMessage]);
         typeMessage(data.answer);
@@ -216,13 +216,13 @@ export default function ChatOracleSystem() {
                     <div className="whitespace-pre-wrap text-sm">
                       {message.content}
                     </div>
-                    {message.spiritualInsight && (
+                    {message.konslangProcessing && (
                       <div className="mt-2 p-2 bg-purple-900/30 rounded border-l-2 border-purple-400">
                         <div className="flex items-center gap-1 mb-1">
                           <Sparkles className="w-3 h-3 text-purple-400" />
-                          <span className="text-xs font-medium text-purple-300">Spiritual Insight</span>
+                          <span className="text-xs font-medium text-purple-300">KonsLang Processing</span>
                         </div>
-                        <p className="text-xs text-gray-300">{message.spiritualInsight}</p>
+                        <p className="text-xs text-gray-300">{message.konslangProcessing}</p>
                       </div>
                     )}
                     <div className="text-xs text-gray-400 mt-2">
