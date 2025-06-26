@@ -13,6 +13,17 @@ let dynamicMemory = {};
 
 // Command Router Module - detects when user wants to open tools
 export function detectCommandTrigger(q, setBotState) {
+  // Check for wallet navigation commands first (priority)
+  if (q.includes("take me to") && q.includes("wallet") || 
+      q.includes("open wallet") || 
+      q.includes("smaiwallet") || 
+      q.includes("go to wallet") || 
+      q.includes("show wallet") ||
+      q.includes("wallet page")) {
+    setBotState({ action: "wallet" });
+    return "🔐 Opening your SmaiWallet...";
+  }
+
   // First check if this is a question about trading (not a command)
   const questionWords = ["what", "how", "why", "when", "where", "can", "should", "will", "would", "is", "are", "do", "does", "tell me", "explain", "help me"];
   const isQuestion = questionWords.some(word => q.toLowerCase().includes(word));
@@ -20,11 +31,6 @@ export function detectCommandTrigger(q, setBotState) {
   // If it's a question, don't trigger any commands
   if (isQuestion) {
     return null;
-  }
-
-  if (q.includes("open wallet") || q.includes("smaiwallet")) {
-    setBotState({ action: "wallet" });
-    return "🔐 Opening your SmaiWallet...";
   }
 
   // Very specific commands only - user must explicitly request activation

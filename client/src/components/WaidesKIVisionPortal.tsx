@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings, MessageCircle } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
-import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine';
+import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine.js';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 
 interface ChatMessage {
@@ -201,6 +201,13 @@ export default function WaidesKIVisionPortal() {
   // Command execution mutation
   const commandMutation = useMutation({
     mutationFn: async (command: string) => {
+      // Check if this is a local command first (wallet navigation)
+      const commandResponse = detectCommandTrigger(command.toLowerCase(), setBotState);
+      if (commandResponse) {
+        return { message: commandResponse, success: true, local: true };
+      }
+      
+      // Otherwise, send to server
       const response = await fetch('/api/commands/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -219,8 +226,15 @@ export default function WaidesKIVisionPortal() {
             typeMessage("Navigate to WaidBot interface? Type 'yes' to proceed or continue chatting here.", 'waidbot_summon', 100);
           }, 2000);
         }
+      } else {
+        typeMessage('Command processed', 'waidbot_summon', 75);
       }
     },
+    onError: (error) => {
+      console.error('Command error:', error);
+      typeMessage('Failed to execute command', 'error', 0);
+      setIsProcessing(false);
+    }
   });
 
   // Voice command processing mutation
