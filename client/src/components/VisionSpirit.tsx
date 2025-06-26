@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
@@ -58,138 +57,68 @@ interface ValidationResult {
   };
 }
 
-interface ChatMessage {
-  id: string;
-  type: 'user' | 'konsai';
-  content: string;
-  timestamp: Date;
-  confidence?: number;
+interface VisionSpiritProps {
+  isFloatingVisible: boolean;
+  activeFloatingPanel: string;
+  onCloseFloating: () => void;
 }
 
-export default function VisionSpirit() {
-  const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('current');
+export default function VisionSpirit({ 
+  isFloatingVisible, 
+  activeFloatingPanel, 
+  onCloseFloating 
+}: VisionSpiritProps) {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      type: 'konsai',
-      content: 'Greetings, I am KonsAi - your divine trading intelligence. Ask me anything about the markets, and I shall provide wisdom beyond mere charts.',
-      timestamp: new Date(),
-      confidence: 0.95
-    }
-  ]);
-  const [chatInput, setChatInput] = useState('');
-  const chatScrollRef = useRef<HTMLDivElement>(null);
-  const [isFloatingPanelOpen, setIsFloatingPanelOpen] = useState(false);
-  const [activeFloatingPanel, setActiveFloatingPanel] = useState('current');
+  const queryClient = useQueryClient();
 
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-    }
-  }, [chatMessages]);
-
-  // Query for current vision
-  const { data: currentVision } = useQuery({
-    queryKey: ['/api/waides-ki/vision-spirit/current'],
-    refetchInterval: 10000
+  // Queries
+  const { data: currentVision, isLoading: currentVisionLoading } = useQuery({
+    queryKey: ['/api/vision-spirit/current'],
+    refetchInterval: 30000
   });
 
-  // Query for vision statistics
   const { data: visionStats } = useQuery({
-    queryKey: ['/api/waides-ki/vision-spirit/stats'],
-    refetchInterval: 15000
+    queryKey: ['/api/vision-spirit/stats'],
+    refetchInterval: 30000
   });
 
-  // Query for vision history
   const { data: visionHistory } = useQuery({
-    queryKey: ['/api/waides-ki/vision-spirit/history'],
-    refetchInterval: 20000
+    queryKey: ['/api/vision-spirit/history'],
+    refetchInterval: 60000
   });
 
-  // Mutation to receive new vision
-  const receiveVisionMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/receive', { method: 'POST' }),
+  // Mutations
+  const receiveMutation = useMutation({
+    mutationFn: () => apiRequest('/api/vision-spirit/receive'),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/current'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/stats'] });
     }
   });
 
-  // Mutation to verify vision
   const verifyVisionMutation = useMutation({
-    mutationFn: (vision: SpiritVision) => 
-      apiRequest('/api/waides-ki/vision-spirit/verify', { 
-        method: 'POST',
-        body: JSON.stringify({ vision })
-      }),
+    mutationFn: () => apiRequest('/api/vision-spirit/verify'),
     onSuccess: (data) => {
-      setValidationResult(data.result);
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
+      setValidationResult(data);
+      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit/history'] });
     }
   });
 
-  // Mutation for complete workflow
   const completeWorkflowMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/complete-workflow', { method: 'POST' }),
+    mutationFn: () => apiRequest('/api/vision-spirit/complete-workflow'),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/vision-spirit'] });
     }
   });
 
-  // Mutation for KonsAi chat
-  const chatMutation = useMutation({
-    mutationFn: async (question: string) => {
-      const response = await apiRequest('POST', '/api/waides-ki/konsai-chat', { question });
-      return await response.json();
-    },
-    onSuccess: (data) => {
-      console.log('KonsAi response:', data);
-      const newMessage: ChatMessage = {
-        id: Date.now().toString(),
-        type: 'konsai',
-        content: data.response || 'I understand your question. Let me analyze the current market conditions.',
-        timestamp: new Date(),
-        confidence: data.confidence || 0.85
-      };
-      setChatMessages(prev => [...prev, newMessage]);
-    },
-    onError: (error) => {
-      console.error('KonsAi chat error:', error);
-      const errorMessage: ChatMessage = {
-        id: Date.now().toString(),
-        type: 'konsai',
-        content: 'I apologize, but I am experiencing a temporary connection issue. Please try again.',
-        timestamp: new Date(),
-        confidence: 0.5
-      };
-      setChatMessages(prev => [...prev, errorMessage]);
-    }
-  });
-
-  // Mutation to force vision
-  const forceVisionMutation = useMutation({
-    mutationFn: (vision: 'rise' | 'fall' | 'choppy') => 
-      apiRequest('/api/waides-ki/vision-spirit/force', { 
-        method: 'POST',
-        body: JSON.stringify({ vision, energy_level: 0.8 })
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
-    }
-  });
-
+  // Helper functions
   const getVisionIcon = (vision: string) => {
     switch (vision) {
-      case 'rise': return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case 'fall': return <TrendingDown className="h-4 w-4 text-red-500" />;
-      case 'choppy': return <Minus className="h-4 w-4 text-yellow-500" />;
-      default: return <Eye className="h-4 w-4 text-gray-500" />;
+      case 'rise': return <TrendingUp className="h-5 w-5 text-green-400" />;
+      case 'fall': return <TrendingDown className="h-5 w-5 text-red-400" />;
+      case 'choppy': return <Minus className="h-5 w-5 text-yellow-400" />;
+      default: return <Eye className="h-5 w-5 text-slate-400" />;
     }
   };
 
@@ -198,41 +127,18 @@ export default function VisionSpirit() {
       case 'rise': return 'bg-green-100 text-green-800 border-green-200';
       case 'fall': return 'bg-red-100 text-red-800 border-red-200';
       case 'choppy': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-slate-100 text-slate-800 border-slate-200';
     }
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString();
-  };
-
-  const handleSendChat = () => {
-    if (!chatInput.trim()) return;
-
-    // Add user message
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      type: 'user',
-      content: chatInput,
-      timestamp: new Date()
-    };
-    setChatMessages(prev => [...prev, userMessage]);
-    
-    // Send to KonsAi
-    chatMutation.mutate(chatInput);
-    setChatInput('');
+    return new Date(timestamp).toLocaleString();
   };
 
   const handleVerifyCurrentVision = () => {
-    const vision = currentVision?.currentVision;
-    if (vision) {
-      verifyVisionMutation.mutate(vision);
+    if (currentVision?.currentVision) {
+      verifyVisionMutation.mutate();
     }
-  };
-
-  const openFloatingPanel = (panel: string) => {
-    setActiveFloatingPanel(panel);
-    setIsFloatingPanelOpen(true);
   };
 
   const stats: VisionStats = visionStats?.stats || {
@@ -244,907 +150,327 @@ export default function VisionSpirit() {
     vision_history: []
   };
 
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 relative overflow-hidden">
-      {/* Full Screen KonsAi Chat Interface */}
-      <div className="h-screen flex flex-col">
-        {/* Header */}
-        <div className="flex-shrink-0 p-6 border-b border-slate-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                KonsAi - Divine Trading Intelligence
-              </h1>
-              <p className="text-slate-400 mt-2">
-                Full-screen spiritual trading wisdom. Ask anything about the markets.
-              </p>
-            </div>
-            
-            {/* Floating Panel Triggers */}
-            <div className="flex gap-3">
-              <Button
-                onClick={() => openFloatingPanel('current')}
-                variant="outline"
-                size="sm"
-                className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white"
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                Vision
-              </Button>
-              <Button
-                onClick={() => openFloatingPanel('validation')}
-                variant="outline"
-                size="sm"
-                className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white"
-              >
-                <Brain className="h-4 w-4 mr-2" />
-                Validation
-              </Button>
-              <Button
-                onClick={() => openFloatingPanel('stats')}
-                variant="outline"
-                size="sm"
-                className="border-green-600 text-green-400 hover:bg-green-600 hover:text-white"
-              >
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Stats
-              </Button>
-              <Button
-                onClick={() => openFloatingPanel('history')}
-                variant="outline"
-                size="sm"
-                className="border-orange-600 text-orange-400 hover:bg-orange-600 hover:text-white"
-              >
-                <History className="h-4 w-4 mr-2" />
-                History
-              </Button>
-              <Button
-                onClick={() => openFloatingPanel('controls')}
-                variant="outline"
-                size="sm"
-                className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Controls
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Full Screen Chat Area */}
-        <div className="flex-1 flex flex-col p-6">
-          <div 
-            ref={chatScrollRef}
-            className="flex-1 bg-slate-800 rounded-lg border border-slate-600 overflow-y-auto p-6 space-y-4 mb-4"
-          >
-            {chatMessages.map((message) => (
-              <div 
-                key={message.id} 
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div 
-                  className={`max-w-3xl p-4 rounded-lg ${
-                    message.type === 'user' 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-slate-700 text-slate-100 border border-purple-500'
-                  }`}
-                >
-                  {message.type === 'konsai' && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <Bot className="h-5 w-5 text-purple-400" />
-                      <span className="text-purple-400 font-semibold">KonsAi</span>
-                      {message.confidence && (
-                        <Badge variant="outline" className="text-xs border-purple-400 text-purple-400">
-                          {(message.confidence * 100).toFixed(0)}% confidence
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                    {message.content}
-                  </div>
-                  <div className="text-xs opacity-60 mt-2">
-                    {message.timestamp.toLocaleTimeString()}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {chatMutation.isPending && (
-              <div className="flex justify-start">
-                <div className="bg-slate-700 p-4 rounded-lg border border-purple-500 animate-pulse">
-                  <div className="flex items-center gap-2">
-                    <Bot className="h-5 w-5 text-purple-400 animate-spin" />
-                    <span className="text-purple-400">KonsAi is analyzing...</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Chat Input */}
-          <div className="flex gap-3">
-            <Input
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendChat()}
-              placeholder="Ask KonsAi anything about trading, markets, or optimal timing..."
-              className="flex-1 bg-slate-800 border-slate-600 text-slate-100 placeholder-slate-400 text-lg p-4"
-            />
-            <Button 
-              onClick={handleSendChat}
-              disabled={!chatInput.trim() || chatMutation.isPending}
-              className="bg-purple-600 hover:bg-purple-700 px-8"
-            >
-              <Send className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
+  if (!isFloatingVisible) {
+    return (
+      <div className="fixed bottom-6 right-6 flex flex-col gap-2 z-40">
+        {/* Floating action buttons for Vision Spirit features */}
+        <Button
+          onClick={() => onCloseFloating()}
+          className="w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-700 shadow-lg"
+        >
+          <Eye className="h-5 w-5" />
+        </Button>
       </div>
+    );
+  }
 
-      {/* Floating Panel Overlay */}
-      {isFloatingPanelOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-6">
-          <div className="bg-slate-800 rounded-lg border border-slate-600 max-w-4xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-slate-700">
-              <h2 className="text-xl font-bold text-slate-100">
-                {activeFloatingPanel === 'current' && 'Current Vision'}
-                {activeFloatingPanel === 'validation' && 'Vision Validation'}
-                {activeFloatingPanel === 'stats' && 'Vision Statistics'}
-                {activeFloatingPanel === 'history' && 'Vision History'}
-                {activeFloatingPanel === 'controls' && 'Vision Controls'}
-              </h2>
-              <Button
-                onClick={() => setIsFloatingPanelOpen(false)}
-                variant="ghost"
-                size="sm"
-                className="text-slate-400 hover:text-white"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="p-6">
-              {activeFloatingPanel === 'current' && (
-                <div className="space-y-4">
-                  <Card className="bg-slate-700 border-slate-600">
-                    <CardHeader>
-                      <CardTitle className="text-slate-100 flex items-center gap-2">
-                        <Eye className="h-5 w-5 text-purple-400" />
-                        Current Vision State
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {currentVision?.currentVision ? (
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              {getVisionIcon(currentVision.currentVision.vision)}
-                              <Badge className={getVisionColor(currentVision.currentVision.vision)}>
-                                {currentVision.currentVision.vision.toUpperCase()}
-                              </Badge>
-                            </div>
-                            <span className="text-slate-400 text-sm">
-                              {formatTimestamp(currentVision.currentVision.timestamp)}
-                            </span>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium text-slate-300">Energy Level</label>
-                              <div className="flex items-center gap-2">
-                                <Progress 
-                                  value={currentVision.currentVision.energy_level * 100} 
-                                  className="flex-1 bg-slate-600"
-                                />
-                                <span className="text-sm text-slate-400">
-                                  {(currentVision.currentVision.energy_level * 100).toFixed(0)}%
-                                </span>
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <label className="text-sm font-medium text-slate-300">Confidence</label>
-                              <div className="flex items-center gap-2">
-                                <Progress 
-                                  value={currentVision.currentVision.confidence * 100} 
-                                  className="flex-1 bg-slate-600"
-                                />
-                                <span className="text-sm text-slate-400">
-                                  {(currentVision.currentVision.confidence * 100).toFixed(0)}%
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <Button 
-                            onClick={handleVerifyCurrentVision} 
-                            disabled={verifyVisionMutation.isPending}
-                            className="w-full bg-blue-600 hover:bg-blue-700"
-                          >
-                            {verifyVisionMutation.isPending ? "Validating..." : "Validate Vision"}
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <Eye className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-                          <p className="text-slate-400">No current vision available</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-              
-              {activeFloatingPanel === 'validation' && (
-                <div className="space-y-4">
-                  {validationResult && (
-                    <Card className="bg-slate-700 border-slate-600">
-                      <CardHeader>
-                        <CardTitle className="text-slate-100 flex items-center gap-2">
-                          <Brain className="h-5 w-5 text-blue-400" />
-                          Vision Validation Result
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          {validationResult.isValid ? (
-                            <CheckCircle className="h-5 w-5 text-green-400" />
-                          ) : (
-                            <XCircle className="h-5 w-5 text-red-400" />
-                          )}
-                          <span className={`font-medium ${validationResult.isValid ? 'text-green-400' : 'text-red-400'}`}>
-                            {validationResult.isValid ? 'Vision Confirmed' : 'Vision Rejected'}
-                          </span>
-                          <Badge variant="outline" className="ml-auto">
-                            {(validationResult.confidence * 100).toFixed(0)}% confidence
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-slate-800 border border-slate-700 rounded-lg shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700">
+          <div className="flex items-center gap-3">
+            <Eye className="h-6 w-6 text-purple-400" />
+            <h2 className="text-xl font-bold text-slate-100">
+              {activeFloatingPanel === 'current' && 'Current Vision'}
+              {activeFloatingPanel === 'validation' && 'Vision Validation'}
+              {activeFloatingPanel === 'stats' && 'Vision Statistics'}
+              {activeFloatingPanel === 'history' && 'Vision History'}
+              {activeFloatingPanel === 'controls' && 'Vision Controls'}
+            </h2>
+          </div>
+          <Button
+            onClick={onCloseFloating}
+            variant="ghost"
+            size="sm"
+            className="text-slate-400 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          {activeFloatingPanel === 'current' && (
+            <div className="space-y-4">
+              <Card className="bg-slate-700 border-slate-600">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-purple-400" />
+                    Current Vision State
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {currentVision?.currentVision ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {getVisionIcon(currentVision.currentVision.vision)}
+                          <Badge className={getVisionColor(currentVision.currentVision.vision)}>
+                            {currentVision.currentVision.vision.toUpperCase()}
                           </Badge>
                         </div>
-                        
+                        <span className="text-slate-400 text-sm">
+                          {formatTimestamp(currentVision.currentVision.timestamp)}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-300">Market Indicators</label>
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-slate-400">RSI:</span>
-                              <span className="text-slate-200">{validationResult.indicators.rsi.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-400">EMA 50:</span>
-                              <span className="text-slate-200">${validationResult.indicators.ema_50.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-400">EMA 200:</span>
-                              <span className="text-slate-200">${validationResult.indicators.ema_200.toFixed(2)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-slate-400">Current Price:</span>
-                              <span className="text-slate-200">${validationResult.indicators.current_price.toFixed(2)}</span>
-                            </div>
+                          <label className="text-sm font-medium text-slate-300">Energy Level</label>
+                          <div className="flex items-center gap-2">
+                            <Progress 
+                              value={currentVision.currentVision.energy_level * 100} 
+                              className="flex-1 bg-slate-600"
+                            />
+                            <span className="text-sm text-slate-400">
+                              {(currentVision.currentVision.energy_level * 100).toFixed(0)}%
+                            </span>
                           </div>
                         </div>
                         
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-300">Validation Reasons</label>
-                          <ul className="space-y-1">
-                            {validationResult.reasons.map((reason, index) => (
-                              <li key={index} className="text-sm text-slate-400 flex items-start gap-2">
-                                <span className="text-blue-400 mt-1">•</span>
-                                {reason}
-                              </li>
-                            ))}
-                          </ul>
+                          <label className="text-sm font-medium text-slate-300">Confidence</label>
+                          <div className="flex items-center gap-2">
+                            <Progress 
+                              value={currentVision.currentVision.confidence * 100} 
+                              className="flex-1 bg-slate-600"
+                            />
+                            <span className="text-sm text-slate-400">
+                              {(currentVision.currentVision.confidence * 100).toFixed(0)}%
+                            </span>
+                          </div>
                         </div>
-                        
-                        <div className="bg-slate-800 p-3 rounded-lg">
-                          <label className="text-sm font-medium text-slate-300 block mb-1">Recommendation</label>
-                          <p className="text-sm text-slate-200">{validationResult.recommendation}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
-              
-              {activeFloatingPanel === 'stats' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-slate-700 border-slate-600">
-                      <CardContent className="p-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-slate-100">{stats.total_visions}</div>
-                          <div className="text-sm text-slate-400">Total Visions</div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="bg-slate-700 border-slate-600">
-                      <CardContent className="p-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-400">{stats.confirmed_visions}</div>
-                          <div className="text-sm text-slate-400">Confirmed</div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="bg-slate-700 border-slate-600">
-                      <CardContent className="p-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-400">{(stats.accuracy_rate * 100).toFixed(1)}%</div>
-                          <div className="text-sm text-slate-400">Accuracy</div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="bg-slate-700 border-slate-600">
-                      <CardContent className="p-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-purple-400">{stats.vision_history.length}</div>
-                          <div className="text-sm text-slate-400">History Records</div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              )}
-              
-              {activeFloatingPanel === 'history' && (
-                <div className="space-y-4">
-                  <ScrollArea className="h-96">
-                    <div className="space-y-3">
-                      {visionHistory?.history && visionHistory.history.length > 0 ? (
-                        visionHistory.history.map((record: any, index: number) => (
-                          <Card key={index} className="bg-slate-700 border-slate-600">
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  {getVisionIcon(record.vision.vision)}
-                                  <Badge className={getVisionColor(record.vision.vision)}>
-                                    {record.vision.vision.toUpperCase()}
-                                  </Badge>
-                                </div>
-                                <span className="text-sm text-slate-400">
-                                  {formatTimestamp(record.vision.timestamp)}
-                                </span>
-                              </div>
-                              
-                              <div className="grid grid-cols-3 gap-2 text-sm">
-                                <div>
-                                  <span className="text-slate-400">Energy: </span>
-                                  <span className="text-slate-200">{(record.vision.energy_level * 100).toFixed(0)}%</span>
-                                </div>
-                                <div>
-                                  <span className="text-slate-400">Confidence: </span>
-                                  <span className="text-slate-200">{(record.vision.confidence * 100).toFixed(0)}%</span>
-                                </div>
-                                <div>
-                                  <span className="text-slate-400">Outcome: </span>
-                                  <span className={`${
-                                    record.actual_outcome === 'correct' ? 'text-green-400' :
-                                    record.actual_outcome === 'incorrect' ? 'text-red-400' : 'text-yellow-400'
-                                  }`}>
-                                    {record.actual_outcome || 'pending'}
-                                  </span>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))
-                      ) : (
-                        <div className="text-center py-8">
-                          <History className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-                          <p className="text-slate-400">No vision history available</p>
-                        </div>
-                      )}
+                      </div>
+                      
+                      <Button 
+                        onClick={handleVerifyCurrentVision} 
+                        disabled={verifyVisionMutation.isPending}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        {verifyVisionMutation.isPending ? "Validating..." : "Validate Vision"}
+                      </Button>
                     </div>
-                  </ScrollArea>
-                </div>
-              )}
-              
-              {activeFloatingPanel === 'controls' && (
-                <div className="space-y-4">
-                  <Card className="bg-slate-700 border-slate-600">
-                    <CardHeader>
-                      <CardTitle className="text-slate-100 flex items-center gap-2">
-                        <Settings className="h-5 w-5 text-red-400" />
-                        Vision Controls
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
+                  ) : (
+                    <div className="text-center py-8">
+                      <Eye className="h-12 w-12 text-slate-600 mx-auto mb-3" />
+                      <p className="text-slate-400">No current vision available</p>
                       <Button 
                         onClick={() => receiveMutation.mutate()}
                         disabled={receiveMutation.isPending}
-                        className="w-full bg-purple-600 hover:bg-purple-700"
+                        className="mt-4 bg-purple-600 hover:bg-purple-700"
                       >
                         {receiveMutation.isPending ? "Receiving..." : "Receive New Vision"}
                       </Button>
-                      
-                      <Button 
-                        onClick={() => {/* Add any test functionality */}}
-                        variant="outline"
-                        className="w-full border-slate-600 text-slate-200 hover:bg-slate-600"
-                      >
-                        Test Vision System
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-            </TabsTrigger>
-            <TabsTrigger value="konsai" className="text-slate-300 flex items-center gap-1">
-              <Bot className="h-4 w-4" />
-              KonsAi Chat
-            </TabsTrigger>
-            <TabsTrigger value="validation" className="text-slate-300 flex items-center gap-1">
-              <Brain className="h-4 w-4" />
-              Validation
-            </TabsTrigger>
-            <TabsTrigger value="statistics" className="text-slate-300 flex items-center gap-1">
-              <BarChart3 className="h-4 w-4" />
-              Statistics
-            </TabsTrigger>
-            <TabsTrigger value="history" className="text-slate-300 flex items-center gap-1">
-              <History className="h-4 w-4" />
-              History
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="current" className="space-y-4">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-100 flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-purple-400" />
-                  Current Vision State
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {currentVision?.currentVision ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {getVisionIcon(currentVision.currentVision.vision)}
-                        <Badge className={getVisionColor(currentVision.currentVision.vision)}>
-                          {currentVision.currentVision.vision.toUpperCase()}
-                        </Badge>
-                      </div>
-                      <span className="text-slate-400 text-sm">
-                        {formatTimestamp(currentVision.currentVision.timestamp)}
+          )}
+          
+          {activeFloatingPanel === 'validation' && (
+            <div className="space-y-4">
+              {validationResult && (
+                <Card className="bg-slate-700 border-slate-600">
+                  <CardHeader>
+                    <CardTitle className="text-slate-100 flex items-center gap-2">
+                      <Brain className="h-5 w-5 text-blue-400" />
+                      Vision Validation Result
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      {validationResult.isValid ? (
+                        <CheckCircle className="h-5 w-5 text-green-400" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-red-400" />
+                      )}
+                      <span className={`font-medium ${validationResult.isValid ? 'text-green-400' : 'text-red-400'}`}>
+                        {validationResult.isValid ? 'Vision Confirmed' : 'Vision Rejected'}
                       </span>
+                      <Badge variant="outline" className="ml-auto">
+                        {(validationResult.confidence * 100).toFixed(0)}% confidence
+                      </Badge>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-slate-400 text-sm">Energy Level</label>
-                        <Progress 
-                          value={currentVision.currentVision.energy_level * 100} 
-                          className="mt-2"
-                        />
-                        <span className="text-slate-300 text-sm">
-                          {(currentVision.currentVision.energy_level * 100).toFixed(1)}%
-                        </span>
-                      </div>
-                      <div>
-                        <label className="text-slate-400 text-sm">Confidence</label>
-                        <Progress 
-                          value={currentVision.currentVision.confidence * 100} 
-                          className="mt-2"
-                        />
-                        <span className="text-slate-300 text-sm">
-                          {(currentVision.currentVision.confidence * 100).toFixed(1)}%
-                        </span>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Market Indicators</label>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">RSI:</span>
+                          <span className="text-slate-200">{validationResult.indicators.rsi.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">EMA 50:</span>
+                          <span className="text-slate-200">${validationResult.indicators.ema_50.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">EMA 200:</span>
+                          <span className="text-slate-200">${validationResult.indicators.ema_200.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Current Price:</span>
+                          <span className="text-slate-200">${validationResult.indicators.current_price.toFixed(2)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Eye className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-                    <p className="text-slate-400">No current vision</p>
-                    <p className="text-slate-500 text-sm">Receive a vision to begin analysis</p>
-                  </div>
-                )}
-
-                <Separator className="bg-slate-700" />
-
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => receiveVisionMutation.mutate()}
-                    disabled={receiveVisionMutation.isPending}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    {receiveVisionMutation.isPending ? 'Receiving...' : 'Receive Vision'}
-                  </Button>
-                  
-                  <Button 
-                    onClick={() => verifyVisionMutation.mutate()}
-                    disabled={verifyVisionMutation.isPending || !currentVision?.currentVision}
-                    variant="outline"
-                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                  >
-                    <Brain className="h-4 w-4 mr-2" />
-                    {verifyVisionMutation.isPending ? 'Verifying...' : 'Verify Vision'}
-                  </Button>
-
-                  <Button 
-                    onClick={() => completeWorkflowMutation.mutate()}
-                    disabled={completeWorkflowMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Zap className="h-4 w-4 mr-2" />
-                    {completeWorkflowMutation.isPending ? 'Processing...' : 'Complete Workflow'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="konsai" className="space-y-4">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-100 flex items-center gap-2">
-                  <Bot className="h-5 w-5 text-purple-400" />
-                  KonsAi - Divine Trading Intelligence
-                </CardTitle>
-                <p className="text-slate-400 text-sm">
-                  Ask KonsAi anything about the markets. More powerful than regular AI, capable of deep trading wisdom.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div 
-                  ref={chatScrollRef}
-                  className="h-96 bg-slate-900 rounded-lg border border-slate-600 overflow-y-auto p-4 space-y-3"
-                >
-                  {chatMessages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div
-                        className={`max-w-[80%] p-3 rounded-lg ${
-                          message.type === 'user'
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-slate-700 text-slate-100 border border-slate-600'
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          {message.type === 'konsai' && (
-                            <Bot className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
-                          )}
-                          <div className="flex-1">
-                            <p className="text-sm">{message.content}</p>
-                            <div className="flex items-center justify-between mt-2 text-xs opacity-70">
-                              <span>{message.timestamp.toLocaleTimeString()}</span>
-                              {message.confidence && (
-                                <span className="text-purple-300">
-                                  {(message.confidence * 100).toFixed(0)}% confidence
-                                </span>
-                              )}
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Validation Reasons</label>
+                      <ul className="space-y-1">
+                        {validationResult.reasons.map((reason, index) => (
+                          <li key={index} className="text-sm text-slate-400 flex items-start gap-2">
+                            <span className="text-blue-400 mt-1">•</span>
+                            {reason}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="bg-slate-800 p-3 rounded-lg">
+                      <label className="text-sm font-medium text-slate-300 block mb-1">Recommendation</label>
+                      <p className="text-sm text-slate-200">{validationResult.recommendation}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
+          
+          {activeFloatingPanel === 'stats' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="bg-slate-700 border-slate-600">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-slate-100">{stats.total_visions}</div>
+                      <div className="text-sm text-slate-400">Total Visions</div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-slate-700 border-slate-600">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">{stats.confirmed_visions}</div>
+                      <div className="text-sm text-slate-400">Confirmed</div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-slate-700 border-slate-600">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-400">{(stats.accuracy_rate * 100).toFixed(1)}%</div>
+                      <div className="text-sm text-slate-400">Accuracy</div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-slate-700 border-slate-600">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-400">{stats.vision_history.length}</div>
+                      <div className="text-sm text-slate-400">History Records</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+          
+          {activeFloatingPanel === 'history' && (
+            <div className="space-y-4">
+              <ScrollArea className="h-96">
+                <div className="space-y-3">
+                  {visionHistory?.history && visionHistory.history.length > 0 ? (
+                    visionHistory.history.map((record: any, index: number) => (
+                      <Card key={index} className="bg-slate-700 border-slate-600">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              {getVisionIcon(record.vision.vision)}
+                              <Badge className={getVisionColor(record.vision.vision)}>
+                                {record.vision.vision.toUpperCase()}
+                              </Badge>
+                            </div>
+                            <span className="text-sm text-slate-400">
+                              {formatTimestamp(record.vision.timestamp)}
+                            </span>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div>
+                              <span className="text-slate-400">Energy: </span>
+                              <span className="text-slate-200">{(record.vision.energy_level * 100).toFixed(0)}%</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Confidence: </span>
+                              <span className="text-slate-200">{(record.vision.confidence * 100).toFixed(0)}%</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Outcome: </span>
+                              <span className={`${
+                                record.actual_outcome === 'correct' ? 'text-green-400' :
+                                record.actual_outcome === 'incorrect' ? 'text-red-400' : 'text-yellow-400'
+                              }`}>
+                                {record.actual_outcome || 'pending'}
+                              </span>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {chatMutation.isPending && (
-                    <div className="flex justify-start">
-                      <div className="bg-slate-700 text-slate-100 border border-slate-600 p-3 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Bot className="h-4 w-4 text-purple-400 animate-pulse" />
-                          <span className="text-sm">KonsAi is thinking...</span>
-                        </div>
-                      </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <History className="h-12 w-12 text-slate-600 mx-auto mb-3" />
+                      <p className="text-slate-400">No vision history available</p>
                     </div>
                   )}
                 </div>
-                
-                <div className="flex gap-2">
-                  <Input
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Ask KonsAi about market trends, analysis, or trading strategies..."
-                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400"
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendChat()}
-                  />
-                  <Button
-                    onClick={handleSendChat}
-                    disabled={!chatInput.trim() || chatMutation.isPending}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="text-xs text-slate-500 text-center">
-                  KonsAi combines mystical wisdom with advanced market analysis for superior trading intelligence
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="validation" className="space-y-4">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-100 flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-blue-400" />
-                  Vision Validation Results
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {stats.last_validation ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {stats.last_validation.confirmed ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-red-500" />
-                        )}
-                        <Badge className={stats.last_validation.confirmed ? 
-                          'bg-green-100 text-green-800 border-green-200' : 
-                          'bg-red-100 text-red-800 border-red-200'
-                        }>
-                          {stats.last_validation.confirmed ? 'CONFIRMED' : 'REJECTED'}
-                        </Badge>
-                      </div>
-                      <span className="text-slate-400 text-sm">
-                        Strength: {(stats.last_validation.confirmation_strength * 100).toFixed(1)}%
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <h4 className="text-slate-300 font-medium">Market Indicators</h4>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-slate-400">RSI:</span>
-                            <span className="text-slate-300">{stats.last_validation.indicators.rsi.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-400">EMA-50:</span>
-                            <span className="text-slate-300">${stats.last_validation.indicators.ema_50.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-400">EMA-200:</span>
-                            <span className="text-slate-300">${stats.last_validation.indicators.ema_200.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-400">Price:</span>
-                            <span className="text-slate-300">${stats.last_validation.indicators.current_price.toFixed(2)}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <h4 className="text-slate-300 font-medium">Validation Rules</h4>
-                        <div className="space-y-1">
-                          {stats.last_validation.validation_rules.map((rule, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <CheckCircle className="h-3 w-3 text-green-500" />
-                              <span className="text-slate-400 text-sm">{rule}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Brain className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-                    <p className="text-slate-400">No validation results</p>
-                    <p className="text-slate-500 text-sm">Verify a vision to see validation details</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="statistics" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-slate-400 text-sm">Total Visions</p>
-                      <p className="text-2xl font-bold text-slate-100">{stats.total_visions}</p>
-                    </div>
-                    <Eye className="h-8 w-8 text-purple-400" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-slate-400 text-sm">Confirmed Visions</p>
-                      <p className="text-2xl font-bold text-slate-100">{stats.confirmed_visions}</p>
-                    </div>
-                    <CheckCircle className="h-8 w-8 text-green-400" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-slate-800 border-slate-700">
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-slate-400 text-sm">Accuracy Rate</p>
-                      <p className="text-2xl font-bold text-slate-100">
-                        {(stats.accuracy_rate * 100).toFixed(1)}%
-                      </p>
-                    </div>
-                    <BarChart3 className="h-8 w-8 text-blue-400" />
-                  </div>
-                </CardContent>
-              </Card>
+              </ScrollArea>
             </div>
-
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-100">Vision Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-400">Confirmation Rate</span>
-                      <span className="text-slate-300">
-                        {stats.total_visions > 0 ? ((stats.confirmed_visions / stats.total_visions) * 100).toFixed(1) : 0}%
-                      </span>
-                    </div>
-                    <Progress 
-                      value={stats.total_visions > 0 ? (stats.confirmed_visions / stats.total_visions) * 100 : 0}
-                      className="h-2"
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-400">Accuracy Rate</span>
-                      <span className="text-slate-300">{(stats.accuracy_rate * 100).toFixed(1)}%</span>
-                    </div>
-                    <Progress 
-                      value={stats.accuracy_rate * 100}
-                      className="h-2"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="history" className="space-y-4">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-100 flex items-center gap-2">
-                  <History className="h-5 w-5 text-orange-400" />
-                  Vision History
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {visionHistory?.history && visionHistory.history.length > 0 ? (
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {visionHistory.history.map((record, index) => (
-                      <div key={index} className="border border-slate-700 rounded p-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {getVisionIcon(record.vision.vision)}
-                            <Badge className={getVisionColor(record.vision.vision)}>
-                              {record.vision.vision.toUpperCase()}
-                            </Badge>
-                            {record.validation.confirmed ? (
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-red-500" />
-                            )}
-                            {record.actual_outcome && (
-                              <Badge variant={record.actual_outcome === 'correct' ? 'default' : 'destructive'}>
-                                {record.actual_outcome}
-                              </Badge>
-                            )}
-                          </div>
-                          <span className="text-slate-400 text-sm">
-                            {formatTimestamp(record.vision.timestamp)}
-                          </span>
-                        </div>
-                        
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                          <div>
-                            <span className="text-slate-500">Confidence:</span>
-                            <span className="text-slate-400 ml-1">
-                              {(record.vision.confidence * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-slate-500">Strength:</span>
-                            <span className="text-slate-400 ml-1">
-                              {(record.validation.confirmation_strength * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-slate-500">Rules:</span>
-                            <span className="text-slate-400 ml-1">
-                              {record.validation.validation_rules.length}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <History className="h-12 w-12 text-slate-600 mx-auto mb-3" />
-                    <p className="text-slate-400">No vision history</p>
-                    <p className="text-slate-500 text-sm">Start receiving visions to build history</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="controls" className="space-y-4">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-slate-100">Vision Controls</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="text-slate-300 font-medium mb-3">Force Vision (Testing)</h4>
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => forceVisionMutation.mutate('rise')}
-                      disabled={forceVisionMutation.isPending}
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <TrendingUp className="h-4 w-4 mr-1" />
-                      Rise
-                    </Button>
-                    <Button 
-                      onClick={() => forceVisionMutation.mutate('fall')}
-                      disabled={forceVisionMutation.isPending}
-                      size="sm"
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      <TrendingDown className="h-4 w-4 mr-1" />
-                      Fall
-                    </Button>
-                    <Button 
-                      onClick={() => forceVisionMutation.mutate('choppy')}
-                      disabled={forceVisionMutation.isPending}
-                      size="sm"
-                      className="bg-yellow-600 hover:bg-yellow-700"
-                    >
-                      <Minus className="h-4 w-4 mr-1" />
-                      Choppy
-                    </Button>
-                  </div>
-                </div>
-
-                <Separator className="bg-slate-700" />
-
-                <div>
-                  <h4 className="text-slate-300 font-medium mb-3">Automated Workflow</h4>
+          )}
+          
+          {activeFloatingPanel === 'controls' && (
+            <div className="space-y-4">
+              <Card className="bg-slate-700 border-slate-600">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-red-400" />
+                    Vision Controls
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button 
+                    onClick={() => receiveMutation.mutate()}
+                    disabled={receiveMutation.isPending}
+                    className="w-full bg-purple-600 hover:bg-purple-700"
+                  >
+                    {receiveMutation.isPending ? "Receiving..." : "Receive New Vision"}
+                  </Button>
+                  
                   <Button 
                     onClick={() => completeWorkflowMutation.mutate()}
                     disabled={completeWorkflowMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    <Zap className="h-4 w-4 mr-2" />
-                    {completeWorkflowMutation.isPending ? 'Processing...' : 'Run Complete Workflow'}
+                    {completeWorkflowMutation.isPending ? "Processing..." : "Complete Workflow"}
                   </Button>
-                  <p className="text-slate-500 text-sm mt-2">
-                    Receive vision + verify with real market data in one action
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  
+                  <Button 
+                    onClick={() => {/* Add any test functionality */}}
+                    variant="outline"
+                    className="w-full border-slate-600 text-slate-200 hover:bg-slate-600"
+                  >
+                    Test Vision System
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
