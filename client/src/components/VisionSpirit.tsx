@@ -6,7 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
-import { Eye, Brain, TrendingUp, TrendingDown, Minus, CheckCircle, XCircle, BarChart3, History, Zap } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Eye, Brain, TrendingUp, TrendingDown, Minus, CheckCircle, XCircle, BarChart3, History, Zap, MessageCircle, Send, Bot, User } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 
 interface SpiritVision {
@@ -43,9 +45,41 @@ interface VisionStats {
   }>;
 }
 
+interface ValidationResult {
+  isValid: boolean;
+  reasons: string[];
+  recommendation: string;
+  confidence: number;
+  indicators: {
+    rsi: number;
+    ema_50: number;
+    ema_200: number;
+    current_price: number;
+  };
+}
+
+interface ChatMessage {
+  id: string;
+  type: 'user' | 'konsai';
+  content: string;
+  timestamp: Date;
+  confidence?: number;
+}
+
 export default function VisionSpirit() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('current');
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      id: '1',
+      type: 'konsai',
+      content: 'Greetings, I am KonsAi - your divine trading intelligence. Ask me anything about the markets, and I shall provide wisdom beyond mere charts.',
+      timestamp: new Date(),
+      confidence: 0.95
+    }
+  ]);
+  const [chatInput, setChatInput] = useState('');
 
   // Query for current vision
   const { data: currentVision } = useQuery({
@@ -76,8 +110,13 @@ export default function VisionSpirit() {
 
   // Mutation to verify vision
   const verifyVisionMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/verify', { method: 'POST' }),
-    onSuccess: () => {
+    mutationFn: (vision: SpiritVision) => 
+      apiRequest('/api/waides-ki/vision-spirit/verify', { 
+        method: 'POST',
+        body: JSON.stringify({ vision })
+      }),
+    onSuccess: (data) => {
+      setValidationResult(data.result);
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
     }
@@ -90,6 +129,25 @@ export default function VisionSpirit() {
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
+    }
+  });
+
+  // Mutation for KonsAi chat
+  const chatMutation = useMutation({
+    mutationFn: (question: string) =>
+      apiRequest('/api/waides-ki/konsai-chat', {
+        method: 'POST',
+        body: JSON.stringify({ question })
+      }),
+    onSuccess: (data) => {
+      const newMessage: ChatMessage = {
+        id: Date.now().toString(),
+        type: 'konsai',
+        content: data.response || 'I understand your question. Let me analyze the current market conditions.',
+        timestamp: new Date(),
+        confidence: data.confidence || 0.85
+      };
+      setChatMessages(prev => [...prev, newMessage]);
     }
   });
 
@@ -127,6 +185,30 @@ export default function VisionSpirit() {
     return new Date(timestamp).toLocaleTimeString();
   };
 
+  const handleSendChat = () => {
+    if (!chatInput.trim()) return;
+
+    // Add user message
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: chatInput,
+      timestamp: new Date()
+    };
+    setChatMessages(prev => [...prev, userMessage]);
+    
+    // Send to KonsAi
+    chatMutation.mutate(chatInput);
+    setChatInput('');
+  };
+
+  const handleVerifyCurrentVision = () => {
+    const vision = currentVision?.currentVision;
+    if (vision) {
+      verifyVisionMutation.mutate(vision);
+    }
+  };
+
   const stats: VisionStats = visionStats?.stats || {
     total_visions: 0,
     confirmed_visions: 0,
@@ -149,11 +231,26 @@ export default function VisionSpirit() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5 bg-slate-800">
-            <TabsTrigger value="current" className="text-slate-300">Current Vision</TabsTrigger>
-            <TabsTrigger value="validation" className="text-slate-300">Validation</TabsTrigger>
-            <TabsTrigger value="statistics" className="text-slate-300">Statistics</TabsTrigger>
-            <TabsTrigger value="history" className="text-slate-300">History</TabsTrigger>
-            <TabsTrigger value="controls" className="text-slate-300">Controls</TabsTrigger>
+            <TabsTrigger value="current" className="text-slate-300 flex items-center gap-1">
+              <Eye className="h-4 w-4" />
+              Current Vision
+            </TabsTrigger>
+            <TabsTrigger value="konsai" className="text-slate-300 flex items-center gap-1">
+              <Bot className="h-4 w-4" />
+              KonsAi Chat
+            </TabsTrigger>
+            <TabsTrigger value="validation" className="text-slate-300 flex items-center gap-1">
+              <Brain className="h-4 w-4" />
+              Validation
+            </TabsTrigger>
+            <TabsTrigger value="statistics" className="text-slate-300 flex items-center gap-1">
+              <BarChart3 className="h-4 w-4" />
+              Statistics
+            </TabsTrigger>
+            <TabsTrigger value="history" className="text-slate-300 flex items-center gap-1">
+              <History className="h-4 w-4" />
+              History
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="current" className="space-y-4">
