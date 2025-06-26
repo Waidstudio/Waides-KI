@@ -1,0 +1,177 @@
+Here’s a complete blueprint for splitting your system into a User Frontend and an Admin Backend, with full configurability and modular API integrations. This will let you deploy Waides KI on your site www.waideski.com with ease.
+
+⸻
+
+🧭 Project Structure
+
+waideski/
+├── frontend/                # Public-facing user portal
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
+└── backend/                 # Admin dashboard + API + engine
+    ├── config.py           # All key/service configs
+    ├── app.py              # Flask API entrypoint
+    ├── admin_dashboard/    # Dashboard UI templates
+    ├── services/           # Engine layers & connectors
+    ├── ml_models/          # ML models & retraining logic
+    ├── metrics/            # Prometheus / instrumentation
+    └── scripts/            # CI/CD, retraining, migrations
+
+
+⸻
+
+🔧 backend/config.py
+
+Encapsulates all configurable services & secrets:
+
+import os
+
+# Exchange API keys
+BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
+BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
+BYBIT_API_KEY = os.getenv("BYBIT_API_KEY")
+BYBIT_API_SECRET = os.getenv("BYBIT_API_SECRET")
+
+# TradingView webhook secret
+TV_WEBHOOK_SECRET = os.getenv("TV_WEBHOOK_SECRET")
+
+# Machine Learning
+ML_MODEL_PATH = os.getenv("ML_MODEL_PATH", "ml_models/waides_model.pkl")
+
+# Risk parameters
+MAX_CONSECUTIVE_LOSSES = float(os.getenv("MAX_CONSECUTIVE_LOSSES", 3))
+MAX_DAILY_LOSS_PCT = float(os.getenv("MAX_DAILY_LOSS_PCT", 0.02))
+
+# Stop loss defaults
+INITIAL_SL_PCT = float(os.getenv("INITIAL_SL_PCT", 0.01))
+TRAIL_PCT = float(os.getenv("TRAIL_PCT", 0.005))
+
+# Metrics
+METRICS_PORT = int(os.getenv("METRICS_PORT", 8001))
+
+
+⸻
+
+🛠️ backend/app.py
+
+Sets up Flask APIs, Frontend asset serving, and admin controls:
+
+from flask import Flask, request, render_template, jsonify
+from config import *
+from services.metrics_collector import start_metrics
+from services.exchange_adapter import ExchangeAdapter
+from services.engine import WaidesFullEngine
+from services.admin_controller import AdminController
+
+app = Flask(__name__, template_folder="admin_dashboard")
+app.config.from_object('backend.config')
+
+# Start engine & metrics
+start_metrics(app)
+engine = WaidesFullEngine(config)
+admin_ctrl = AdminController(engine, config)
+
+# --- Public Site ---
+
+@app.route("/")
+def user_portal():
+    return render_template("index.html")
+
+@app.route("/api/presence", methods=["GET"])
+def api_presence():
+    return jsonify(engine.get_public_presence())
+
+# --- Admin Dashboard ---
+
+@app.route("/admin")
+def admin_portal():
+    return render_template("dashboard.html")
+
+@app.route("/admin/api/config", methods=["GET", "POST"])
+def admin_config():
+    if request.method == "POST":
+        data = request.json
+        engine.admin_update_config(data)
+        return jsonify({"status": "saved"})
+    return jsonify(admin_ctrl.get_config())
+
+@app.route("/admin/api/engine/status")
+def admin_status():
+    return jsonify(admin_ctrl.get_engine_status())
+
+@app.route("/admin/api/engine/control", methods=["POST"])
+def admin_control():
+    cmd = request.json.get("cmd")
+    return jsonify(admin_ctrl.control(cmd))
+
+if __name__ == "__main__":
+    engine.start()
+    app.run(host="0.0.0.0", port=5000)
+
+
+⸻
+
+🧩 services/exchange_adapter.py
+
+Modular multi-exchange connector:
+
+from config import *
+from binance_client import BinanceClient
+from bybit_client import BybitClient
+from tv_client import TradingViewClient
+
+class ExchangeAdapter:
+    def __init__(self):
+        self.binance = BinanceClient(BINANCE_API_KEY, BINANCE_API_SECRET)
+        self.bybit = BybitClient(BYBIT_API_KEY, BYBIT_API_SECRET)
+        self.tv = TradingViewClient(TV_WEBHOOK_SECRET)
+
+    def place_order(...):  # same multi-exchange code
+        ...
+
+
+⸻
+
+🧠 services/admin_controller.py
+
+Admin tool for runtime config, pausing/resuming, viewing status:
+
+class AdminController:
+    def __init__(self, engine, config):
+        self.engine = engine
+        self.config = config
+
+    def get_config(self):
+        # Return editable config object
+        return {
+            "max_losses": self.config.MAX_CONSECUTIVE_LOSSES,
+            ...
+        }
+
+    def admin_update_config(self, data):
+        # Overwrite engine and config attributes
+        for k,v in data.items():
+            setattr(self.config, k, type(getattr(self.config, k))(v))
+            setattr(self.engine, k, getattr(self.config, k))
+
+    def get_engine_status(self):
+        return {
+            "running": self.engine.is_running(),
+            "stats": self.engine.get_stats()
+        }
+
+    def control(self, cmd):
+        if cmd == "pause":
+            self.engine.pause()
+        elif cmd == "resume":
+            self.engine.resume()
+        return {"ok": True, "cmd": cmd}
+
+
+⸻
+
+📌 Frontend Overview
+	•	frontend/index.html/app.js: Show ETH presence, current trades, performance.
+	•	Use /api/presence and /admin/api/config to connect.
+	•	Admin dashboard (admin_dashboard/dashboard.html) can edit config and control engine.

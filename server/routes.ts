@@ -197,6 +197,9 @@ import { portfolioManager } from './services/portfolioManager';
 import { WaidBotPro } from './services/waidBotPro';
 import { quantumTradingEngine } from './services/quantumTradingEngine';
 import { konsLangAI } from './services/konsLangAI';
+import { waidesKIModelTrainer } from './services/waidesKIModelTrainer';
+import { waidesKIModelHealthMonitor } from './services/waidesKIModelHealthMonitor';
+import { waidesKIABTestingEngine } from './services/waidesKIABTestingEngine';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server
