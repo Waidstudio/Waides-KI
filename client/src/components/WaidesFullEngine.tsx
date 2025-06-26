@@ -648,7 +648,7 @@ export default function WaidesFullEngine() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Max Drawdown</span>
-                      <span className="font-medium text-red-500">{analytics.max_drawdown_pct.toFixed(2)}%</span>
+                      <span className="font-medium text-red-500">{(analytics?.max_drawdown_pct || 0).toFixed(2)}%</span>
                     </div>
                   </div>
                 </div>

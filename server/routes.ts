@@ -14996,5 +14996,133 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============================================================================
+  // PROPHECY LOG API ENDPOINTS - Waides KI Sacred Archive System
+  // ============================================================================
+
+  // Save prophecy to log
+  app.post('/api/prophecy/save', async (req, res) => {
+    try {
+      const { prophecyLogService } = await import('./services/prophecyLogService.js');
+      const prophecyData = req.body;
+      const prophecy = await prophecyLogService.saveProphecy(prophecyData);
+      res.json({
+        success: true,
+        prophecy,
+        message: 'Prophecy saved to sacred archive'
+      });
+    } catch (error) {
+      console.error('Error saving prophecy:', error);
+      res.status(500).json({ error: 'Failed to save prophecy' });
+    }
+  });
+
+  // Get user prophecies with filtering
+  app.get('/api/prophecy/user/:userId', async (req, res) => {
+    try {
+      const { prophecyLogService } = await import('./services/prophecyLogService.js');
+      const { userId } = req.params;
+      const { page = 1, limit = 10, ...filters } = req.query;
+      
+      const result = await prophecyLogService.getUserProphecies(
+        userId,
+        filters,
+        parseInt(page as string),
+        parseInt(limit as string)
+      );
+      
+      res.json({
+        success: true,
+        prophecies: result.prophecies,
+        total: result.total,
+        page: parseInt(page as string),
+        totalPages: Math.ceil(result.total / parseInt(limit as string))
+      });
+    } catch (error) {
+      console.error('Error getting user prophecies:', error);
+      res.status(500).json({ error: 'Failed to get prophecies' });
+    }
+  });
+
+  // Get prophecy by ID
+  app.get('/api/prophecy/:id', async (req, res) => {
+    try {
+      const { prophecyLogService } = await import('./services/prophecyLogService.js');
+      const { id } = req.params;
+      const { userId } = req.query;
+      
+      const prophecy = await prophecyLogService.getProphecyById(
+        parseInt(id),
+        userId as string
+      );
+      
+      if (!prophecy) {
+        return res.status(404).json({ error: 'Prophecy not found' });
+      }
+      
+      res.json({
+        success: true,
+        prophecy
+      });
+    } catch (error) {
+      console.error('Error getting prophecy:', error);
+      res.status(500).json({ error: 'Failed to get prophecy' });
+    }
+  });
+
+  // Get prophecy statistics
+  app.get('/api/prophecy/stats/:userId', async (req, res) => {
+    try {
+      const { prophecyLogService } = await import('./services/prophecyLogService.js');
+      const { userId } = req.params;
+      
+      const stats = await prophecyLogService.getProphecyStats(userId);
+      
+      res.json({
+        success: true,
+        stats,
+        insights: {
+          most_active_category: Object.keys(stats.categoryCounts).reduce((a, b) => 
+            stats.categoryCounts[a] > stats.categoryCounts[b] ? a : b, 'none'
+          ),
+          confidence_level: stats.averageConfidence >= 80 ? 'High' : 
+                           stats.averageConfidence >= 60 ? 'Medium' : 'Developing',
+          activity_trend: stats.recentActivity > 5 ? 'Very Active' :
+                         stats.recentActivity > 2 ? 'Active' : 'Moderate'
+        }
+      });
+    } catch (error) {
+      console.error('Error getting prophecy stats:', error);
+      res.status(500).json({ error: 'Failed to get prophecy statistics' });
+    }
+  });
+
+  // Get prophecy of the day
+  app.get('/api/prophecy/daily/:userId', async (req, res) => {
+    try {
+      const { prophecyLogService } = await import('./services/prophecyLogService.js');
+      const { userId } = req.params;
+      
+      const dailyProphecy = await prophecyLogService.getProphecyOfTheDay(userId);
+      
+      if (!dailyProphecy) {
+        return res.json({
+          success: true,
+          message: 'No prophecies found. Create your first prophecy to receive daily guidance.',
+          prophecy: null
+        });
+      }
+      
+      res.json({
+        success: true,
+        dailyProphecy,
+        spiritualMessage: "The universe has chosen this prophecy to guide you today."
+      });
+    } catch (error) {
+      console.error('Error getting prophecy of the day:', error);
+      res.status(500).json({ error: 'Failed to get prophecy of the day' });
+    }
+  });
+
   return httpServer;
 }
