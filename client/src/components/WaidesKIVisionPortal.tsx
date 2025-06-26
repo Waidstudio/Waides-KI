@@ -71,7 +71,12 @@ export default function WaidesKIVisionPortal() {
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   
   // Cosmic AI Enhancement States
-  const [aiPersonality, setAiPersonality] = useState<'spiritual' | 'analytical' | 'creative' | 'balanced'>('balanced');
+  const [aiPersonality, setAiPersonality] = useState({
+    mode: 'spiritual' as 'spiritual' | 'analytical' | 'creative' | 'balanced',
+    energyLevel: 85,
+    responsiveness: 90,
+    depth: 95
+  });
   const [voiceSettings, setVoiceSettings] = useState({
     pitch: 1,
     rate: 1,
@@ -79,6 +84,7 @@ export default function WaidesKIVisionPortal() {
     enabled: false
   });
   const [cosmicMode, setCosmicMode] = useState(false);
+  const [cosmicTheme, setCosmicTheme] = useState<'nebula' | 'starfield' | 'galaxy'>('nebula');
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [botState, setBotState] = useState<{
@@ -849,7 +855,7 @@ export default function WaidesKIVisionPortal() {
           {/* Cosmic AI Controls */}
           <div className="flex items-center gap-2">
             {/* AI Personality Selector */}
-            <Select value={aiPersonality} onValueChange={(value: any) => setAiPersonality(value)}>
+            <Select value={aiPersonality.mode} onValueChange={(value: any) => setAiPersonality(prev => ({ ...prev, mode: value }))}>
               <SelectTrigger className="w-24 h-8 bg-gray-800/60 border-gray-600 text-xs">
                 <SelectValue />
               </SelectTrigger>
