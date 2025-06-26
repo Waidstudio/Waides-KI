@@ -808,12 +808,34 @@ export default function WaidesKIVisionPortal() {
   }, [messages, currentTypingMessage]);
 
   return (
-    <div className="min-h-screen bg-black text-white font-inter relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(120,119,198,0.1),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)]"></div>
-      </div>
+    <div className={cosmicMode ? 
+      (cosmicTheme === 'nebula' ? "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 text-white font-inter relative overflow-hidden" :
+       cosmicTheme === 'starfield' ? "min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white font-inter relative overflow-hidden" :
+       cosmicTheme === 'galaxy' ? "min-h-screen bg-gradient-to-br from-violet-900 via-purple-900 to-pink-900 text-white font-inter relative overflow-hidden" :
+       "min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white font-inter relative overflow-hidden") :
+      "min-h-screen bg-black text-white font-inter relative overflow-hidden"}>
+      
+      {/* Enhanced Cosmic Background Effects */}
+      {cosmicMode ? (
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Starfield Animation */}
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse opacity-60"></div>
+          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-300 rounded-full animate-ping opacity-40"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-purple-300 rounded-full animate-pulse opacity-30"></div>
+          <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-pink-300 rounded-full animate-ping opacity-50"></div>
+          <div className="absolute bottom-1/3 right-1/2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse opacity-40"></div>
+          <div className="absolute top-2/3 left-1/5 w-1 h-1 bg-cyan-300 rounded-full animate-ping opacity-35"></div>
+          <div className="absolute bottom-1/5 right-1/5 w-2.5 h-2.5 bg-violet-300 rounded-full animate-pulse opacity-45"></div>
+          <div className="absolute top-3/4 right-2/3 w-1 h-1 bg-emerald-300 rounded-full animate-ping opacity-30"></div>
+          <div className="absolute top-1/6 left-2/3 w-1.5 h-1.5 bg-rose-300 rounded-full animate-pulse opacity-40"></div>
+          <div className="absolute bottom-2/3 left-1/6 w-1 h-1 bg-amber-300 rounded-full animate-ping opacity-45"></div>
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)]"></div>
+        </div>
+      )}
 
       {/* Top Status Bar */}
       <div className="relative z-10 flex justify-between items-center p-4 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
@@ -854,6 +876,35 @@ export default function WaidesKIVisionPortal() {
           
           {/* Cosmic AI Controls */}
           <div className="flex items-center gap-2">
+            {/* Cosmic Mode Toggle */}
+            <Button
+              onClick={() => setCosmicMode(!cosmicMode)}
+              variant="ghost"
+              size="sm"
+              className={`h-8 px-3 text-xs font-medium ${
+                cosmicMode
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border border-purple-400/50' 
+                  : 'text-gray-400 hover:bg-gray-700/50 border border-gray-600'
+              }`}
+            >
+              <Sparkles className="w-3 h-3 mr-1" />
+              Cosmic
+            </Button>
+
+            {/* Cosmic Theme Selector (only visible when cosmic mode is on) */}
+            {cosmicMode && (
+              <Select value={cosmicTheme} onValueChange={(value: any) => setCosmicTheme(value)}>
+                <SelectTrigger className="w-20 h-8 bg-gray-800/60 border-purple-400/50 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-purple-400">
+                  <SelectItem value="nebula">Nebula</SelectItem>
+                  <SelectItem value="starfield">Starfield</SelectItem>
+                  <SelectItem value="galaxy">Galaxy</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+
             {/* AI Personality Selector */}
             <Select value={aiPersonality.mode} onValueChange={(value: any) => setAiPersonality(prev => ({ ...prev, mode: value }))}>
               <SelectTrigger className="w-24 h-8 bg-gray-800/60 border-gray-600 text-xs">
