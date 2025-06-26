@@ -1,5 +1,5 @@
 import { waidesKIAutonomousTradeCore } from './waidesKIAutonomousTradeCore';
-import { smaiWalletManager } from './smaiWalletManager';
+import { SmaiWalletManager } from './smaiWalletManager';
 import { waidesKILiveFeed } from './waidesKILiveFeed';
 
 interface CommandResult {
@@ -103,8 +103,9 @@ export class WaidesKICommandProcessor {
   private async activateAutonomousTrading(userId: string): Promise<CommandResult> {
     try {
       // Check wallet balance first
-      const walletStats = await smaiWalletManager.getUserWalletStats(userId);
-      const balance = walletStats?.wallet?.balance || 0;
+      const walletManager = SmaiWalletManager.getInstance();
+      const walletResult = await walletManager.getWallet(userId);
+      const balance = walletResult?.wallet?.balance ? parseFloat(walletResult.wallet.balance) : 0;
       
       if (balance < 100) {
         return {
@@ -119,7 +120,7 @@ export class WaidesKICommandProcessor {
       waidesKIAutonomousTradeCore.enableAutonomousTrading();
       
       // Get current market data
-      const marketData = await waidesKILiveFeed.getUnifiedMarketData();
+      const marketData = await waidesKILiveFeed.getCurrentMarketData();
       const ethPrice = marketData?.price || 2400;
       
       // Calculate trading parameters
@@ -184,11 +185,12 @@ export class WaidesKICommandProcessor {
 
   private async checkBalance(userId: string): Promise<CommandResult> {
     try {
-      const walletStats = await smaiWalletManager.getUserWalletStats(userId);
-      const balance = walletStats?.wallet?.balance || 0;
-      const totalProfit = walletStats?.wallet?.totalProfit || 0;
-      const totalTrades = walletStats?.wallet?.totalTrades || 0;
-      const winRate = walletStats?.wallet?.winRate || 0;
+      const walletManager = SmaiWalletManager.getInstance();
+      const walletResult = await walletManager.getWallet(userId);
+      const balance = walletResult?.wallet?.balance ? parseFloat(walletResult.wallet.balance) : 0;
+      const totalProfit = walletResult?.wallet?.totalProfit ? parseFloat(walletResult.wallet.totalProfit) : 0;
+      const totalTrades = 0; // Will be calculated from trade history
+      const winRate = 0; // Will be calculated from trade history
       
       return {
         success: true,
@@ -216,8 +218,9 @@ export class WaidesKICommandProcessor {
     try {
       const stats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
       const isActive = waidesKIAutonomousTradeCore.isAutonomousActive();
-      const walletStats = await smaiWalletManager.getUserWalletStats(userId);
-      const balance = walletStats?.wallet?.balance || 0;
+      const walletManager = SmaiWalletManager.getInstance();
+      const walletResult = await walletManager.getWallet(userId);
+      const balance = walletResult?.wallet?.balance ? parseFloat(walletResult.wallet.balance) : 0;
       
       const activeTradesCount = waidesKIAutonomousTradeCore.getActiveTrades().length;
       const lastTradeTime = stats.last_autonomous_trade ? new Date(stats.last_autonomous_trade) : null;
@@ -271,8 +274,9 @@ export class WaidesKICommandProcessor {
   private async getTradingPerformance(userId: string): Promise<CommandResult> {
     try {
       const stats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
-      const walletStats = await smaiWalletManager.getUserWalletStats(userId);
-      const recentTrades = walletStats?.recentTrades || [];
+      const walletManager = SmaiWalletManager.getInstance();
+      const walletResult = await walletManager.getWallet(userId);
+      const recentTrades = []; // Trade history will be fetched from trade history service
       
       const last24h = recentTrades.filter(trade => 
         Date.now() - new Date(trade.timestamp).getTime() < 24 * 60 * 60 * 1000
