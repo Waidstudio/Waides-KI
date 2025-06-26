@@ -69,6 +69,12 @@ import { waidesKIOmniviewOracle } from './services/waidesKIOmniviewOracle.js';
 import { waidesKIPriceFeed } from './services/waidesKIPriceFeed.js';
 import { waidesKITrendProfiler } from './services/waidesKITrendProfiler.js';
 import { waidesKIDualTokenExecutor } from './services/waidesKIDualTokenExecutor.js';
+// STEP 40: Spirit Vision Sync + Dream Symbol Confirmations
+import { waidesKIKonslangDictionary } from './services/waidesKIKonslangDictionary.js';
+import { waidesKISpiritOracle } from './services/waidesKISpiritOracle.js';
+import { waidesKIVisionSyncEngine } from './services/waidesKIVisionSyncEngine.js';
+import { waidesKIDreamLogger } from './services/waidesKIDreamLogger.js';
+import { waidesKISpiritTrader } from './services/waidesKISpiritTrader.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
@@ -8064,6 +8070,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in complete omniview workflow:', error);
       res.status(500).json({ error: 'Failed to execute complete omniview workflow' });
+    }
+  });
+
+  // ===== STEP 40: SPIRIT VISION SYNC + DREAM SYMBOL CONFIRMATIONS API ENDPOINTS =====
+
+  // Get all Konslang symbols and their meanings
+  app.get('/api/waides-ki/konslang/symbols', (req, res) => {
+    try {
+      const symbols = waidesKIKonslangDictionary.getAllSymbols();
+      const categories = waidesKIKonslangDictionary.getSymbolCategories();
+      const stats = waidesKIKonslangDictionary.getSymbolUsageStats();
+      
+      res.json({
+        success: true,
+        symbols,
+        categories,
+        usage_stats: stats,
+        message: 'Konslang symbols retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting Konslang symbols:', error);
+      res.status(500).json({ error: 'Failed to get Konslang symbols' });
+    }
+  });
+
+  // Generate a dream symbol based on market conditions
+  app.post('/api/waides-ki/spirit-oracle/generate-symbol', async (req, res) => {
+    try {
+      const { trend, market_data } = req.body;
+      
+      if (!trend || !['up', 'down', 'sideways'].includes(trend)) {
+        return res.status(400).json({ error: 'Invalid trend direction. Must be: up, down, or sideways' });
+      }
+      
+      const dreamVision = waidesKISpiritOracle.generateDreamSymbol(trend, market_data || {});
+      
+      res.json({
+        success: true,
+        dream_vision: dreamVision,
+        message: 'Dream symbol generated successfully'
+      });
+    } catch (error) {
+      console.error('Error generating dream symbol:', error);
+      res.status(500).json({ error: 'Failed to generate dream symbol' });
+    }
+  });
+
+  // Get Spirit Oracle status and statistics
+  app.get('/api/waides-ki/spirit-oracle/status', (req, res) => {
+    try {
+      const status = waidesKISpiritOracle.getOracleStatus();
+      
+      res.json({
+        success: true,
+        oracle_status: status,
+        message: 'Spirit Oracle status retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting Spirit Oracle status:', error);
+      res.status(500).json({ error: 'Failed to get Spirit Oracle status' });
+    }
+  });
+
+  // Confirm trade using Vision Sync Engine
+  app.post('/api/waides-ki/vision-sync/confirm-trade', async (req, res) => {
+    try {
+      const { market_data } = req.body;
+      
+      const confirmedTrade = await waidesKIVisionSyncEngine.confirmTrade(market_data || {});
+      
+      res.json({
+        success: true,
+        confirmed_trade: confirmedTrade,
+        trade_approved: confirmedTrade !== null,
+        message: confirmedTrade ? 'Trade confirmed by spiritual-technical alignment' : 'Trade rejected - insufficient alignment'
+      });
+    } catch (error) {
+      console.error('Error confirming trade:', error);
+      res.status(500).json({ error: 'Failed to confirm trade' });
+    }
+  });
+
+  // Get Vision Sync Engine status
+  app.get('/api/waides-ki/vision-sync/status', (req, res) => {
+    try {
+      const status = waidesKIVisionSyncEngine.getVisionSyncStatus();
+      
+      res.json({
+        success: true,
+        vision_sync_status: status,
+        message: 'Vision Sync status retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting Vision Sync status:', error);
+      res.status(500).json({ error: 'Failed to get Vision Sync status' });
+    }
+  });
+
+  // Get spiritual trading performance analysis
+  app.get('/api/waides-ki/dream-logger/performance', (req, res) => {
+    try {
+      const analysis = waidesKIDreamLogger.getSpiritualPerformanceAnalysis();
+      
+      res.json({
+        success: true,
+        performance_analysis: analysis,
+        message: 'Spiritual performance analysis retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting performance analysis:', error);
+      res.status(500).json({ error: 'Failed to get performance analysis' });
+    }
+  });
+
+  // Get active spiritual trades
+  app.get('/api/waides-ki/dream-logger/active-trades', (req, res) => {
+    try {
+      const activeTrades = waidesKIDreamLogger.getActiveSpiritualTrades();
+      
+      res.json({
+        success: true,
+        active_trades: activeTrades,
+        count: activeTrades.length,
+        message: 'Active spiritual trades retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting active trades:', error);
+      res.status(500).json({ error: 'Failed to get active trades' });
+    }
+  });
+
+  // Start spiritual trading session
+  app.post('/api/waides-ki/spirit-trader/start-session', async (req, res) => {
+    try {
+      const sessionId = await waidesKISpiritTrader.startSpiritualTradingSession();
+      
+      res.json({
+        success: true,
+        session_id: sessionId,
+        message: 'Spiritual trading session started successfully'
+      });
+    } catch (error) {
+      console.error('Error starting spiritual trading session:', error);
+      res.status(500).json({ error: error.message || 'Failed to start spiritual trading session' });
+    }
+  });
+
+  // Stop spiritual trading session
+  app.post('/api/waides-ki/spirit-trader/stop-session', async (req, res) => {
+    try {
+      await waidesKISpiritTrader.stopSpiritualTradingSession();
+      
+      res.json({
+        success: true,
+        message: 'Spiritual trading session stopped successfully'
+      });
+    } catch (error) {
+      console.error('Error stopping spiritual trading session:', error);
+      res.status(500).json({ error: error.message || 'Failed to stop spiritual trading session' });
+    }
+  });
+
+  // Get spiritual trading status
+  app.get('/api/waides-ki/spirit-trader/status', (req, res) => {
+    try {
+      const status = waidesKISpiritTrader.getSpiritualTradingStatus();
+      
+      res.json({
+        success: true,
+        spiritual_trading_status: status,
+        message: 'Spiritual trading status retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting spiritual trading status:', error);
+      res.status(500).json({ error: 'Failed to get spiritual trading status' });
+    }
+  });
+
+  // Complete STEP 40 demo workflow
+  app.post('/api/waides-ki/spirit-trader/demo-workflow', async (req, res) => {
+    try {
+      // Start a demo session
+      const sessionId = await waidesKISpiritTrader.startSpiritualTradingSession();
+      
+      // Perform a spiritual scan
+      const scan = await waidesKISpiritTrader.performSpiritualScan();
+      
+      // Get status
+      const status = waidesKISpiritTrader.getSpiritualTradingStatus();
+      const performance = waidesKIDreamLogger.getSpiritualPerformanceAnalysis();
+      const oracleStatus = waidesKISpiritOracle.getOracleStatus();
+      
+      res.json({
+        success: true,
+        demo_session_id: sessionId,
+        spiritual_scan_result: scan,
+        current_status: status,
+        performance_analysis: performance,
+        oracle_status: oracleStatus,
+        workflow_steps: [
+          '1. Started spiritual trading session',
+          '2. Performed spiritual market scan',
+          '3. Generated dream symbols with market alignment',
+          '4. Validated spiritual-technical consensus',
+          '5. System ready for sacred trade execution'
+        ],
+        message: 'STEP 40 demo workflow completed successfully - Spirit Vision Sync active'
+      });
+    } catch (error) {
+      console.error('Error in STEP 40 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 40 demo workflow' });
     }
   });
 
