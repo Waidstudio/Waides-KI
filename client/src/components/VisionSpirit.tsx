@@ -89,7 +89,10 @@ export default function VisionSpirit({
 
   // Mutations
   const receiveMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/receive', {}),
+    mutationFn: () => fetch('/api/waides-ki/vision-spirit/receive', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(res => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
@@ -97,17 +100,30 @@ export default function VisionSpirit({
   });
 
   const verifyVisionMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/verify', {}),
-    onSuccess: (data) => {
-      setValidationResult(data);
+    mutationFn: () => fetch('/api/waides-ki/vision-spirit/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(res => res.json()),
+    onSuccess: (data: any) => {
+      if (data?.validation) {
+        setValidationResult(data.validation);
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
     }
   });
 
   const completeWorkflowMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/receive', {}).then(() => 
-      apiRequest('/api/waides-ki/vision-spirit/verify', {})),
+    mutationFn: async () => {
+      await fetch('/api/waides-ki/vision-spirit/receive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return fetch('/api/waides-ki/vision-spirit/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(res => res.json());
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
@@ -139,14 +155,14 @@ export default function VisionSpirit({
   };
 
   const handleVerifyCurrentVision = () => {
-    if (currentVision?.currentVision) {
+    if (currentVisionData) {
       verifyVisionMutation.mutate();
     }
   };
 
   // Extract data from API responses properly
-  const currentVisionData = currentVision?.currentVision || null;
-  const statsData: VisionStats = visionStats?.stats || {
+  const currentVisionData = (currentVision as any)?.currentVision || null;
+  const statsData: VisionStats = (visionStats as any)?.stats || {
     total_visions: 0,
     confirmed_visions: 0,
     accuracy_rate: 0,
@@ -154,7 +170,7 @@ export default function VisionSpirit({
     last_validation: null,
     vision_history: []
   };
-  const historyData = visionHistory?.history || [];
+  const historyData = (visionHistory as any)?.history || [];
 
   if (!isFloatingVisible) {
     return (
@@ -350,7 +366,7 @@ export default function VisionSpirit({
                 <Card className="bg-slate-700 border-slate-600">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-slate-100">{stats.total_visions}</div>
+                      <div className="text-2xl font-bold text-slate-100">{statsData.total_visions}</div>
                       <div className="text-sm text-slate-400">Total Visions</div>
                     </div>
                   </CardContent>
@@ -359,7 +375,7 @@ export default function VisionSpirit({
                 <Card className="bg-slate-700 border-slate-600">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">{stats.confirmed_visions}</div>
+                      <div className="text-2xl font-bold text-green-400">{statsData.confirmed_visions}</div>
                       <div className="text-sm text-slate-400">Confirmed</div>
                     </div>
                   </CardContent>
@@ -368,7 +384,7 @@ export default function VisionSpirit({
                 <Card className="bg-slate-700 border-slate-600">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-400">{(stats.accuracy_rate * 100).toFixed(1)}%</div>
+                      <div className="text-2xl font-bold text-blue-400">{(statsData.accuracy_rate * 100).toFixed(1)}%</div>
                       <div className="text-sm text-slate-400">Accuracy</div>
                     </div>
                   </CardContent>
@@ -377,7 +393,7 @@ export default function VisionSpirit({
                 <Card className="bg-slate-700 border-slate-600">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-400">{stats.vision_history.length}</div>
+                      <div className="text-2xl font-bold text-purple-400">{statsData.vision_history.length}</div>
                       <div className="text-sm text-slate-400">History Records</div>
                     </div>
                   </CardContent>
@@ -390,8 +406,8 @@ export default function VisionSpirit({
             <div className="space-y-4">
               <ScrollArea className="h-96">
                 <div className="space-y-3">
-                  {visionHistory?.history && visionHistory.history.length > 0 ? (
-                    visionHistory.history.map((record: any, index: number) => (
+                  {historyData && historyData.length > 0 ? (
+                    historyData.map((record: any, index: number) => (
                       <Card key={index} className="bg-slate-700 border-slate-600">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-2">
