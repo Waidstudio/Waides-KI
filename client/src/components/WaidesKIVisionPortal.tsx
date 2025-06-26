@@ -72,7 +72,13 @@ export default function WaidesKIVisionPortal() {
   // Chat mutation
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const endpoint = oracleEnabled ? '/api/chat/oracle' : '/api/chat';
+      let endpoint = '/api/chat';
+      if (reasoningMode) {
+        endpoint = '/api/chat/reasoning';
+      } else if (oracleEnabled) {
+        endpoint = '/api/chat/oracle';
+      }
+      
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,8 +87,14 @@ export default function WaidesKIVisionPortal() {
       if (!response.ok) throw new Error('Failed to send message');
       return response.json();
     },
-    onSuccess: (data: OracleResponse) => {
-      typeMessage(data.answer, data.source, data.confidence, data.konslangProcessing);
+    onSuccess: (data: any) => {
+      // Handle reasoning responses
+      if (data.reasoning && Array.isArray(data.reasoning)) {
+        typeMessage(data.answer, 'reasoning', data.confidence, undefined, data.reasoning);
+      } else {
+        // Handle oracle/standard responses
+        typeMessage(data.answer, data.source, data.confidence, data.konslangProcessing);
+      }
     },
     onError: (error) => {
       console.error('Chat error:', error);
@@ -106,7 +118,7 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
-  const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string) => {
+  const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     setIsTyping(true);
     setCurrentTypingMessage('');
     
@@ -126,7 +138,8 @@ export default function WaidesKIVisionPortal() {
           timestamp: new Date(),
           source,
           confidence,
-          konslangProcessing
+          konslangProcessing,
+          reasoning
         };
         
         setMessages(prev => [...prev, newMessage]);
@@ -273,12 +286,55 @@ export default function WaidesKIVisionPortal() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
-          <Button 
-            className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 rounded-lg font-bold"
-            onClick={() => setOracleEnabled(!oracleEnabled)}
-          >
-            {oracleEnabled ? 'Oracle Mode ✦' : 'Get Oracle ✦'}
-          </Button>
+          
+          {/* Chat Mode Selection */}
+          <div className="flex items-center gap-1 bg-gray-800/60 rounded-lg p-1">
+            <Button
+              onClick={() => {
+                setOracleEnabled(false);
+                setReasoningMode(false);
+              }}
+              variant="ghost"
+              size="sm"
+              className={`text-xs px-2 py-1 ${
+                !oracleEnabled && !reasoningMode
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-700/50'
+              }`}
+            >
+              Standard
+            </Button>
+            <Button
+              onClick={() => {
+                setOracleEnabled(true);
+                setReasoningMode(false);
+              }}
+              variant="ghost"
+              size="sm"
+              className={`text-xs px-2 py-1 ${
+                oracleEnabled && !reasoningMode
+                  ? 'bg-purple-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-700/50'
+              }`}
+            >
+              Oracle ✦
+            </Button>
+            <Button
+              onClick={() => {
+                setOracleEnabled(false);
+                setReasoningMode(true);
+              }}
+              variant="ghost"
+              size="sm"
+              className={`text-xs px-2 py-1 ${
+                reasoningMode
+                  ? 'bg-cyan-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-700/50'
+              }`}
+            >
+              Reasoning 🧠
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -309,9 +365,44 @@ export default function WaidesKIVisionPortal() {
                 <Brain className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
-              <p className="text-gray-400 max-w-md">
+              <p className="text-gray-400 max-w-md mb-4">
                 Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
+              <div className="text-sm text-gray-500">
+                {reasoningMode && (
+                  <div className="bg-cyan-900/30 border border-cyan-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Brain className="w-4 h-4 text-cyan-400" />
+                      <span className="text-cyan-300 font-medium">Advanced Reasoning Mode Active</span>
+                    </div>
+                    <p className="text-cyan-200/80">
+                      I'll think step-by-step, gather information from all connected systems, and provide comprehensive analysis.
+                    </p>
+                  </div>
+                )}
+                {oracleEnabled && !reasoningMode && (
+                  <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Zap className="w-4 h-4 text-purple-400" />
+                      <span className="text-purple-300 font-medium">Oracle Mode Active</span>
+                    </div>
+                    <p className="text-purple-200/80">
+                      Connected to dual AI systems for enhanced mystical and technical insights.
+                    </p>
+                  </div>
+                )}
+                {!oracleEnabled && !reasoningMode && (
+                  <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <MessageCircle className="w-4 h-4 text-blue-400" />
+                      <span className="text-blue-300 font-medium">Standard Chat Mode</span>
+                    </div>
+                    <p className="text-blue-200/80">
+                      Basic spiritual chat interface with KonsLang wisdom and trading guidance.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
