@@ -1,5 +1,7 @@
 import BotMemory from "./BotMemory";
 import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
+import UKC from './UKC';
+import { addPendingQuestion, autoTeachFromConversation } from './KnowledgeLoader';
 
 // Dynamic memory for auto-learning - lives in runtime memory only
 let dynamicMemory = {};
@@ -30,6 +32,20 @@ function getCurrentETHPrice() {
   return localStorage.getItem("ethPrice") || "2438.37";
 }
 
+// 🌌 Universal Knowledge Core (UKC) Checker
+function checkUKC(q) {
+  const all = UKC.categories;
+  for (const category in all) {
+    const topic = all[category];
+    for (const question in topic) {
+      if (q.includes(question)) {
+        return topic[question];
+      }
+    }
+  }
+  return null;
+}
+
 // ✨ Very simple smart match function
 export default function getSmartAnswer(userInput) {
   const q = userInput.toLowerCase().trim();
@@ -38,6 +54,10 @@ export default function getSmartAnswer(userInput) {
   if (dynamicMemory[q]) {
     return dynamicMemory[q];
   }
+
+  // 🌌 Universal Knowledge Core (UKC) - Primary Knowledge Source
+  const ukcAnswer = checkUKC(q);
+  if (ukcAnswer) return ukcAnswer;
 
   // Moral Layer Processing (Emotion + Behavior Sensing)
   const emotionalResponse = detectEmotion(q);
@@ -112,7 +132,9 @@ export default function getSmartAnswer(userInput) {
   if (q.includes("thank") || q.includes("grateful")) return "Your gratitude creates positive energy in the markets. This is the way of the spiritual trader.";
   if (q.includes("confused") || q.includes("lost")) return "Confusion is the beginning of understanding. Ask me specific questions and I will illuminate the path.";
 
-  // Auto-Learning Module: If no match, learn it
-  dynamicMemory[q] = "🤔 I'm still learning this. I've saved your question for review.";
-  return dynamicMemory[q];
+  // If no match found, add to pending questions for learning
+  addPendingQuestion(userInput);
+  
+  // Return null to allow fallback to server-side intelligence
+  return null;
 }
