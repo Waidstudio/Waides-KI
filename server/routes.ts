@@ -87,6 +87,11 @@ import { WaidesKIHealingPrayerEngine } from './services/waidesKIHealingPrayerEng
 import { WaidesKIDreamfirePurifier } from './services/waidesKIDreamfirePurifier.js';
 import { WaidesKISpiritualExhaustionMonitor } from './services/waidesKISpiritualExhaustionMonitor.js';
 import { WaidesKIHealingGlyphs } from './services/waidesKIHealingGlyphs.js';
+// STEP 44: Conscious Dream Navigation + Ethical Compass AI
+import { WaidesKIEthicalCompass } from './services/waidesKIEthicalCompass.js';
+import { WaidesKISoulWeightFilter } from './services/waidesKISoulWeightFilter.js';
+import { WaidesKIMarketClarityChecker } from './services/waidesKIMarketClarityChecker.js';
+import { WaidesKITradeConscience } from './services/waidesKITradeConscience.js';
 import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
 import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
 import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
@@ -122,6 +127,11 @@ let waidesKIHealingPrayerEngine: WaidesKIHealingPrayerEngine;
 let waidesKIDreamfirePurifier: WaidesKIDreamfirePurifier;
 let waidesKISpiritualExhaustionMonitor: WaidesKISpiritualExhaustionMonitor;
 let waidesKIHealingGlyphs: WaidesKIHealingGlyphs;
+// STEP 44: Conscious Dream Navigation + Ethical Compass AI services
+let waidesKIEthicalCompass: WaidesKIEthicalCompass;
+let waidesKISoulWeightFilter: WaidesKISoulWeightFilter;
+let waidesKIMarketClarityChecker: WaidesKIMarketClarityChecker;
+let waidesKITradeConscience: WaidesKITradeConscience;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -173,6 +183,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     waidesKIMemorySigilVault,
     waidesKISpiritualExhaustionMonitor
   );
+
+  // Initialize STEP 44: Conscious Dream Navigation + Ethical Compass AI
+  waidesKIEthicalCompass = new WaidesKIEthicalCompass();
+  waidesKISoulWeightFilter = new WaidesKISoulWeightFilter();
+  waidesKIMarketClarityChecker = new WaidesKIMarketClarityChecker();
+  waidesKITradeConscience = new WaidesKITradeConscience();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -9172,6 +9188,396 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in STEP 42 demo workflow:', error);
       res.status(500).json({ error: 'Failed to execute STEP 42 demo workflow' });
+    }
+  });
+
+  // =============================================================================
+  // STEP 44: Conscious Dream Navigation + Ethical Compass AI - API Endpoints
+  // =============================================================================
+
+  // Ethical Compass - Evaluate ethics of trading setup
+  app.post('/api/waides-ki/ethical-compass/evaluate', (req, res) => {
+    try {
+      const { trading_setup } = req.body;
+      const ethicsAnalysis = waidesKIEthicalCompass.evaluateEthics(trading_setup);
+      
+      res.json({
+        success: true,
+        ethics_analysis: ethicsAnalysis,
+        message: `Ethics evaluation complete: ${ethicsAnalysis.moral_judgment} (${ethicsAnalysis.overall_ethics_score})`
+      });
+    } catch (error) {
+      console.error('Error evaluating ethics:', error);
+      res.status(500).json({ error: 'Failed to evaluate trading ethics' });
+    }
+  });
+
+  // Quick ethics check
+  app.get('/api/waides-ki/ethical-compass/quick-check', (req, res) => {
+    try {
+      const { rsi, volume_spike, time_zone } = req.query;
+      const ethicsOk = waidesKIEthicalCompass.quickEthicsCheck(
+        Number(rsi),
+        volume_spike === 'true',
+        time_zone as string
+      );
+      
+      res.json({
+        success: true,
+        ethics_approved: ethicsOk,
+        message: ethicsOk ? 'Quick ethics check passed' : 'Ethics concerns detected'
+      });
+    } catch (error) {
+      console.error('Error in quick ethics check:', error);
+      res.status(500).json({ error: 'Failed to perform quick ethics check' });
+    }
+  });
+
+  // Get ethical guidelines
+  app.get('/api/waides-ki/ethical-compass/guidelines', (req, res) => {
+    try {
+      const guidelines = waidesKIEthicalCompass.getEthicalGuidelines();
+      
+      res.json({
+        success: true,
+        ethical_guidelines: guidelines,
+        message: 'Ethical trading guidelines retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting ethical guidelines:', error);
+      res.status(500).json({ error: 'Failed to get ethical guidelines' });
+    }
+  });
+
+  // Soul Weight Filter - Calculate soul weight of trade
+  app.post('/api/waides-ki/soul-weight/calculate', (req, res) => {
+    try {
+      const { trade_metadata } = req.body;
+      const soulAnalysis = waidesKISoulWeightFilter.calculateSoulWeight(trade_metadata);
+      
+      res.json({
+        success: true,
+        soul_analysis: soulAnalysis,
+        message: `Soul weight calculated: ${soulAnalysis.spiritual_verdict} (${soulAnalysis.overall_soul_weight})`
+      });
+    } catch (error) {
+      console.error('Error calculating soul weight:', error);
+      res.status(500).json({ error: 'Failed to calculate soul weight' });
+    }
+  });
+
+  // Quick soul check
+  app.get('/api/waides-ki/soul-weight/quick-check', (req, res) => {
+    try {
+      const { motivation, trend_conflict, loss_rate } = req.query;
+      const soulOk = waidesKISoulWeightFilter.quickSoulCheck(
+        motivation as string,
+        trend_conflict === 'true',
+        Number(loss_rate)
+      );
+      
+      res.json({
+        success: true,
+        soul_approved: soulOk,
+        message: soulOk ? 'Soul weight check passed' : 'Spiritual concerns detected'
+      });
+    } catch (error) {
+      console.error('Error in quick soul check:', error);
+      res.status(500).json({ error: 'Failed to perform quick soul check' });
+    }
+  });
+
+  // Purify trading intention
+  app.post('/api/waides-ki/soul-weight/purify', (req, res) => {
+    try {
+      const { trade_metadata } = req.body;
+      const purificationResult = waidesKISoulWeightFilter.purifyTradingIntention(trade_metadata);
+      
+      res.json({
+        success: true,
+        purification_result: purificationResult,
+        message: `Purification complete. Light enhancement: +${purificationResult.light_enhancement}`
+      });
+    } catch (error) {
+      console.error('Error purifying trading intention:', error);
+      res.status(500).json({ error: 'Failed to purify trading intention' });
+    }
+  });
+
+  // Market Clarity Checker - Analyze market clarity and manipulation
+  app.post('/api/waides-ki/market-clarity/analyze', (req, res) => {
+    try {
+      const { market_indicators } = req.body;
+      const clarityAnalysis = waidesKIMarketClarityChecker.analyzeClarityScore(market_indicators);
+      
+      res.json({
+        success: true,
+        clarity_analysis: clarityAnalysis,
+        message: `Market clarity analyzed: ${clarityAnalysis.truth_verdict} (${clarityAnalysis.overall_clarity_score})`
+      });
+    } catch (error) {
+      console.error('Error analyzing market clarity:', error);
+      res.status(500).json({ error: 'Failed to analyze market clarity' });
+    }
+  });
+
+  // Quick clarity check
+  app.get('/api/waides-ki/market-clarity/quick-check', (req, res) => {
+    try {
+      const { fakeouts, volume_auth, manip_signals } = req.query;
+      const clarityOk = waidesKIMarketClarityChecker.quickClarityCheck(
+        Number(fakeouts),
+        Number(volume_auth),
+        Number(manip_signals)
+      );
+      
+      res.json({
+        success: true,
+        clarity_approved: clarityOk,
+        message: clarityOk ? 'Market clarity check passed' : 'Market manipulation concerns detected'
+      });
+    } catch (error) {
+      console.error('Error in quick clarity check:', error);
+      res.status(500).json({ error: 'Failed to perform quick clarity check' });
+    }
+  });
+
+  // Detect manipulation patterns
+  app.post('/api/waides-ki/market-clarity/detect-manipulation', (req, res) => {
+    try {
+      const { market_data } = req.body;
+      const manipulationAnalysis = waidesKIMarketClarityChecker.detectManipulationPatterns(market_data);
+      
+      res.json({
+        success: true,
+        manipulation_analysis: manipulationAnalysis,
+        message: `Manipulation analysis complete. ${manipulationAnalysis.detected_patterns.length} patterns detected`
+      });
+    } catch (error) {
+      console.error('Error detecting manipulation patterns:', error);
+      res.status(500).json({ error: 'Failed to detect manipulation patterns' });
+    }
+  });
+
+  // Trade Conscience - Final moral decision for trades
+  app.post('/api/waides-ki/trade-conscience/evaluate', (req, res) => {
+    try {
+      const { trading_setup, trade_metadata, market_indicators } = req.body;
+      const conscienceVerdict = waidesKITradeConscience.evaluateTradeConscience(
+        trading_setup,
+        trade_metadata,
+        market_indicators
+      );
+      
+      res.json({
+        success: true,
+        conscience_verdict: conscienceVerdict,
+        message: conscienceVerdict.allow_trade 
+          ? `Trade approved: ${conscienceVerdict.moral_verdict}` 
+          : `Trade blocked: ${conscienceVerdict.moral_verdict}`
+      });
+    } catch (error) {
+      console.error('Error evaluating trade conscience:', error);
+      res.status(500).json({ error: 'Failed to evaluate trade conscience' });
+    }
+  });
+
+  // Waides KI final approval (main API endpoint)
+  app.post('/api/waides-ki/trade-conscience/final-approval', (req, res) => {
+    try {
+      const { trading_setup, trade_metadata, market_indicators } = req.body;
+      const approvalResult = waidesKITradeConscience.waidesKIFinalApproval(
+        trading_setup,
+        trade_metadata,
+        market_indicators
+      );
+      
+      res.json({
+        success: true,
+        approved: approvalResult.approved,
+        verdict: approvalResult.verdict,
+        message: approvalResult.message
+      });
+    } catch (error) {
+      console.error('Error in final approval:', error);
+      res.status(500).json({ error: 'Failed to process final approval' });
+    }
+  });
+
+  // Quick conscience check
+  app.get('/api/waides-ki/trade-conscience/quick-check', (req, res) => {
+    try {
+      const { rsi, motivation, fakeouts, volume_auth } = req.query;
+      const conscienceOk = waidesKITradeConscience.quickConscienceCheck(
+        Number(rsi),
+        motivation as string,
+        Number(fakeouts),
+        Number(volume_auth)
+      );
+      
+      res.json({
+        success: true,
+        conscience_approved: conscienceOk,
+        message: conscienceOk ? 'Quick conscience check passed' : 'Moral concerns detected'
+      });
+    } catch (error) {
+      console.error('Error in quick conscience check:', error);
+      res.status(500).json({ error: 'Failed to perform quick conscience check' });
+    }
+  });
+
+  // Get conscience statistics
+  app.get('/api/waides-ki/trade-conscience/stats', (req, res) => {
+    try {
+      const stats = waidesKITradeConscience.getConscienceStats();
+      
+      res.json({
+        success: true,
+        conscience_stats: stats,
+        message: `Conscience statistics: ${stats.total_evaluations} evaluations, ${stats.blessing_rate}% blessing rate`
+      });
+    } catch (error) {
+      console.error('Error getting conscience stats:', error);
+      res.status(500).json({ error: 'Failed to get conscience statistics' });
+    }
+  });
+
+  // Purify trading decision
+  app.post('/api/waides-ki/trade-conscience/purify', (req, res) => {
+    try {
+      const { trading_setup, trade_metadata, market_indicators } = req.body;
+      const purificationResult = waidesKITradeConscience.purifyTradingDecision(
+        trading_setup,
+        trade_metadata,
+        market_indicators
+      );
+      
+      res.json({
+        success: true,
+        purification_result: purificationResult,
+        message: `Purification complete. Conscience improvement: +${purificationResult.conscience_improvement}`
+      });
+    } catch (error) {
+      console.error('Error purifying trading decision:', error);
+      res.status(500).json({ error: 'Failed to purify trading decision' });
+    }
+  });
+
+  // Complete STEP 44 demo workflow
+  app.post('/api/waides-ki/ethical-compass/demo-workflow', async (req, res) => {
+    try {
+      // Demo trading setup with mixed ethical characteristics
+      const demoTradingSetup = {
+        rsi: 82,                    // Slightly overbought
+        volume_spike: true,
+        volume_tied_to_news: false, // Potential manipulation
+        time_of_day: 'us_open',
+        price_movement: 3.2,
+        trend_strength: 0.7,
+        market_volatility: 0.6,
+        reversal_signals: 1
+      };
+
+      // Demo trade metadata
+      const demoTradeMetadata = {
+        goal: 'balanced growth with risk management',
+        motivation: 'BALANCED' as const,
+        trend_conflict: false,
+        symbol_history_loss_rate: 0.35,
+        risk_reward_ratio: 2.1,
+        position_size_relative: 0.08,
+        emotional_state: 'calm and focused',
+        time_since_last_trade: 6,
+        consecutive_losses: 1,
+        profit_target_realistic: true
+      };
+
+      // Demo market indicators
+      const demoMarketIndicators = {
+        fakeouts: 1,
+        confirming_indicators: true,
+        volume_authenticity: 0.75,
+        price_action_coherence: 0.8,
+        support_resistance_validity: 0.85,
+        institutional_flow_alignment: true,
+        manipulation_signals: ['minor volume irregularity'],
+        whipsaw_frequency: 2,
+        breakout_failure_rate: 0.25,
+        volume_price_divergence: false
+      };
+
+      // Step 1: Individual component analysis
+      const ethicsAnalysis = waidesKIEthicalCompass.evaluateEthics(demoTradingSetup);
+      const soulAnalysis = waidesKISoulWeightFilter.calculateSoulWeight(demoTradeMetadata);
+      const clarityAnalysis = waidesKIMarketClarityChecker.analyzeClarityScore(demoMarketIndicators);
+
+      // Step 2: Final conscience evaluation
+      const conscienceVerdict = waidesKITradeConscience.evaluateTradeConscience(
+        demoTradingSetup,
+        demoTradeMetadata,
+        demoMarketIndicators
+      );
+
+      // Step 3: Waides KI final approval
+      const finalApproval = waidesKITradeConscience.waidesKIFinalApproval(
+        demoTradingSetup,
+        demoTradeMetadata,
+        demoMarketIndicators
+      );
+
+      // Step 4: Get comprehensive statistics
+      const conscienceStats = waidesKITradeConscience.getConscienceStats();
+      const ethicalGuidelines = waidesKIEthicalCompass.getEthicalGuidelines();
+
+      // Step 5: Demonstrate purification if needed
+      const purificationResult = waidesKITradeConscience.purifyTradingDecision(
+        demoTradingSetup,
+        demoTradeMetadata,
+        demoMarketIndicators
+      );
+
+      res.json({
+        success: true,
+        demo_setup: {
+          trading_setup: demoTradingSetup,
+          trade_metadata: demoTradeMetadata,
+          market_indicators: demoMarketIndicators
+        },
+        component_analysis: {
+          ethics_analysis: ethicsAnalysis,
+          soul_analysis: soulAnalysis,
+          clarity_analysis: clarityAnalysis
+        },
+        conscience_evaluation: {
+          verdict: conscienceVerdict,
+          final_approval: finalApproval,
+          approval_status: finalApproval.approved ? 'APPROVED' : 'BLOCKED'
+        },
+        system_insights: {
+          conscience_stats: conscienceStats,
+          ethical_guidelines: ethicalGuidelines,
+          purification_demo: purificationResult
+        },
+        workflow_steps: [
+          '1. Analyzed trading setup through Ethical Compass for moral score',
+          '2. Evaluated trade metadata through Soul Weight Filter for spiritual alignment',
+          '3. Assessed market indicators through Market Clarity Checker for manipulation risk',
+          '4. Combined all analyses through Trade Conscience for final moral verdict',
+          '5. Applied Waides KI Final Approval gate with blessing or blocking decision',
+          '6. Generated purification suggestions for improved spiritual alignment'
+        ],
+        ethical_system_status: {
+          components_active: 4,
+          moral_framework: 'Conscious Dream Navigation + Ethical Compass AI',
+          decision_basis: 'Ethics + Soul Weight + Market Clarity = Conscience Score',
+          approval_threshold: '65% minimum conscience score required',
+          blessing_capability: conscienceVerdict.trade_blessing ? 'Active' : 'Inactive'
+        },
+        message: 'STEP 44 demo workflow completed successfully - Waides KI now trades with complete moral awareness and ethical intelligence'
+      });
+    } catch (error) {
+      console.error('Error in STEP 44 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 44 demo workflow' });
     }
   });
 
