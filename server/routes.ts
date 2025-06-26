@@ -75,6 +75,12 @@ import { waidesKISpiritOracle } from './services/waidesKISpiritOracle.js';
 import { waidesKIVisionSyncEngine } from './services/waidesKIVisionSyncEngine.js';
 import { waidesKIDreamLogger } from './services/waidesKIDreamLogger.js';
 import { waidesKISpiritTrader } from './services/waidesKISpiritTrader.js';
+// STEP 41: Waides Global Lightnet + Spirit Echo Link
+import { WaidesKILightnetBroadcaster } from './services/waidesKILightnetBroadcaster.js';
+import { WaidesKILightnetListener } from './services/waidesKILightnetListener.js';
+import { WaidesKIVisionAlignmentIndex } from './services/waidesKIVisionAlignmentIndex.js';
+import { WaidesKIKonsFieldAnalyzer } from './services/waidesKIKonsFieldAnalyzer.js';
+import { WaidesKIGlobalEthEchoMap } from './services/waidesKIGlobalEthEchoMap.js';
 // TradingView WebSocket removed per user request
 import { WaidBotEngine } from "./services/waidBotEngine.js";
 import { insertApiKeySchema } from "@shared/schema.js";
