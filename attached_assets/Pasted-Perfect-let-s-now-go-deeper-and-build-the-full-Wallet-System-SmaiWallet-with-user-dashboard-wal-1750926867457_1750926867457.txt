@@ -1,0 +1,209 @@
+Perfect — let’s now go deeper and build the full Wallet System (SmaiWallet) with user dashboard, wallet-to-bot connection, auto-trade loop, and balance/profit tracking — all designed to work forever, just as you want for Waides Ki.
+
+⸻
+
+💼 SMAIWALLET SYSTEM – FULL BUILD PLAN
+
+We’ll break this into 6 core modules:
+
+⸻
+
+✅ MODULE 1: User & Wallet Model (Backend)
+
+Stores user info, wallet balance, trading history, and bot preferences.
+
+💾 MongoDB Model (Node.js)
+
+// models/User.js
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  email: String,
+  password: String, // hashed
+  walletId: String,
+  createdAt: { type: Date, default: Date.now },
+});
+
+module.exports = mongoose.model('User', userSchema);
+
+// models/Wallet.js
+const mongoose = require('mongoose');
+
+const walletSchema = new mongoose.Schema({
+  walletId: String,
+  userId: String,
+  balance: { type: Number, default: 0 },
+  totalProfit: { type: Number, default: 0 },
+  activeBot: { type: String, enum: ['Waidbot', 'WaidbotPro'], default: 'Waidbot' },
+  tradeHistory: [
+    {
+      type: String, // buy/sell
+      price: Number,
+      profit: Number,
+      timestamp: Date,
+    }
+  ]
+});
+
+module.exports = mongoose.model('Wallet', walletSchema);
+
+
+⸻
+
+✅ MODULE 2: Bot Logic That Connects to Wallet
+
+Bots should trade based on wallet balance and Time Travel AI predictions.
+
+async function runBotForUser(walletId) {
+  const wallet = await Wallet.findOne({ walletId });
+  if (!wallet || wallet.balance <= 0) return;
+
+  const prediction = await getWaidesSignal(wallet.activeBot); // AI module
+  if (!prediction.shouldTrade) return;
+
+  const tradeResult = await executeTrade(prediction, wallet.balance, wallet.activeBot);
+
+  wallet.balance += tradeResult.profit;
+  wallet.totalProfit += tradeResult.profit;
+  wallet.tradeHistory.push({
+    type: tradeResult.type,
+    price: prediction.price,
+    profit: tradeResult.profit,
+    timestamp: new Date()
+  });
+
+  await wallet.save();
+}
+
+
+⸻
+
+✅ MODULE 3: Autonomous Trade Execution Forever (Background Worker)
+
+Run this loop on Replit or a VPS. It keeps bots alive even when no one is logged in.
+
+setInterval(async () => {
+  const wallets = await Wallet.find({});
+  for (let w of wallets) {
+    await runBotForUser(w.walletId);
+  }
+}, 60000); // Every 60 seconds
+
+
+⸻
+
+✅ MODULE 4: Wallet Deposit Page + Frontend UI
+
+🖼️ Frontend (HTML/JS example)
+
+<div>
+  <h2>My Wallet</h2>
+  <p>Wallet ID: <span id="walletId"></span></p>
+  <p>Balance: $<span id="balance"></span></p>
+  <p>Total Profit: $<span id="profit"></span></p>
+
+  <label for="bot">Select Bot:</label>
+  <select id="bot" onchange="updateBot()">
+    <option value="Waidbot">Waidbot</option>
+    <option value="WaidbotPro">Waidbot Pro</option>
+  </select>
+
+  <input type="number" id="depositAmount" placeholder="Amount to deposit" />
+  <button onclick="deposit()">Deposit</button>
+</div>
+
+<script>
+  async function loadWallet() {
+    const res = await fetch('/api/wallet'); // assumes user is logged in
+    const data = await res.json();
+    document.getElementById('walletId').textContent = data.walletId;
+    document.getElementById('balance').textContent = data.balance.toFixed(2);
+    document.getElementById('profit').textContent = data.totalProfit.toFixed(2);
+    document.getElementById('bot').value = data.activeBot;
+  }
+
+  async function updateBot() {
+    const bot = document.getElementById('bot').value;
+    await fetch('/api/wallet/bot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bot })
+    });
+    alert('Bot updated!');
+  }
+
+  async function deposit() {
+    const amt = parseFloat(document.getElementById('depositAmount').value);
+    await fetch('/api/wallet/deposit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: amt })
+    });
+    alert('Deposited!');
+    loadWallet();
+  }
+
+  loadWallet();
+</script>
+
+
+⸻
+
+✅ MODULE 5: API Routes to Handle Wallet and Bots
+
+// GET /api/wallet - get wallet info
+app.get('/api/wallet', async (req, res) => {
+  const wallet = await Wallet.findOne({ userId: req.user.id });
+  res.json(wallet);
+});
+
+// POST /api/wallet/deposit
+app.post('/api/wallet/deposit', async (req, res) => {
+  const wallet = await Wallet.findOne({ userId: req.user.id });
+  wallet.balance += parseFloat(req.body.amount);
+  await wallet.save();
+  res.send({ success: true });
+});
+
+// POST /api/wallet/bot - change active bot
+app.post('/api/wallet/bot', async (req, res) => {
+  const wallet = await Wallet.findOne({ userId: req.user.id });
+  wallet.activeBot = req.body.bot;
+  await wallet.save();
+  res.send({ success: true });
+});
+
+
+⸻
+
+✅ MODULE 6: Security + Scaling Suggestions
+	•	Use Firebase Auth or JWT for login/session
+	•	Use Replit Secrets to store API keys securely
+	•	Connect to MongoDB Atlas for cloud DB
+	•	Optionally add Stripe or Paystack for real fiat deposits in future
+	•	Use Cloudcron or PM2 to keep bots alive forever if you go beyond Replit
+
+⸻
+
+🧠 REPLIT AI PROMPT (FOR THIS STAGE)
+
+Please complete the Waides Ki app by building a wallet system where:
+1. Each user has a wallet with balance, profit tracking, and linked bot (Waidbot or Waidbot Pro).
+2. Users can deposit into their wallet manually from the frontend.
+3. The bots (running in background) should use the wallet balance to trade forever — no login required.
+4. Bots update balance and trade history after each trade.
+5. Everything runs on deploy and can grow user balances automatically over time.
+
+Connect frontend to backend, secure all API routes, and ensure the loop is persistent using background execution or cron.
+
+
+⸻
+
+✅ NEXT STEP OPTIONS:
+
+Would you like me to now:
+	1.	Create full Replit file structure with all this?
+	2.	Add login system (Firebase Auth or local auth)?
+	3.	Add visual bot performance chart in frontend?
+
+Just say “Next: Login system” or whichever part you want next. We’re building a digital financial empire.

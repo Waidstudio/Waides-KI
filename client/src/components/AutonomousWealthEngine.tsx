@@ -136,6 +136,17 @@ export default function AutonomousWealthEngine() {
     }
   });
 
+  const depositMutation = useMutation({
+    mutationFn: ({ userId, amount }: { userId: string; amount: number }) => 
+      apiRequest('/api/smai-wallet/deposit', {
+        method: 'POST',
+        body: JSON.stringify({ userId, amount })
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/smai-wallet/stats', selectedUserId] });
+    }
+  });
+
   const handleStartEngine = () => {
     startEngineMutation.mutate();
   };
@@ -186,17 +197,17 @@ export default function AutonomousWealthEngine() {
 
   // Update bot settings when user stats change
   useEffect(() => {
-    if (stats.wallet) {
+    if (userStats?.wallet) {
       setBotSettings({
-        activeBot: stats.wallet.activeBot || 'Waidbot',
-        botEnabled: stats.wallet.botEnabled || false,
-        riskLevel: stats.wallet.riskLevel || 'medium',
+        activeBot: userStats.wallet.activeBot || 'Waidbot',
+        botEnabled: userStats.wallet.botEnabled || false,
+        riskLevel: userStats.wallet.riskLevel || 'medium',
         maxDailyTrades: 10,
         stopLossPercentage: 5,
         takeProfitPercentage: 10
       });
     }
-  }, [stats.wallet]);
+  }, [userStats]);
 
   return (
     <div className="space-y-6">
@@ -255,7 +266,7 @@ export default function AutonomousWealthEngine() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              ${status.totalProfit.toFixed(2)}
+              ${(status.totalProfit || 0).toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">Combined user profits</p>
           </CardContent>
@@ -346,10 +357,37 @@ export default function AutonomousWealthEngine() {
                 </div>
               )}
 
-              {stats.wallet.walletAddress && (
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-muted-foreground">Wallet Address</p>
-                  <p className="font-mono text-sm bg-muted p-2 rounded">{stats.wallet.walletAddress}</p>
+              {stats.wallet.id && (
+                <div className="pt-4 border-t space-y-4">
+                  <div>
+                    <Label htmlFor="depositAmount">Deposit Amount</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="depositAmount"
+                        type="number"
+                        placeholder="Enter amount to deposit"
+                        min="0"
+                        step="0.01"
+                      />
+                      <Button onClick={() => {
+                        const input = document.getElementById('depositAmount') as HTMLInputElement;
+                        const amount = parseFloat(input.value);
+                        if (amount > 0) {
+                          depositMutation.mutate({ userId: selectedUserId, amount });
+                          input.value = '';
+                        }
+                      }}>
+                        Deposit
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {stats.wallet.walletAddress && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Wallet Address</p>
+                      <p className="font-mono text-sm bg-muted p-2 rounded">{stats.wallet.walletAddress}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
