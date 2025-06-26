@@ -129,6 +129,7 @@
   /* Webkit scrollbar styling */
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
@@ -143,5 +144,9 @@
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: #a855f7;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-corner {
+    background: #1f2937;
   }
 }

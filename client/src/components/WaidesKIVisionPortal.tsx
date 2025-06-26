@@ -1392,11 +1392,12 @@ export default function WaidesKIVisionPortal() {
           </CardHeader>
           <CardContent className="p-3">
             <div 
-              className="grid grid-cols-3 gap-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-800 pr-2"
+              className="grid grid-rows-2 grid-flow-col gap-2 max-w-full overflow-x-auto scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-800 pb-2"
               style={{ 
-                scrollSnapType: 'y mandatory',
+                scrollSnapType: 'x mandatory',
                 scrollbarWidth: 'thin',
-                scrollbarColor: '#9333ea #1f2937'
+                scrollbarColor: '#9333ea #1f2937',
+                gridAutoColumns: 'minmax(140px, 1fr)'
               }}
             >
               {/* Quick Actions */}
