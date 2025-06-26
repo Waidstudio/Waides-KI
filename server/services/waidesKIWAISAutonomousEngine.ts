@@ -303,7 +303,8 @@ export class WaidesKIWAISAutonomousEngine {
     // Test Trinity Brain decision (if available)
     let trinity_decision = null;
     try {
-      trinity_decision = await waidesKIBrainHiveController.makeDecision(dangerousPattern, {});
+      const trinityBrain = new WaidesKIBrainHiveController();
+      trinity_decision = await trinityBrain.makeDecision();
     } catch (error) {
       trinity_decision = { decision: 'HOLD', confidence: 50, reasoning: 'Trinity system initializing' };
     }

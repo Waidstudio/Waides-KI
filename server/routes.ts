@@ -11310,5 +11310,189 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 50: Ancestral Whisper Layer API Endpoints
+  app.get('/api/whisper/stats', async (req, res) => {
+    try {
+      const stats = waidesKIPastTradeSpirits.getSpiritStatistics();
+      res.json({
+        success: true,
+        spirit_statistics: stats,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get spirit statistics' });
+    }
+  });
+
+  app.post('/api/whisper/ask', async (req, res) => {
+    try {
+      const context = req.body;
+      
+      if (!context.price || !context.rsi || !context.ema50 || !context.ema200) {
+        return res.status(400).json({ error: 'Missing required context fields: price, rsi, ema50, ema200' });
+      }
+
+      const guidance = waidesKIAncestralWhisperEngine.ask(context);
+      
+      res.json({
+        success: true,
+        ancestral_guidance: guidance,
+        context_analyzed: context,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to consult ancestral spirits' });
+    }
+  });
+
+  app.post('/api/whisper/validate-trade', async (req, res) => {
+    try {
+      const { context, proposed_action } = req.body;
+      
+      if (!context || !proposed_action) {
+        return res.status(400).json({ error: 'Missing required fields: context and proposed_action' });
+      }
+
+      const validation = waidesKIAncestralWhisperEngine.validateTradeDecision(context, proposed_action);
+      
+      res.json({
+        success: true,
+        trade_validation: validation,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to validate trade with ancestors' });
+    }
+  });
+
+  app.post('/api/whisper/filter-trade', async (req, res) => {
+    try {
+      const tradeRequest = req.body;
+      
+      if (!tradeRequest.action || !tradeRequest.context) {
+        return res.status(400).json({ error: 'Missing required fields: action and context' });
+      }
+
+      const filterDecision = waidesKIWhisperGuidanceFilter.applyAncestralGuidance(tradeRequest);
+      
+      res.json({
+        success: true,
+        filter_decision: filterDecision,
+        trade_request: tradeRequest,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to apply ancestral guidance filter' });
+    }
+  });
+
+  app.post('/api/whisper/record-spirit', async (req, res) => {
+    try {
+      const { trade_id, context, feedback, result, profit_loss, market_conditions, emotional_state } = req.body;
+      
+      if (!trade_id || !context || !feedback || !result) {
+        return res.status(400).json({ error: 'Missing required fields: trade_id, context, feedback, result' });
+      }
+
+      const contextHash = waidesKIWhisperContextAnalyzer.getContextHash(context);
+      
+      waidesKIPastTradeSpirits.recordSpirit(
+        trade_id,
+        contextHash,
+        context,
+        feedback,
+        result,
+        profit_loss || 0,
+        market_conditions || '',
+        emotional_state || 'neutral'
+      );
+      
+      res.json({
+        success: true,
+        message: 'Trade spirit recorded successfully',
+        trade_id,
+        context_hash: contextHash,
+        timestamp: new Date()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to record trade spirit' });
+    }
+  });
+
+  app.get('/api/whisper/demo-workflow', async (req, res) => {
+    try {
+      // Demo Step 1: Create sample trading context
+      const sampleContext = {
+        price: 2500,
+        rsi: 65,
+        ema50: 2480,
+        ema200: 2450,
+        volume: 15000,
+        market_trend: 'bullish',
+        emotional_state: 'neutral',
+        time_window: 'morning',
+        volatility: 2.5
+      };
+
+      // Demo Step 2: Record some sample spirits
+      const sampleSpirits = [
+        { feedback: 'should have held longer', result: 'loss', profit_loss: -50 },
+        { feedback: 'perfect entry timing', result: 'win', profit_loss: 120 },
+        { feedback: 'never trade during high volatility', result: 'loss', profit_loss: -80 }
+      ];
+
+      for (let i = 0; i < sampleSpirits.length; i++) {
+        const spirit = sampleSpirits[i];
+        const trade_id = `demo_${Date.now()}_${i}`;
+        waidesKIWhisperContextAnalyzer.recordTradeOutcome(
+          trade_id,
+          sampleContext,
+          spirit.feedback,
+          spirit.result as 'win' | 'loss',
+          spirit.profit_loss
+        );
+      }
+
+      // Demo Step 3: Ask for ancestral guidance
+      const guidance = waidesKIAncestralWhisperEngine.ask(sampleContext);
+
+      // Demo Step 4: Test trade filtering
+      const sampleTrade = {
+        action: 'BUY_ETH',
+        price: 2500,
+        amount: 0.1,
+        context: sampleContext
+      };
+
+      const filterDecision = waidesKIWhisperGuidanceFilter.applyAncestralGuidance(sampleTrade);
+
+      // Demo Step 5: Get statistics
+      const stats = waidesKIPastTradeSpirits.getSpiritStatistics();
+
+      res.json({
+        success: true,
+        demo_steps: {
+          sample_context: sampleContext,
+          recorded_spirits: sampleSpirits.length,
+          ancestral_guidance: guidance,
+          filter_decision: filterDecision,
+          spirit_statistics: stats
+        },
+        whisper_features: [
+          'Query past trading spirits for guidance',
+          'Apply ancestral wisdom to filter trades',
+          'Record trading outcomes for learning',
+          'Context-based pattern matching',
+          'Konslang spiritual echoes',
+          'Comprehensive trade analysis'
+        ],
+        message: 'STEP 50 Ancestral Whisper Layer demonstration complete',
+        timestamp: new Date()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to demonstrate whisper workflow' });
+    }
+  });
+
   return httpServer;
 }

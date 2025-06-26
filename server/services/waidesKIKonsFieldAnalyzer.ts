@@ -140,7 +140,7 @@ export class WaidesKIKonsFieldAnalyzer {
     convergenceStrength += (avg_confidence - 50) * 0.4;
     
     // Sacred symbol bonus
-    if (this.SPIRITUAL_MEANINGS[symbol]) {
+    if (this.SPIRITUAL_MEANINGS[symbol as keyof typeof this.SPIRITUAL_MEANINGS]) {
       convergenceStrength += 10;
     }
     
@@ -161,7 +161,7 @@ export class WaidesKIKonsFieldAnalyzer {
       recommendation = 'CONFIRM_TRADE';
     }
 
-    const spiritualSignificance = this.SPIRITUAL_MEANINGS[symbol] || 
+    const spiritualSignificance = this.SPIRITUAL_MEANINGS[symbol as keyof typeof this.SPIRITUAL_MEANINGS] || 
       `Unknown symbol ${symbol} - Emergent spiritual pattern detected`;
 
     return {
