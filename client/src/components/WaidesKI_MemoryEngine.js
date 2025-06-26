@@ -8,12 +8,22 @@ let dynamicMemory = {};
 
 // Command Router Module - detects when user wants to open tools
 export function detectCommandTrigger(q, setBotState) {
+  // First check if this is a question about trading (not a command)
+  const questionWords = ["what", "how", "why", "when", "where", "can", "should", "will", "would", "is", "are", "do", "does", "tell me", "explain", "help me"];
+  const isQuestion = questionWords.some(word => q.toLowerCase().includes(word));
+  
+  // If it's a question, don't trigger any commands
+  if (isQuestion) {
+    return null;
+  }
+
   if (q.includes("open wallet") || q.includes("smaiwallet")) {
     setBotState({ action: "wallet" });
     return "🔐 Opening your SmaiWallet...";
   }
 
-  if (q.includes("start trading") || q.includes("waidbot")) {
+  // Very specific commands only - user must explicitly request activation
+  if (q.includes("activate waidbot") || q.includes("launch waidbot") || q.includes("summon waidbot") || q.includes("start waidbot") || q.includes("open waidbot")) {
     setBotState({ action: "trade" });
     return "🤖 Activating WaidBot now...";
   }
@@ -104,6 +114,36 @@ export default function getSmartAnswer(userInput) {
   if (q.includes("emotion") || q.includes("fear") || q.includes("greed")) return BotMemory.tradingWisdom.emotion;
   if (q.includes("timing") || q.includes("when")) return BotMemory.tradingWisdom.timing;
   if (q.includes("strategy")) return BotMemory.tradingWisdom.strategy;
+  
+  // Trading capital and money management questions
+  if (q.includes("how much") && (q.includes("start") || q.includes("begin")) && q.includes("trading")) {
+    return "For beginners, I recommend starting with only money you can afford to lose. A good rule is 1-5% of your total savings. Never use money for rent, food, or emergencies. Start small ($100-500), learn the basics, then gradually increase as you gain experience and confidence.";
+  }
+  
+  if (q.includes("minimum") && (q.includes("start") || q.includes("trading") || q.includes("amount"))) {
+    return "You can start trading ETH with as little as $50-100 on most exchanges. However, I recommend $200-500 minimum to account for fees and allow proper position sizing. Remember: start small, learn first, scale later.";
+  }
+  
+  if (q.includes("how much money") || (q.includes("capital") && q.includes("trading"))) {
+    return "Your trading capital should be money you can lose without affecting your life. Follow the 1% rule: never risk more than 1-2% of your account on a single trade. If you have $1000, risk only $10-20 per trade. This keeps you safe during learning.";
+  }
+  
+  // More specific trading knowledge
+  if (q.includes("beginner") && q.includes("trading")) {
+    return "As a beginner: 1) Start with paper trading to practice, 2) Learn basic technical analysis (support, resistance, trends), 3) Use only 1-2% of your account per trade, 4) Focus on ETH which I specialize in, 5) Keep a trading journal to track your progress.";
+  }
+  
+  if (q.includes("learn") && (q.includes("trading") || q.includes("trade"))) {
+    return "I can teach you ETH trading through my memory modules. Start by asking about risk management, technical analysis, or market psychology. I also have WaidBot systems that can show you live trading signals and analysis.";
+  }
+  
+  if (q.includes("what") && q.includes("trading")) {
+    return "Trading is buying and selling assets like ETH to profit from price movements. I focus on ETH trading using technical analysis, risk management, and spiritual wisdom. I can guide you through learning proper trading techniques step by step.";
+  }
+  
+  if (q.includes("profitable") || q.includes("make money")) {
+    return "Profitable trading requires: proper risk management (1-2% per trade), patience to wait for good setups, emotional control to avoid FOMO and fear, continuous learning, and starting small. Most traders lose money initially, so education and practice are essential.";
+  }
 
   // Ethereum knowledge
   if (q.includes("ethereum") || q.includes("eth")) return BotMemory.ethereumKnowledge.nature;
