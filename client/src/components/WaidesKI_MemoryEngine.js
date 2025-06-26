@@ -165,8 +165,21 @@ export default function getSmartAnswer(userInput, setBotState, walletContext = n
     return BotMemory.introQuestions[q];
   }
 
+  // 💰 WALLET-AWARE RESPONSES - Enhanced with real-time wallet data
+  if (walletContext && (q.includes("balance") || q.includes("how much") || q.includes("wallet") || q.includes("money") || q.includes("funds"))) {
+    if (q.includes("balance") || q.includes("how much")) {
+      return `💰 Your SmaiWallet Balance:\n• SmaiKa (₭): ${walletContext.smaiBalance.toLocaleString()}\n• Local Balance: $${walletContext.localBalance.toLocaleString()}\n• Total Transactions: ${walletContext.totalTransactions}\n\n${walletContext.canAfford(100) ? "✅ Ready for trading" : "⚠️ Consider adding funds for trading"}`;
+    }
+    if (q.includes("can i trade") || q.includes("afford")) {
+      const canTrade = walletContext.canAfford(100);
+      return canTrade ? 
+        `✅ Yes! You have ₭${walletContext.smaiBalance.toLocaleString()} SmaiKa available for trading. Your wallet is ready for WaidBot operations.` :
+        `⚠️ Your current balance is ₭${walletContext.smaiBalance.toLocaleString()}. Consider adding more SmaiKa for optimal trading capacity.`;
+    }
+    if (q.includes("wallet")) return `🔐 SmaiWallet Status: ₭${walletContext.smaiBalance.toLocaleString()} SmaiKa | $${walletContext.localBalance.toLocaleString()} Local | ${walletContext.totalTransactions} transactions completed.`;
+  }
+
   // ✅ SECOND: Search inside key topics
-  if (q.includes("wallet")) return "Your SmaiWallet holds your ETH and spiritual funds.";
   if (q.includes("price")) return "Check the ETH Live Tracker for current price.";
   if (q.includes("guardian")) return "The ETH Guardian watches over your trading safety.";
   if (q.includes("waidbot")) return "WaidBot is your trading agent — it watches and acts.";
