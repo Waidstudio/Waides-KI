@@ -83,7 +83,35 @@ export default function WaidesKIVisionPortal() {
     refetchInterval: 30000
   });
 
-
+  // Oracle Message Mutation
+  const sendOracleMessageMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/chat/oracle/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: message })
+      });
+      return response.json();
+    },
+    onSuccess: async (data) => {
+      if (data.success) {
+        await typeWaidesResponse(data.answer);
+        
+        // Update the last message with Oracle metadata
+        setMessages(prev => 
+          prev.map((msg, index) => 
+            index === prev.length - 1 && msg.sender === 'waides'
+              ? { ...msg, source: data.source, confidence: data.confidence, konslangProcessing: data.konslangProcessing }
+              : msg
+          )
+        );
+      }
+      setIsTyping(false);
+    },
+    onError: () => {
+      setIsTyping(false);
+    }
+  });
 
   // Fetch user wallet balance
   const { data: walletData } = useQuery({
