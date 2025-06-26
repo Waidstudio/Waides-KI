@@ -135,12 +135,15 @@ export function VisionSpiritPage() {
 
   // Chat mutations
   const chatMutation = useMutation({
-    mutationFn: (message: string) => 
-      apiRequest('/api/waides-ki/konsai-chat', {
+    mutationFn: (message: string) => {
+      console.log('Sending message to KonsAi:', message);
+      return apiRequest('/api/waides-ki/konsai-chat', {
         method: 'POST',
         body: { question: message }
-      }),
+      });
+    },
     onSuccess: (data) => {
+      console.log('KonsAi response received:', data);
       const response: Message = {
         id: Date.now().toString(),
         message: data.response || data.answer || 'No response received',
@@ -156,7 +159,8 @@ export function VisionSpiritPage() {
       setMessages(prev => [...prev, response]);
       setIsProcessing(false);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('KonsAi chat error:', error);
       typeMessage('Connection to KonsAi temporarily unavailable. Spiritual channels are being realigned...', 'error', 0);
       setIsProcessing(false);
     }
