@@ -8,6 +8,7 @@ import { waidesKIOrderBookInterpreter } from './waidesKIOrderBookInterpreter.js'
 
 interface OrderPresenceState {
   pressure: string;
+  strength: number;
   description: string;
   crowd_behavior: string;
   trading_implication: string;
@@ -25,6 +26,7 @@ export class WaidesKIETHOrderPresenceRegistry {
   constructor() {
     this.currentState = {
       pressure: 'neutral',
+      strength: 50,
       description: 'mute signal',
       crowd_behavior: 'Insufficient data to determine crowd behavior',
       trading_implication: 'Avoid trading until order flow becomes clear',
@@ -64,6 +66,7 @@ export class WaidesKIETHOrderPresenceRegistry {
 
       this.currentState = {
         pressure,
+        strength: enhanced.confidence || 50,
         description: enhanced.basic_description,
         crowd_behavior: enhanced.crowd_behavior,
         trading_implication: enhanced.trading_implication,
@@ -108,6 +111,7 @@ export class WaidesKIETHOrderPresenceRegistry {
     
     this.currentState = {
       pressure,
+      strength: enhanced.confidence || 50,
       description,
       crowd_behavior: enhanced.crowd_behavior,
       trading_implication: enhanced.trading_implication,
