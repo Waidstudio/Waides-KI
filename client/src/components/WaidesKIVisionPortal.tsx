@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Mic, Send, Plus, Settings, Brain, Zap, TrendingUp, Eye, Sparkles, MicOff, Volume2, VolumeX, Moon, Sun, Star, Heart, Shield, Flame, Wand2, Gem, Compass, MessageCircle } from 'lucide-react';
+import { Mic, Send, Plus, Settings, Brain, Zap, TrendingUp, Eye, Sparkles, MicOff, Volume2, VolumeX, Moon, Sun, Star, Heart, Shield, Flame, Wand2, Gem, Compass, MessageCircle, BarChart3, Wallet, Bot, LineChart, Database, Layers, Swords, RotateCcw, Users, Network, Cog, BookOpen, FileText, Activity } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -453,53 +453,214 @@ export default function WaidesKIVisionPortal() {
         </Card>
       </div>
 
-      {/* Quick Suggestions */}
-      <div className="relative z-10 flex flex-wrap justify-center gap-2 mt-6 px-4">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
-          onClick={() => setCurrentMessage("Predict ETH price for next hour")}
-        >
-          <TrendingUp className="w-4 h-4 mr-1" />
-          Predict ETH
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
-          onClick={() => setCurrentMessage("Show my wallet growth and trading performance")}
-        >
-          <Gem className="w-4 h-4 mr-1" />
-          Wallet Growth
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
-          onClick={() => setCurrentMessage("Give me a spiritual trading vision")}
-        >
-          <Eye className="w-4 h-4 mr-1" />
-          Spiritual Vision
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
-          onClick={() => setCurrentMessage("Activate autonomous trading mode")}
-        >
-          <Zap className="w-4 h-4 mr-1" />
-          Auto Trade
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
-          onClick={() => setCurrentMessage("Show me the market's spiritual energy")}
-        >
-          <Flame className="w-4 h-4 mr-1" />
-          Market Energy
-        </Button>
+      {/* Action Menu - All Pages Navigation */}
+      <div className="relative z-10 mt-6 px-4">
+        <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-center text-purple-300 text-sm">Action Menu</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4">
+            {/* Quick Actions Row 1 */}
+            <div className="flex flex-wrap justify-center gap-2 mb-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
+                onClick={() => setCurrentMessage("Predict ETH price for next hour")}
+              >
+                <TrendingUp className="w-4 h-4 mr-1" />
+                Predict ETH
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-green-500/30 bg-gray-800/40 text-green-300 hover:bg-green-500/20"
+                onClick={() => window.location.href = '/autonomous-wealth'}
+              >
+                <Wallet className="w-4 h-4 mr-1" />
+                SmaiWallet
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-blue-500/30 bg-gray-800/40 text-blue-300 hover:bg-blue-500/20"
+                onClick={() => setCurrentMessage("Activate autonomous trading mode")}
+              >
+                <Zap className="w-4 h-4 mr-1" />
+                Auto Trade
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-orange-500/30 bg-gray-800/40 text-orange-300 hover:bg-orange-500/20"
+                onClick={() => window.location.href = '/dashboard'}
+              >
+                <BarChart3 className="w-4 h-4 mr-1" />
+                Dashboard
+              </Button>
+            </div>
+
+            {/* Trading Bots Row */}
+            <div className="flex flex-wrap justify-center gap-2 mb-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-cyan-500/30 bg-gray-800/40 text-cyan-300 hover:bg-cyan-500/20"
+                onClick={() => window.location.href = '/waidbot'}
+              >
+                <Bot className="w-4 h-4 mr-1" />
+                WaidBot
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-indigo-500/30 bg-gray-800/40 text-indigo-300 hover:bg-indigo-500/20"
+                onClick={() => window.location.href = '/waidbot-pro'}
+              >
+                <Brain className="w-4 h-4 mr-1" />
+                WaidBot Pro
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-pink-500/30 bg-gray-800/40 text-pink-300 hover:bg-pink-500/20"
+                onClick={() => window.location.href = '/enhanced-waidbot'}
+              >
+                <Settings className="w-4 h-4 mr-1" />
+                Enhanced Controller
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-red-500/30 bg-gray-800/40 text-red-300 hover:bg-red-500/20"
+                onClick={() => window.location.href = '/live-data'}
+              >
+                <Activity className="w-4 h-4 mr-1" />
+                Live Data
+              </Button>
+            </div>
+
+            {/* Spiritual & Vision Row */}
+            <div className="flex flex-wrap justify-center gap-2 mb-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
+                onClick={() => window.location.href = '/dream-vision'}
+              >
+                <Eye className="w-4 h-4 mr-1" />
+                Dream Vision
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-violet-500/30 bg-gray-800/40 text-violet-300 hover:bg-violet-500/20"
+                onClick={() => window.location.href = '/vision-spirit'}
+              >
+                <Sparkles className="w-4 h-4 mr-1" />
+                Vision Spirit
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-amber-500/30 bg-gray-800/40 text-amber-300 hover:bg-amber-500/20"
+                onClick={() => window.location.href = '/spiritual-recall'}
+              >
+                <Heart className="w-4 h-4 mr-1" />
+                Spiritual Recall
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-emerald-500/30 bg-gray-800/40 text-emerald-300 hover:bg-emerald-500/20"
+                onClick={() => window.location.href = '/seasonal-rebirth'}
+              >
+                <RotateCcw className="w-4 h-4 mr-1" />
+                Seasonal Rebirth
+              </Button>
+            </div>
+
+            {/* Advanced Systems Row */}
+            <div className="flex flex-wrap justify-center gap-2 mb-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-slate-500/30 bg-gray-800/40 text-slate-300 hover:bg-slate-500/20"
+                onClick={() => window.location.href = '/sigil-layer'}
+              >
+                <Layers className="w-4 h-4 mr-1" />
+                Sigil Layer
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-red-500/30 bg-gray-800/40 text-red-300 hover:bg-red-500/20"
+                onClick={() => window.location.href = '/shadow-defense'}
+              >
+                <Shield className="w-4 h-4 mr-1" />
+                Shadow Defense
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-yellow-500/30 bg-gray-800/40 text-yellow-300 hover:bg-yellow-500/20"
+                onClick={() => window.location.href = '/reincarnation'}
+              >
+                <RotateCcw className="w-4 h-4 mr-1" />
+                Reincarnation
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-teal-500/30 bg-gray-800/40 text-teal-300 hover:bg-teal-500/20"
+                onClick={() => window.location.href = '/eth-empath-guardian'}
+              >
+                <Users className="w-4 h-4 mr-1" />
+                ETH Guardian
+              </Button>
+            </div>
+
+            {/* Technical & Admin Row */}
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-gray-500/30 bg-gray-800/40 text-gray-300 hover:bg-gray-500/20"
+                onClick={() => window.location.href = '/learning'}
+              >
+                <BookOpen className="w-4 h-4 mr-1" />
+                Trading Academy
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-blue-500/30 bg-gray-800/40 text-blue-300 hover:bg-blue-500/20"
+                onClick={() => window.location.href = '/ml-lifecycle'}
+              >
+                <Database className="w-4 h-4 mr-1" />
+                ML Lifecycle
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-orange-500/30 bg-gray-800/40 text-orange-300 hover:bg-orange-500/20"
+                onClick={() => window.location.href = '/admin'}
+              >
+                <Cog className="w-4 h-4 mr-1" />
+                Admin
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-green-500/30 bg-gray-800/40 text-green-300 hover:bg-green-500/20"
+                onClick={() => window.location.href = '/api-docs'}
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                API Docs
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Chat Window */}
