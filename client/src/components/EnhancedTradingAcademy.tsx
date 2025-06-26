@@ -2297,36 +2297,77 @@ export default function EnhancedTradingAcademy() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-white flex items-center space-x-3">
-            <GraduationCap className="h-10 w-10 text-blue-500" />
-            <span>Waides KI Trading Academy</span>
-          </h1>
-          <p className="text-gray-400 mt-2 text-lg">Master trading with AI-powered education and interactive simulations</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Card className="bg-gradient-to-r from-blue-600 to-purple-600 border-0">
-            <CardContent className="p-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">Level 5</div>
-                <div className="text-sm text-blue-100">Trading Student</div>
-              </div>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      {/* Enhanced Header */}
+      <div className="w-full bg-gradient-to-r from-blue-900/50 to-purple-900/50 backdrop-blur-sm border-b border-gray-700/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
+            <div className="text-center lg:text-left">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent flex items-center justify-center lg:justify-start space-x-3">
+                <GraduationCap className="h-10 w-10 lg:h-12 lg:w-12 text-blue-500" />
+                <span>Waides KI Trading Academy</span>
+              </h1>
+              <p className="text-gray-300 mt-3 text-base sm:text-lg lg:text-xl max-w-2xl">
+                Master trading with comprehensive courses, AI-powered tutoring, and hands-on practice simulations
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Card className="bg-gradient-to-r from-blue-600 to-purple-600 border-0 shadow-2xl">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="text-center">
+                    <div className="text-2xl sm:text-3xl font-bold text-white">Level 5</div>
+                    <div className="text-sm sm:text-base text-blue-100">Trading Student</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
 
-      <Tabs defaultValue="courses" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-800">
-          <TabsTrigger value="courses" className="text-white">Courses</TabsTrigger>
-          <TabsTrigger value="konsai-tutor" className="text-white">KonsAi Tutor</TabsTrigger>
-          <TabsTrigger value="simulations" className="text-white">Simulations</TabsTrigger>
-          <TabsTrigger value="tools" className="text-white">Trading Tools</TabsTrigger>
-          <TabsTrigger value="progress" className="text-white">Progress</TabsTrigger>
-        </TabsList>
+      {/* Main Content Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        <Tabs defaultValue="courses" className="space-y-8">
+          {/* Enhanced Tab Navigation */}
+          <div className="flex justify-center">
+            <TabsList className="grid grid-cols-5 bg-gray-800/80 backdrop-blur-sm border border-gray-600/50 rounded-xl p-1 shadow-2xl">
+              <TabsTrigger 
+                value="courses" 
+                className="data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-4 py-3 text-white"
+              >
+                <BookOpen className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Courses</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="konsai-tutor" 
+                className="data-[state=active]:bg-orange-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-4 py-3 text-white"
+              >
+                <Bot className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">KonsAi Tutor</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="simulations" 
+                className="data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-4 py-3 text-white"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Simulations</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="tools" 
+                className="data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-4 py-3 text-white"
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Tools</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="progress" 
+                className="data-[state=active]:bg-yellow-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-4 py-3 text-white"
+              >
+                <Trophy className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Progress</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
         {/* Trading Courses */}
         <TabsContent value="courses" className="space-y-6">
@@ -4117,7 +4158,8 @@ export default function EnhancedTradingAcademy() {
             </Card>
           </div>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
     </div>
   );
 }
