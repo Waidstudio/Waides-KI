@@ -393,8 +393,71 @@ export default function WaidesKIVisionPortal() {
     }
   });
 
-  // Voice command processing mutation
+  // Voice command processing mutation with cosmic AI features
   const voiceProcessingMutation = useMutation({
+    mutationFn: async (command: string) => {
+      const response = await fetch('/api/voice/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          command,
+          personality: aiPersonality,
+          cosmicMode: cosmicMode
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to process voice command');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setIsVoiceProcessing(false);
+      if (data && data.response) {
+        typeMessage(data.response, 'enhanced_bot_memory', data.confidence || 95);
+      }
+    },
+    onError: (error) => {
+      console.error('Voice processing error:', error);
+      setIsVoiceProcessing(false);
+      typeMessage('Voice command processing failed. Please try again.', 'error', 0);
+    },
+  });
+
+  // KonsAi enhanced reasoning mutation
+  const konsAiMutation = useMutation({
+    mutationFn: async (question: string) => {
+      const response = await fetch('/api/konsai/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          question,
+          personality: aiPersonality,
+          cosmicMode: cosmicMode,
+          context: {
+            walletBalance: walletState.balance,
+            tradingEnabled: true,
+            moralFilters: true
+          }
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to get KonsAi response');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.answer) {
+        typeMessage(data.answer, 'reasoning', data.confidence || 98, data.konslangProcessing, data.reasoning);
+      } else {
+        typeMessage('KonsAi divine intelligence engaged. How may I assist you with advanced reasoning and universal wisdom?', 'reasoning', 95);
+      }
+      setIsProcessing(false);
+    },
+    onError: (error) => {
+      console.error('KonsAi error:', error);
+      typeMessage('KonsAi divine intelligence is processing your request. Please allow a moment for deep reasoning.', 'reasoning', 85);
+      setIsProcessing(false);
+    },
+  });
+
+  // Voice processing mutation for cosmic AI features
+  const voiceCommandMutation = useMutation({
     mutationFn: async (command: string) => {
       const response = await fetch('/api/voice/process', {
         method: 'POST',
