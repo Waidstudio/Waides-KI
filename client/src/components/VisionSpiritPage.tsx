@@ -2,9 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, Eye, BarChart3, History, Settings, Send, Mic, MicOff, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Brain, Eye, BarChart3, History, Send, Mic, MicOff, Sparkles, 
+  TrendingUp, TrendingDown, Clock, Target, Shield, Zap
+} from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 
 interface VisionData {
@@ -39,7 +42,68 @@ interface Message {
     data?: any;
   }>;
   konslangProcessing?: string;
+  visionData?: VisionData;
+  isContextualSuggestion?: boolean;
 }
+
+// Contextual Vision Suggestions
+const getContextualSuggestions = (currentVision?: VisionData, stats?: VisionStats) => {
+  const suggestions = [
+    {
+      icon: <Eye className="h-4 w-4" />,
+      text: "Should I generate a vision about ETH trade in the next 4 hours?",
+      action: "generate_4h_vision",
+      color: "bg-purple-600 hover:bg-purple-700"
+    },
+    {
+      icon: <TrendingUp className="h-4 w-4" />,
+      text: "What do the spirits see for ETH direction today?",
+      action: "daily_direction_vision",
+      color: "bg-blue-600 hover:bg-blue-700"
+    },
+    {
+      icon: <Target className="h-4 w-4" />,
+      text: "Should I enter a position now based on current energy?",
+      action: "position_timing_vision",
+      color: "bg-green-600 hover:bg-green-700"
+    },
+    {
+      icon: <Shield className="h-4 w-4" />,
+      text: "Are there any warning signs I should be aware of?",
+      action: "risk_warning_vision",
+      color: "bg-red-600 hover:bg-red-700"
+    }
+  ];
+
+  // Add dynamic suggestions based on current vision
+  if (currentVision?.direction === 'BULLISH') {
+    suggestions.push({
+      icon: <Zap className="h-4 w-4" />,
+      text: "How long will this bullish energy last?",
+      action: "bullish_duration_vision",
+      color: "bg-emerald-600 hover:bg-emerald-700"
+    });
+  } else if (currentVision?.direction === 'BEARISH') {
+    suggestions.push({
+      icon: <TrendingDown className="h-4 w-4" />,
+      text: "When will this bearish phase end?",
+      action: "bearish_recovery_vision",
+      color: "bg-orange-600 hover:bg-orange-700"
+    });
+  }
+
+  // Add accuracy-based suggestions
+  if (stats?.accuracy && stats.accuracy > 75) {
+    suggestions.push({
+      icon: <BarChart3 className="h-4 w-4" />,
+      text: "My accuracy is high - what's the next high-confidence trade?",
+      action: "high_confidence_trade",
+      color: "bg-indigo-600 hover:bg-indigo-700"
+    });
+  }
+
+  return suggestions.slice(0, 6); // Limit to 6 suggestions
+};
 
 export function VisionSpiritPage() {
   // Chat state
@@ -55,10 +119,6 @@ export function VisionSpiritPage() {
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   const recognitionRef = useRef<any>(null);
   
-  // Vision Spirit state
-  const [activeVisionPanel, setActiveVisionPanel] = useState<'current' | 'validation' | 'stats' | 'history' | 'controls'>('current');
-  const [showVisionSpirit, setShowVisionSpirit] = useState(true);
-  
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -71,11 +131,6 @@ export function VisionSpiritPage() {
   const { data: visionStats } = useQuery({
     queryKey: ['/api/waides-ki/vision-spirit/stats'],
     refetchInterval: 15000,
-  });
-
-  const { data: visionHistory } = useQuery({
-    queryKey: ['/api/waides-ki/vision-spirit/history'],
-    refetchInterval: 20000,
   });
 
   // Chat mutations
@@ -107,6 +162,34 @@ export function VisionSpiritPage() {
     }
   });
 
+  // Vision Spirit mutations
+  const receiveVisionMutation = useMutation({
+    mutationFn: (visionType: string) => 
+      apiRequest('/api/waides-ki/vision-spirit/receive', { 
+        method: 'POST',
+        body: { visionType }
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
+      
+      // Add vision response to chat
+      const visionResponse: Message = {
+        id: Date.now().toString(),
+        message: data.message || 'Vision received from the spirits...',
+        sender: 'konsai',
+        timestamp: Date.now(),
+        source: 'vision_spirit',
+        confidence: data.confidence || 80,
+        visionData: data.vision
+      };
+      
+      typeMessage(visionResponse.message, 'konsai', visionResponse.confidence || 80);
+      setMessages(prev => [...prev, visionResponse]);
+    }
+  });
+
+  // Voice processing mutation
   const voiceProcessingMutation = useMutation({
     mutationFn: (command: string) => 
       apiRequest('/api/chat/voice-process', {
@@ -133,29 +216,28 @@ export function VisionSpiritPage() {
     }
   });
 
-  // Vision Spirit mutations
-  const receiveVisionMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/receive', { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/current'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
-    }
-  });
-
-  const verifyVisionMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waides-ki/vision-spirit/verify', { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/stats'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/vision-spirit/history'] });
-    }
-  });
-
-  // Initialize speech recognition
+  // Initialize welcome message with contextual suggestions
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      setSpeechSupported(true);
-    }
+    const welcomeMessage: Message = {
+      id: 'welcome',
+      message: `Welcome to Vision Spirit - where KonsAi meets trading prophecy.
+
+I can help you:
+🔮 Generate trading visions for specific timeframes
+📊 Analyze current market spiritual energy
+⚡ Provide real-time ETH direction insights
+🛡️ Warn about potential market risks
+🎯 Time your entry and exit points
+
+Try the contextual suggestions below or ask me anything about ETH trading visions.`,
+      sender: 'konsai',
+      timestamp: Date.now(),
+      source: 'system',
+      confidence: 100,
+      isContextualSuggestion: true
+    };
+    
+    setMessages([welcomeMessage]);
   }, []);
 
   // Auto-scroll to bottom
@@ -163,24 +245,56 @@ export function VisionSpiritPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, typewriterMessage]);
 
+  // Speech recognition setup
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setSpeechSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event) => {
+          const command = event.results[0][0].transcript;
+          setCurrentMessage(command);
+          setIsVoiceProcessing(true);
+          voiceProcessingMutation.mutate(command);
+        };
+
+        recognition.onerror = () => {
+          setVoiceEnabled(false);
+          setIsVoiceProcessing(false);
+        };
+
+        recognition.onend = () => {
+          setVoiceEnabled(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
   // Typewriter effect
-  const typeMessage = (message: string, type: 'konsai' | 'error' | 'konslang', confidence: number) => {
+  const typeMessage = (message: string, sender: 'konsai' | 'error', confidence: number) => {
     setIsTyping(true);
     setTypewriterMessage('');
     
     let index = 0;
     const interval = setInterval(() => {
-      setTypewriterMessage(message.slice(0, index + 1));
+      setTypewriterMessage(prev => prev + message[index]);
       index++;
-      
-      if (index >= message.length) {
+      if (index === message.length) {
         clearInterval(interval);
         setIsTyping(false);
+        setTypewriterMessage('');
       }
     }, 30);
   };
 
-  const sendMessage = () => {
+  const handleSendMessage = async () => {
     if (!currentMessage.trim() || isProcessing) return;
 
     const userMessage: Message = {
@@ -192,411 +306,272 @@ export function VisionSpiritPage() {
 
     setMessages(prev => [...prev, userMessage]);
     setIsProcessing(true);
-    chatMutation.mutate(currentMessage);
+    
+    const messageToSend = currentMessage;
     setCurrentMessage('');
+    
+    chatMutation.mutate(messageToSend);
   };
 
-  const startVoiceRecognition = () => {
-    if (!speechSupported) {
-      typeMessage('Voice recognition not supported in this browser', 'error', 0);
-      return;
+  const handleContextualAction = (action: string) => {
+    let message = '';
+    let visionType = 'general';
+
+    switch (action) {
+      case 'generate_4h_vision':
+        message = 'Generate a vision about ETH trade in the next 4 hours';
+        visionType = '4h_trade';
+        break;
+      case 'daily_direction_vision':
+        message = 'What do the spirits see for ETH direction today?';
+        visionType = 'daily_direction';
+        break;
+      case 'position_timing_vision':
+        message = 'Should I enter a position now based on current energy?';
+        visionType = 'position_timing';
+        break;
+      case 'risk_warning_vision':
+        message = 'Are there any warning signs I should be aware of?';
+        visionType = 'risk_warning';
+        break;
+      case 'bullish_duration_vision':
+        message = 'How long will this bullish energy last?';
+        visionType = 'bullish_duration';
+        break;
+      case 'bearish_recovery_vision':
+        message = 'When will this bearish phase end?';
+        visionType = 'bearish_recovery';
+        break;
+      case 'high_confidence_trade':
+        message = 'My accuracy is high - what\'s the next high-confidence trade?';
+        visionType = 'high_confidence';
+        break;
+      default:
+        message = 'Generate a general trading vision';
+        visionType = 'general';
     }
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      message,
+      sender: 'user',
+      timestamp: Date.now()
+    };
+    setMessages(prev => [...prev, userMessage]);
 
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
+    // Trigger vision generation
+    receiveVisionMutation.mutate(visionType);
+  };
 
-    recognition.onstart = () => {
+  const toggleVoiceRecognition = () => {
+    if (!speechSupported) return;
+    
+    if (voiceEnabled) {
+      recognitionRef.current?.stop();
+      setVoiceEnabled(false);
+    } else {
+      recognitionRef.current?.start();
       setVoiceEnabled(true);
-      setIsVoiceProcessing(true);
-      typeMessage('Listening for spiritual command...', 'konslang', 90);
-    };
-
-    recognition.onresult = (event: any) => {
-      const command = event.results[0][0].transcript;
-      typeMessage(`Voice detected: "${command}"`, 'konslang', 95);
-      voiceProcessingMutation.mutate(command);
-    };
-
-    recognition.onerror = (event: any) => {
-      setVoiceEnabled(false);
-      setIsVoiceProcessing(false);
-      typeMessage(`Voice recognition error: ${event.error}`, 'error', 0);
-    };
-
-    recognition.onend = () => {
-      setVoiceEnabled(false);
-      if (!isVoiceProcessing) {
-        typeMessage('Voice recognition complete', 'konslang', 70);
-      }
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
-  };
-
-  const stopVoiceRecognition = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
     }
-    setVoiceEnabled(false);
-    setIsVoiceProcessing(false);
   };
+
+  const contextualSuggestions = getContextualSuggestions(currentVision, visionStats);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 relative overflow-hidden">
-      {/* Cosmic Background Effects */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl animate-pulse delay-2000"></div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
+      {/* Animated background effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse"></div>
       </div>
 
-      <div className="relative z-10 flex h-screen">
-        {/* Main Chat Interface */}
-        <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <div className="p-6 border-b border-purple-500/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                    Vision Spirit
-                  </h1>
-                  <p className="text-sm text-gray-400">KonsAi Enhanced with Vision Intelligence</p>
-                </div>
-              </div>
+      {/* Main Chat Container */}
+      <div className="relative z-10 flex flex-col h-screen">
+        {/* Header with Vision Status */}
+        <div className="p-4 border-b border-purple-500/30">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Brain className="h-6 w-6 text-purple-400" />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Vision Spirit
+              </h1>
+            </div>
+            
+            {/* Current Vision Status */}
+            {currentVision && (
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-400 animate-pulse" />
-                <span className="text-sm text-purple-300">Spiritual Mode Active</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
-            {messages.length === 0 && (
-              <div className="text-center py-12">
-                <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 animate-pulse" />
-                <h3 className="text-xl font-semibold text-purple-300 mb-2">Welcome to Vision Spirit</h3>
-                <p className="text-gray-400 max-w-md mx-auto">
-                  Experience KonsAi enhanced with spiritual vision intelligence. Ask about markets, visions, or seek divine guidance.
-                </p>
+                <Badge 
+                  variant="outline" 
+                  className={`${
+                    currentVision.direction === 'BULLISH' ? 'border-green-500 text-green-400' :
+                    currentVision.direction === 'BEARISH' ? 'border-red-500 text-red-400' :
+                    'border-yellow-500 text-yellow-400'
+                  }`}
+                >
+                  {currentVision.direction}
+                </Badge>
+                <Badge variant="outline" className="border-purple-500 text-purple-400">
+                  {currentVision.confidence}% confidence
+                </Badge>
               </div>
             )}
-
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`max-w-[80%] rounded-2xl p-4 ${
-                  message.sender === 'user'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-800/60 border border-purple-500/20 text-gray-100'
-                }`}>
-                  {message.sender === 'konsai' && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                        <Brain className="w-3 h-3 text-white" />
-                      </div>
-                      <span className="text-xs text-purple-300 font-medium">
-                        KonsAi Vision Spirit
-                        {message.confidence && ` • ${message.confidence}%`}
-                      </span>
-                    </div>
-                  )}
-                  <p className="whitespace-pre-wrap leading-relaxed">{message.message}</p>
-                  
-                  {message.reasoning && message.reasoning.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      <div className="text-xs text-purple-300 font-semibold flex items-center gap-2">
-                        <Brain className="w-3 h-3" />
-                        Reasoning Process
-                      </div>
-                      {message.reasoning.map((step, index) => (
-                        <div key={index} className="bg-gray-900/40 border border-purple-500/10 rounded-lg p-3">
-                          <div className="text-xs text-purple-400 font-medium mb-1">
-                            Step {index + 1}: {step.step}
-                          </div>
-                          <div className="text-sm text-gray-300 mb-2">
-                            {step.analysis}
-                          </div>
-                          <div className="text-xs text-purple-300">
-                            Confidence: {step.confidence}%
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {message.konslangProcessing && (
-                    <div className="mt-2 text-xs text-purple-400 italic">
-                      🔮 {message.konslangProcessing}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="max-w-[80%] rounded-2xl p-4 bg-gray-800/60 border border-purple-500/20 text-gray-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                      <Brain className="w-3 h-3 text-white" />
-                    </div>
-                    <span className="text-xs text-purple-300 font-medium">KonsAi Vision Spirit</span>
-                  </div>
-                  <p className="whitespace-pre-wrap leading-relaxed">{typewriterMessage}</p>
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
-          <div className="p-6 border-t border-purple-500/20">
-            <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
-              <Input
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                placeholder="Ask KonsAi Vision Spirit..."
-                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                disabled={isProcessing}
-              />
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`p-2 rounded-full transition-all ${
-                  voiceEnabled 
-                    ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                    : speechSupported
-                    ? 'hover:bg-purple-500/20 text-purple-400'
-                    : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
-                }`}
-                onClick={voiceEnabled ? stopVoiceRecognition : startVoiceRecognition}
-                disabled={isProcessing || !speechSupported}
-              >
-                {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </Button>
-              
-              <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || isProcessing}
-              >
-                <Send className="w-5 h-5" />
-              </Button>
+          {/* Stats */}
+          {visionStats && (
+            <div className="flex items-center gap-4 text-sm text-gray-400">
+              <span>Total Visions: {visionStats.totalVisions}</span>
+              <span>Accuracy: {visionStats.accuracy.toFixed(1)}%</span>
+              <span>Avg Confidence: {visionStats.averageConfidence.toFixed(1)}%</span>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Vision Spirit Floating Panels */}
-        {showVisionSpirit && (
-          <div className="w-96 border-l border-purple-500/20 bg-gray-900/40 backdrop-blur-sm">
-            <div className="p-4 border-b border-purple-500/20">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-purple-300">Vision Spirit Panels</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowVisionSpirit(false)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  ×
-                </Button>
-              </div>
-            </div>
-
-            <Tabs value={activeVisionPanel} onValueChange={(value) => setActiveVisionPanel(value as any)} className="h-full">
-              <TabsList className="grid grid-cols-5 w-full bg-gray-800/60 border-b border-purple-500/20">
-                <TabsTrigger value="current" className="text-xs"><Eye className="w-3 h-3" /></TabsTrigger>
-                <TabsTrigger value="validation" className="text-xs"><Sparkles className="w-3 h-3" /></TabsTrigger>
-                <TabsTrigger value="stats" className="text-xs"><BarChart3 className="w-3 h-3" /></TabsTrigger>
-                <TabsTrigger value="history" className="text-xs"><History className="w-3 h-3" /></TabsTrigger>
-                <TabsTrigger value="controls" className="text-xs"><Settings className="w-3 h-3" /></TabsTrigger>
-              </TabsList>
-
-              <div className="p-4 h-full overflow-y-auto">
-                <TabsContent value="current" className="space-y-4">
-                  <Card className="bg-gray-800/60 border-purple-500/20">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-purple-300">Current Vision</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {currentVision?.success && currentVision.current ? (
-                        <>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-white mb-1">
-                              {currentVision.current.direction}
-                            </div>
-                            <div className="text-sm text-gray-400">
-                              Energy: {(currentVision.current.energy * 100).toFixed(1)}%
-                            </div>
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <Card 
+                className={`max-w-[80%] ${
+                  message.sender === 'user' 
+                    ? 'bg-blue-600/20 border-blue-500/30' 
+                    : 'bg-purple-600/20 border-purple-500/30'
+                }`}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    {message.sender === 'konsai' && (
+                      <div className="flex-shrink-0">
+                        {message.source === 'vision_spirit' ? (
+                          <Eye className="h-5 w-5 text-purple-400" />
+                        ) : message.source === 'voice' ? (
+                          <Mic className="h-5 w-5 text-blue-400" />
+                        ) : (
+                          <Brain className="h-5 w-5 text-purple-400" />
+                        )}
+                      </div>
+                    )}
+                    
+                    <div className="flex-1">
+                      <div className="prose prose-invert max-w-none">
+                        <p className="whitespace-pre-wrap text-sm">{message.message}</p>
+                      </div>
+                      
+                      {message.visionData && (
+                        <div className="mt-3 p-3 bg-purple-500/20 rounded-lg border border-purple-500/30">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-4 w-4 text-purple-400" />
+                            <span className="text-sm font-semibold text-purple-400">Vision Details</span>
                           </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-400">Confidence:</span>
-                              <span className="text-purple-300">{(currentVision.current.confidence * 100).toFixed(1)}%</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-400">Accuracy:</span>
-                              <span className="text-blue-300">{(currentVision.current.accuracy * 100).toFixed(1)}%</span>
-                            </div>
+                          <div className="text-xs space-y-1 text-gray-300">
+                            <div>Direction: <span className="text-purple-400">{message.visionData.direction}</span></div>
+                            <div>Energy Level: <span className="text-purple-400">{message.visionData.energy}%</span></div>
+                            <div>Confidence: <span className="text-purple-400">{message.visionData.confidence}%</span></div>
                           </div>
-                          <div className="bg-gray-900/60 rounded-lg p-3">
-                            <p className="text-sm text-gray-300 leading-relaxed">
-                              {currentVision.current.message}
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-center text-gray-400 py-8">
-                          <Eye className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">No current vision</p>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-
-                  <div className="space-y-2">
-                    <Button
-                      onClick={() => receiveVisionMutation.mutate()}
-                      disabled={receiveVisionMutation.isPending}
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                    >
-                      {receiveVisionMutation.isPending ? 'Receiving...' : 'Receive Vision'}
-                    </Button>
-                    <Button
-                      onClick={() => verifyVisionMutation.mutate()}
-                      disabled={verifyVisionMutation.isPending}
-                      variant="outline"
-                      className="w-full border-purple-500/30 text-purple-300 hover:bg-purple-500/10"
-                    >
-                      {verifyVisionMutation.isPending ? 'Verifying...' : 'Verify Vision'}
-                    </Button>
+                      
+                      {message.confidence && (
+                        <div className="mt-2 flex items-center gap-2 text-xs text-gray-400">
+                          <span>Confidence: {message.confidence}%</span>
+                          {message.source && <span>• Source: {message.source}</span>}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </TabsContent>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+          
+          {/* Typewriter effect */}
+          {isTyping && (
+            <div className="flex justify-start">
+              <Card className="max-w-[80%] bg-purple-600/20 border-purple-500/30">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Brain className="h-5 w-5 text-purple-400 flex-shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm">{typewriterMessage}<span className="animate-pulse">|</span></p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
 
-                <TabsContent value="validation" className="space-y-4">
-                  <Card className="bg-gray-800/60 border-purple-500/20">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-purple-300">Vision Validation</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center text-gray-400 py-8">
-                      <Sparkles className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Validation system active</p>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="stats" className="space-y-4">
-                  <Card className="bg-gray-800/60 border-purple-500/20">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-purple-300">Vision Statistics</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {visionStats?.success ? (
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <div className="text-gray-400">Total Visions</div>
-                              <div className="text-white font-semibold">{visionStats.stats.totalVisions}</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-400">Confirmed</div>
-                              <div className="text-green-400 font-semibold">{visionStats.stats.confirmedVisions}</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-400">Accuracy</div>
-                              <div className="text-blue-400 font-semibold">{(visionStats.stats.accuracy * 100).toFixed(1)}%</div>
-                            </div>
-                            <div>
-                              <div className="text-gray-400">Confidence</div>
-                              <div className="text-purple-400 font-semibold">{(visionStats.stats.averageConfidence * 100).toFixed(1)}%</div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400 py-8">
-                          <BarChart3 className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">No statistics available</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="history" className="space-y-4">
-                  <Card className="bg-gray-800/60 border-purple-500/20">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-purple-300">Vision History</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {visionHistory?.success && visionHistory.history?.length > 0 ? (
-                        <div className="space-y-2 max-h-64 overflow-y-auto">
-                          {visionHistory.history.slice(0, 5).map((vision: any, index: number) => (
-                            <div key={index} className="bg-gray-900/60 rounded-lg p-3">
-                              <div className="flex justify-between items-center mb-1">
-                                <span className="text-sm font-medium text-white">{vision.direction}</span>
-                                <span className="text-xs text-gray-400">
-                                  {new Date(vision.timestamp).toLocaleTimeString()}
-                                </span>
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                Confidence: {(vision.confidence * 100).toFixed(1)}%
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400 py-8">
-                          <History className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">No vision history</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="controls" className="space-y-4">
-                  <Card className="bg-gray-800/60 border-purple-500/20">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm text-purple-300">Vision Controls</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center text-gray-400 py-8">
-                      <Settings className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Control panel active</p>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </div>
-            </Tabs>
+        {/* Contextual Suggestions */}
+        {!isProcessing && contextualSuggestions.length > 0 && (
+          <div className="p-4 border-t border-purple-500/30">
+            <div className="mb-2 text-sm text-gray-400">Contextual Suggestions:</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {contextualSuggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleContextualAction(suggestion.action)}
+                  className={`${suggestion.color} border-transparent text-white text-left justify-start h-auto p-3`}
+                  disabled={receiveVisionMutation.isPending}
+                >
+                  <div className="flex items-center gap-2">
+                    {suggestion.icon}
+                    <span className="text-xs">{suggestion.text}</span>
+                  </div>
+                </Button>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Floating Action Button to show panels if hidden */}
-        {!showVisionSpirit && (
-          <div className="fixed bottom-6 right-6">
-            <Button
-              onClick={() => setShowVisionSpirit(true)}
-              className="w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-700 shadow-lg"
-              title="Show Vision Spirit Panels"
+        {/* Input Area */}
+        <div className="p-4 border-t border-purple-500/30">
+          <div className="flex gap-2">
+            <Input
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              placeholder="Ask about trading visions, market energy, or ETH insights..."
+              disabled={isProcessing || isVoiceProcessing}
+              className="flex-1 bg-black/20 border-purple-500/30 text-white placeholder-gray-400 focus:border-purple-400"
+            />
+            
+            {speechSupported && (
+              <Button
+                onClick={toggleVoiceRecognition}
+                disabled={isProcessing || isVoiceProcessing}
+                className={`${
+                  voiceEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-purple-600 hover:bg-purple-700'
+                }`}
+              >
+                {voiceEnabled ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
+            )}
+            
+            <Button 
+              onClick={handleSendMessage}
+              disabled={isProcessing || !currentMessage.trim() || isVoiceProcessing}
+              className="bg-purple-600 hover:bg-purple-700"
             >
-              <Eye className="h-6 w-6" />
+              <Send className="h-4 w-4" />
             </Button>
           </div>
-        )}
+          
+          {isVoiceProcessing && (
+            <div className="mt-2 text-sm text-blue-400 flex items-center gap-2">
+              <Mic className="h-4 w-4 animate-pulse" />
+              Processing voice command...
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
