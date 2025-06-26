@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,7 +10,9 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Mic, Send, Plus, Settings, Brain, Zap, TrendingUp, Eye, Sparkles, MicOff, Volume2, VolumeX, Moon, Sun, Star, Heart, Shield, Flame, Wand2, Gem, Compass } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Mic, Send, Plus, Settings, Brain, Zap, TrendingUp, Eye, Sparkles, MicOff, Volume2, VolumeX, Moon, Sun, Star, Heart, Shield, Flame, Wand2, Gem, Compass, MessageCircle } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -18,6 +20,26 @@ interface ChatMessage {
   message: string;
   timestamp: Date;
   personality?: string;
+  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined';
+  confidence?: number;
+  konslangProcessing?: string;
+}
+
+interface OracleResponse {
+  answer: string;
+  source: 'incite' | 'chatgpt' | 'konslang' | 'combined';
+  confidence: number;
+  konslangProcessing?: string;
+}
+
+interface OracleStatus {
+  api_status: {
+    chatgpt: boolean;
+    incite: boolean;
+    konslang: boolean;
+  };
+  dual_ai_ready: boolean;
+  message: string;
 }
 
 interface PersonalityMode {
@@ -50,9 +72,47 @@ export default function WaidesKIVisionPortal() {
   const [auraIntensity, setAuraIntensity] = useState(50);
   const [prophecyMode, setProphecyMode] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [oracleMode, setOracleMode] = useState(false);
   const chatWindowRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
+
+  // Oracle Status Query
+  const { data: oracleStatus } = useQuery<OracleStatus>({
+    queryKey: ['/api/chat/oracle/status'],
+    refetchInterval: 30000
+  });
+
+  // Oracle Message Mutation
+  const sendOracleMessageMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/chat/oracle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, context: messages.slice(-10) })
+      });
+      return response.json();
+    },
+    onSuccess: (data: OracleResponse & { success: boolean }) => {
+      if (data.success) {
+        const oracleMessage: ChatMessage = {
+          id: Date.now().toString(),
+          sender: 'waides',
+          message: data.answer,
+          timestamp: new Date(),
+          personality: personality,
+          source: data.source,
+          confidence: data.confidence,
+          konslangProcessing: data.konslangProcessing
+        };
+        setMessages(prev => [...prev, oracleMessage]);
+        setIsTyping(false);
+      }
+    },
+    onError: () => {
+      setIsTyping(false);
+    }
+  });
 
   // Fetch user wallet balance
   const { data: walletData } = useQuery({
@@ -232,7 +292,15 @@ export default function WaidesKIVisionPortal() {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    chatMutation.mutate({ message: currentMessage, personality });
+
+    // Use Oracle system if enabled, otherwise use regular chat
+    if (oracleMode && oracleStatus?.dual_ai_ready) {
+      setIsTyping(true);
+      sendOracleMessageMutation.mutate(currentMessage);
+    } else {
+      chatMutation.mutate({ message: currentMessage, personality });
+    }
+    
     setCurrentMessage('');
   };
 
