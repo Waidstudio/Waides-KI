@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
-import VisionSpirit from './VisionSpirit';
+
 import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine.js';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
@@ -104,7 +104,7 @@ export default function WaidesKIVisionPortal() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
-  const [, setLocation] = useLocation();
+
   const { smaiBalance, localBalance, transactions, canAffordTrade } = useSmaiWallet();
   const { toast } = useToast();
 
@@ -1448,52 +1448,7 @@ export default function WaidesKIVisionPortal() {
         onClose={() => setShowWaidBotSummon(false)}
       />
 
-      {/* Vision Spirit Floating Panels - Only show on /vision-spirit route */}
-      {isVisionSpiritRoute && (
-        <>
-          <VisionSpirit
-            isFloatingVisible={showVisionSpirit}
-            activeFloatingPanel={activeVisionPanel}
-            onCloseFloating={() => setShowVisionSpirit(false)}
-          />
 
-          {/* Floating Action Buttons for Vision Spirit */}
-          {!showVisionSpirit && (
-            <div className="fixed bottom-6 right-6 flex flex-col gap-2 z-40">
-              <Button
-                onClick={() => {
-                  setActiveVisionPanel('current');
-                  setShowVisionSpirit(true);
-                }}
-                className="w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-700 shadow-lg"
-                title="Vision Spirit - Current Vision"
-              >
-                <Eye className="h-5 w-5" />
-              </Button>
-              <Button
-                onClick={() => {
-                  setActiveVisionPanel('stats');
-                  setShowVisionSpirit(true);
-                }}
-                className="w-12 h-12 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg"
-                title="Vision Spirit - Statistics"
-              >
-                <BarChart3 className="h-5 w-5" />
-              </Button>
-              <Button
-                onClick={() => {
-                  setActiveVisionPanel('history');
-                  setShowVisionSpirit(true);
-                }}
-                className="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg"
-                title="Vision Spirit - History"
-              >
-                <Brain className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
-        </>
-      )}
     </div>
   );
 }
