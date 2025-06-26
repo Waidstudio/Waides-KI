@@ -11090,6 +11090,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Deduct trading balance API
+  app.post("/api/wallet/deduct-trading", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid trading amount'
+        });
+      }
+
+      if (amount > walletData.smaiBalance) {
+        return res.status(400).json({
+          success: false,
+          error: 'Insufficient SmaiSika balance'
+        });
+      }
+
+      walletData.smaiBalance -= amount;
+      
+      const transaction = {
+        id: Date.now().toString(),
+        type: 'trade',
+        amount: `₭${amount.toFixed(2)}`,
+        date: new Date().toLocaleDateString(),
+        status: 'completed',
+        description: `Trading balance deducted for WaidBot`
+      };
+
+      walletData.transactions.unshift(transaction);
+
+      res.json({
+        success: true,
+        newBalance: walletData.smaiBalance,
+        transaction,
+        message: `Deducted ₭${amount.toFixed(2)} for trading`
+      });
+    } catch (error) {
+      console.error('Error deducting trading balance:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to deduct trading balance'
+      });
+    }
+  });
+
+  // Add trading profit API
+  app.post("/api/wallet/add-profit", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid profit amount'
+        });
+      }
+
+      walletData.smaiBalance += amount;
+      
+      const transaction = {
+        id: Date.now().toString(),
+        type: 'trade',
+        amount: `+₭${amount.toFixed(2)}`,
+        date: new Date().toLocaleDateString(),
+        status: 'completed',
+        description: `Trading profit from WaidBot`
+      };
+
+      walletData.transactions.unshift(transaction);
+
+      res.json({
+        success: true,
+        newBalance: walletData.smaiBalance,
+        transaction,
+        message: `Added ₭${amount.toFixed(2)} trading profit`
+      });
+    } catch (error) {
+      console.error('Error adding trading profit:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to add trading profit'
+      });
+    }
+  });
+
   // Test immunity with Trinity Brain integration
   app.post("/api/immunity/trinity-test", async (req, res) => {
     try {

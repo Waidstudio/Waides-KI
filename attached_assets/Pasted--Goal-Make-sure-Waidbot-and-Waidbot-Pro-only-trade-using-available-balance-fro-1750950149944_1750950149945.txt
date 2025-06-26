@@ -1,0 +1,150 @@
+
+
+---
+
+## 🧠 Goal:
+
+> Make sure Waidbot and Waidbot Pro **only trade using available ₭ balance** from the user’s SmaiSika wallet.
+
+This ensures:
+
+* No trade happens without funding
+* Bot knows the current trading power
+* Waides KI respects wallet limits
+* SmaiSika is the true energy behind all trade
+
+---
+
+## ✅ Architecture Overview
+
+```
+           🧍‍♂️ User
+              ↓
+     🔐 SmaiSika Wallet (₭)
+              ↓
+   ┌──────────────┐
+   │ Waidbot Core │  ←– reads wallet balance
+   └──────────────┘
+          ↓
+ Executes Trades based on:
+     ✅ Strategy
+     ✅ Market Signal
+     ✅ ₭ Available
+
+   (Same logic applies for Waidbot Pro)
+```
+
+---
+
+## ⚙️ Let’s Connect It
+
+### 🔹 Step 1: Shared Wallet Context (React / JS)
+
+Create a shared file so both wallet and bot access balance:
+
+#### `src/context/SmaiWalletContext.js`
+
+```jsx
+import React, { createContext, useContext, useState } from 'react';
+
+const SmaiWalletContext = createContext();
+
+export const SmaiWalletProvider = ({ children }) => {
+  const [smaiBalance, setSmaiBalance] = useState(1250); // example ₭ balance
+
+  const updateBalance = (amount) => {
+    setSmaiBalance(amount);
+  };
+
+  return (
+    <SmaiWalletContext.Provider value={{ smaiBalance, updateBalance }}>
+      {children}
+    </SmaiWalletContext.Provider>
+  );
+};
+
+export const useSmaiWallet = () => useContext(SmaiWalletContext);
+```
+
+---
+
+### 🔹 Step 2: Update Wallet Page to Use Shared State
+
+In your `SmaiSikaWallet.js`, change:
+
+```js
+import { useSmaiWallet } from '../context/SmaiWalletContext';
+
+// Replace local state
+const { smaiBalance, updateBalance } = useSmaiWallet();
+```
+
+Then use `updateBalance(newAmount)` when converting local to SmaiSika.
+
+---
+
+### 🔹 Step 3: Use Wallet in Waidbot Logic
+
+Let’s say this is `Waidbot.js` or inside Waides KI engine:
+
+```js
+import { useSmaiWallet } from '../context/SmaiWalletContext';
+
+export default function Waidbot() {
+  const { smaiBalance } = useSmaiWallet();
+
+  const startTrading = () => {
+    if (smaiBalance < 10) {
+      alert("Insufficient ₭ balance. Please top up your SmaiSika wallet.");
+      return;
+    }
+
+    // Proceed with smart human-like trading logic
+    console.log("Sufficient balance. Waidbot trading initiated...");
+    // Trade logic here...
+  };
+
+  return (
+    <div>
+      <button onClick={startTrading}>🧠 Start Waidbot</button>
+    </div>
+  );
+}
+```
+
+Same applies for Waidbot Pro. You can even show balance inside bot panel:
+
+```jsx
+<p>📊 Available Trading Power: ₭ {smaiBalance.toFixed(2)}</p>
+```
+
+---
+
+### 🔐 Step 4: Prevent Over-Trading
+
+In bot trade logic:
+
+```js
+if (tradeAmount > smaiBalance) {
+  throw new Error("Trade exceeds available ₭");
+}
+```
+
+---
+
+### 💡 Optional Add-ons:
+
+* Lock balance during trade
+* Deduct balance after trade execution
+* Display current active trades powered by ₭
+* Notify wallet when trading profit is earned (auto-credit)
+
+---
+
+## ✅ Summary
+
+* Wallet balance now feeds **directly** into Waidbot logic
+* No trading without SmaiSika (₭)
+* User needs to convert before they can trade
+* This creates a closed, divine economy for Konsmia
+

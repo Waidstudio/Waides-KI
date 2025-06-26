@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "./lib/utils";
+import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
