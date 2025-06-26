@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -108,25 +109,7 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
-  // Command execution mutation
-  const commandMutation = useMutation({
-    mutationFn: async (command: string) => {
-      const response = await fetch('/api/commands/execute', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command }),
-      });
-      if (!response.ok) throw new Error('Failed to execute command');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      if (data && (data.response || data.message)) {
-        typeMessage(data.response || data.message || 'Command executed successfully', 'combined', 95);
-      } else {
-        typeMessage('Command executed but no response received', 'combined', 80);
-      }
-    },
-  });
+
 
   // Enhanced question answering mutation
   const questionMutation = useMutation({
@@ -187,6 +170,31 @@ export default function WaidesKIVisionPortal() {
         typeMessage(data.answer, validSource, data.confidence, data.konslangProcessing);
       } else {
         typeMessage('Oracle consultation complete', 'combined', 80);
+      }
+    },
+  });
+
+  // Command execution mutation
+  const commandMutation = useMutation({
+    mutationFn: async (command: string) => {
+      const response = await fetch('/api/commands/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command }),
+      });
+      if (!response.ok) throw new Error('Failed to execute command');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.message) {
+        typeMessage(data.message, 'waidbot_summon', data.success ? 95 : 50);
+        
+        // Handle navigation suggestion for WaidBot activation
+        if (data.data?.navigationSuggestion === '/waidbot' && data.data?.waidbotActivated) {
+          setTimeout(() => {
+            typeMessage("Navigate to WaidBot interface? Type 'yes' to proceed or continue chatting here.", 'waidbot_summon', 100);
+          }, 2000);
+        }
       }
     },
   });
@@ -269,9 +277,16 @@ export default function WaidesKIVisionPortal() {
     // First, check for WaidBot summoning commands
     summonCheckMutation.mutate(currentMessage);
     
+    // WaidBot activation patterns
+    const waidbotActivationPatterns = [
+      'activate waidbot', 'summon waidbot', 'start waidbot', 
+      'activate waid bot', 'summon waid bot', 'start waid bot'
+    ];
+    const isWaidbotActivation = waidbotActivationPatterns.some(pattern => message.includes(pattern));
+    
     // Command patterns
     const commandPrefixes = ['activate', 'start', 'stop', 'predict', 'analyze', 'get', 'show', 'enable', 'disable'];
-    const isCommand = commandPrefixes.some(prefix => message.startsWith(prefix));
+    const isCommand = commandPrefixes.some(prefix => message.startsWith(prefix)) || isWaidbotActivation;
     
     // Waides KI self-knowledge patterns
     const selfKnowledgePatterns = [
