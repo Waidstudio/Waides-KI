@@ -601,9 +601,19 @@ export default function WaidesKIVisionPortal() {
     ];
     const isETHQuestion = ethPatterns.some(pattern => message.includes(pattern));
 
-    // Enhanced routing with chat mode support
+    // KonsAi activation patterns
+    const konsAiPatterns = [
+      'konsai', 'kons ai', 'higher intelligence', 'divine reasoning', 
+      'advanced reasoning', 'universal wisdom', 'deep analysis'
+    ];
+    const isKonsAiRequest = konsAiPatterns.some(pattern => message.includes(pattern));
+
+    // Enhanced routing with chat mode support and KonsAi integration
     if (isCommand) {
       commandMutation.mutate(currentMessage);
+    } else if (isKonsAiRequest && aiPersonality === 'cosmic') {
+      // Route to KonsAi for higher divine intelligence
+      konsAiMutation.mutate(currentMessage);
     } else {
       // Route based on chat mode
       switch (chatMode) {
@@ -630,14 +640,26 @@ export default function WaidesKIVisionPortal() {
           }
           break;
         default: // 'auto' mode
-          // Always try Memory Engine first for instant responses with full wallet context
-          const smartResponse = getSmartAnswer(currentMessage, setBotState, walletContext);
-          if (smartResponse) {
-            typeMessage(smartResponse, 'enhanced_bot_memory', 95);
-            setIsProcessing(false);
+          // Check for complex reasoning requests and route to KonsAi if needed
+          const complexPatterns = [
+            'explain', 'analyze', 'philosophy', 'ethics', 'moral', 'wisdom', 
+            'meaning', 'purpose', 'consciousness', 'reality', 'truth'
+          ];
+          const isComplexQuestion = complexPatterns.some(pattern => message.includes(pattern));
+          
+          if (isComplexQuestion && aiPersonality === 'cosmic') {
+            // Route complex questions to KonsAi in cosmic mode
+            konsAiMutation.mutate(currentMessage);
           } else {
-            // Always fallback to spiritual intelligence for any message
-            questionMutation.mutate(currentMessage);
+            // Always try Memory Engine first for instant responses with full wallet context
+            const smartResponse = getSmartAnswer(currentMessage, setBotState, walletContext);
+            if (smartResponse) {
+              typeMessage(smartResponse, 'enhanced_bot_memory', 95);
+              setIsProcessing(false);
+            } else {
+              // Always fallback to spiritual intelligence for any message
+              questionMutation.mutate(currentMessage);
+            }
           }
           break;
       }
@@ -1096,7 +1118,8 @@ export default function WaidesKIVisionPortal() {
                       <Brain className="w-3 h-3 text-white" />
                     </div>
                     <span className="text-xs text-purple-300 font-medium">
-                      Waides KI {message.source && `• ${message.source.toUpperCase()}`}
+                      {message.source === 'reasoning' ? 'KonsAi Divine Intelligence' : 'Waides KI'} 
+                      {message.source && message.source !== 'reasoning' && `• ${message.source.toUpperCase()}`}
                       {message.confidence && ` • ${message.confidence}%`}
                     </span>
                   </div>
