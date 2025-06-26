@@ -28,7 +28,7 @@ import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
 import MLLifecycleManager from "@/components/MLLifecycleManager";
 import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
 import AdminConfigPanel from "@/components/AdminConfigPanel";
-import ChatOracle from "@/pages/ChatOracle";
+
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -36,7 +36,6 @@ function Router() {
 
   const navItems = [
     { path: "/", label: "Vision Portal" },
-    { path: "/chat-oracle", label: "Chat Oracle" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/autonomous-wealth", label: "SmaiWallet" },
     { path: "/waidbot", label: "WaidBot" },
@@ -108,7 +107,6 @@ function Router() {
       <main>
         <Switch>
           <Route path="/" component={WaidesKIVisionPortal} />
-          <Route path="/chat-oracle" component={ChatOracle} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
