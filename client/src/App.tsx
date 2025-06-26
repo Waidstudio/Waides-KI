@@ -32,6 +32,7 @@ function Router() {
     { path: "/live-data", label: "Live Data" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/risk-backtesting", label: "Risk Backtesting" },
     { path: "/reincarnation", label: "Reincarnation" },
     { path: "/spiritual-recall", label: "Spiritual Recall" },
     { path: "/seasonal-rebirth", label: "Seasonal Rebirth" },
@@ -96,8 +97,10 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
           <Route path="/reincarnation" component={ReincarnationLoop} />
           <Route path="/spiritual-recall" component={SpiritualRecall} />
+          <Route path="/seasonal-rebirth" component={SeasonalRebirth} />
           <Route path="/sigil-layer" component={SigilLayer} />
           <Route path="/shadow-defense" component={ShadowOverrideDefense} />
           <Route path="/dream-vision" component={DreamLayerVision} />
