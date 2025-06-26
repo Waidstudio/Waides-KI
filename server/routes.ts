@@ -16662,6 +16662,246 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // ==========================================================================
+  // TRADING ACADEMY & EDUCATION SYSTEM
+  // ==========================================================================
+
+  // Run trading simulation
+  app.post('/api/trading/simulation/run', async (req, res) => {
+    try {
+      const { simulationId, userId } = req.body;
+      
+      if (!simulationId || !userId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Simulation ID and User ID are required'
+        });
+      }
+
+      // Demo simulation results based on simulation type
+      let simulationResults;
+      
+      switch (simulationId) {
+        case 'trend-following':
+          simulationResults = {
+            success: true,
+            scenario: 'Bull Market Breakout',
+            initialBalance: 10000,
+            finalBalance: 10750,
+            trades: 8,
+            winRate: 75,
+            profitLoss: 750,
+            lessons: [
+              'Excellent trend identification skills!',
+              'Your entry timing was precise during the breakout',
+              'Consider tighter stop losses during volatile periods',
+              'Good job letting profits run on winning trades'
+            ]
+          };
+          break;
+          
+        case 'support-resistance':
+          simulationResults = {
+            success: true,
+            scenario: 'Range-Bound Market',
+            initialBalance: 10000,
+            finalBalance: 10420,
+            trades: 12,
+            winRate: 67,
+            profitLoss: 420,
+            lessons: [
+              'Strong support and resistance identification',
+              'Good patience waiting for level tests',
+              'Work on position sizing for better risk management',
+              'Consider volume confirmation for stronger signals'
+            ]
+          };
+          break;
+          
+        case 'risk-management-practice':
+          simulationResults = {
+            success: true,
+            scenario: 'High Volatility Event',
+            initialBalance: 10000,
+            finalBalance: 9850,
+            trades: 6,
+            winRate: 50,
+            profitLoss: -150,
+            lessons: [
+              'Excellent risk management during volatility',
+              'Small loss shows disciplined stop loss usage',
+              'Consider reducing position size in high volatility',
+              'Good job avoiding revenge trading after losses'
+            ]
+          };
+          break;
+          
+        case 'psychology-test':
+          simulationResults = {
+            success: true,
+            scenario: 'Losing Streak Recovery',
+            initialBalance: 10000,
+            finalBalance: 10320,
+            trades: 15,
+            winRate: 60,
+            profitLoss: 320,
+            lessons: [
+              'Outstanding emotional control during losing streak',
+              'Gradual recovery shows patience and discipline',
+              'Kept position sizes appropriate throughout',
+              'Demonstrates mature trading psychology'
+            ]
+          };
+          break;
+          
+        default:
+          simulationResults = {
+            success: true,
+            scenario: 'General Trading Practice',
+            initialBalance: 10000,
+            finalBalance: 10500,
+            trades: 10,
+            winRate: 70,
+            profitLoss: 500,
+            lessons: [
+              'Good overall trading performance',
+              'Keep practicing to improve consistency',
+              'Focus on your risk management',
+              'Continue learning and stay disciplined'
+            ]
+          };
+      }
+
+      res.json(simulationResults);
+    } catch (error) {
+      console.error('Trading simulation error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to run trading simulation'
+      });
+    }
+  });
+
+  // Get trading course progress
+  app.get('/api/trading/courses/progress/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Demo progress data
+      const progress = {
+        userId,
+        coursesCompleted: 3,
+        totalCourses: 6,
+        overallProgress: 50,
+        certificates: [
+          {
+            courseId: 'fundamentals',
+            title: 'Trading Fundamentals',
+            completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+            score: 92
+          },
+          {
+            courseId: 'technical-analysis',
+            title: 'Technical Analysis Mastery',
+            completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            score: 88
+          }
+        ],
+        currentCourse: 'risk-management',
+        stats: {
+          totalLearningTime: 1250, // minutes
+          averageScore: 90,
+          simulationsRun: 24,
+          questionsAsked: 127
+        }
+      };
+
+      res.json({
+        success: true,
+        progress
+      });
+    } catch (error) {
+      console.error('Course progress error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get course progress'
+      });
+    }
+  });
+
+  // Calculate trading tool results
+  app.post('/api/trading/tools/calculate', async (req, res) => {
+    try {
+      const { toolType, inputs } = req.body;
+      
+      if (!toolType || !inputs) {
+        return res.status(400).json({
+          success: false,
+          error: 'Tool type and inputs are required'
+        });
+      }
+
+      let result;
+      
+      switch (toolType) {
+        case 'position-size':
+          const { accountBalance, riskPercent, stopLossDistance } = inputs;
+          const riskAmount = (accountBalance * riskPercent) / 100;
+          const positionSize = riskAmount / stopLossDistance;
+          result = {
+            positionSize: positionSize.toFixed(2),
+            riskAmount: riskAmount.toFixed(2),
+            maxLoss: riskAmount.toFixed(2)
+          };
+          break;
+          
+        case 'risk-reward':
+          const { entryPrice, stopLoss, takeProfit } = inputs;
+          const risk = Math.abs(entryPrice - stopLoss);
+          const reward = Math.abs(takeProfit - entryPrice);
+          const ratio = reward / risk;
+          result = {
+            riskAmount: risk.toFixed(4),
+            rewardAmount: reward.toFixed(4),
+            ratio: ratio.toFixed(2),
+            quality: ratio >= 2 ? 'Excellent' : ratio >= 1.5 ? 'Good' : 'Poor'
+          };
+          break;
+          
+        case 'portfolio-analysis':
+          // Demo portfolio analysis
+          result = {
+            totalValue: 25000,
+            allocation: {
+              'ETH': 45,
+              'BTC': 30,
+              'Cash': 25
+            },
+            riskScore: 7.2,
+            recommendation: 'Well-diversified portfolio with good risk management'
+          };
+          break;
+          
+        default:
+          return res.status(400).json({
+            success: false,
+            error: 'Unknown tool type'
+          });
+      }
+
+      res.json({
+        success: true,
+        result
+      });
+    } catch (error) {
+      console.error('Tool calculation error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to calculate tool result'
+      });
+    }
+  });
+
+  // ==========================================================================
   // REAL-TIME COMMAND EXECUTION SYSTEM - Action Menu Integration
   // ==========================================================================
 
