@@ -299,15 +299,48 @@ export default function WaidesKIVisionPortal() {
         </div>
       </div>
 
+      {/* Spiritual Energy Display */}
+      <div className="relative z-10 mx-4 mt-6">
+        <Card className="bg-gray-900/40 backdrop-blur-sm border-purple-500/30 text-white">
+          <CardContent className="p-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-xs text-purple-300 mb-1">Spiritual Energy</div>
+                <div className="text-lg font-bold text-purple-400">{spiritualEnergy}%</div>
+                <Progress value={spiritualEnergy} className="h-2 mt-1" />
+              </div>
+              <div>
+                <div className="text-xs text-blue-300 mb-1">Consciousness</div>
+                <div className="text-lg font-bold text-blue-400">Level {consciousnessLevel}</div>
+                <div className="flex justify-center mt-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`w-3 h-3 ${i < consciousnessLevel ? 'text-blue-400 fill-current' : 'text-gray-600'}`} 
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-green-300 mb-1">Aura Intensity</div>
+                <div className="text-lg font-bold text-green-400">{auraIntensity}%</div>
+                <Progress value={auraIntensity} className="h-2 mt-1" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Quick Suggestions */}
-      <div className="relative z-10 flex justify-center gap-2 mt-8 px-4">
+      <div className="relative z-10 flex flex-wrap justify-center gap-2 mt-6 px-4">
         <Button 
           variant="outline" 
           size="sm" 
           className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
           onClick={() => setCurrentMessage("Predict ETH price for next hour")}
         >
-          📈 Predict ETH Now
+          <TrendingUp className="w-4 h-4 mr-1" />
+          Predict ETH
         </Button>
         <Button 
           variant="outline" 
@@ -315,7 +348,8 @@ export default function WaidesKIVisionPortal() {
           className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
           onClick={() => setCurrentMessage("Show my wallet growth and trading performance")}
         >
-          🧠 Show Wallet Growth
+          <Gem className="w-4 h-4 mr-1" />
+          Wallet Growth
         </Button>
         <Button 
           variant="outline" 
@@ -323,7 +357,26 @@ export default function WaidesKIVisionPortal() {
           className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
           onClick={() => setCurrentMessage("Give me a spiritual trading vision")}
         >
-          🧘‍♂️ Ask for Vision
+          <Eye className="w-4 h-4 mr-1" />
+          Spiritual Vision
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
+          onClick={() => setCurrentMessage("Activate autonomous trading mode")}
+        >
+          <Zap className="w-4 h-4 mr-1" />
+          Auto Trade
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="border-purple-500/30 bg-gray-800/40 text-purple-300 hover:bg-purple-500/20"
+          onClick={() => setCurrentMessage("Show me the market's spiritual energy")}
+        >
+          <Flame className="w-4 h-4 mr-1" />
+          Market Energy
         </Button>
       </div>
 
@@ -396,6 +449,39 @@ export default function WaidesKIVisionPortal() {
             </Select>
           </div>
 
+          {/* Voice and Sound Controls */}
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleVoiceActivation}
+              className={`border-purple-500/30 ${voiceEnabled ? 'bg-purple-600/20 text-purple-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-purple-500/20`}
+            >
+              {voiceEnabled ? <Mic className="w-4 h-4 mr-1" /> : <MicOff className="w-4 h-4 mr-1" />}
+              Voice {voiceEnabled ? 'ON' : 'OFF'}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className={`border-purple-500/30 ${soundEnabled ? 'bg-purple-600/20 text-purple-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-purple-500/20`}
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4 mr-1" /> : <VolumeX className="w-4 h-4 mr-1" />}
+              Sound {soundEnabled ? 'ON' : 'OFF'}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAutoVoiceActivation(!autoVoiceActivation)}
+              className={`border-purple-500/30 ${autoVoiceActivation ? 'bg-blue-600/20 text-blue-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-blue-500/20`}
+            >
+              <Brain className="w-4 h-4 mr-1" />
+              Auto-Voice {autoVoiceActivation ? 'ON' : 'OFF'}
+            </Button>
+          </div>
+
           {/* Input Row */}
           <div className="flex items-center gap-2">
             <div className="flex-1 relative">
@@ -403,26 +489,28 @@ export default function WaidesKIVisionPortal() {
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask anything..."
+                placeholder={isListening ? "Listening..." : voiceEnabled ? "Speak or type your message..." : "Type your message..."}
                 className="bg-gray-800/60 border-purple-500/30 text-white placeholder-purple-300/50 pr-20"
-                disabled={isTyping}
+                disabled={isTyping || isListening}
               />
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={startVoiceInput}
-                  disabled={isListening || isTyping}
-                  className={`p-2 h-8 w-8 ${isListening ? 'text-red-400 animate-pulse' : 'text-purple-400 hover:text-purple-300'}`}
-                >
-                  <Mic className="w-4 h-4" />
-                </Button>
+                {voiceEnabled && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={isListening ? stopVoiceInput : startVoiceInput}
+                    disabled={isTyping}
+                    className={`p-2 h-8 w-8 ${isListening ? 'text-red-400 animate-pulse bg-red-500/20' : 'text-purple-400 hover:text-purple-300 hover:bg-purple-500/20'}`}
+                  >
+                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={sendMessage}
-                  disabled={!currentMessage.trim() || isTyping}
-                  className="p-2 h-8 w-8 text-purple-400 hover:text-purple-300"
+                  disabled={!currentMessage.trim() || isTyping || isListening}
+                  className="p-2 h-8 w-8 text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
