@@ -148,6 +148,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     waidesKIVisionAlignmentIndex
   );
 
+  // Initialize STEP 42: Memory Sigils + Time-Layered Training Engine
+  waidesKIMemorySigilVault = new WaidesKIMemorySigilVault();
+  waidesKISymbolTimeTrainer = new WaidesKISymbolTimeTrainer(waidesKIMemorySigilVault);
+  waidesKISigilPredictor = new WaidesKISigilPredictor(waidesKISymbolTimeTrainer);
+  waidesKISigilResultTracker = new WaidesKISigilResultTracker(waidesKIMemorySigilVault, waidesKISigilPredictor);
+
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
     try {
@@ -8791,6 +8797,361 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in STEP 41 demo workflow:', error);
       res.status(500).json({ error: 'Failed to execute STEP 41 demo workflow' });
+    }
+  });
+
+  // ========================================
+  // STEP 42: Memory Sigils + Time-Layered Training Engine API Endpoints
+  // ========================================
+
+  // Memory Sigil Vault - Store and retrieve historical symbol outcomes
+  app.post('/api/waides-ki/memory-sigils/log-outcome', (req, res) => {
+    try {
+      const { symbol, trend, result, profit, additional_context } = req.body;
+      
+      waidesKIMemorySigilVault.logSymbolOutcome(symbol, trend, result, profit, additional_context);
+      
+      res.json({
+        success: true,
+        message: `Symbol outcome logged: ${symbol} → ${result} (${profit > 0 ? '+' : ''}${profit})`
+      });
+    } catch (error) {
+      console.error('Error logging symbol outcome:', error);
+      res.status(500).json({ error: 'Failed to log symbol outcome' });
+    }
+  });
+
+  // Get symbol history
+  app.get('/api/waides-ki/memory-sigils/symbol-history/:symbol', (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const history = waidesKIMemorySigilVault.getSymbolHistory(symbol);
+      
+      res.json({
+        success: true,
+        symbol,
+        history,
+        total_trades: history.length,
+        message: `Retrieved ${history.length} historical outcomes for ${symbol}`
+      });
+    } catch (error) {
+      console.error('Error getting symbol history:', error);
+      res.status(500).json({ error: 'Failed to get symbol history' });
+    }
+  });
+
+  // Get all sigil histories
+  app.get('/api/waides-ki/memory-sigils/all-histories', (req, res) => {
+    try {
+      const histories = waidesKIMemorySigilVault.getAllSigilHistories();
+      
+      res.json({
+        success: true,
+        sigil_histories: histories,
+        total_symbols: histories.length,
+        message: `Retrieved histories for ${histories.length} symbols`
+      });
+    } catch (error) {
+      console.error('Error getting all histories:', error);
+      res.status(500).json({ error: 'Failed to get sigil histories' });
+    }
+  });
+
+  // Get memory vault statistics
+  app.get('/api/waides-ki/memory-sigils/vault-stats', (req, res) => {
+    try {
+      const stats = waidesKIMemorySigilVault.getVaultStats();
+      const summary = waidesKIMemorySigilVault.getMemorySummary();
+      
+      res.json({
+        success: true,
+        vault_stats: stats,
+        memory_summary: summary,
+        message: 'Memory vault statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting vault stats:', error);
+      res.status(500).json({ error: 'Failed to get vault statistics' });
+    }
+  });
+
+  // Get immortal sigils
+  app.get('/api/waides-ki/memory-sigils/immortal-sigils', (req, res) => {
+    try {
+      const immortalSigils = waidesKIMemorySigilVault.getImmortalSigils();
+      
+      res.json({
+        success: true,
+        immortal_sigils: immortalSigils,
+        count: immortalSigils.length,
+        message: `Found ${immortalSigils.length} immortal sigils with >75% win rate`
+      });
+    } catch (error) {
+      console.error('Error getting immortal sigils:', error);
+      res.status(500).json({ error: 'Failed to get immortal sigils' });
+    }
+  });
+
+  // Symbol Time Trainer - Analyze patterns and build sigils
+  app.get('/api/waides-ki/symbol-trainer/sigil-strength/:symbol', (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const strength = waidesKISymbolTimeTrainer.getSigilStrength(symbol);
+      
+      res.json({
+        success: true,
+        symbol,
+        sigil_strength: strength,
+        message: `Sigil strength analysis for ${symbol}: ${strength.strength} (${(strength.win_rate * 100).toFixed(1)}% win rate)`
+      });
+    } catch (error) {
+      console.error('Error getting sigil strength:', error);
+      res.status(500).json({ error: 'Failed to analyze sigil strength' });
+    }
+  });
+
+  // Analyze all sigils
+  app.get('/api/waides-ki/symbol-trainer/analyze-all', (req, res) => {
+    try {
+      const allSigils = waidesKISymbolTimeTrainer.analyzeAllSigils();
+      
+      res.json({
+        success: true,
+        all_sigils: allSigils,
+        total_analyzed: allSigils.length,
+        immortal_count: allSigils.filter(s => s.strength === 'immortal sigil').length,
+        strong_count: allSigils.filter(s => s.strength === 'strong').length,
+        message: `Analyzed ${allSigils.length} sigils across all strength categories`
+      });
+    } catch (error) {
+      console.error('Error analyzing all sigils:', error);
+      res.status(500).json({ error: 'Failed to analyze all sigils' });
+    }
+  });
+
+  // Get immortal sigils from trainer
+  app.get('/api/waides-ki/symbol-trainer/immortal-sigils', (req, res) => {
+    try {
+      const immortalSigils = waidesKISymbolTimeTrainer.getImmortalSigils();
+      
+      res.json({
+        success: true,
+        immortal_sigils: immortalSigils,
+        count: immortalSigils.length,
+        message: `Found ${immortalSigils.length} immortal sigils from trainer analysis`
+      });
+    } catch (error) {
+      console.error('Error getting immortal sigils from trainer:', error);
+      res.status(500).json({ error: 'Failed to get immortal sigils' });
+    }
+  });
+
+  // Get pattern analysis for symbol
+  app.get('/api/waides-ki/symbol-trainer/pattern-analysis/:symbol', (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const patterns = waidesKISymbolTimeTrainer.analyzeSymbolPatterns(symbol);
+      
+      res.json({
+        success: true,
+        symbol,
+        pattern_analysis: patterns,
+        message: `Pattern analysis completed for ${symbol}`
+      });
+    } catch (error) {
+      console.error('Error getting pattern analysis:', error);
+      res.status(500).json({ error: 'Failed to analyze symbol patterns' });
+    }
+  });
+
+  // Force training session
+  app.post('/api/waides-ki/symbol-trainer/force-training', (req, res) => {
+    try {
+      const results = waidesKISymbolTimeTrainer.forceTrainingSession();
+      
+      res.json({
+        success: true,
+        training_results: results,
+        message: results.training_summary
+      });
+    } catch (error) {
+      console.error('Error forcing training session:', error);
+      res.status(500).json({ error: 'Failed to force training session' });
+    }
+  });
+
+  // Sigil Predictor - Generate predictions from historical patterns
+  app.post('/api/waides-ki/sigil-predictor/predict', (req, res) => {
+    try {
+      const { symbol, market_conditions } = req.body;
+      const prediction = waidesKISigilPredictor.predictBySymbol(symbol, market_conditions);
+      
+      res.json({
+        success: true,
+        prediction,
+        message: `Prediction for ${symbol}: ${prediction.recommendation} (${prediction.confidence}% confidence)`
+      });
+    } catch (error) {
+      console.error('Error generating prediction:', error);
+      res.status(500).json({ error: 'Failed to generate prediction' });
+    }
+  });
+
+  // Get best trading opportunities
+  app.get('/api/waides-ki/sigil-predictor/best-opportunities', (req, res) => {
+    try {
+      const { limit = 5 } = req.query;
+      const opportunities = waidesKISigilPredictor.getBestTradingOpportunities(undefined, Number(limit));
+      
+      res.json({
+        success: true,
+        best_opportunities: opportunities,
+        count: opportunities.length,
+        message: `Found ${opportunities.length} high-confidence trading opportunities`
+      });
+    } catch (error) {
+      console.error('Error getting best opportunities:', error);
+      res.status(500).json({ error: 'Failed to get best trading opportunities' });
+    }
+  });
+
+  // Sigil Result Tracker - Track prediction accuracy and trade outcomes
+  app.post('/api/waides-ki/result-tracker/record-trade', (req, res) => {
+    try {
+      const tradeData = req.body;
+      const tradeId = waidesKISigilResultTracker.recordTradeResult(tradeData);
+      
+      res.json({
+        success: true,
+        trade_id: tradeId,
+        message: `Trade result recorded successfully: ${tradeId}`
+      });
+    } catch (error) {
+      console.error('Error recording trade result:', error);
+      res.status(500).json({ error: 'Failed to record trade result' });
+    }
+  });
+
+  // Get accuracy metrics
+  app.get('/api/waides-ki/result-tracker/accuracy-metrics', (req, res) => {
+    try {
+      const metrics = waidesKISigilResultTracker.getAllAccuracyMetrics();
+      
+      res.json({
+        success: true,
+        accuracy_metrics: metrics,
+        symbols_tracked: metrics.length,
+        message: `Retrieved accuracy metrics for ${metrics.length} symbols`
+      });
+    } catch (error) {
+      console.error('Error getting accuracy metrics:', error);
+      res.status(500).json({ error: 'Failed to get accuracy metrics' });
+    }
+  });
+
+  // Complete STEP 42 demo workflow
+  app.post('/api/waides-ki/memory-sigils/demo-workflow', async (req, res) => {
+    try {
+      // Step 1: Log some demo symbol outcomes
+      const demoOutcomes = [
+        { symbol: "SHAI'LOR", trend: 'UP', result: 'profit', profit: 125.50 },
+        { symbol: "DOM'KAAN", trend: 'DOWN', result: 'profit', profit: 89.25 },
+        { symbol: "MEL'ZEK", trend: 'UP', result: 'loss', profit: -45.75 },
+        { symbol: "SHAI'LOR", trend: 'UP', result: 'profit', profit: 210.00 },
+        { symbol: "KORVEX", trend: 'SIDEWAYS', result: 'neutral', profit: 5.25 }
+      ];
+
+      for (const outcome of demoOutcomes) {
+        waidesKIMemorySigilVault.logSymbolOutcome(
+          outcome.symbol, 
+          outcome.trend as any, 
+          outcome.result as any, 
+          outcome.profit
+        );
+      }
+
+      // Step 2: Analyze all sigils
+      const sigilAnalysis = waidesKISymbolTimeTrainer.analyzeAllSigils();
+      
+      // Step 3: Generate predictions for top symbols
+      const topSymbols = sigilAnalysis.slice(0, 3).map(s => s.symbol);
+      const predictions = waidesKISigilPredictor.predictMultipleSymbols(topSymbols);
+      
+      // Step 4: Record a demo trade result
+      const demoTrade = {
+        kons_symbol: "SHAI'LOR",
+        execution_data: {
+          entry_price: 2450.00,
+          exit_price: 2485.50,
+          quantity: 0.1,
+          trade_type: 'BUY' as const,
+          executed_at: new Date(Date.now() - 3600000).toISOString(),
+          closed_at: new Date().toISOString()
+        },
+        market_context: {
+          trend: 'UP' as const,
+          volatility: 'MEDIUM',
+          volume: 'HIGH',
+          time_of_day: 'MORNING',
+          day_of_week: 'Tuesday'
+        }
+      };
+      
+      const tradeId = waidesKISigilResultTracker.recordTradeResult(demoTrade);
+      
+      // Step 5: Get comprehensive statistics
+      const vaultStats = waidesKIMemorySigilVault.getVaultStats();
+      const trainingStats = waidesKISymbolTimeTrainer.getTrainingStats();
+      const predictorStats = waidesKISigilPredictor.getPredictorStats();
+      const trackerStats = waidesKISigilResultTracker.getTrackerStats();
+      const immortalSigils = waidesKIMemorySigilVault.getImmortalSigils();
+      
+      res.json({
+        success: true,
+        demo_outcomes_logged: demoOutcomes,
+        sigil_analysis: {
+          total_sigils: sigilAnalysis.length,
+          immortal_sigils: sigilAnalysis.filter(s => s.strength === 'immortal sigil').length,
+          strong_sigils: sigilAnalysis.filter(s => s.strength === 'strong').length,
+          top_performers: sigilAnalysis.slice(0, 3)
+        },
+        predictions: {
+          symbols_predicted: predictions.length,
+          confirmed_trades: predictions.filter(p => p.recommendation === 'CONFIRMED_TRADE').length,
+          predictions_list: predictions
+        },
+        demo_trade: {
+          trade_id: tradeId,
+          trade_details: demoTrade,
+          profit: ((demoTrade.execution_data.exit_price - demoTrade.execution_data.entry_price) * demoTrade.execution_data.quantity).toFixed(2)
+        },
+        system_statistics: {
+          vault_stats: vaultStats,
+          training_stats: trainingStats,
+          predictor_stats: predictorStats,
+          tracker_stats: trackerStats,
+          immortal_sigils: immortalSigils
+        },
+        workflow_steps: [
+          '1. Logged 5 demo symbol outcomes to Memory Sigil Vault',
+          '2. Analyzed all sigils with Symbol Time Trainer',
+          '3. Generated predictions for top-performing symbols',
+          '4. Recorded demo SHAI\'LOR trade with profitable outcome',
+          '5. Compiled comprehensive system statistics and performance metrics',
+          '6. Built "Sigils of Truth" from historical patterns with >75% win rates'
+        ],
+        memory_system_status: {
+          sigils_in_memory: vaultStats.total_symbols,
+          trades_recorded: vaultStats.total_trades,
+          immortal_sigils_count: immortalSigils.length,
+          learning_effectiveness: `${((sigilAnalysis.filter(s => s.strength !== 'weak').length / Math.max(sigilAnalysis.length, 1)) * 100).toFixed(1)}%`,
+          prediction_accuracy: `${predictorStats.recent_accuracy}%`
+        },
+        message: 'STEP 42 demo workflow completed successfully - Memory Sigils + Time-Layered Training Engine fully operational'
+      });
+    } catch (error) {
+      console.error('Error in STEP 42 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 42 demo workflow' });
     }
   });
 

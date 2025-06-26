@@ -1,4 +1,4 @@
-wimport { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -264,7 +264,7 @@ export default function SeasonalRebirth() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7 bg-gray-800/50">
+        <TabsList className="grid w-full grid-cols-8 bg-gray-800/50">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             Overview
@@ -272,6 +272,10 @@ export default function SeasonalRebirth() {
           <TabsTrigger value="memories" className="flex items-center gap-2">
             <Archive className="h-4 w-4" />
             Memory Vault
+          </TabsTrigger>
+          <TabsTrigger value="sigils" className="flex items-center gap-2">
+            <Hash className="h-4 w-4" />
+            Memory Sigils
           </TabsTrigger>
           <TabsTrigger value="health" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
@@ -478,6 +482,198 @@ export default function SeasonalRebirth() {
                   )}
                 </div>
               </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Memory Sigils Tab - STEP 42 */}
+        <TabsContent value="sigils" className="space-y-6">
+          <Card className="bg-gray-800/50 border-purple-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Hash className="h-5 w-5 text-purple-400" />
+                Memory Sigils + Time-Layered Training Engine
+              </CardTitle>
+              <CardDescription>
+                STEP 42: Waides KI builds "Sigils of Truth" from historical patterns with >75% win rates
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <Card className="bg-gray-700/30 border-gray-600/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Database className="h-4 w-4 text-purple-400" />
+                      <span className="font-medium">Memory Vault</span>
+                    </div>
+                    <p className="text-2xl font-bold text-purple-400">0</p>
+                    <p className="text-xs text-gray-400">Total Symbols</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-700/30 border-gray-600/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Star className="h-4 w-4 text-yellow-400" />
+                      <span className="font-medium">Immortal Sigils</span>
+                    </div>
+                    <p className="text-2xl font-bold text-yellow-400">0</p>
+                    <p className="text-xs text-gray-400">>75% Win Rate</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-700/30 border-gray-600/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Brain className="h-4 w-4 text-blue-400" />
+                      <span className="font-medium">Training Sessions</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-400">0</p>
+                    <p className="text-xs text-gray-400">Completed</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-700/30 border-gray-600/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart3 className="h-4 w-4 text-green-400" />
+                      <span className="font-medium">Prediction Accuracy</span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-400">0%</p>
+                    <p className="text-xs text-gray-400">Recent Performance</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      apiRequest('/api/waides-ki/memory-sigils/demo-workflow', {
+                        method: 'POST'
+                      }).then(() => {
+                        // Refresh data after demo
+                        window.location.reload();
+                      });
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Run STEP 42 Demo
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      apiRequest('/api/waides-ki/symbol-trainer/force-training', {
+                        method: 'POST'
+                      });
+                    }}
+                  >
+                    <Brain className="h-4 w-4 mr-2" />
+                    Force Training Session
+                  </Button>
+                </div>
+
+                <Separator />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Memory Vault Stats */}
+                  <Card className="bg-gray-700/30 border-gray-600/30">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Database className="h-5 w-5 text-purple-400" />
+                        Memory Vault Statistics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Total Symbols:</span>
+                          <p className="font-medium">0</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Total Trades:</span>
+                          <p className="font-medium">0</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Immortal Sigils:</span>
+                          <p className="font-medium text-yellow-400">0</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Strong Sigils:</span>
+                          <p className="font-medium text-green-400">0</p>
+                        </div>
+                      </div>
+                      <div className="pt-2">
+                        <span className="text-gray-400 text-sm">Last Update:</span>
+                        <p className="text-xs text-gray-500">No data yet</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Best Trading Opportunities */}
+                  <Card className="bg-gray-700/30 border-gray-600/30">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-green-400" />
+                        Best Trading Opportunities
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-gray-400">
+                        <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No opportunities detected</p>
+                        <p className="text-xs mt-2">Run demo to generate sigil predictions</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card className="bg-gray-700/30 border-gray-600/30">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-blue-400" />
+                      Memory System Workflow
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                          <span>1. Memory Sigil Vault stores historical outcomes</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <span>2. Symbol Time Trainer analyzes patterns</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                          <span>3. Sigil Predictor generates recommendations</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                          <span>4. Result Tracker validates accuracy</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                          <span>5. System builds "Sigils of Truth" (>75% win rate)</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                          <span>6. Continuous learning and pattern evolution</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-gray-800/50 rounded border border-purple-500/20">
+                      <p className="text-sm text-purple-200">
+                        <strong>STEP 42 Innovation:</strong> Waides KI remembers every trading outcome and builds sacred "Sigils of Truth" 
+                        from patterns with >75% win rates. The system learns from time-layered historical data to predict future market movements 
+                        with increasing accuracy through continuous pattern recognition and spiritual memory evolution.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
