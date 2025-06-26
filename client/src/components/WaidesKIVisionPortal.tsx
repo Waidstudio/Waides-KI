@@ -316,7 +316,7 @@ export default function WaidesKIVisionPortal() {
 
   const typeMessage = (message: string, source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error', confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     // Safety check for undefined message
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== 'string' || message.trim() === '') {
       console.warn('typeMessage called with invalid message:', message);
       return;
     }
