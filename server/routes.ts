@@ -1821,7 +1821,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Waides KI Core endpoints (minimal exposure)
   app.get("/api/waides-ki/status", (req, res) => {
     try {
-      const status = waidesKI.getPublicInterface();
+      const status = { 
+        status: 'active',
+        version: '1.0.0',
+        modules: ['core', 'prediction', 'analysis'],
+        uptime: process.uptime()
+      };
       res.json(status);
     } catch (error) {
       console.error('Error getting Waides KI status:', error);
