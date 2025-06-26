@@ -83,36 +83,7 @@ export default function WaidesKIVisionPortal() {
     refetchInterval: 30000
   });
 
-  // Oracle Message Mutation
-  const sendOracleMessageMutation = useMutation({
-    mutationFn: async (message: string) => {
-      const response = await fetch('/api/chat/oracle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, context: messages.slice(-10) })
-      });
-      return response.json();
-    },
-    onSuccess: (data: OracleResponse & { success: boolean }) => {
-      if (data.success) {
-        const oracleMessage: ChatMessage = {
-          id: Date.now().toString(),
-          sender: 'waides',
-          message: data.answer,
-          timestamp: new Date(),
-          personality: personality,
-          source: data.source,
-          confidence: data.confidence,
-          konslangProcessing: data.konslangProcessing
-        };
-        setMessages(prev => [...prev, oracleMessage]);
-        setIsTyping(false);
-      }
-    },
-    onError: () => {
-      setIsTyping(false);
-    }
-  });
+
 
   // Fetch user wallet balance
   const { data: walletData } = useQuery({
@@ -125,6 +96,8 @@ export default function WaidesKIVisionPortal() {
     queryKey: ['/api/divine-reading'],
     refetchInterval: 10000
   });
+
+
 
   // Chat message mutation
   const chatMutation = useMutation({
@@ -477,11 +450,36 @@ export default function WaidesKIVisionPortal() {
                     }`}
                   >
                     {message.sender === 'waides' && (
-                      <div className="text-xs text-purple-400 mb-1">
-                        💫 Waides KI • {currentPersonality?.name} Mode
+                      <div className="text-xs text-purple-400 mb-1 flex items-center justify-between">
+                        <span>💫 Waides KI • {currentPersonality?.name} Mode</span>
+                        {message.source && (
+                          <div className="flex items-center gap-1">
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs px-1 py-0 border-0 ${
+                                message.source === 'combined' ? 'bg-gold-500/20 text-gold-300' :
+                                message.source === 'chatgpt' ? 'bg-green-500/20 text-green-300' :
+                                message.source === 'incite' ? 'bg-blue-500/20 text-blue-300' :
+                                'bg-purple-500/20 text-purple-300'
+                              }`}
+                            >
+                              {message.source.toUpperCase()}
+                            </Badge>
+                            {message.confidence && (
+                              <Badge variant="outline" className="text-xs px-1 py-0 border-0 bg-orange-500/20 text-orange-300">
+                                {message.confidence}%
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                     <p className="text-sm leading-relaxed">{message.message}</p>
+                    {message.konslangProcessing && (
+                      <div className="text-xs text-purple-400/60 mt-2 italic">
+                        KonsLang: {message.konslangProcessing}
+                      </div>
+                    )}
                     {message.sender === 'waides' && isTyping && message.message === '' && (
                       <div className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
@@ -547,6 +545,19 @@ export default function WaidesKIVisionPortal() {
             >
               <Brain className="w-4 h-4 mr-1" />
               Auto-Voice {autoVoiceActivation ? 'ON' : 'OFF'}
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOracleMode(!oracleMode)}
+              className={`border-orange-500/30 ${oracleMode ? 'bg-orange-600/20 text-orange-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-orange-500/20`}
+            >
+              <Eye className="w-4 h-4 mr-1" />
+              Oracle {oracleMode ? 'ON' : 'OFF'}
+              {oracleMode && oracleStatus?.dual_ai_ready && (
+                <div className="w-2 h-2 bg-green-400 rounded-full ml-2 animate-pulse"></div>
+              )}
             </Button>
           </div>
 
