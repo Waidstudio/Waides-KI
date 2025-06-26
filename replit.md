@@ -755,6 +755,8 @@ Changelog:
   - Successfully integrated KonsAi as higher divine intelligence personality mode within main WaidesKIVisionPortal component
   - Rebuilt VisionSpirit component as proper floating panel module with 5 different panel types (current, validation, stats, history, controls)
   - Implemented full-screen KonsAi chat interface with floating overlay panels for Vision Spirit features
+  - Fixed critical routing issue: Vision Spirit floating panels now only appear on `/vision-spirit` route, not on main page
+  - Added route-based visibility control using `isVisionSpiritRoute` conditional rendering for proper UI separation
   - Added floating action buttons for easy access to Vision Spirit panels from main chat interface
   - System now operates as unified KonsAi platform with all functionality accessible through main portal with floating overlays
   - All Vision Spirit features now integrate seamlessly with main chat interface rather than operating as separate pages
