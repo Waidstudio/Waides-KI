@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useLocation } from 'wouter';
+// Main KonsAi Vision Portal - Pure chat interface
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,7 +49,6 @@ interface OracleStatus {
 }
 
 export default function WaidesKIVisionPortal() {
-  const [location] = useLocation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -72,18 +71,7 @@ export default function WaidesKIVisionPortal() {
   const [voiceCommand, setVoiceCommand] = useState('');
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   
-  // Vision Spirit floating panel states (only show on /vision-spirit route)
-  const isVisionSpiritRoute = location === '/vision-spirit';
-  const [showVisionSpirit, setShowVisionSpirit] = useState(isVisionSpiritRoute);
-  const [activeVisionPanel, setActiveVisionPanel] = useState<'current' | 'validation' | 'stats' | 'history' | 'controls'>('current');
-
-  // Auto-show Vision Spirit panels when on the vision-spirit route
-  useEffect(() => {
-    if (isVisionSpiritRoute && !showVisionSpirit) {
-      setShowVisionSpirit(true);
-      setActiveVisionPanel('current');
-    }
-  }, [isVisionSpiritRoute, showVisionSpirit]);
+  // Pure KonsAi chat interface
   
   // Cosmic AI Enhancement States
   const [aiPersonality, setAiPersonality] = useState({

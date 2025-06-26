@@ -19,7 +19,7 @@ import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
 import DreamLayerVision from "@/components/DreamLayerVision";
-import VisionSpirit from "@/components/VisionSpirit";
+import { VisionSpiritPage } from "@/components/VisionSpiritPage";
 import { SpiritualRecall } from "@/components/SpiritualRecall";
 import SeasonalRebirth from "@/components/SeasonalRebirth";
 import { ETHEmpathNetworkGuardian } from "@/components/ETHEmpathNetworkGuardian";
@@ -134,7 +134,7 @@ function Router() {
           <Route path="/sigil-layer" component={SigilLayer} />
           <Route path="/shadow-defense" component={ShadowOverrideDefense} />
           <Route path="/dream-vision" component={DreamLayerVision} />
-          <Route path="/vision-spirit" component={WaidesKIVisionPortal} />
+          <Route path="/vision-spirit" component={VisionSpiritPage} />
           <Route path="/eth-empath-guardian" component={ETHEmpathNetworkGuardian} />
           <Route path="/meta-guardian" component={MetaGuardianNetwork} />
           <Route path="/full-engine" component={WaidesFullEngine} />
