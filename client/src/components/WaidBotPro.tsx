@@ -96,7 +96,15 @@ export function WaidBotPro() {
   };
 
   const history: WaidBotProDecision[] = Array.isArray(historyData) ? historyData : [];
-  const analysis: TechnicalAnalysis = analysisData || {
+  const analysis: TechnicalAnalysis = (analysisData && typeof analysisData === 'object') ? {
+    currentPrice: analysisData.currentPrice || 0,
+    trendDirection: analysisData.trendDirection || 'SIDEWAYS',
+    strategy: analysisData.strategy || 'SIDEWAYS_RANGE',
+    confidence: analysisData.confidence || 0,
+    riskLevel: analysisData.riskLevel || 'LOW',
+    volume: analysisData.volume || 0,
+    priceChange24h: analysisData.priceChange24h || 0
+  } : {
     currentPrice: 0,
     trendDirection: 'SIDEWAYS',
     strategy: 'SIDEWAYS_RANGE',

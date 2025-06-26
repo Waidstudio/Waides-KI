@@ -1,6 +1,7 @@
 import { BasicWaidBot, BasicWaidDecision } from './basicWaidBot';
 import { WaidBotPro, WaidBotProDecision } from './waidBotPro';
 import { EthPriceData } from './ethMonitor';
+import fetch from 'node-fetch';
 
 export interface BotStatus {
   running: boolean;
@@ -74,6 +75,7 @@ export class EnhancedWaidBotController {
   private parameters: TradingParameters;
   private ethPrice: number = 0;
   private isInitialized: boolean = false;
+  private priceUpdateInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     this.basicWaidBot = new BasicWaidBot();
@@ -83,6 +85,9 @@ export class EnhancedWaidBotController {
     this.waidBotProStatus = this.initializeBotStatus('WaidBot Pro');
     
     this.parameters = this.getDefaultParameters();
+    
+    // Start real-time price updates
+    this.startPriceUpdates();
     
     console.log('🚀 Enhanced WaidBot Controller initialized');
   }
@@ -466,6 +471,81 @@ export class EnhancedWaidBotController {
       this.waidBotProStatus = this.initializeBotStatus('WaidBot Pro');
       console.log('🔄 WaidBot Pro statistics reset');
     }
+  }
+
+  /**
+   * Start real-time price updates
+   */
+  private startPriceUpdates(): void {
+    this.priceUpdateInterval = setInterval(async () => {
+      try {
+        const ethData = await this.fetchEthPrice();
+        if (ethData && ethData.price > 0) {
+          await this.updateEthPrice(ethData);
+        }
+      } catch (error) {
+        console.error('💸 Price update error:', error);
+      }
+    }, 15000); // Update every 15 seconds
+    
+    console.log('🔄 Real-time price updates started');
+  }
+
+  /**
+   * Stop real-time price updates
+   */
+  private stopPriceUpdates(): void {
+    if (this.priceUpdateInterval) {
+      clearInterval(this.priceUpdateInterval);
+      this.priceUpdateInterval = null;
+      console.log('⏹️ Real-time price updates stopped');
+    }
+  }
+
+  /**
+   * Fetch current ETH price from CoinGecko
+   */
+  private async fetchEthPrice(): Promise<EthPriceData | null> {
+    try {
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true');
+      
+      if (!response.ok) {
+        throw new Error(`API response not ok: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const ethInfo = data.ethereum;
+      
+      if (!ethInfo) {
+        throw new Error('No Ethereum data in response');
+      }
+
+      return {
+        price: ethInfo.usd || 0,
+        volume: ethInfo.usd_24h_vol || 0,
+        marketCap: ethInfo.usd_market_cap || 0,
+        priceChange24h: ethInfo.usd_24h_change || 0,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('💸 Failed to fetch ETH price:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get current ETH price
+   */
+  public getCurrentEthPrice(): number {
+    return this.ethPrice;
+  }
+
+  /**
+   * Cleanup resources
+   */
+  public cleanup(): void {
+    this.stopPriceUpdates();
+    console.log('🧹 Enhanced WaidBot Controller cleaned up');
   }
 }
 
