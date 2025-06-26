@@ -151,6 +151,8 @@ import { waidesKIStopLossManager } from './services/waidesKIStopLossManager.js';
 // WAIDBOT SERVICES: Basic and Pro Trading Bots
 import { basicWaidBot } from './services/basicWaidBot.js';
 import { waidBotPro } from './services/waidBotPro.js';
+// GAMIFIED LEARNING SYSTEM
+import { GamifiedLearningSystem } from './services/gamifiedLearning.js';
 
 
 let ethMonitor: EthMonitor;
@@ -194,6 +196,8 @@ let waidesKIDivineVisionMap: WaidesKIDivineVisionMap;
 let waidesKISpiritContract: WaidesKISpiritContract;
 // STEP 47: Trinity Brain Model
 let waidesKIBrainHiveController: WaidesKIBrainHiveController;
+// GAMIFIED LEARNING SYSTEM
+let gamifiedLearning: GamifiedLearningSystem;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -203,6 +207,7 @@ import { konsLangAI } from './services/konsLangAI';
 import { waidesKIModelTrainer } from './services/waidesKIModelTrainer';
 import { waidesKIModelHealthMonitor } from './services/waidesKIModelHealthMonitor';
 import { waidesKIABTestingEngine } from './services/waidesKIABTestingEngine';
+import { GamifiedLearningSystem } from './services/gamifiedLearning';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create HTTP server
@@ -273,6 +278,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     waidesKIPreCognitionEngine,
     waidesKIVisionMemoryMap
   );
+
+  // Initialize Gamified Learning System
+  gamifiedLearning = new GamifiedLearningSystem();
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -14113,6 +14121,210 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('❌ WaidBot Pro analysis error:', error);
       res.status(500).json({ error: 'Failed to get WaidBot Pro analysis' });
+    }
+  });
+
+  // ==================== GAMIFIED LEARNING SYSTEM API ROUTES ====================
+
+  // Get user progress
+  app.get("/api/learning/progress/:userId", (req, res) => {
+    try {
+      const { userId } = req.params;
+      const progress = gamifiedLearning.getUserProgress(userId);
+      res.json({ success: true, progress });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get user progress' });
+    }
+  });
+
+  // Get all learning modules
+  app.get("/api/learning/modules", (req, res) => {
+    try {
+      const modules = gamifiedLearning.getAllModules();
+      res.json({ success: true, modules });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get learning modules' });
+    }
+  });
+
+  // Get modules by category
+  app.get("/api/learning/modules/category/:category", (req, res) => {
+    try {
+      const { category } = req.params;
+      const modules = gamifiedLearning.getModulesByCategory(category);
+      res.json({ success: true, modules });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get modules by category' });
+    }
+  });
+
+  // Get available modules for user
+  app.get("/api/learning/modules/available/:userId", (req, res) => {
+    try {
+      const { userId } = req.params;
+      const modules = gamifiedLearning.getAvailableModules(userId);
+      res.json({ success: true, modules });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get available modules' });
+    }
+  });
+
+  // Start a module
+  app.post("/api/learning/modules/:moduleId/start", (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+      }
+
+      const success = gamifiedLearning.startModule(userId, moduleId);
+      if (success) {
+        res.json({ success: true, message: 'Module started successfully' });
+      } else {
+        res.status(400).json({ error: 'Cannot start module - check prerequisites' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start module' });
+    }
+  });
+
+  // Submit quiz answer
+  app.post("/api/learning/quiz/submit", (req, res) => {
+    try {
+      const { userId, moduleId, lessonId, questionId, answer } = req.body;
+      
+      if (!userId || !moduleId || !lessonId || !questionId || answer === undefined) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      const result = gamifiedLearning.submitQuizAnswer(userId, moduleId, lessonId, questionId, answer);
+      res.json({ success: true, result });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to submit quiz answer' });
+    }
+  });
+
+  // Complete a lesson
+  app.post("/api/learning/lessons/:lessonId/complete", (req, res) => {
+    try {
+      const { lessonId } = req.params;
+      const { userId, moduleId } = req.body;
+      
+      if (!userId || !moduleId) {
+        return res.status(400).json({ error: 'User ID and Module ID are required' });
+      }
+
+      gamifiedLearning.completeLesson(userId, moduleId, lessonId);
+      res.json({ success: true, message: 'Lesson completed successfully' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to complete lesson' });
+    }
+  });
+
+  // Get active challenges
+  app.get("/api/learning/challenges", (req, res) => {
+    try {
+      const challenges = gamifiedLearning.getActiveChallenges();
+      res.json({ success: true, challenges });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get challenges' });
+    }
+  });
+
+  // Join a challenge
+  app.post("/api/learning/challenges/:challengeId/join", (req, res) => {
+    try {
+      const { challengeId } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+      }
+
+      const success = gamifiedLearning.joinChallenge(userId, challengeId);
+      if (success) {
+        res.json({ success: true, message: 'Joined challenge successfully' });
+      } else {
+        res.status(400).json({ error: 'Cannot join challenge' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to join challenge' });
+    }
+  });
+
+  // Get leaderboard
+  app.get("/api/learning/leaderboard", (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const leaderboard = gamifiedLearning.getLeaderboard(limit);
+      res.json({ success: true, leaderboard });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get leaderboard' });
+    }
+  });
+
+  // Update leaderboard (called when user completes activities)
+  app.post("/api/learning/leaderboard/update", (req, res) => {
+    try {
+      const { userId, username } = req.body;
+      
+      if (!userId || !username) {
+        return res.status(400).json({ error: 'User ID and username are required' });
+      }
+
+      gamifiedLearning.updateLeaderboard(userId, username);
+      res.json({ success: true, message: 'Leaderboard updated successfully' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update leaderboard' });
+    }
+  });
+
+  // Get learning statistics
+  app.get("/api/learning/stats/:userId", (req, res) => {
+    try {
+      const { userId } = req.params;
+      const stats = gamifiedLearning.getLearningStats(userId);
+      res.json({ success: true, stats });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get learning statistics' });
+    }
+  });
+
+  // Get recommended modules
+  app.get("/api/learning/recommendations/:userId", (req, res) => {
+    try {
+      const { userId } = req.params;
+      const recommendations = gamifiedLearning.getRecommendedModules(userId);
+      res.json({ success: true, recommendations });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get recommendations' });
+    }
+  });
+
+  // Get learning dashboard data (comprehensive overview)
+  app.get("/api/learning/dashboard/:userId", (req, res) => {
+    try {
+      const { userId } = req.params;
+      const progress = gamifiedLearning.getUserProgress(userId);
+      const availableModules = gamifiedLearning.getAvailableModules(userId);
+      const activeChallenges = gamifiedLearning.getActiveChallenges();
+      const recommendations = gamifiedLearning.getRecommendedModules(userId);
+      const stats = gamifiedLearning.getLearningStats(userId);
+
+      res.json({
+        success: true,
+        dashboard: {
+          progress,
+          availableModules,
+          activeChallenges,
+          recommendations,
+          stats
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get learning dashboard' });
     }
   });
 
