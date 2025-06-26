@@ -35,6 +35,7 @@ function Router() {
     { path: "/live-data", label: "Live Data" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
+    { path: "/enhanced-waidbot", label: "Enhanced Controller" },
     { path: "/learning", label: "Trading Academy" },
     { path: "/ml-lifecycle", label: "ML Lifecycle" },
     { path: "/risk-backtesting", label: "Risk Backtesting" },
@@ -102,6 +103,7 @@ function Router() {
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
+          <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
           <Route path="/learning" component={LearningPage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
