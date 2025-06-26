@@ -11456,6 +11456,419 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 53: Collective Emotional Harmony + Grid Meditation Protocol API Endpoints
+
+  app.post('/api/collective/peer-state', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const result = waidesKICollectiveEmotionHub.receivePeerState(req.body);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to receive peer state' });
+    }
+  });
+
+  app.get('/api/collective/harmony', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const metrics = waidesKICollectiveEmotionHub.calculateCollectiveMetrics();
+      res.json({
+        success: true,
+        collective_metrics: metrics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get collective harmony' });
+    }
+  });
+
+  app.get('/api/collective/dashboard', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const dashboard = waidesKICollectiveEmotionHub.getCollectiveDashboard();
+      res.json({
+        success: true,
+        dashboard: dashboard,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get collective dashboard' });
+    }
+  });
+
+  app.get('/api/collective/nodes', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const nodeStatuses = waidesKICollectiveEmotionHub.getAllNodeStatuses();
+      res.json({
+        success: true,
+        node_statuses: nodeStatuses,
+        total_nodes: nodeStatuses.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get node statuses' });
+    }
+  });
+
+  app.get('/api/collective/node/:nodeId/history', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const { nodeId } = req.params;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKICollectiveEmotionHub.getNodeHistory(nodeId, limit);
+      res.json({
+        success: true,
+        node_id: nodeId,
+        history: history,
+        total_entries: history.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get node history' });
+    }
+  });
+
+  app.post('/api/collective/cleanup', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const cleanup = waidesKICollectiveEmotionHub.cleanupStaleNodes();
+      res.json({
+        success: true,
+        cleanup_result: cleanup,
+        message: `Removed ${cleanup.removed_nodes.length} offline nodes, cleaned ${cleanup.cleaned_states} stale states`
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to cleanup stale nodes' });
+    }
+  });
+
+  app.post('/api/meditation/register-node', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const result = waidesKIGroupMeditationCoordinator.registerPeerNode(req.body);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to register meditation node' });
+    }
+  });
+
+  app.delete('/api/meditation/node/:nodeId', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const { nodeId } = req.params;
+      const result = waidesKIGroupMeditationCoordinator.unregisterPeerNode(nodeId);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to unregister meditation node' });
+    }
+  });
+
+  app.get('/api/meditation/evaluate', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const evaluation = waidesKIGroupMeditationCoordinator.evaluateMeditationNeed();
+      res.json({
+        success: true,
+        evaluation: evaluation,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to evaluate meditation need' });
+    }
+  });
+
+  app.post('/api/meditation/coordinate', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const { reason } = req.body;
+      const result = await waidesKIGroupMeditationCoordinator.coordinateGroupMeditation(reason);
+      res.json({
+        success: true,
+        coordination_result: result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to coordinate group meditation' });
+    }
+  });
+
+  app.get('/api/meditation/history', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKIGroupMeditationCoordinator.getMeditationHistory(limit);
+      res.json({
+        success: true,
+        meditation_history: history,
+        total_sessions: history.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get meditation history' });
+    }
+  });
+
+  app.get('/api/meditation/nodes', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const nodes = waidesKIGroupMeditationCoordinator.getRegisteredNodes();
+      res.json({
+        success: true,
+        registered_nodes: nodes,
+        total_nodes: nodes.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get registered nodes' });
+    }
+  });
+
+  app.patch('/api/meditation/node/:nodeId/status', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const { nodeId } = req.params;
+      const { active } = req.body;
+      const result = waidesKIGroupMeditationCoordinator.updateNodeStatus(nodeId, active);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update node status' });
+    }
+  });
+
+  app.get('/api/meditation/stats', async (req, res) => {
+    try {
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const stats = waidesKIGroupMeditationCoordinator.getMeditationStats();
+      res.json({
+        success: true,
+        meditation_stats: stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get meditation statistics' });
+    }
+  });
+
+  app.get('/api/meditation/broadcast/history', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKIMeditationBroadcast.getBroadcastHistory(limit);
+      res.json({
+        success: true,
+        broadcast_history: history,
+        total_broadcasts: history.length
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get broadcast history' });
+    }
+  });
+
+  app.get('/api/meditation/broadcast/network-state', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const networkState = waidesKIMeditationBroadcast.getNetworkMeditationState();
+      res.json({
+        success: true,
+        network_meditation_state: networkState,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get network meditation state' });
+    }
+  });
+
+  app.get('/api/meditation/broadcast/schedule', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const schedule = waidesKIMeditationBroadcast.getBroadcastSchedule();
+      res.json({
+        success: true,
+        broadcast_schedule: schedule,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get broadcast schedule' });
+    }
+  });
+
+  app.patch('/api/meditation/broadcast/schedule', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const result = waidesKIMeditationBroadcast.updateBroadcastSchedule(req.body);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update broadcast schedule' });
+    }
+  });
+
+  app.post('/api/meditation/broadcast/trigger', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const { reason, priority_level } = req.body;
+      const result = await waidesKIMeditationBroadcast.broadcastMeditationTrigger({
+        broadcast_type: 'manual',
+        trigger_reason: reason || 'Manual meditation trigger',
+        priority_level: priority_level || 'medium'
+      });
+      res.json({
+        success: true,
+        broadcast_result: result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to trigger meditation broadcast' });
+    }
+  });
+
+  app.post('/api/meditation/broadcast/emergency', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const { crisis_reason } = req.body;
+      const result = await waidesKIMeditationBroadcast.emergencyMeditationBroadcast(
+        crisis_reason || 'Emergency meditation required'
+      );
+      res.json({
+        success: true,
+        emergency_result: result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to trigger emergency meditation' });
+    }
+  });
+
+  app.post('/api/meditation/broadcast/force', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const { reason } = req.body;
+      const result = await waidesKIMeditationBroadcast.forceImmediateMeditation(reason);
+      res.json({
+        success: true,
+        force_result: result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to force immediate meditation' });
+    }
+  });
+
+  app.get('/api/meditation/broadcast/stats', async (req, res) => {
+    try {
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      const stats = waidesKIMeditationBroadcast.getBroadcastStatistics();
+      res.json({
+        success: true,
+        broadcast_statistics: stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get broadcast statistics' });
+    }
+  });
+
+  app.get('/api/collective-harmony/demo-workflow', async (req, res) => {
+    try {
+      const { waidesKICollectiveEmotionHub } = await import('./services/waidesKICollectiveEmotionHub.js');
+      const { waidesKIGroupMeditationCoordinator } = await import('./services/waidesKIGroupMeditationCoordinator.js');
+      const { waidesKIMeditationBroadcast } = await import('./services/waidesKIMeditationBroadcast.js');
+      
+      // Step 1: Register multiple peer nodes
+      const node1 = waidesKIGroupMeditationCoordinator.registerPeerNode({
+        node_id: 'waides_node_1',
+        meditation_endpoint: 'https://node1.waides.ai/api/meditation/trigger',
+        location: 'US_East',
+        active: true
+      });
+      
+      const node2 = waidesKIGroupMeditationCoordinator.registerPeerNode({
+        node_id: 'waides_node_2',
+        meditation_endpoint: 'https://node2.waides.ai/api/meditation/trigger',
+        location: 'EU_West',
+        active: true
+      });
+      
+      const node3 = waidesKIGroupMeditationCoordinator.registerPeerNode({
+        node_id: 'waides_node_3',
+        meditation_endpoint: 'https://node3.waides.ai/api/meditation/trigger',
+        location: 'Asia_Pacific',
+        active: true
+      });
+      
+      // Step 2: Simulate peer emotional states
+      waidesKICollectiveEmotionHub.receivePeerState({
+        node_id: 'waides_node_1',
+        emotional_state: 'overheated',
+        temperature: 40,
+        self_awareness_level: 'HIGH',
+        emotional_intelligence_score: 85,
+        location: 'US_East'
+      });
+      
+      waidesKICollectiveEmotionHub.receivePeerState({
+        node_id: 'waides_node_2',
+        emotional_state: 'hot',
+        temperature: 30,
+        self_awareness_level: 'MEDIUM',
+        emotional_intelligence_score: 75,
+        location: 'EU_West'
+      });
+      
+      waidesKICollectiveEmotionHub.receivePeerState({
+        node_id: 'waides_node_3',
+        emotional_state: 'overheated',
+        temperature: 45,
+        self_awareness_level: 'HIGH',
+        emotional_intelligence_score: 90,
+        location: 'Asia_Pacific'
+      });
+      
+      // Step 3: Calculate collective metrics
+      const collectiveMetrics = waidesKICollectiveEmotionHub.calculateCollectiveMetrics();
+      
+      // Step 4: Evaluate meditation need
+      const meditationEvaluation = waidesKIGroupMeditationCoordinator.evaluateMeditationNeed();
+      
+      // Step 5: Trigger group meditation if needed
+      let meditationResult = null;
+      if (meditationEvaluation.should_trigger) {
+        meditationResult = await waidesKIGroupMeditationCoordinator.coordinateGroupMeditation(
+          'Demo: High collective temperature detected'
+        );
+      }
+      
+      // Step 6: Broadcast meditation trigger
+      const broadcastResult = await waidesKIMeditationBroadcast.broadcastMeditationTrigger({
+        broadcast_type: 'triggered',
+        trigger_reason: 'Demo: Collective emotional overheating',
+        priority_level: 'high'
+      });
+      
+      // Step 7: Get comprehensive dashboard
+      const dashboard = waidesKICollectiveEmotionHub.getCollectiveDashboard();
+      const broadcastStats = waidesKIMeditationBroadcast.getBroadcastStatistics();
+      
+      res.json({
+        demo_workflow: {
+          step_1: 'Registered 3 peer nodes across different regions',
+          step_2: 'Simulated peer emotional states with collective overheating',
+          step_3: 'Calculated collective harmony metrics and temperature analysis',
+          step_4: 'Evaluated meditation need based on collective state',
+          step_5: 'Coordinated group meditation session across registered nodes',
+          step_6: 'Broadcast meditation trigger with Konslang messaging',
+          step_7: 'Generated comprehensive collective emotional dashboard'
+        },
+        node_registrations: { node1, node2, node3 },
+        collective_metrics: collectiveMetrics,
+        meditation_evaluation: meditationEvaluation,
+        meditation_coordination: meditationResult,
+        broadcast_result: broadcastResult,
+        collective_dashboard: dashboard,
+        broadcast_statistics: broadcastStats,
+        demonstration: 'STEP 53 Collective Emotional Harmony + Grid Meditation Protocol fully operational'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to run collective harmony demo workflow' });
+    }
+  });
+
   app.get('/api/thermodynamics/safety-report', async (req, res) => {
     try {
       const { waidesKIRiskThermodynamicsController } = await import('./services/waidesKIRiskThermodynamicsController.js');
