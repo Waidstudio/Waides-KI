@@ -14915,6 +14915,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ==========================================================================
+  // REAL-TIME COMMAND EXECUTION SYSTEM - Action Menu Integration
+  // ==========================================================================
+
+  // Execute trading commands in real-time
+  app.post('/api/commands/execute', async (req, res) => {
+    try {
+      const { command, userId = 'user123' } = req.body;
+      
+      if (!command || typeof command !== 'string') {
+        return res.status(400).json({
+          success: false,
+          error: 'Command is required and must be a string'
+        });
+      }
+
+      const result = await waidesKICommandProcessor.processCommand(command, userId);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Command execution error:', error);
+      res.status(500).json({
+        success: false,
+        message: `❌ Command execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        timestamp: Date.now()
+      });
+    }
+  });
+
+  // Get supported commands list
+  app.get('/api/commands/supported', (req, res) => {
+    try {
+      const commands = waidesKICommandProcessor.getSupportedCommands();
+      res.json({
+        success: true,
+        commands,
+        total: commands.length,
+        categories: {
+          trading: ['activate autonomous trading', 'deactivate autonomous trading', 'start trading', 'stop trading'],
+          status: ['check balance', 'trading status', 'trading performance', 'wallet status'],
+          orders: ['set take profit', 'set stop loss', 'close all trades'],
+          analysis: ['predict eth', 'eth prediction', 'analyze market', 'get signals', 'market analysis']
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get supported commands'
+      });
+    }
+  });
+
+  // ==========================================================================
   // ADMIN CONFIGURATION PANEL - API Key Management System
   // ==========================================================================
 
