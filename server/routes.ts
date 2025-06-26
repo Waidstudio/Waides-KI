@@ -125,6 +125,12 @@ import { waidesKIMeditationBroadcast } from './services/waidesKIMeditationBroadc
 // STEP 54: Real-World Deployment & Security Audit
 import { waidesKISecureBinanceClient } from './services/waidesKISecureBinanceClient.js';
 import { waidesKIProductionRiskManager } from './services/waidesKIProductionRiskManager.js';
+// STEP 57: Advanced Multi-Node Sentience & Order Flow Sync + Entangled Presence Mesh
+import { waidesKIMultiNodeOrderConsensus } from './services/waidesKIMultiNodeOrderConsensus.js';
+import { waidesKIETHSentimentTracker } from './services/waidesKIETHSentimentTracker.js';
+import { waidesKIPresenceOrchestrator } from './services/waidesKIPresenceOrchestrator.js';
+import { waidesKIEntangledPresenceMesh } from './services/waidesKIEntangledPresenceMesh.js';
+import { waidesKICollectiveTradeConductor } from './services/waidesKICollectiveTradeConductor.js';
 
 
 let ethMonitor: EthMonitor;
