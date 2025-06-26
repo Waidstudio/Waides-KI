@@ -1087,7 +1087,7 @@ export default function WaidesKIVisionPortal() {
       {activeTab === 'chat' && (
         <>
           {/* Chat Suggestions */}
-          <div className="relative z-10 flex flex-wrap gap-2 p-4">
+          <div className="relative z-10 flex flex-wrap gap-2 p-4 max-w-6xl mx-auto">
             {suggestions.map((suggestion, index) => (
               <Button
                 key={index}
@@ -1102,7 +1102,7 @@ export default function WaidesKIVisionPortal() {
           </div>
 
       {/* Chat Window */}
-      <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 h-[calc(100vh-300px)] overflow-hidden">
+      <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 h-[calc(100vh-300px)] overflow-hidden max-w-6xl mx-auto">
         <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-800">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center">
@@ -1338,7 +1338,7 @@ export default function WaidesKIVisionPortal() {
       </div>
 
           {/* Chat Input */}
-          <div className="relative z-10 p-4">
+          <div className="relative z-10 p-4 max-w-6xl mx-auto">
             <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
               <Input
                 value={currentMessage}
