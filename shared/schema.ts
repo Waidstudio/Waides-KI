@@ -29,6 +29,75 @@ export const wallets = pgTable("wallets", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const userProfiles = pgTable("user_profiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  displayName: text("display_name"),
+  avatar: text("avatar"), // URL or base64 encoded image
+  bio: text("bio"),
+  location: text("location"),
+  timezone: text("timezone").default("UTC"),
+  language: text("language").default("en"),
+  theme: text("theme").default("dark"), // 'dark', 'light', 'cosmic', 'neural'
+  tradingStyle: text("trading_style").default("balanced"), // 'aggressive', 'conservative', 'balanced', 'ai_driven'
+  riskTolerance: integer("risk_tolerance").default(50), // 0-100
+  experienceLevel: text("experience_level").default("beginner"), // 'beginner', 'intermediate', 'advanced', 'expert'
+  preferredPairs: jsonb("preferred_pairs").default("[]"),
+  tradingGoals: jsonb("trading_goals").default("[]"),
+  notifications: jsonb("notifications").default("{}"),
+  privacy: jsonb("privacy").default("{}"),
+  achievements: jsonb("achievements").default("[]"),
+  stats: jsonb("stats").default("{}"),
+  customFields: jsonb("custom_fields").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userSettings = pgTable("user_settings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  // Trading Settings
+  autoTradingEnabled: boolean("auto_trading_enabled").default(false),
+  maxPositionSize: numeric("max_position_size", { precision: 15, scale: 2 }).default("1000.00"),
+  dailyTradingLimit: numeric("daily_trading_limit", { precision: 15, scale: 2 }).default("10000.00"),
+  stopLossPercentage: real("stop_loss_percentage").default(5.0),
+  takeProfitPercentage: real("take_profit_percentage").default(10.0),
+  tradingHours: jsonb("trading_hours").default("{}"),
+  // UI/UX Settings
+  chartType: text("chart_type").default("candlestick"),
+  chartTimeframe: text("chart_timeframe").default("1h"),
+  dashboardLayout: jsonb("dashboard_layout").default("{}"),
+  sidebarCollapsed: boolean("sidebar_collapsed").default(false),
+  animationsEnabled: boolean("animations_enabled").default(true),
+  soundEnabled: boolean("sound_enabled").default(true),
+  voiceAssistantEnabled: boolean("voice_assistant_enabled").default(false),
+  // AI & Automation Settings
+  aiPersonality: text("ai_personality").default("balanced"), // 'spiritual', 'analytical', 'creative', 'balanced'
+  konsaiMode: text("konsai_mode").default("auto"), // 'auto', 'spiritual', 'oracle', 'universal'
+  predictionConfidenceThreshold: integer("prediction_confidence_threshold").default(75),
+  signalFilterLevel: text("signal_filter_level").default("medium"), // 'low', 'medium', 'high'
+  // Security & Privacy
+  biometricEnabled: boolean("biometric_enabled").default(false),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  sessionTimeout: integer("session_timeout").default(30), // minutes
+  ipWhitelist: jsonb("ip_whitelist").default("[]"),
+  dataRetention: integer("data_retention").default(365), // days
+  // Notification Settings
+  emailNotifications: boolean("email_notifications").default(true),
+  pushNotifications: boolean("push_notifications").default(true),
+  tradeAlerts: boolean("trade_alerts").default(true),
+  priceAlerts: boolean("price_alerts").default(true),
+  newsAlerts: boolean("news_alerts").default(false),
+  // Advanced Settings
+  apiAccess: boolean("api_access").default(false),
+  webhookUrl: text("webhook_url"),
+  customCss: text("custom_css"),
+  betaFeatures: boolean("beta_features").default(false),
+  developerMode: boolean("developer_mode").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const memories = pgTable("memories", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
@@ -145,6 +214,18 @@ export const insertMemorySchema = createInsertSchema(memories).omit({
   createdAt: true,
 });
 
+export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertTradeSchema = createInsertSchema(trades).omit({
   id: true,
   createdAt: true,
@@ -155,6 +236,10 @@ export type InsertWallet = z.infer<typeof insertWalletSchema>;
 export type Wallet = typeof wallets.$inferSelect;
 export type InsertMemory = z.infer<typeof insertMemorySchema>;
 export type Memory = typeof memories.$inferSelect;
+export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
+export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertTrade = z.infer<typeof insertTradeSchema>;
 export type Trade = typeof trades.$inferSelect;
 
