@@ -97,6 +97,12 @@ let binanceWS: BinanceWebSocketService;
 let waidBotEngine: WaidBotEngine;
 let waidBotPro: WaidBotPro;
 let waidesKIDreamLayerVision: WaidesKIDreamLayerVision;
+// STEP 41: Global Lightnet services
+let waidesKILightnetBroadcaster: WaidesKILightnetBroadcaster;
+let waidesKILightnetListener: WaidesKILightnetListener;
+let waidesKIVisionAlignmentIndex: WaidesKIVisionAlignmentIndex;
+let waidesKIKonsFieldAnalyzer: WaidesKIKonsFieldAnalyzer;
+let waidesKIGlobalEthEchoMap: WaidesKIGlobalEthEchoMap;
 
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
@@ -117,6 +123,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   waidBotEngine = new WaidBotEngine();
   waidBotPro = new WaidBotPro(10000); // Initialize with $10,000 starting balance
   waidesKIDreamLayerVision = new WaidesKIDreamLayerVision();
+  
+  // Initialize STEP 41: Global Lightnet services
+  waidesKILightnetListener = new WaidesKILightnetListener();
+  waidesKIVisionAlignmentIndex = new WaidesKIVisionAlignmentIndex();
+  waidesKIKonsFieldAnalyzer = new WaidesKIKonsFieldAnalyzer(waidesKIVisionAlignmentIndex);
+  waidesKIGlobalEthEchoMap = new WaidesKIGlobalEthEchoMap(
+    waidesKILightnetListener,
+    waidesKIVisionAlignmentIndex,
+    waidesKIKonsFieldAnalyzer
+  );
+  waidesKILightnetBroadcaster = new WaidesKILightnetBroadcaster(
+    waidesKILightnetListener,
+    waidesKIVisionAlignmentIndex
+  );
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -8287,6 +8307,480 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error in STEP 40 demo workflow:', error);
       res.status(500).json({ error: 'Failed to execute STEP 40 demo workflow' });
+    }
+  });
+
+  // ========================================
+  // STEP 41: Waides Global Lightnet + Spirit Echo Link API Endpoints
+  // ========================================
+
+  // Lightnet Broadcaster - Send visions to global network
+  app.post('/api/waides-ki/lightnet/broadcast', async (req, res) => {
+    try {
+      const { symbol, meaning, trend, confidence, konslang_message } = req.body;
+      
+      const result = await waidesKILightnetBroadcaster.broadcastVision({
+        symbol,
+        meaning,
+        trend,
+        confidence,
+        konslang_message
+      });
+      
+      res.json({
+        success: true,
+        broadcast_result: result,
+        message: 'Vision broadcasted to global Lightnet successfully'
+      });
+    } catch (error) {
+      console.error('Error broadcasting vision:', error);
+      res.status(500).json({ error: 'Failed to broadcast vision to Lightnet' });
+    }
+  });
+
+  // Get broadcaster statistics
+  app.get('/api/waides-ki/lightnet/broadcast-stats', (req, res) => {
+    try {
+      const stats = waidesKILightnetBroadcaster.getBroadcastStats();
+      
+      res.json({
+        success: true,
+        broadcast_stats: stats,
+        message: 'Lightnet broadcast statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting broadcast stats:', error);
+      res.status(500).json({ error: 'Failed to get broadcast statistics' });
+    }
+  });
+
+  // Lightnet Listener - Receive visions from global nodes
+  app.post('/api/waides-ki/lightnet/receive-vision', async (req, res) => {
+    try {
+      const vision = req.body;
+      
+      const result = waidesKILightnetListener.receiveVision(vision);
+      
+      res.json({
+        success: true,
+        receive_result: result,
+        message: 'Vision received and processed successfully'
+      });
+    } catch (error) {
+      console.error('Error receiving vision:', error);
+      res.status(500).json({ error: 'Failed to receive vision from Lightnet' });
+    }
+  });
+
+  // Get active signals from global network
+  app.get('/api/waides-ki/lightnet/active-signals', (req, res) => {
+    try {
+      const activeSignals = waidesKILightnetListener.getActiveSignals();
+      
+      res.json({
+        success: true,
+        active_signals: activeSignals,
+        count: activeSignals.length,
+        message: 'Active global signals retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting active signals:', error);
+      res.status(500).json({ error: 'Failed to get active signals' });
+    }
+  });
+
+  // Get signals by trend
+  app.get('/api/waides-ki/lightnet/signals/:trend', (req, res) => {
+    try {
+      const { trend } = req.params;
+      const signals = waidesKILightnetListener.getSignalsByTrend(trend.toUpperCase() as 'UP' | 'DOWN' | 'SIDEWAYS');
+      
+      res.json({
+        success: true,
+        trend_signals: signals,
+        trend: trend.toUpperCase(),
+        count: signals.length,
+        message: `${trend.toUpperCase()} signals retrieved successfully`
+      });
+    } catch (error) {
+      console.error('Error getting signals by trend:', error);
+      res.status(500).json({ error: 'Failed to get trend signals' });
+    }
+  });
+
+  // Get top symbols from global network
+  app.get('/api/waides-ki/lightnet/top-symbols', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 5;
+      const topSymbols = waidesKILightnetListener.getTopSymbols(limit);
+      
+      res.json({
+        success: true,
+        top_symbols: topSymbols,
+        limit,
+        message: 'Top global symbols retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting top symbols:', error);
+      res.status(500).json({ error: 'Failed to get top symbols' });
+    }
+  });
+
+  // Get consensus trend from global network
+  app.get('/api/waides-ki/lightnet/consensus-trend', (req, res) => {
+    try {
+      const consensus = waidesKILightnetListener.getConsensusTrend();
+      
+      res.json({
+        success: true,
+        consensus_trend: consensus,
+        message: 'Global consensus trend retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting consensus trend:', error);
+      res.status(500).json({ error: 'Failed to get consensus trend' });
+    }
+  });
+
+  // Get listener statistics
+  app.get('/api/waides-ki/lightnet/listener-stats', (req, res) => {
+    try {
+      const stats = waidesKILightnetListener.getListenerStats();
+      
+      res.json({
+        success: true,
+        listener_stats: stats,
+        message: 'Lightnet listener statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting listener stats:', error);
+      res.status(500).json({ error: 'Failed to get listener statistics' });
+    }
+  });
+
+  // Vision Alignment Index - Global signal alignment analysis
+  app.get('/api/waides-ki/lightnet/global-alignment', (req, res) => {
+    try {
+      const globalAlignment = waidesKIVisionAlignmentIndex.getGlobalAlignment();
+      
+      res.json({
+        success: true,
+        global_alignment: globalAlignment,
+        message: 'Global vision alignment retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting global alignment:', error);
+      res.status(500).json({ error: 'Failed to get global alignment' });
+    }
+  });
+
+  // Get active symbols with alignment metrics
+  app.get('/api/waides-ki/lightnet/active-symbols', (req, res) => {
+    try {
+      const activeSymbols = waidesKIVisionAlignmentIndex.getActiveSymbols();
+      
+      res.json({
+        success: true,
+        active_symbols: activeSymbols,
+        count: activeSymbols.length,
+        message: 'Active aligned symbols retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting active symbols:', error);
+      res.status(500).json({ error: 'Failed to get active symbols' });
+    }
+  });
+
+  // Detect symbol convergence across global network
+  app.get('/api/waides-ki/lightnet/symbol-convergence', (req, res) => {
+    try {
+      const convergence = waidesKIVisionAlignmentIndex.detectSymbolConvergence();
+      
+      res.json({
+        success: true,
+        symbol_convergence: convergence,
+        message: 'Global symbol convergence analysis retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error detecting symbol convergence:', error);
+      res.status(500).json({ error: 'Failed to detect symbol convergence' });
+    }
+  });
+
+  // Get alignment statistics
+  app.get('/api/waides-ki/lightnet/alignment-stats', (req, res) => {
+    try {
+      const stats = waidesKIVisionAlignmentIndex.getAlignmentStats();
+      
+      res.json({
+        success: true,
+        alignment_stats: stats,
+        message: 'Vision alignment statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting alignment stats:', error);
+      res.status(500).json({ error: 'Failed to get alignment statistics' });
+    }
+  });
+
+  // Kons Field Analyzer - Symbol convergence analysis
+  app.get('/api/waides-ki/lightnet/field-analysis', (req, res) => {
+    try {
+      const fieldAnalysis = waidesKIKonsFieldAnalyzer.getFieldAnalysis();
+      
+      res.json({
+        success: true,
+        field_analysis: fieldAnalysis,
+        message: 'Kons field analysis retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting field analysis:', error);
+      res.status(500).json({ error: 'Failed to get field analysis' });
+    }
+  });
+
+  // Get Kons symbol convergence
+  app.get('/api/waides-ki/lightnet/kons-convergence', (req, res) => {
+    try {
+      const convergence = waidesKIKonsFieldAnalyzer.getKonsSymbolConvergence();
+      
+      res.json({
+        success: true,
+        kons_convergence: convergence,
+        message: 'Kons symbol convergence retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting Kons convergence:', error);
+      res.status(500).json({ error: 'Failed to get Kons symbol convergence' });
+    }
+  });
+
+  // Get field analysis history
+  app.get('/api/waides-ki/lightnet/field-history', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKIKonsFieldAnalyzer.getFieldHistory(limit);
+      
+      res.json({
+        success: true,
+        field_history: history,
+        limit,
+        message: 'Kons field analysis history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting field history:', error);
+      res.status(500).json({ error: 'Failed to get field history' });
+    }
+  });
+
+  // Get field metrics and statistics
+  app.get('/api/waides-ki/lightnet/field-metrics', (req, res) => {
+    try {
+      const metrics = waidesKIKonsFieldAnalyzer.getFieldMetrics();
+      
+      res.json({
+        success: true,
+        field_metrics: metrics,
+        message: 'Kons field metrics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting field metrics:', error);
+      res.status(500).json({ error: 'Failed to get field metrics' });
+    }
+  });
+
+  // Force immediate field analysis
+  app.post('/api/waides-ki/lightnet/force-field-analysis', (req, res) => {
+    try {
+      const analysis = waidesKIKonsFieldAnalyzer.forceFieldAnalysis();
+      
+      res.json({
+        success: true,
+        forced_analysis: analysis,
+        message: 'Forced field analysis completed successfully'
+      });
+    } catch (error) {
+      console.error('Error forcing field analysis:', error);
+      res.status(500).json({ error: 'Failed to force field analysis' });
+    }
+  });
+
+  // Global ETH Echo Map - Planetary spiritual heat monitoring
+  app.get('/api/waides-ki/lightnet/global-echo-map', (req, res) => {
+    try {
+      const echoMap = waidesKIGlobalEthEchoMap.getCurrentEchoMap();
+      
+      res.json({
+        success: true,
+        global_echo_map: echoMap,
+        message: 'Global ETH echo map retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting global echo map:', error);
+      res.status(500).json({ error: 'Failed to get global echo map' });
+    }
+  });
+
+  // Get echo map history
+  app.get('/api/waides-ki/lightnet/echo-history', (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const history = waidesKIGlobalEthEchoMap.getEchoHistory(limit);
+      
+      res.json({
+        success: true,
+        echo_history: history,
+        limit,
+        message: 'Global echo map history retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting echo history:', error);
+      res.status(500).json({ error: 'Failed to get echo history' });
+    }
+  });
+
+  // Get echo statistics
+  app.get('/api/waides-ki/lightnet/echo-stats', (req, res) => {
+    try {
+      const stats = waidesKIGlobalEthEchoMap.getEchoStats();
+      
+      res.json({
+        success: true,
+        echo_stats: stats,
+        message: 'Global echo statistics retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting echo stats:', error);
+      res.status(500).json({ error: 'Failed to get echo statistics' });
+    }
+  });
+
+  // Get regional focus
+  app.get('/api/waides-ki/lightnet/regional-focus/:region', (req, res) => {
+    try {
+      const { region } = req.params;
+      const regionalFocus = waidesKIGlobalEthEchoMap.getRegionalFocus(region);
+      
+      res.json({
+        success: true,
+        regional_focus: regionalFocus,
+        region,
+        message: `Regional focus for ${region} retrieved successfully`
+      });
+    } catch (error) {
+      console.error('Error getting regional focus:', error);
+      res.status(500).json({ error: 'Failed to get regional focus' });
+    }
+  });
+
+  // Get Konslang echo summary (main API endpoint)
+  app.get('/api/waides-ki/lightnet/kons-echo-map', (req, res) => {
+    try {
+      const konsEcho = waidesKIGlobalEthEchoMap.getKonsEchoMap();
+      
+      res.json({
+        success: true,
+        kons_echo_map: konsEcho,
+        message: 'Konslang echo map retrieved successfully'
+      });
+    } catch (error) {
+      console.error('Error getting Kons echo map:', error);
+      res.status(500).json({ error: 'Failed to get Kons echo map' });
+    }
+  });
+
+  // Force global echo update
+  app.post('/api/waides-ki/lightnet/force-global-update', (req, res) => {
+    try {
+      const updatedMap = waidesKIGlobalEthEchoMap.forceGlobalUpdate();
+      
+      res.json({
+        success: true,
+        updated_echo_map: updatedMap,
+        message: 'Global echo map update forced successfully'
+      });
+    } catch (error) {
+      console.error('Error forcing global update:', error);
+      res.status(500).json({ error: 'Failed to force global update' });
+    }
+  });
+
+  // Reset echo map data (admin function)
+  app.post('/api/waides-ki/lightnet/reset-echo-data', (req, res) => {
+    try {
+      waidesKIGlobalEthEchoMap.resetEchoData();
+      
+      res.json({
+        success: true,
+        message: 'Global echo map data reset successfully'
+      });
+    } catch (error) {
+      console.error('Error resetting echo data:', error);
+      res.status(500).json({ error: 'Failed to reset echo data' });
+    }
+  });
+
+  // Complete STEP 41 demo workflow
+  app.post('/api/waides-ki/lightnet/demo-workflow', async (req, res) => {
+    try {
+      // Simulate receiving a vision from another node
+      const demoVision = {
+        node_id: 'demo-node-global-01',
+        symbol: "SHAI'LOR",
+        meaning: 'Sacred ascension energy detected',
+        trend: 'UP' as const,
+        confidence: 85,
+        timestamp: new Date().toISOString(),
+        konslang_message: 'The spirits whisper of golden prosperity flowing through the ethereal channels'
+      };
+
+      // Receive the vision
+      const receiveResult = waidesKILightnetListener.receiveVision(demoVision);
+      
+      // Broadcast our own vision
+      const broadcastResult = await waidesKILightnetBroadcaster.broadcastVision({
+        symbol: "MEL'ZEK",
+        meaning: 'Golden prosperity flow detected',
+        trend: 'UP' as const,
+        confidence: 78,
+        konslang_message: 'Ancient pathways of abundance illuminate the trading realm'
+      });
+
+      // Get comprehensive analysis
+      const globalAlignment = waidesKIVisionAlignmentIndex.getGlobalAlignment();
+      const fieldAnalysis = waidesKIKonsFieldAnalyzer.getFieldAnalysis();
+      const echoMap = waidesKIGlobalEthEchoMap.getCurrentEchoMap();
+      const konsEcho = waidesKIGlobalEthEchoMap.getKonsEchoMap();
+      
+      res.json({
+        success: true,
+        demo_vision: demoVision,
+        receive_result: receiveResult,
+        broadcast_result: broadcastResult,
+        global_alignment: globalAlignment,
+        field_analysis: fieldAnalysis,
+        echo_map: echoMap,
+        kons_echo_summary: konsEcho,
+        workflow_steps: [
+          '1. Simulated receiving vision from global node demo-node-global-01',
+          '2. Processed incoming SHAI\'LOR vision with 85% confidence',
+          '3. Broadcasted our MEL\'ZEK vision to global Lightnet',
+          '4. Analyzed global vision alignment and symbol convergence',
+          '5. Generated planetary echo map with spiritual heat distribution',
+          '6. Calculated Kons field coherence and regional activity'
+        ],
+        lightnet_status: {
+          nodes_connected: echoMap.total_nodes_active,
+          planetary_consensus: echoMap.planetary_consensus,
+          spiritual_weather: echoMap.konslang_weather.current_weather,
+          field_coherence: fieldAnalysis.field_coherence,
+          echo_waves: echoMap.echo_waves.wave_type
+        },
+        message: 'STEP 41 demo workflow completed successfully - Global Lightnet + Spirit Echo Link active'
+      });
+    } catch (error) {
+      console.error('Error in STEP 41 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 41 demo workflow' });
     }
   });
 
