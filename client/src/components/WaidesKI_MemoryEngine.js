@@ -2,6 +2,7 @@ import BotMemory from "./BotMemory";
 import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
 import UKC from './UKC';
 import { addPendingQuestion, autoTeachFromConversation, expandKnowledgeAutonomously } from './KnowledgeLoader';
+import PageKnowledge from './PageKnowledge';
 
 // Dynamic memory for auto-learning - lives in runtime memory only
 let dynamicMemory = {};
@@ -31,6 +32,24 @@ export function detectCommandTrigger(q, setBotState) {
   if (q.includes("check eth price") || q.includes("eth live")) {
     setBotState({ action: "price" });
     return "📡 Connecting to ETH Live Tracker...";
+  }
+
+  return null;
+}
+
+// Page Recommendation Module - detects when user needs a specific page/module
+export function detectPageRecommendation(q, setBotState) {
+  const qLower = q.toLowerCase();
+
+  for (const page in PageKnowledge) {
+    const { keywords, description, route } = PageKnowledge[page];
+
+    if (keywords.some(word => qLower.includes(word))) {
+      setBotState({ action: "open-page", page, route, description });
+
+      return `📘 Recommendation: **${page}** — ${description}  
+👉 Click below to open this module.`;
+    }
   }
 
   return null;
