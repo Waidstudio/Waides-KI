@@ -127,6 +127,29 @@ export default function WaidesKIVisionPortal() {
 
 
 
+  // Command execution mutation for real-time trading commands
+  const commandMutation = useMutation({
+    mutationFn: async (command: string) => {
+      const response = await fetch('/api/waides-ki/command/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command, userId: 'user123' })
+      });
+      return response.json();
+    },
+    onSuccess: async (data) => {
+      // Type the command result as if Waides KI is responding
+      const resultMessage = data.success 
+        ? `✅ ${data.message}`
+        : `❌ ${data.message}`;
+      
+      await typeWaidesResponse(resultMessage);
+    },
+    onError: () => {
+      typeWaidesResponse("❌ Failed to execute command. Please try again.");
+    }
+  });
+
   // Chat message mutation
   const chatMutation = useMutation({
     mutationFn: async (data: { message: string; personality: string }) => {
@@ -282,6 +305,19 @@ export default function WaidesKIVisionPortal() {
     }
   };
 
+  // Function to detect if message contains trading commands
+  const detectTradingCommand = (message: string): boolean => {
+    const tradingKeywords = [
+      'activate autonomous trading', 'deactivate autonomous trading',
+      'start trading', 'stop trading', 'trading status',
+      'check balance', 'balance', 'close all trades',
+      'trading performance', 'set take profit', 'set stop loss'
+    ];
+    
+    const normalizedMessage = message.toLowerCase().trim();
+    return tradingKeywords.some(keyword => normalizedMessage.includes(keyword));
+  };
+
   const sendMessage = () => {
     if (!currentMessage.trim() || isTyping) return;
 
@@ -293,12 +329,20 @@ export default function WaidesKIVisionPortal() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setIsTyping(true);
+    setAvatarGlow(true);
 
-    // Use Oracle system if enabled, otherwise use regular chat
-    if (oracleMode && oracleStatus?.dual_ai_ready) {
-      setIsTyping(true);
+    // Check if message contains trading commands for immediate execution
+    const isCommand = detectTradingCommand(currentMessage);
+    
+    if (isCommand) {
+      // Execute trading command immediately with real-time status reporting
+      commandMutation.mutate(currentMessage);
+    } else if (oracleMode && oracleStatus?.dual_ai_ready) {
+      // Use Oracle system
       sendOracleMessageMutation.mutate(currentMessage);
     } else {
+      // Use regular chat system
       chatMutation.mutate({ message: currentMessage, personality });
     }
     

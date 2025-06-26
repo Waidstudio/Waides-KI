@@ -15124,5 +15124,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Command Processing API - Real-time trading command execution
+  app.post('/api/waides-ki/command/execute', async (req, res) => {
+    try {
+      const { waidesKICommandProcessor } = await import('./services/waidesKICommandProcessor.js');
+      const { command, userId = 'user123' } = req.body;
+      
+      if (!command) {
+        return res.status(400).json({ error: 'Command is required' });
+      }
+      
+      const result = await waidesKICommandProcessor.processCommand(command, userId);
+      res.json(result);
+      
+    } catch (error) {
+      console.error('Error executing command:', error);
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to execute command',
+        timestamp: Date.now()
+      });
+    }
+  });
+
+  app.get('/api/waides-ki/command/supported', async (req, res) => {
+    try {
+      const { waidesKICommandProcessor } = await import('./services/waidesKICommandProcessor.js');
+      const commands = waidesKICommandProcessor.getSupportedCommands();
+      res.json({ 
+        success: true,
+        commands,
+        total: commands.length
+      });
+      
+    } catch (error) {
+      console.error('Error getting supported commands:', error);
+      res.status(500).json({ error: 'Failed to get supported commands' });
+    }
+  });
+
   return httpServer;
 }
