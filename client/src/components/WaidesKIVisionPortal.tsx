@@ -3,16 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Mic, Send, Plus, Settings, Brain, Zap, TrendingUp, Eye, Sparkles, MicOff, Volume2, VolumeX, Moon, Sun, Star, Heart, Shield, Flame, Wand2, Gem, Compass, MessageCircle, BarChart3, Wallet, Bot, LineChart, Database, Layers, Swords, RotateCcw, Users, Network, Cog, BookOpen, FileText, Activity } from 'lucide-react';
+import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2 } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -42,419 +33,336 @@ interface OracleStatus {
   message: string;
 }
 
-interface PersonalityMode {
-  id: string;
-  name: string;
-  emoji: string;
-  description: string;
-}
-
-const personalityModes: PersonalityMode[] = [
-  { id: 'gentle', name: 'Gentle', emoji: '🌸', description: 'Soft and nurturing guidance' },
-  { id: 'wise', name: 'Wise', emoji: '🧙‍♂️', description: 'Ancient wisdom and deep insights' },
-  { id: 'stern', name: 'Stern', emoji: '⚡', description: 'Direct and powerful teachings' },
-  { id: 'mystic', name: 'Mystic', emoji: '🔮', description: 'Mysterious and prophetic visions' }
-];
-
 export default function WaidesKIVisionPortal() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
-  const [personality, setPersonality] = useState('wise');
-  const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [avatarGlow, setAvatarGlow] = useState(false);
-  const [activeTab, setActiveTab] = useState('chat');
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [autoVoiceActivation, setAutoVoiceActivation] = useState(false);
-  const [spiritualEnergy, setSpiritualEnergy] = useState(75);
-  const [consciousnessLevel, setConsciousnessLevel] = useState(3);
-  const [auraIntensity, setAuraIntensity] = useState(50);
-  const [prophecyMode, setProphecyMode] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
-  const [oracleMode, setOracleMode] = useState(false);
-  const chatWindowRef = useRef<HTMLDivElement>(null);
+  const [currentTypingMessage, setCurrentTypingMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [oracleEnabled, setOracleEnabled] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [showAudioIcon, setShowAudioIcon] = useState(false);
+  
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
 
-  // Oracle Status Query
-  const { data: oracleStatus } = useQuery<OracleStatus>({
+  // Update time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const { data: oracleStatus } = useQuery({
     queryKey: ['/api/chat/oracle/status'],
-    refetchInterval: 30000
+    refetchInterval: 30000,
   });
 
-  // Oracle Message Mutation
-  const sendOracleMessageMutation = useMutation({
+  const { data: divineReading, isLoading: isDivineLoading } = useQuery({
+    queryKey: ['/api/divine-reading'],
+    refetchInterval: 12000,
+  });
+
+  // Chat mutation
+  const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await fetch('/api/chat/oracle/ask', {
+      const endpoint = oracleEnabled ? '/api/chat/oracle' : '/api/chat';
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: message })
+        body: JSON.stringify({ message }),
       });
+      if (!response.ok) throw new Error('Failed to send message');
       return response.json();
     },
-    onSuccess: async (data) => {
-      if (data.success) {
-        await typeWaidesResponse(data.answer);
-        
-        // Update the last message with Oracle metadata
-        setMessages(prev => 
-          prev.map((msg, index) => 
-            index === prev.length - 1 && msg.sender === 'waides'
-              ? { ...msg, source: data.source, confidence: data.confidence, konslangProcessing: data.konslangProcessing }
-              : msg
-          )
-        );
-      }
-      setIsTyping(false);
+    onSuccess: (data: OracleResponse) => {
+      typeMessage(data.answer, data.source, data.confidence, data.konslangProcessing);
     },
-    onError: () => {
-      setIsTyping(false);
-    }
+    onError: (error) => {
+      console.error('Chat error:', error);
+      setIsProcessing(false);
+    },
   });
 
-  // Fetch user wallet balance
-  const { data: walletData } = useQuery({
-    queryKey: ['/api/smai-wallet/user123'],
-    refetchInterval: 5000
-  });
-
-  // Fetch ETH price data
-  const { data: ethData } = useQuery({
-    queryKey: ['/api/divine-reading'],
-    refetchInterval: 10000
-  });
-
-
-
-  // Command execution mutation for real-time trading commands
+  // Command execution mutation
   const commandMutation = useMutation({
     mutationFn: async (command: string) => {
       const response = await fetch('/api/commands/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command, userId: 'user123' })
+        body: JSON.stringify({ command }),
       });
+      if (!response.ok) throw new Error('Failed to execute command');
       return response.json();
     },
-    onSuccess: async (data) => {
-      // Type the command result as if Waides KI is responding
-      const resultMessage = data.success 
-        ? data.message
-        : `❌ ${data.message}`;
-      
-      await typeWaidesResponse(resultMessage);
+    onSuccess: (data) => {
+      typeMessage(data.response, 'combined', 95);
     },
-    onError: () => {
-      typeWaidesResponse("❌ Failed to execute command. Please try again.");
-    }
   });
 
-  // Chat message mutation
-  const chatMutation = useMutation({
-    mutationFn: async (data: { message: string; personality: string }) => {
-      const response = await fetch('/api/chat/message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: data.message,
-          personality: data.personality,
-          spiritualEnergy,
-          consciousnessLevel,
-          auraIntensity,
-          prophecyMode
-        })
-      });
-      return response.json();
-    },
-    onSuccess: async (data) => {
-      if (data.success && data.response) {
-        // Apply energy shift
-        if (data.energyShift) {
-          setSpiritualEnergy(prev => Math.max(0, Math.min(100, prev + data.energyShift)));
-        }
-        
-        // Type the AI response
-        await typeWaidesResponse(data.response);
-        
-        // Add spiritual insight if present
-        if (data.spiritualInsight) {
-          setTimeout(() => {
-            const insightMessage: ChatMessage = {
-              id: (Date.now() + 1).toString(),
-              sender: 'waides',
-              message: `✨ Spiritual Insight: ${data.spiritualInsight}`,
-              timestamp: new Date(),
-              personality
-            };
-            setMessages(prev => [...prev, insightMessage]);
-          }, 2000);
-        }
-        
-        // Add prophecy if present
-        if (data.prophecy) {
-          setTimeout(() => {
-            const prophecyMessage: ChatMessage = {
-              id: (Date.now() + 2).toString(),
-              sender: 'waides',
-              message: `🔮 Prophecy: ${data.prophecy}`,
-              timestamp: new Date(),
-              personality
-            };
-            setMessages(prev => [...prev, prophecyMessage]);
-          }, 4000);
-        }
-      } else {
-        // Fallback response
-        await typeWaidesResponse(data.fallback || "The cosmic energies are temporarily disrupted. Please try again in a moment.");
-      }
-    },
-    onError: () => {
-      typeWaidesResponse("The spiritual channels are experiencing interference. Let me commune with the cosmic forces...");
-    }
-  });
-
-  // Initialize voice recognition
-  useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
-
-      recognitionRef.current.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setCurrentMessage(transcript);
-        setIsListening(false);
-      };
-
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
-    }
-  }, []);
-
-  // Prophetic typing effect
-  const typeWaidesResponse = async (text: string) => {
+  const typeMessage = (message: string, source?: string, confidence?: number, konslangProcessing?: string) => {
     setIsTyping(true);
-    setAvatarGlow(true);
+    setCurrentTypingMessage('');
     
-    const messageId = Date.now().toString();
-    const newMessage: ChatMessage = {
-      id: messageId,
-      sender: 'waides',
-      message: '',
-      timestamp: new Date(),
-      personality
-    };
-
-    setMessages(prev => [...prev, newMessage]);
-
-    // Type character by character
-    for (let i = 0; i <= text.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 30));
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === messageId 
-            ? { ...msg, message: text.substring(0, i) }
-            : msg
-        )
-      );
-      
-      if (chatWindowRef.current) {
-        chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    let index = 0;
+    const typeInterval = setInterval(() => {
+      if (index < message.length) {
+        setCurrentTypingMessage(prev => prev + message[index]);
+        index++;
+      } else {
+        clearInterval(typeInterval);
+        setIsTyping(false);
+        
+        const newMessage: ChatMessage = {
+          id: Date.now().toString(),
+          sender: 'waides',
+          message,
+          timestamp: new Date(),
+          source,
+          confidence,
+          konslangProcessing
+        };
+        
+        setMessages(prev => [...prev, newMessage]);
+        setCurrentTypingMessage('');
+        setIsProcessing(false);
+        setShowAudioIcon(true);
+        setTimeout(() => setShowAudioIcon(false), 3000);
       }
-    }
-
-    setIsTyping(false);
-    setAvatarGlow(false);
+    }, 30);
   };
 
-  const startVoiceInput = () => {
-    if (recognitionRef.current && !isListening && voiceEnabled) {
-      setIsListening(true);
-      setAvatarGlow(true);
-      recognitionRef.current.start();
-      
-      // Play sound feedback if enabled
-      if (soundEnabled) {
-        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1O'); // Short beep
-        audio.volume = 0.3;
-        audio.play().catch(() => {}); // Ignore errors
-      }
-    }
-  };
-
-  const stopVoiceInput = () => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-      setAvatarGlow(false);
-    }
-  };
-
-  const toggleVoiceActivation = () => {
-    setVoiceEnabled(!voiceEnabled);
-    if (isListening) {
-      stopVoiceInput();
-    }
-  };
-
-  // Function to detect if message contains trading commands
-  const detectTradingCommand = (message: string): boolean => {
-    const tradingKeywords = [
-      // Trading control commands
-      'activate autonomous trading', 'deactivate autonomous trading',
-      'start trading', 'stop trading', 'trading status',
-      'check balance', 'balance', 'close all trades',
-      'trading performance', 'set take profit', 'set stop loss',
-      // ETH prediction and analysis commands
-      'predict eth', 'eth prediction', 'eth price prediction',
-      'analyze market', 'market analysis', 'get signals',
-      'trading signals', 'market forecast', 'price forecast',
-      'eth forecast', 'trading advice', 'market insights',
-      // Voice variations
-      'predict ethereum', 'ethereum prediction', 'price prediction',
-      'what will eth do', 'eth analysis', 'market trend'
-    ];
-    
-    const normalizedMessage = message.toLowerCase().trim();
-    return tradingKeywords.some(keyword => normalizedMessage.includes(keyword));
-  };
-
-  const sendMessage = () => {
-    if (!currentMessage.trim() || isTyping) return;
+  const sendMessage = async () => {
+    if (!currentMessage.trim() || isProcessing) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       sender: 'user',
       message: currentMessage,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setIsTyping(true);
-    setAvatarGlow(true);
+    setIsProcessing(true);
 
-    // Check if message contains trading commands for immediate execution
-    const isCommand = detectTradingCommand(currentMessage);
-    
+    // Check if it's a command
+    const commandPrefixes = ['activate', 'start', 'stop', 'predict', 'analyze', 'get', 'show', 'enable', 'disable'];
+    const isCommand = commandPrefixes.some(prefix => currentMessage.toLowerCase().startsWith(prefix));
+
     if (isCommand) {
-      // Execute trading command immediately with real-time status reporting
       commandMutation.mutate(currentMessage);
-    } else if (oracleMode && oracleStatus?.dual_ai_ready) {
-      // Use Oracle system
-      sendOracleMessageMutation.mutate(currentMessage);
     } else {
-      // Use regular chat system
-      chatMutation.mutate({ message: currentMessage, personality });
+      chatMutation.mutate(currentMessage);
     }
-    
+
     setCurrentMessage('');
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  const handleSuggestionClick = (suggestion: string) => {
+    setCurrentMessage(suggestion);
+    setTimeout(() => sendMessage(), 100);
   };
 
-  const timeString = new Date().toLocaleTimeString('en-US', { 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: false 
-  });
+  const startVoiceRecognition = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Voice recognition not supported in this browser');
+      return;
+    }
 
-  const currentPersonality = personalityModes.find(p => p.id === personality);
+    const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setCurrentMessage(transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+    recognitionRef.current = recognition;
+  };
+
+  const suggestions = [
+    "Create strategy",
+    "Predict ETH now", 
+    "Ask vision",
+    "Market analysis",
+    "Auto trade",
+    "Check balance"
+  ];
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  };
+
+  const getMemoryStatus = () => {
+    if (isDivineLoading) return "🧠 Waides KI Loading...";
+    if (divineReading?.ethData) return "🧠 Waides KI Memory Full";
+    return "🧠 Waides KI Offline";
+  };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, currentTypingMessage]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-purple-900 relative overflow-hidden">
-      {/* Cosmic Background Animation */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="stars absolute inset-0"></div>
-        <div className="nebula absolute inset-0 opacity-20"></div>
+    <div className="min-h-screen bg-black text-white font-inter relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)]"></div>
       </div>
 
-      {/* Top Bar */}
-      <div className="relative z-10 flex justify-between items-center p-4 text-white">
-        <span className="text-sm font-mono">{timeString}</span>
-        
-        <div className="flex items-center gap-3">
-          {/* Wallet Balance Bubble */}
-          <div className="bg-gray-800/60 backdrop-blur-sm rounded-full px-3 py-1 text-sm border border-purple-500/30">
-            💰 ${(walletData as any)?.wallet?.balance ? parseFloat((walletData as any).wallet.balance).toFixed(2) : '0.00'}
-          </div>
-          
-          {/* ETH Price Bubble */}
-          {(ethData as any)?.ethData?.price && (
-            <div className="bg-gray-800/60 backdrop-blur-sm rounded-full px-3 py-1 text-sm border border-green-500/30">
-              📈 ETH ${typeof (ethData as any).ethData.price === 'number' ? (ethData as any).ethData.price.toFixed(2) : (ethData as any).ethData.price}
+      {/* Top Status Bar */}
+      <div className="relative z-10 flex justify-between items-center p-4 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
+        <span className="text-lg font-bold text-purple-300">{formatTime(currentTime)}</span>
+        <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
+        <Button 
+          className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 rounded-lg font-bold"
+          onClick={() => setOracleEnabled(!oracleEnabled)}
+        >
+          {oracleEnabled ? 'Oracle Mode ✦' : 'Get Oracle ✦'}
+        </Button>
+      </div>
+
+      {/* Chat Suggestions */}
+      <div className="relative z-10 flex flex-wrap gap-2 p-4">
+        {suggestions.map((suggestion, index) => (
+          <Button
+            key={index}
+            variant="outline"
+            size="sm"
+            className="bg-gray-800/60 border-gray-600 text-gray-300 hover:bg-gray-700/60 hover:text-white text-xs rounded-lg backdrop-blur-sm"
+            onClick={() => handleSuggestionClick(suggestion)}
+          >
+            {suggestion}
+          </Button>
+        ))}
+      </div>
+
+      {/* Chat Window */}
+      <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 h-[calc(100vh-300px)] overflow-hidden">
+        <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-800">
+          {messages.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
+                <Brain className="w-10 h-10 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
+              <p className="text-gray-400 max-w-md">
+                Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
+              </p>
             </div>
           )}
+
+          {messages.map((message) => (
+            <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] p-4 rounded-2xl ${
+                message.sender === 'user'
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-800/60 border border-purple-500/20 text-gray-100'
+              }`}>
+                {message.sender === 'waides' && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                      <Brain className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-xs text-purple-300 font-medium">
+                      Waides KI {message.source && `• ${message.source.toUpperCase()}`}
+                      {message.confidence && ` • ${message.confidence}%`}
+                    </span>
+                  </div>
+                )}
+                <p className="whitespace-pre-wrap leading-relaxed">{message.message}</p>
+                {message.konslangProcessing && (
+                  <div className="mt-2 text-xs text-purple-400 italic">
+                    🔮 {message.konslangProcessing}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20 text-gray-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse">
+                    <Brain className="w-3 h-3 text-white" />
+                  </div>
+                  <span className="text-xs text-purple-300 font-medium">Waides KI is thinking...</span>
+                  {showAudioIcon && <Volume2 className="w-4 h-4 text-purple-400 animate-pulse" />}
+                </div>
+                <p className="whitespace-pre-wrap leading-relaxed">
+                  {currentTypingMessage}
+                  <span className="animate-pulse">|</span>
+                </p>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Chat Input */}
+      <div className="relative z-10 p-4">
+        <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+          <Input
+            value={currentMessage}
+            onChange={(e) => setCurrentMessage(e.target.value)}
+            placeholder="Ask anything..."
+            className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            disabled={isProcessing}
+          />
           
-          <Button variant="outline" size="sm" className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20">
-            <Plus className="w-4 h-4 mr-1" />
-            Get Plus ✦
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`p-2 rounded-full transition-all ${
+              isListening 
+                ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                : 'hover:bg-purple-500/20 text-purple-400'
+            }`}
+            onClick={startVoiceRecognition}
+            disabled={isProcessing}
+          >
+            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+          </Button>
+          
+          <Button
+            className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+            onClick={sendMessage}
+            disabled={!currentMessage.trim() || isProcessing}
+          >
+            <Send className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
-      {/* Waides KI Avatar */}
-      <div className="relative z-10 flex justify-center mt-8">
-        <div className={`relative transition-all duration-1000 ${avatarGlow ? 'animate-pulse' : ''}`}>
-          <div className={`w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-2xl font-bold text-white border-4 transition-all duration-500 ${
-            avatarGlow ? 'border-purple-400 shadow-lg shadow-purple-500/50' : 'border-purple-500/30'
-          }`}>
-            🧿
-          </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-            <div className="bg-gray-800/80 backdrop-blur-sm rounded-full px-2 py-1 text-xs text-purple-300 border border-purple-500/30">
-              {currentPersonality?.emoji} {currentPersonality?.name}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Spiritual Energy Display */}
-      <div className="relative z-10 mx-4 mt-6">
-        <Card className="bg-gray-900/40 backdrop-blur-sm border-purple-500/30 text-white">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-xs text-purple-300 mb-1">Spiritual Energy</div>
-                <div className="text-lg font-bold text-purple-400">{spiritualEnergy}%</div>
-                <Progress value={spiritualEnergy} className="h-2 mt-1" />
-              </div>
-              <div>
-                <div className="text-xs text-blue-300 mb-1">Consciousness</div>
-                <div className="text-lg font-bold text-blue-400">Level {consciousnessLevel}</div>
-                <div className="flex justify-center mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`w-3 h-3 ${i < consciousnessLevel ? 'text-blue-400 fill-current' : 'text-gray-600'}`} 
-                    />
-                  ))}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-green-300 mb-1">Aura Intensity</div>
-                <div className="text-lg font-bold text-green-400">{auraIntensity}%</div>
-                <Progress value={auraIntensity} className="h-2 mt-1" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Action Menu */}
-      <div className="relative z-10 mt-6 px-4">
+      <div className="relative z-10 mx-4 mb-4">
         <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-center text-purple-300 text-sm">Actions</CardTitle>
@@ -463,7 +371,7 @@ export default function WaidesKIVisionPortal() {
             <div className="grid grid-cols-3 gap-2">
               <button
                 className="h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                onClick={() => setCurrentMessage("Predict ETH price for next hour")}
+                onClick={() => handleSuggestionClick("Predict ETH price for next hour")}
               >
                 <TrendingUp className="w-5 h-5 mb-1" />
                 <span>Predict ETH</span>
@@ -471,7 +379,7 @@ export default function WaidesKIVisionPortal() {
               
               <button
                 className="h-16 rounded-xl bg-gradient-to-br from-green-500 to-green-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                onClick={() => setCurrentMessage("Activate autonomous trading mode")}
+                onClick={() => handleSuggestionClick("Activate autonomous trading mode")}
               >
                 <Zap className="w-5 h-5 mb-1" />
                 <span>Auto Trade</span>
@@ -512,207 +420,6 @@ export default function WaidesKIVisionPortal() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Chat Window */}
-      <div className="relative z-10 mx-4 mt-8 mb-32">
-        <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
-          <CardContent className="p-0">
-            <div 
-              ref={chatWindowRef}
-              className="h-96 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent"
-            >
-              {messages.length === 0 && (
-                <div className="text-center text-purple-300/60 mt-20">
-                  <div className="text-6xl mb-4">🌌</div>
-                  <p className="text-lg font-light">Welcome to the Waides KI Vision Portal</p>
-                  <p className="text-sm mt-2">Where AI, Spirit, and Trade become one.</p>
-                </div>
-              )}
-              
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                      message.sender === 'user'
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-gray-800/80 text-purple-100 border border-purple-500/30'
-                    }`}
-                  >
-                    {message.sender === 'waides' && (
-                      <div className="text-xs text-purple-400 mb-1 flex items-center justify-between">
-                        <span>💫 Waides KI • {currentPersonality?.name} Mode</span>
-                        {message.source && (
-                          <div className="flex items-center gap-1">
-                            <Badge 
-                              variant="outline" 
-                              className={`text-xs px-1 py-0 border-0 ${
-                                message.source === 'combined' ? 'bg-gold-500/20 text-gold-300' :
-                                message.source === 'chatgpt' ? 'bg-green-500/20 text-green-300' :
-                                message.source === 'incite' ? 'bg-blue-500/20 text-blue-300' :
-                                'bg-purple-500/20 text-purple-300'
-                              }`}
-                            >
-                              {message.source.toUpperCase()}
-                            </Badge>
-                            {message.confidence && (
-                              <Badge variant="outline" className="text-xs px-1 py-0 border-0 bg-orange-500/20 text-orange-300">
-                                {message.confidence}%
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <p className="text-sm leading-relaxed">{message.message}</p>
-                    {message.konslangProcessing && (
-                      <div className="text-xs text-purple-400/60 mt-2 italic">
-                        KonsLang: {message.konslangProcessing}
-                      </div>
-                    )}
-                    {message.sender === 'waides' && isTyping && message.message === '' && (
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Input Area */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 bg-gray-900/80 backdrop-blur-sm border-t border-purple-500/30 p-4">
-        <div className="max-w-4xl mx-auto space-y-3">
-          {/* Personality Selector */}
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-sm text-purple-300">Personality:</span>
-            <Select value={personality} onValueChange={setPersonality}>
-              <SelectTrigger className="w-40 bg-gray-800/60 border-purple-500/30 text-purple-300">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-purple-500/30">
-                {personalityModes.map((mode) => (
-                  <SelectItem key={mode.id} value={mode.id} className="text-purple-300 hover:bg-purple-500/20">
-                    {mode.emoji} {mode.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Voice and Sound Controls */}
-          <div className="flex items-center justify-center gap-4 mb-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleVoiceActivation}
-              className={`border-purple-500/30 ${voiceEnabled ? 'bg-purple-600/20 text-purple-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-purple-500/20`}
-            >
-              {voiceEnabled ? <Mic className="w-4 h-4 mr-1" /> : <MicOff className="w-4 h-4 mr-1" />}
-              Voice {voiceEnabled ? 'ON' : 'OFF'}
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`border-purple-500/30 ${soundEnabled ? 'bg-purple-600/20 text-purple-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-purple-500/20`}
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4 mr-1" /> : <VolumeX className="w-4 h-4 mr-1" />}
-              Sound {soundEnabled ? 'ON' : 'OFF'}
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setAutoVoiceActivation(!autoVoiceActivation)}
-              className={`border-purple-500/30 ${autoVoiceActivation ? 'bg-blue-600/20 text-blue-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-blue-500/20`}
-            >
-              <Brain className="w-4 h-4 mr-1" />
-              Auto-Voice {autoVoiceActivation ? 'ON' : 'OFF'}
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setOracleMode(!oracleMode)}
-              className={`border-orange-500/30 ${oracleMode ? 'bg-orange-600/20 text-orange-300' : 'bg-gray-800/40 text-gray-400'} hover:bg-orange-500/20`}
-            >
-              <Eye className="w-4 h-4 mr-1" />
-              Oracle {oracleMode ? 'ON' : 'OFF'}
-              {oracleMode && oracleStatus?.dual_ai_ready && (
-                <div className="w-2 h-2 bg-green-400 rounded-full ml-2 animate-pulse"></div>
-              )}
-            </Button>
-          </div>
-
-          {/* Input Row */}
-          <div className="flex items-center gap-2">
-            <div className="flex-1 relative">
-              <Input
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={isListening ? "Listening..." : voiceEnabled ? "Speak or type your message..." : "Type your message..."}
-                className="bg-gray-800/60 border-purple-500/30 text-white placeholder-purple-300/50 pr-20"
-                disabled={isTyping || isListening}
-              />
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
-                {voiceEnabled && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={isListening ? stopVoiceInput : startVoiceInput}
-                    disabled={isTyping}
-                    className={`p-2 h-8 w-8 ${isListening ? 'text-red-400 animate-pulse bg-red-500/20' : 'text-purple-400 hover:text-purple-300 hover:bg-purple-500/20'}`}
-                  >
-                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={sendMessage}
-                  disabled={!currentMessage.trim() || isTyping || isListening}
-                  className="p-2 h-8 w-8 text-purple-400 hover:text-purple-300 hover:bg-purple-500/20"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        .stars {
-          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='star' cx='50%25' cy='50%25' r='1px'%3E%3Cstop offset='0%25' stop-color='%23ffffff' stop-opacity='1'/%3E%3Cstop offset='100%25' stop-color='%23ffffff' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='25' cy='25' r='1' fill='url(%23star)'/%3E%3Ccircle cx='75' cy='75' r='0.5' fill='url(%23star)'/%3E%3Ccircle cx='50' cy='10' r='0.5' fill='url(%23star)'/%3E%3Ccircle cx='10' cy='50' r='0.5' fill='url(%23star)'/%3E%3Ccircle cx='90' cy='30' r='0.5' fill='url(%23star)'/%3E%3C/svg%3E") repeat;
-          animation: twinkle 3s infinite;
-        }
-        
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 1; }
-        }
-        
-        .nebula {
-          background: radial-gradient(ellipse at 30% 40%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
-                      radial-gradient(ellipse at 70% 60%, rgba(75, 0, 130, 0.1) 0%, transparent 50%);
-          animation: drift 20s infinite linear;
-        }
-        
-        @keyframes drift {
-          0% { transform: translateX(-100px) translateY(-100px); }
-          100% { transform: translateX(100px) translateY(100px); }
-        }
-      `}</style>
     </div>
   );
 }
