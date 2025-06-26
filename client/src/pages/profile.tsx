@@ -332,30 +332,38 @@ export default function ProfilePage() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-800/50 border border-purple-500/30">
+          <TabsList className="grid w-full grid-cols-8 bg-slate-800/50 border border-purple-500/30">
             <TabsTrigger value="profile" className="data-[state=active]:bg-purple-600/20">
-              <User className="h-4 w-4 mr-2" />
-              Profile
+              <User className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Profile</span>
             </TabsTrigger>
             <TabsTrigger value="trading" className="data-[state=active]:bg-purple-600/20">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Trading
+              <TrendingUp className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Trading</span>
             </TabsTrigger>
             <TabsTrigger value="ai" className="data-[state=active]:bg-purple-600/20">
-              <Brain className="h-4 w-4 mr-2" />
-              AI & Automation
+              <Brain className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">AI</span>
             </TabsTrigger>
             <TabsTrigger value="ui" className="data-[state=active]:bg-purple-600/20">
-              <Palette className="h-4 w-4 mr-2" />
-              Interface
+              <Palette className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">UI/UX</span>
             </TabsTrigger>
             <TabsTrigger value="security" className="data-[state=active]:bg-purple-600/20">
-              <Shield className="h-4 w-4 mr-2" />
-              Security
+              <Shield className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Security</span>
+            </TabsTrigger>
+            <TabsTrigger value="performance" className="data-[state=active]:bg-purple-600/20">
+              <Cpu className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Performance</span>
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="data-[state=active]:bg-purple-600/20">
+              <Webhook className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Apps</span>
             </TabsTrigger>
             <TabsTrigger value="advanced" className="data-[state=active]:bg-purple-600/20">
-              <Settings className="h-4 w-4 mr-2" />
-              Advanced
+              <Settings className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Advanced</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1144,6 +1152,656 @@ export default function ProfilePage() {
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Account
                   </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Performance Tab */}
+          <TabsContent value="performance">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* System Performance */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Cpu className="h-5 w-5 mr-2 text-green-400" />
+                    System Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-purple-200">CPU Priority</Label>
+                    <Select
+                      value={settings?.cpuPriority || 'normal'}
+                      onValueChange={(value) => handleSettingsUpdate('cpuPriority', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="low">Low Priority</SelectItem>
+                        <SelectItem value="normal">Normal Priority</SelectItem>
+                        <SelectItem value="high">High Priority</SelectItem>
+                        <SelectItem value="realtime">Real-time</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Memory Usage Limit</Label>
+                    <Slider
+                      value={[settings?.memoryLimit || 4096]}
+                      onValueChange={(value) => handleSettingsUpdate('memoryLimit', value[0])}
+                      max={16384}
+                      min={1024}
+                      step={512}
+                      className="py-4"
+                    />
+                    <p className="text-xs text-purple-300">
+                      {settings?.memoryLimit || 4096}MB RAM Limit
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Update Frequency</Label>
+                    <Select
+                      value={settings?.updateFrequency || 'standard'}
+                      onValueChange={(value) => handleSettingsUpdate('updateFrequency', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="slow">Conservative (5s)</SelectItem>
+                        <SelectItem value="standard">Standard (1s)</SelectItem>
+                        <SelectItem value="fast">Fast (500ms)</SelectItem>
+                        <SelectItem value="turbo">Turbo (100ms)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Hardware Acceleration</Label>
+                    <Switch
+                      checked={settings?.hardwareAcceleration || false}
+                      onCheckedChange={(checked) => handleSettingsUpdate('hardwareAcceleration', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Multi-threading</Label>
+                    <Switch
+                      checked={settings?.multiThreading || false}
+                      onCheckedChange={(checked) => handleSettingsUpdate('multiThreading', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Background Processing</Label>
+                    <Switch
+                      checked={settings?.backgroundProcessing || true}
+                      onCheckedChange={(checked) => handleSettingsUpdate('backgroundProcessing', checked)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trading Performance */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Zap className="h-5 w-5 mr-2 text-yellow-400" />
+                    Trading Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-purple-200">Analysis Depth</Label>
+                    <Select
+                      value={settings?.analysisDepth || 'standard'}
+                      onValueChange={(value) => handleSettingsUpdate('analysisDepth', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="basic">Basic Analysis</SelectItem>
+                        <SelectItem value="standard">Standard Analysis</SelectItem>
+                        <SelectItem value="deep">Deep Analysis</SelectItem>
+                        <SelectItem value="quantum">Quantum Analysis</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Prediction Accuracy Mode</Label>
+                    <Select
+                      value={settings?.predictionMode || 'balanced'}
+                      onValueChange={(value) => handleSettingsUpdate('predictionMode', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="speed">Speed Priority</SelectItem>
+                        <SelectItem value="balanced">Balanced</SelectItem>
+                        <SelectItem value="accuracy">Accuracy Priority</SelectItem>
+                        <SelectItem value="conservative">Ultra Conservative</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Signal Processing</Label>
+                    <Slider
+                      value={[settings?.signalProcessing || 75]}
+                      onValueChange={(value) => handleSettingsUpdate('signalProcessing', value[0])}
+                      max={100}
+                      min={0}
+                      step={5}
+                      className="py-4"
+                    />
+                    <p className="text-xs text-purple-300">
+                      {settings?.signalProcessing || 75}% Processing Power
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Neural Network Layers</Label>
+                    <Slider
+                      value={[settings?.neuralLayers || 12]}
+                      onValueChange={(value) => handleSettingsUpdate('neuralLayers', value[0])}
+                      max={64}
+                      min={4}
+                      step={4}
+                      className="py-4"
+                    />
+                    <p className="text-xs text-purple-300">
+                      {settings?.neuralLayers || 12} Neural Layers
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Quantum Computing</Label>
+                    <Switch
+                      checked={settings?.quantumComputing || false}
+                      onCheckedChange={(checked) => handleSettingsUpdate('quantumComputing', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Edge Computing</Label>
+                    <Switch
+                      checked={settings?.edgeComputing || false}
+                      onCheckedChange={(checked) => handleSettingsUpdate('edgeComputing', checked)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Data Management */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Database className="h-5 w-5 mr-2 text-blue-400" />
+                    Data Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-purple-200">Cache Strategy</Label>
+                    <Select
+                      value={settings?.cacheStrategy || 'intelligent'}
+                      onValueChange={(value) => handleSettingsUpdate('cacheStrategy', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="minimal">Minimal Cache</SelectItem>
+                        <SelectItem value="intelligent">Intelligent Cache</SelectItem>
+                        <SelectItem value="aggressive">Aggressive Cache</SelectItem>
+                        <SelectItem value="persistent">Persistent Cache</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Data Compression</Label>
+                    <Slider
+                      value={[settings?.dataCompression || 70]}
+                      onValueChange={(value) => handleSettingsUpdate('dataCompression', value[0])}
+                      max={100}
+                      min={0}
+                      step={10}
+                      className="py-4"
+                    />
+                    <p className="text-xs text-purple-300">
+                      {settings?.dataCompression || 70}% Compression Ratio
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Backup Frequency</Label>
+                    <Select
+                      value={settings?.backupFrequency || 'daily'}
+                      onValueChange={(value) => handleSettingsUpdate('backupFrequency', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="realtime">Real-time</SelectItem>
+                        <SelectItem value="hourly">Every Hour</SelectItem>
+                        <SelectItem value="daily">Daily</SelectItem>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Auto-cleanup</Label>
+                    <Switch
+                      checked={settings?.autoCleanup || true}
+                      onCheckedChange={(checked) => handleSettingsUpdate('autoCleanup', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Data Encryption</Label>
+                    <Switch
+                      checked={settings?.dataEncryption || true}
+                      onCheckedChange={(checked) => handleSettingsUpdate('dataEncryption', checked)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Network Performance */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Globe className="h-5 w-5 mr-2 text-cyan-400" />
+                    Network Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-purple-200">Connection Pool Size</Label>
+                    <Slider
+                      value={[settings?.connectionPool || 50]}
+                      onValueChange={(value) => handleSettingsUpdate('connectionPool', value[0])}
+                      max={200}
+                      min={10}
+                      step={10}
+                      className="py-4"
+                    />
+                    <p className="text-xs text-purple-300">
+                      {settings?.connectionPool || 50} Concurrent Connections
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Timeout Settings</Label>
+                    <Slider
+                      value={[settings?.timeoutSettings || 30]}
+                      onValueChange={(value) => handleSettingsUpdate('timeoutSettings', value[0])}
+                      max={120}
+                      min={5}
+                      step={5}
+                      className="py-4"
+                    />
+                    <p className="text-xs text-purple-300">
+                      {settings?.timeoutSettings || 30}s Request Timeout
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-purple-200">Retry Strategy</Label>
+                    <Select
+                      value={settings?.retryStrategy || 'exponential'}
+                      onValueChange={(value) => handleSettingsUpdate('retryStrategy', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700/50 border-purple-400/30 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-purple-400/30">
+                        <SelectItem value="linear">Linear Backoff</SelectItem>
+                        <SelectItem value="exponential">Exponential Backoff</SelectItem>
+                        <SelectItem value="fibonacci">Fibonacci Backoff</SelectItem>
+                        <SelectItem value="immediate">Immediate Retry</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Load Balancing</Label>
+                    <Switch
+                      checked={settings?.loadBalancing || true}
+                      onCheckedChange={(checked) => handleSettingsUpdate('loadBalancing', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Label className="text-purple-200">Auto-failover</Label>
+                    <Switch
+                      checked={settings?.autoFailover || true}
+                      onCheckedChange={(checked) => handleSettingsUpdate('autoFailover', checked)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Integrations Tab */}
+          <TabsContent value="integrations">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Trading Platforms */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <TrendingUp className="h-5 w-5 mr-2 text-green-400" />
+                    Trading Platforms
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                          <span className="text-black font-bold text-sm">B</span>
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Binance</p>
+                          <p className="text-purple-300 text-sm">Global Exchange</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.binanceIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('binanceIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">C</span>
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Coinbase Pro</p>
+                          <p className="text-purple-300 text-sm">Advanced Trading</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.coinbaseIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('coinbaseIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">K</span>
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Kraken</p>
+                          <p className="text-purple-300 text-sm">Pro Trading</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.krakenIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('krakenIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">B</span>
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Bybit</p>
+                          <p className="text-purple-300 text-sm">Derivatives Trading</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.bybitIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('bybitIntegration', checked)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI & Analytics */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Brain className="h-5 w-5 mr-2 text-purple-400" />
+                    AI & Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                          <Cpu className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">OpenAI GPT-4</p>
+                          <p className="text-purple-300 text-sm">Advanced AI Analysis</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.openaiIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('openaiIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                          <BarChart3 className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">TradingView</p>
+                          <p className="text-purple-300 text-sm">Technical Analysis</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.tradingviewIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('tradingviewIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                          <Activity className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Messari</p>
+                          <p className="text-purple-300 text-sm">Market Data</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.messariIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('messariIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                          <Sparkles className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">KonsAI Oracle</p>
+                          <p className="text-purple-300 text-sm">Spiritual Intelligence</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.konsaiIntegration || true}
+                        onCheckedChange={(checked) => handleSettingsUpdate('konsaiIntegration', checked)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Communication & Alerts */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <MessageSquare className="h-5 w-5 mr-2 text-blue-400" />
+                    Communication & Alerts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                          <MessageSquare className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Discord</p>
+                          <p className="text-purple-300 text-sm">Trading Alerts</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.discordIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('discordIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center">
+                          <Mail className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Telegram</p>
+                          <p className="text-purple-300 text-sm">Instant Notifications</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.telegramIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('telegramIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                          <Mail className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Email SMTP</p>
+                          <p className="text-purple-300 text-sm">Email Notifications</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.emailIntegration || true}
+                        onCheckedChange={(checked) => handleSettingsUpdate('emailIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                          <Smartphone className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Push Notifications</p>
+                          <p className="text-purple-300 text-sm">Mobile Alerts</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.pushIntegration || true}
+                        onCheckedChange={(checked) => handleSettingsUpdate('pushIntegration', checked)}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Developer Tools */}
+              <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Code className="h-5 w-5 mr-2 text-emerald-400" />
+                    Developer Tools
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
+                          <Code className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">GitHub</p>
+                          <p className="text-purple-300 text-sm">Code Repository</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.githubIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('githubIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                          <Webhook className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">Webhooks</p>
+                          <p className="text-purple-300 text-sm">Custom Integrations</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.webhooksIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('webhooksIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                          <Database className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">REST API</p>
+                          <p className="text-purple-300 text-sm">External Access</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.restApiIntegration || true}
+                        onCheckedChange={(checked) => handleSettingsUpdate('restApiIntegration', checked)}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-purple-400/20">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                          <Activity className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">GraphQL</p>
+                          <p className="text-purple-300 text-sm">Advanced Queries</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={settings?.graphqlIntegration || false}
+                        onCheckedChange={(checked) => handleSettingsUpdate('graphqlIntegration', checked)}
+                      />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
