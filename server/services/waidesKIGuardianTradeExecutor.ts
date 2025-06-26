@@ -87,7 +87,7 @@ export class WaidesKIGuardianTradeExecutor {
 
       // Check emotional state
       const emotionalState = await waidesKIEmotionalCore.getEmotionalState();
-      if (emotionalState.state === 'frozen' || emotionalState.state === 'overheated') {
+      if (emotionalState.emotion_state === 'frozen' || emotionalState.emotion_state === 'overheated') {
         const result = this.createBlockedResult('EMOTIONAL_PROTECTION', guardianDecision, timestamp);
         this.addToHistory(result);
         return result;
