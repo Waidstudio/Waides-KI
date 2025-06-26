@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, MicOff, Volume2, Heart, Settings, MessageCircle } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
-import getSmartAnswer from './WaidesKI_MemoryEngine';
+import getSmartAnswer, { detectCommandTrigger } from './WaidesKI_MemoryEngine';
 
 interface ChatMessage {
   id: string;
@@ -57,6 +57,7 @@ export default function WaidesKIVisionPortal() {
   const [speechSupported, setSpeechSupported] = useState(false);
   const [voiceCommand, setVoiceCommand] = useState('');
   const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
+  const [botState, setBotState] = useState<{action?: 'wallet' | 'trade' | 'price'}>({});
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);

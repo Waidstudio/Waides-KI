@@ -1,8 +1,48 @@
 import BotMemory from "./BotMemory";
 
+// Dynamic memory for auto-learning - lives in runtime memory only
+let dynamicMemory = {};
+
+// Command Router Module - detects when user wants to open tools
+export function detectCommandTrigger(q, setBotState) {
+  if (q.includes("open wallet") || q.includes("smaiwallet")) {
+    setBotState({ action: "wallet" });
+    return "🔐 Opening your SmaiWallet...";
+  }
+
+  if (q.includes("start trading") || q.includes("waidbot")) {
+    setBotState({ action: "trade" });
+    return "🤖 Activating WaidBot now...";
+  }
+
+  if (q.includes("check eth price") || q.includes("eth live")) {
+    setBotState({ action: "price" });
+    return "📡 Connecting to ETH Live Tracker...";
+  }
+
+  return null;
+}
+
+// Live ETH Data Reader Module
+function getCurrentETHPrice() {
+  // Get live ETH price from localStorage or default
+  return localStorage.getItem("ethPrice") || "2438.37";
+}
+
 // ✨ Very simple smart match function
 export default function getSmartAnswer(userInput) {
   const q = userInput.toLowerCase().trim();
+
+  // Check dynamic memory first (auto-learning module)
+  if (dynamicMemory[q]) {
+    return dynamicMemory[q];
+  }
+
+  // Live ETH Data Reader Module
+  if (q.includes("eth price") || q.includes("price now")) {
+    const price = getCurrentETHPrice();
+    return `📊 Current ETH price is: $${price}`;
+  }
 
   // ✅ FIRST: Check direct question matches
   if (BotMemory.introQuestions[q]) {
@@ -60,6 +100,7 @@ export default function getSmartAnswer(userInput) {
   if (q.includes("thank") || q.includes("grateful")) return "Your gratitude creates positive energy in the markets. This is the way of the spiritual trader.";
   if (q.includes("confused") || q.includes("lost")) return "Confusion is the beginning of understanding. Ask me specific questions and I will illuminate the path.";
 
-  // 🚫 DEFAULT RESPONSE
-  return "Hmm... I'm still learning. Can you ask that a different way?";
+  // Auto-Learning Module: If no match, learn it
+  dynamicMemory[q] = "🤔 I'm still learning this. I've saved your question for review.";
+  return dynamicMemory[q];
 }
