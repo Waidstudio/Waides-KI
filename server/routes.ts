@@ -14594,6 +14594,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Autonomous Wealth Engine API Routes
+  app.get('/api/autonomous/status', async (req, res) => {
+    try {
+      const { AutonomousBotEngine } = await import('./services/autonomousBotEngine.js');
+      const engine = AutonomousBotEngine.getInstance();
+      const status = engine.getStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get autonomous engine status' });
+    }
+  });
+
+  app.post('/api/autonomous/start', async (req, res) => {
+    try {
+      const { AutonomousBotEngine } = await import('./services/autonomousBotEngine.js');
+      const engine = AutonomousBotEngine.getInstance();
+      await engine.startAutonomousExecution();
+      res.json({ success: true, message: 'Autonomous trading started' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start autonomous trading' });
+    }
+  });
+
+  app.post('/api/autonomous/stop', async (req, res) => {
+    try {
+      const { AutonomousBotEngine } = await import('./services/autonomousBotEngine.js');
+      const engine = AutonomousBotEngine.getInstance();
+      engine.stopAutonomousExecution();
+      res.json({ success: true, message: 'Autonomous trading stopped' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to stop autonomous trading' });
+    }
+  });
+
+  app.post('/api/autonomous/register-user', async (req, res) => {
+    try {
+      const { AutonomousBotEngine } = await import('./services/autonomousBotEngine.js');
+      const engine = AutonomousBotEngine.getInstance();
+      const { userId } = req.body;
+      const result = await engine.registerUser(userId);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to register user for autonomous trading' });
+    }
+  });
+
+  app.get('/api/autonomous/user-stats/:userId', async (req, res) => {
+    try {
+      const { AutonomousBotEngine } = await import('./services/autonomousBotEngine.js');
+      const engine = AutonomousBotEngine.getInstance();
+      const { userId } = req.params;
+      const stats = await engine.getUserStats(userId);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get user trading statistics' });
+    }
+  });
+
+  app.post('/api/autonomous/update-settings', async (req, res) => {
+    try {
+      const { AutonomousBotEngine } = await import('./services/autonomousBotEngine.js');
+      const engine = AutonomousBotEngine.getInstance();
+      const { userId, settings } = req.body;
+      const result = await engine.updateUserBotSettings(userId, settings);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update bot settings' });
+    }
+  });
+
+  // SmaiWallet Management API Routes
+  app.post('/api/smai-wallet/create', async (req, res) => {
+    try {
+      const { SmaiWalletManager } = await import('./services/smaiWalletManager.js');
+      const manager = SmaiWalletManager.getInstance();
+      const { userId } = req.body;
+      const wallet = await manager.createOrGetWallet(userId);
+      res.json(wallet);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create SmaiWallet' });
+    }
+  });
+
+  app.get('/api/smai-wallet/:userId', async (req, res) => {
+    try {
+      const { SmaiWalletManager } = await import('./services/smaiWalletManager.js');
+      const manager = SmaiWalletManager.getInstance();
+      const { userId } = req.params;
+      const wallet = await manager.getWallet(userId);
+      res.json(wallet || { error: 'Wallet not found' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get wallet' });
+    }
+  });
+
+  app.get('/api/smai-wallet/stats/:userId', async (req, res) => {
+    try {
+      const { SmaiWalletManager } = await import('./services/smaiWalletManager.js');
+      const manager = SmaiWalletManager.getInstance();
+      const { userId } = req.params;
+      const stats = await manager.getWalletStats(userId);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get wallet statistics' });
+    }
+  });
+
+  app.post('/api/smai-wallet/update-balance', async (req, res) => {
+    try {
+      const { SmaiWalletManager } = await import('./services/smaiWalletManager.js');
+      const manager = SmaiWalletManager.getInstance();
+      const { userId, profitLoss, tradeType } = req.body;
+      const result = await manager.updateBalance(userId, profitLoss, tradeType);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update wallet balance' });
+    }
+  });
+
+  app.post('/api/smai-wallet/record-trade', async (req, res) => {
+    try {
+      const { SmaiWalletManager } = await import('./services/smaiWalletManager.js');
+      const manager = SmaiWalletManager.getInstance();
+      const tradeData = req.body;
+      const result = await manager.recordTrade(tradeData);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to record trade' });
+    }
+  });
+
   // Start data monitoring loops
   setInterval(async () => {
     try {

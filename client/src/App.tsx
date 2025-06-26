@@ -13,6 +13,7 @@ import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
 import LearningPage from "@/pages/learning";
 import EnhancedWaidBotPage from "@/pages/enhanced-waidbot";
+import AutonomousWealthEngine from "@/components/AutonomousWealthEngine";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
 import { ShadowOverrideDefense } from "@/components/ShadowOverrideDefense";
@@ -36,6 +37,7 @@ function Router() {
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/enhanced-waidbot", label: "Enhanced Controller" },
+    { path: "/autonomous-wealth", label: "Autonomous Wealth Engine" },
     { path: "/learning", label: "Trading Academy" },
     { path: "/ml-lifecycle", label: "ML Lifecycle" },
     { path: "/risk-backtesting", label: "Risk Backtesting" },
@@ -104,6 +106,7 @@ function Router() {
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
           <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
+          <Route path="/autonomous-wealth" component={AutonomousWealthEngine} />
           <Route path="/learning" component={LearningPage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
