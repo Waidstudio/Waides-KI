@@ -42,6 +42,7 @@ export default function WaidesKIVisionPortal() {
   const [currentTypingMessage, setCurrentTypingMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [oracleEnabled, setOracleEnabled] = useState(false);
+  const [reasoningMode, setReasoningMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
   const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');

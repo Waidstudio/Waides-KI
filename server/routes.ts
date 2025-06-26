@@ -26,6 +26,7 @@ import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
 import { waidesKIChatService } from './services/waidesKIChatService.js';
 import { waidesKICommandProcessor } from './services/waidesKICommandProcessor.js';
 import chatOracleService from './services/chatOracleService.js';
+import { WaidesKIReasoningEngine } from './services/waidesKIReasoningEngine.js';
 import { WaidesKIProphecyLogService } from './services/prophecyLogService.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
@@ -290,6 +291,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize Waides KI Core Engine - The Heart of Intelligence
   const waidesKiCoreEngine = new WaidesKiCoreEngine();
+  
+  // Initialize Advanced Reasoning Engine
+  const waidesKIReasoningEngine = new WaidesKIReasoningEngine(ethMonitor);
 
   // Set up Binance WebSocket candlestick data handler
   binanceWS.onCandlestickUpdate(async (candlestickData: CandlestickData) => {
@@ -11662,6 +11666,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         error: 'The cosmic channels are experiencing interference',
         fallback: "💫 Waides KI speaks with vision:\n\nThe spiritual energies are realigning. Let me commune with the cosmic forces and return with clarity. 🌟"
+      });
+    }
+  });
+
+  // Advanced reasoning chat endpoint
+  app.post('/api/chat/reasoning', async (req, res) => {
+    try {
+      const { message } = req.body;
+
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      // Use advanced reasoning engine to process the question
+      const reasoningResult = await waidesKIReasoningEngine.processQuestion(message);
+
+      // Gather additional context from Waides KI systems
+      const systemContext = {
+        coreEngine: await waidesKiCoreEngine.getStatus(),
+        tradingSignals: await waidesKISignalLogger.getSignalStatistics(),
+        marketData: await ethMonitor.fetchEthData().catch(() => null),
+        riskStatus: waidesKIRiskManager.getCurrentRiskLevel(),
+        learningStatus: waidesKILearning.getStats()
+      };
+
+      // Enhanced response with system integration
+      const enhancedAnswer = `🧠 **Waides KI Advanced Analysis**
+
+${reasoningResult.answer}
+
+📊 **Current System Context:**
+- Core Engine: ${systemContext.coreEngine.isRunning ? 'Active' : 'Inactive'}
+- ETH Price: $${systemContext.marketData?.price || 'N/A'}
+- Risk Level: ${systemContext.riskStatus}
+- Learning Stage: ${systemContext.learningStatus.evolutionStage || 'Developing'}
+
+🔍 **Analysis Confidence:** ${reasoningResult.confidence}%
+📚 **Knowledge Sources:** ${reasoningResult.sources.join(', ')}
+
+${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 ? 
+  `\n💡 **Recommendations:**\n${reasoningResult.recommendations.map(r => `• ${r}`).join('\n')}` : ''}`;
+
+      res.json({
+        success: true,
+        answer: enhancedAnswer,
+        reasoning: reasoningResult.reasoning,
+        confidence: reasoningResult.confidence,
+        sources: reasoningResult.sources,
+        systemContext,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Advanced reasoning error:', error);
+      res.status(500).json({ 
+        error: 'Reasoning engine temporarily unavailable',
+        fallback: "🤖 Waides KI is thinking deeply about your question. Let me gather information from all connected systems and provide you with a comprehensive analysis."
       });
     }
   });
