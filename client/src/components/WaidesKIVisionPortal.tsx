@@ -51,6 +51,10 @@ export default function WaidesKIVisionPortal() {
   const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');
   const [showWaidBotSummon, setShowWaidBotSummon] = useState(false);
   const [lastSummonCommand, setLastSummonCommand] = useState('');
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const [voiceCommand, setVoiceCommand] = useState('');
+  const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
