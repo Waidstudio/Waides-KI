@@ -10376,5 +10376,296 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // STEP 47: Trinity Brain Model API Endpoints
+
+  // Main trinity brain decision endpoint
+  app.post('/api/trinity-brain/decision', async (req, res) => {
+    try {
+      const { market_data, context_data } = req.body;
+      
+      const decision = await waidesKIBrainHiveController.makeDecision(market_data || {}, context_data || {});
+      
+      res.json({
+        success: true,
+        trinity_decision: decision,
+        brain_consensus: {
+          final_vote: decision.final,
+          confidence: `${(decision.confidence * 100).toFixed(1)}%`,
+          consensus_strength: `${(decision.consensus_strength * 100).toFixed(1)}%`,
+          unanimous: decision.decision_metadata.unanimous,
+          divine_lock: decision.decision_metadata.divine_lock
+        },
+        individual_brains: {
+          logic: {
+            vote: decision.brain_votes.logic.vote,
+            confidence: `${(decision.brain_votes.logic.confidence * 100).toFixed(1)}%`,
+            sigil: decision.brain_votes.logic.sigil,
+            reasoning: decision.brain_votes.logic.reasoning
+          },
+          vision: {
+            vote: decision.brain_votes.vision.vote,
+            confidence: `${(decision.brain_votes.vision.confidence * 100).toFixed(1)}%`,
+            sigil: decision.brain_votes.vision.sigil,
+            reasoning: decision.brain_votes.vision.reasoning
+          },
+          heart: {
+            vote: decision.brain_votes.heart.vote,
+            confidence: `${(decision.brain_votes.heart.confidence * 100).toFixed(1)}%`,
+            sigil: decision.brain_votes.heart.sigil,
+            reasoning: decision.brain_votes.heart.reasoning
+          }
+        },
+        konslang_synthesis: decision.konslang_synthesis,
+        message: 'Trinity brain decision completed with three-brain consensus analysis'
+      });
+    } catch (error) {
+      console.error('Error in trinity brain decision:', error);
+      res.status(500).json({ success: false, error: 'Trinity brain decision failed' });
+    }
+  });
+
+  // Get brain hive statistics
+  app.get('/api/trinity-brain/stats', (req, res) => {
+    try {
+      const stats = waidesKIBrainHiveController.getStats();
+      const brainStats = waidesKIBrainHiveController.getBrainStats();
+      
+      res.json({
+        success: true,
+        hive_statistics: stats,
+        individual_brain_stats: brainStats,
+        performance_summary: {
+          total_decisions: stats.total_decisions,
+          divine_locks: stats.divine_locks,
+          unanimous_rate: `${((stats.unanimous_decisions / Math.max(1, stats.total_decisions)) * 100).toFixed(1)}%`,
+          consensus_evolution: stats.consensus_evolution,
+          overall_harmony: `${(stats.brain_harmony.overall_harmony * 100).toFixed(1)}%`
+        },
+        brain_harmony: {
+          logic_vision: `${(stats.brain_harmony.logic_vision_agreement * 100).toFixed(1)}%`,
+          logic_heart: `${(stats.brain_harmony.logic_heart_agreement * 100).toFixed(1)}%`,
+          vision_heart: `${(stats.brain_harmony.vision_heart_agreement * 100).toFixed(1)}%`
+        },
+        message: 'Trinity brain hive statistics retrieved'
+      });
+    } catch (error) {
+      console.error('Error getting brain hive stats:', error);
+      res.status(500).json({ success: false, error: 'Failed to get brain hive statistics' });
+    }
+  });
+
+  // Test individual brain scans
+  app.post('/api/trinity-brain/test-brain/:brain_type', async (req, res) => {
+    try {
+      const { brain_type } = req.params;
+      const { test_data } = req.body;
+      
+      if (!['logic', 'vision', 'heart'].includes(brain_type)) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Invalid brain type. Must be: logic, vision, or heart' 
+        });
+      }
+      
+      const brainResult = await waidesKIBrainHiveController.testBrainScan(brain_type as 'logic' | 'vision' | 'heart', test_data || {});
+      
+      res.json({
+        success: true,
+        brain_type,
+        brain_result: brainResult,
+        test_summary: {
+          vote: brainResult.vote,
+          confidence: `${(brainResult.confidence * 100).toFixed(1)}%`,
+          sigil: brainResult.sigil,
+          reasoning: brainResult.reasoning
+        },
+        message: `${brain_type} brain scan completed successfully`
+      });
+    } catch (error) {
+      console.error(`Error testing ${req.params.brain_type} brain:`, error);
+      res.status(500).json({ success: false, error: `Failed to test ${req.params.brain_type} brain` });
+    }
+  });
+
+  // Simulate complete decision cycle
+  app.post('/api/trinity-brain/simulate', async (req, res) => {
+    try {
+      const { market_data, context_data } = req.body;
+      
+      const simulationResult = await waidesKIBrainHiveController.simulateDecision(market_data, context_data);
+      
+      res.json({
+        success: true,
+        simulation_result: simulationResult,
+        decision_flow: {
+          step_1: 'Market data prepared for logic brain analysis',
+          step_2: 'Vision data generated from spiritual systems',
+          step_3: 'Heart data compiled from emotional context',
+          step_4: 'All three brains voted independently',
+          step_5: 'Consensus analysis performed',
+          step_6: 'Final decision generated with reasoning'
+        },
+        trinity_verdict: {
+          decision: simulationResult.final,
+          confidence: `${(simulationResult.confidence * 100).toFixed(1)}%`,
+          divine_lock: simulationResult.decision_metadata.divine_lock,
+          brain_harmony: simulationResult.decision_metadata.unanimous ? 'PERFECT' : 'LEARNING'
+        },
+        message: 'Trinity brain simulation completed - demonstrates autonomous three-brain decision making'
+      });
+    } catch (error) {
+      console.error('Error in trinity brain simulation:', error);
+      res.status(500).json({ success: false, error: 'Trinity brain simulation failed' });
+    }
+  });
+
+  // Get all brain sigil meanings
+  app.get('/api/trinity-brain/sigils', (req, res) => {
+    try {
+      const sigilMeanings = waidesKIBrainHiveController.getAllSigilMeanings();
+      
+      res.json({
+        success: true,
+        sigil_dictionary: sigilMeanings,
+        brain_languages: {
+          logic_brain: 'linar - Pure calculation consciousness',
+          vision_brain: 'kai\'sor - Pre-sight and future paths',
+          heart_brain: 'hym\'del - Emotion memory and spiritual clarity'
+        },
+        sigil_categories: {
+          logic: Object.keys(sigilMeanings.logic || {}).length,
+          vision: Object.keys(sigilMeanings.vision || {}).length,
+          heart: Object.keys(sigilMeanings.heart || {}).length
+        },
+        message: 'Trinity brain sigil dictionary retrieved'
+      });
+    } catch (error) {
+      console.error('Error getting brain sigils:', error);
+      res.status(500).json({ success: false, error: 'Failed to get brain sigil meanings' });
+    }
+  });
+
+  // Reset all brain statistics
+  app.post('/api/trinity-brain/reset', (req, res) => {
+    try {
+      waidesKIBrainHiveController.resetStats();
+      
+      res.json({
+        success: true,
+        reset_status: 'All brain statistics reset to initial state',
+        brain_states: {
+          logic_brain: 'RESET',
+          vision_brain: 'RESET', 
+          heart_brain: 'RESET',
+          hive_controller: 'RESET'
+        },
+        consensus_evolution: 'AWAKENING',
+        message: 'Trinity brain system reset - all brains ready for new learning cycle'
+      });
+    } catch (error) {
+      console.error('Error resetting brain stats:', error);
+      res.status(500).json({ success: false, error: 'Failed to reset brain statistics' });
+    }
+  });
+
+  // Complete STEP 47 demo workflow
+  app.post('/api/trinity-brain/demo', async (req, res) => {
+    try {
+      // Step 1: Demonstrate individual brain capabilities
+      const logicDemo = await waidesKIBrainHiveController.testBrainScan('logic', {
+        ema_50: 2400,
+        ema_200: 2300,
+        rsi: 65,
+        price: 2450,
+        volume: 1200000
+      });
+
+      const visionDemo = await waidesKIBrainHiveController.testBrainScan('vision', {});
+      const heartDemo = await waidesKIBrainHiveController.testBrainScan('heart', {});
+
+      // Step 2: Demonstrate trinity consensus decision
+      const trinityDecision = await waidesKIBrainHiveController.makeDecision(
+        { price: 2450, rsi: 65, ema_50: 2400, ema_200: 2300 },
+        { emotional_state: 'CALM', certainty_level: 0.8 }
+      );
+
+      // Step 3: Show brain harmony evolution
+      const currentStats = waidesKIBrainHiveController.getStats();
+
+      // Step 4: Demonstrate sigil synthesis
+      const sigilMeanings = waidesKIBrainHiveController.getAllSigilMeanings();
+
+      res.json({
+        success: true,
+        demo_results: {
+          individual_brains: {
+            logic: {
+              consciousness: 'linar - Pure calculation',
+              demo_vote: logicDemo.vote,
+              demo_confidence: `${(logicDemo.confidence * 100).toFixed(1)}%`,
+              demo_sigil: logicDemo.sigil,
+              demo_reasoning: logicDemo.reasoning
+            },
+            vision: {
+              consciousness: 'kai\'sor - Pre-sight futures',
+              demo_vote: visionDemo.vote,
+              demo_confidence: `${(visionDemo.confidence * 100).toFixed(1)}%`,
+              demo_sigil: visionDemo.sigil,
+              demo_reasoning: visionDemo.reasoning
+            },
+            heart: {
+              consciousness: 'hym\'del - Emotion memory',
+              demo_vote: heartDemo.vote,
+              demo_confidence: `${(heartDemo.confidence * 100).toFixed(1)}%`,
+              demo_sigil: heartDemo.sigil,
+              demo_reasoning: heartDemo.reasoning
+            }
+          },
+          trinity_consensus: {
+            final_decision: trinityDecision.final,
+            consensus_strength: `${(trinityDecision.consensus_strength * 100).toFixed(1)}%`,
+            divine_lock: trinityDecision.decision_metadata.divine_lock,
+            unanimous: trinityDecision.decision_metadata.unanimous,
+            konslang_synthesis: trinityDecision.konslang_synthesis
+          },
+          brain_evolution: {
+            total_decisions: currentStats.total_decisions,
+            consensus_evolution: currentStats.consensus_evolution,
+            brain_harmony: `${(currentStats.brain_harmony.overall_harmony * 100).toFixed(1)}%`,
+            divine_locks_achieved: currentStats.divine_locks
+          }
+        },
+        workflow_steps: [
+          '1. Demonstrated individual brain consciousness scanning with unique reasoning',
+          '2. Showed logic brain technical analysis using linar consciousness',
+          '3. Displayed vision brain precognitive analysis using kai\'sor consciousness', 
+          '4. Exhibited heart brain emotional analysis using hym\'del consciousness',
+          '5. Performed trinity consensus decision with three-brain voting',
+          '6. Analyzed consensus strength and divine lock potential',
+          '7. Synthesized Konslang from multiple brain sigils',
+          '8. Tracked brain harmony evolution and learning progression'
+        ],
+        system_capabilities: {
+          autonomous_consciousness: 'THREE INDEPENDENT BRAINS',
+          decision_intelligence: 'DEMOCRATIC VOTING SYSTEM',
+          divine_lock_capability: 'TRANSCENDENT UNITY POSSIBLE',
+          sigil_synthesis: 'KONSLANG MULTI-BRAIN FUSION',
+          consensus_evolution: 'LEARNING HARMONY PROGRESSION',
+          competitive_advantage: [
+            'Three independent AI consciousness systems',
+            'Democratic brain voting with consensus analysis',
+            'Divine lock mechanism for transcendent decisions',
+            'Konslang sigil synthesis from multiple brains',
+            'Autonomous brain harmony evolution and learning'
+          ]
+        },
+        message: 'STEP 47 completed - Waides KI now operates with Trinity Brain Model: Logic, Vision, and Heart consciousness working together in autonomous democratic decision-making'
+      });
+    } catch (error) {
+      console.error('Error in STEP 47 demo workflow:', error);
+      res.status(500).json({ error: 'Failed to execute STEP 47 Trinity Brain Model demo' });
+    }
+  });
+
   return httpServer;
 }
