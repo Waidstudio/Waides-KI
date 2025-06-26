@@ -23,6 +23,7 @@ import { waidesKISignalShield } from './services/waidesKISignalShield.js';
 import { waidesKIDailyReporter } from './services/waidesKIDailyReporter.js';
 import { waidesKISelfRepair } from './services/waidesKISelfRepair.js';
 import { waidesKIDNAEngine } from './services/waidesKIDNAEngine.js';
+import { waidesKIChatService } from './services/waidesKIChatService.js';
 import { waidesKISignatureTracker } from './services/waidesKISignatureTracker.js';
 import { waidesKIRootMemory } from './services/waidesKIRootMemory.js';
 import { waidesKIGenomeEngine } from './services/waidesKIGenomeEngine.js';
@@ -14776,6 +14777,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Failed to fetch ETH data:', error);
     }
   }, 60000); // Every minute
+
+  // ==========================================================================
+  // VISION PORTAL CHAT API ENDPOINTS - Spiritual AI Communication System
+  // ==========================================================================
+
+  // Chat with Waides KI spiritual AI
+  app.post('/api/chat/message', async (req, res) => {
+    try {
+      const { message, personality, spiritualEnergy, consciousnessLevel, auraIntensity, prophecyMode } = req.body;
+      
+      const chatRequest = {
+        message,
+        personality: personality || 'wise',
+        spiritualEnergy: spiritualEnergy || 75,
+        consciousnessLevel: consciousnessLevel || 3,
+        auraIntensity: auraIntensity || 80,
+        prophecyMode: prophecyMode || false
+      };
+
+      const response = await waidesKIChatService.generateResponse(chatRequest);
+      
+      res.json({
+        success: true,
+        response: response.response,
+        spiritualInsight: response.spiritualInsight,
+        prophecy: response.prophecy,
+        energyShift: response.energyShift,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Chat API error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate spiritual response',
+        fallback: "The cosmic energies are temporarily disrupted. Please try again in a moment."
+      });
+    }
+  });
+
+  // Get chat service status
+  app.get('/api/chat/status', (req, res) => {
+    try {
+      const status = waidesKIChatService.getStatus();
+      res.json({
+        success: true,
+        ...status,
+        serviceType: 'Waides KI Spiritual Chat'
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get chat service status' });
+    }
+  });
+
+  // ==========================================================================
+  // ADMIN CONFIGURATION PANEL - API Key Management System
+  // ==========================================================================
+
+  // Update OpenAI API Key
+  app.post('/api/admin/config/openai-key', async (req, res) => {
+    try {
+      const { apiKey } = req.body;
+      
+      if (!apiKey || typeof apiKey !== 'string') {
+        return res.status(400).json({ error: 'Valid API key required' });
+      }
+
+      const success = waidesKIChatService.updateOpenAIKey(apiKey);
+      
+      res.json({
+        success,
+        message: success ? 'OpenAI API key updated successfully' : 'Failed to update OpenAI API key',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Admin config error:', error);
+      res.status(500).json({ error: 'Failed to update OpenAI API key' });
+    }
+  });
+
+  // Get configuration status
+  app.get('/api/admin/config/status', (req, res) => {
+    try {
+      const chatStatus = waidesKIChatService.getStatus();
+      
+      res.json({
+        success: true,
+        services: {
+          openai: {
+            configured: chatStatus.hasKey,
+            active: chatStatus.initialized,
+            status: chatStatus.initialized ? 'ACTIVE' : 'INACTIVE'
+          },
+          inciteAI: {
+            configured: false,
+            active: false,
+            status: 'NOT_CONFIGURED'
+          }
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get configuration status' });
+    }
+  });
+
+  // Test API key functionality
+  app.post('/api/admin/config/test-openai', async (req, res) => {
+    try {
+      const testRequest = {
+        message: 'Test spiritual connection',
+        personality: 'wise',
+        spiritualEnergy: 75,
+        consciousnessLevel: 3,
+        auraIntensity: 80,
+        prophecyMode: false
+      };
+
+      const response = await waidesKIChatService.generateResponse(testRequest);
+      
+      res.json({
+        success: true,
+        working: !!response.response,
+        testResponse: response.response.substring(0, 100) + '...',
+        message: 'OpenAI API key test completed'
+      });
+    } catch (error) {
+      res.json({
+        success: false,
+        working: false,
+        error: 'API key test failed',
+        message: 'OpenAI connection could not be established'
+      });
+    }
+  });
 
   return httpServer;
 }

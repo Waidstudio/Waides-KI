@@ -27,6 +27,7 @@ import WaidesFullEngine from "@/components/WaidesFullEngine";
 import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
 import MLLifecycleManager from "@/components/MLLifecycleManager";
 import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
+import AdminConfigPanel from "@/components/AdminConfigPanel";
 import NotFound from "@/pages/not-found";
 
 function Router() {
