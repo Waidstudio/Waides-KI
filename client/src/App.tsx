@@ -18,6 +18,7 @@ import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
+import WaidbotEnginePage from "@/pages/WaidbotEnginePage";
 import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
 import APIDocsPage from "@/pages/APIDocsPage";
@@ -54,6 +55,7 @@ function Router() {
   const navItems = [
     { path: "/", label: "Vision Portal" },
     { path: "/dashboard", label: "Dashboard" },
+    { path: "/waidbot-engine", label: "Waidbot Engine" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
@@ -187,6 +189,7 @@ function Router() {
           <Route path="/profile" component={ProfilePage} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/live-data" component={LiveDataPage} />
+          <Route path="/waidbot-engine" component={WaidbotEnginePage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
           <Route path="/strategy-autogen" component={StrategyAutogenPage} />

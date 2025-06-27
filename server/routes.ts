@@ -16565,6 +16565,145 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // =============================================================================
+  // WAIDBOT ENGINE API ENDPOINTS - Unified Multi-Bot Management
+  // =============================================================================
+
+  // WaidBot (ETH Uptrend Only) Status
+  app.get("/api/waidbot-engine/waidbot/status", (req, res) => {
+    try {
+      // Mock data for WaidBot - ETH uptrend only trading
+      const status = {
+        id: 'waidbot',
+        name: 'WaidBot',
+        isActive: false,
+        performance: {
+          totalTrades: 47,
+          winRate: 78,
+          profit: 12.4,
+          todayTrades: 3
+        },
+        currentAction: 'Waiting for ETH uptrend signal',
+        nextAction: 'Monitor for breakout above $2,450',
+        confidence: 73
+      };
+      res.json(status);
+    } catch (error) {
+      console.error('❌ WaidBot Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot status' });
+    }
+  });
+
+  // WaidBot Pro (ETH3L/ETH3S Bidirectional) Status
+  app.get("/api/waidbot-engine/waidbot-pro/status", (req, res) => {
+    try {
+      // Mock data for WaidBot Pro - bidirectional with ETH3L/ETH3S
+      const status = {
+        id: 'waidbot-pro',
+        name: 'WaidBot Pro',
+        isActive: true,
+        performance: {
+          totalTrades: 89,
+          winRate: 84,
+          profit: 23.7,
+          todayTrades: 7
+        },
+        currentAction: 'Analyzing ETH3L/ETH3S opportunities',
+        nextAction: 'Position for 4-hour directional move',
+        confidence: 91
+      };
+      res.json(status);
+    } catch (error) {
+      console.error('❌ WaidBot Pro Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot Pro status' });
+    }
+  });
+
+  // Autonomous Trader (24/7 Scanner) Status
+  app.get("/api/waidbot-engine/autonomous/status", (req, res) => {
+    try {
+      // Mock data for Autonomous Trader - 24/7 scanning
+      const status = {
+        id: 'autonomous',
+        name: 'Autonomous Trader',
+        isActive: true,
+        performance: {
+          totalTrades: 156,
+          winRate: 82,
+          profit: 34.2,
+          todayTrades: 12
+        },
+        currentAction: 'Scanning 247 market patterns',
+        nextAction: 'Execute on next opportunity',
+        confidence: 88
+      };
+      res.json(status);
+    } catch (error) {
+      console.error('❌ Autonomous Trader Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get Autonomous status' });
+    }
+  });
+
+  // Start/Stop WaidBot
+  app.post("/api/waidbot-engine/waidbot/:action", (req, res) => {
+    try {
+      const { action } = req.params;
+      const message = action === 'start' 
+        ? 'WaidBot started - monitoring for ETH uptrend signals'
+        : 'WaidBot stopped - no longer monitoring';
+      
+      res.json({ 
+        success: true, 
+        message,
+        action,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ WaidBot toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle WaidBot' });
+    }
+  });
+
+  // Start/Stop WaidBot Pro
+  app.post("/api/waidbot-engine/waidbot-pro/:action", (req, res) => {
+    try {
+      const { action } = req.params;
+      const message = action === 'start'
+        ? 'WaidBot Pro started - scanning for ETH3L/ETH3S opportunities'
+        : 'WaidBot Pro stopped - no longer monitoring';
+      
+      res.json({ 
+        success: true, 
+        message,
+        action,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ WaidBot Pro toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle WaidBot Pro' });
+    }
+  });
+
+  // Start/Stop Autonomous Trader
+  app.post("/api/waidbot-engine/autonomous/:action", (req, res) => {
+    try {
+      const { action } = req.params;
+      const message = action === 'start'
+        ? 'Autonomous Trader started - 24/7 market scanning active'
+        : 'Autonomous Trader stopped - scanning disabled';
+      
+      res.json({ 
+        success: true, 
+        message,
+        action,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ Autonomous Trader toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle Autonomous Trader' });
+    }
+  });
+
+  // =============================================================================
   // WAIDBOT API ENDPOINTS - Basic Long-Only ETH Trading Bot
   // =============================================================================
 
