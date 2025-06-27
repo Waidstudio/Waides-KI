@@ -72,9 +72,13 @@ export default function KonsaiChat() {
   };
 
   return (
-    <div className="h-full flex flex-col p-6 bg-black/40 backdrop-blur-sm border border-emerald-500/20 rounded-xl">
+    <div className="h-screen w-full flex flex-col bg-gradient-to-br from-black via-gray-900 to-emerald-900/20 relative">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(20,184,166,0.1),transparent)] pointer-events-none"></div>
+      
       {/* Chat Messages Container */}
-      <div className="flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-emerald-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-6 min-h-[70vh]">
+      <div className="flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-emerald-600/80 scrollbar-track-gray-800/50 scroll-smooth p-6 relative z-10 max-w-4xl mx-auto w-full">
         
         {/* Welcome Message */}
         {showWelcome && (
@@ -198,16 +202,16 @@ export default function KonsaiChat() {
         )}
       </div>
 
-      {/* Chat Input */}
-      <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl border border-emerald-500/20 p-6">
-        <div className="flex gap-4">
+      {/* Fixed Chat Input at Bottom */}
+      <div className="relative z-10 bg-black/60 backdrop-blur-sm border-t border-emerald-500/20 p-6">
+        <div className="flex gap-4 max-w-4xl mx-auto w-full">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder="Ask Konsai anything... (e.g., 'Generate a new strategy', 'Fund my account with USDT', 'Start WaidBot Pro')"
-            className="flex-1 bg-gray-900/60 border border-emerald-500/30 rounded-lg px-6 py-4 text-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+            className="flex-1 bg-gray-900/80 border border-emerald-500/30 rounded-lg px-6 py-4 text-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-sm"
           />
           <button 
             onClick={handleSendMessage}
@@ -220,7 +224,7 @@ export default function KonsaiChat() {
         </div>
         
         {/* Quick Suggestions */}
-        <div className="flex flex-wrap gap-3 mt-4">
+        <div className="flex flex-wrap gap-3 mt-4 max-w-4xl mx-auto w-full">
           <button 
             onClick={() => handleSuggestionClick("Generate a bullish ETH strategy")}
             className="px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-sm rounded-full border border-emerald-500/30 transition-all font-medium hover:scale-105"
