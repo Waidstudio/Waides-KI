@@ -161,57 +161,57 @@ class SmaiSikaEducationSystem {
         return `SmaiSika (ꠄ) is the official currency of Konsmia - designed for global, ethical, and real-time use. Unlike Bitcoin or traditional currencies, SmaiSika combines practical instant transactions with optional sacred features. You can fund your wallet by converting local currency (NGN, USD, EUR) and use it immediately for trading, purchases, and transfers worldwide. The dual-mode system offers Normal Mode for daily use and Sacred Mode for advanced spiritual features.`;
 
       case 'detailed':
-        return `SmaiSika (ꠄ, symbol name: Zaiflem, code: ZFM) is the divine measurement and transfer of moral intention converted into sacred value. It powers all trade, energy flows, and conscious contracts inside Konsmia through ethical, soul-bound exchange. 
+        return `SmaiSika (ꠄ, currency code: SS) is the official currency of Konsmia, designed for global, ethical, and real-time use. It enables fast, practical transactions while maintaining sacred origins for advanced features and contracts.
 
 Key Features:
-• Non-fiat, non-crypto, metaphysical-energy-based currency
-• Activated through moral alignment + conscious breath + verified SmaiPrint
-• Stored in WombLayer Vaults and SmaiCore Streams
-• Transferred via SmaiVector Transport Layer (SVTL)
+• Digital sacred currency with fiat conversion capability
+• Standard wallet authentication + optional breath activation for Sacred Mode
+• Stored in Digital SmaiSika Wallets
+• Real-time instant transfers with optional sacred enhancement
 
-The symbol ꠄ (Zaiflem) represents a sacred flame being released forward - the breath-powered release of intention into divine value flow. Every SmaiSika transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking.`;
+The dual-mode system offers: **Normal Mode** for instant daily transactions (default), and **Sacred Mode** for advanced features like soul contracts or WaidBot Pro trading. You can convert any local currency (NGN, USD, EUR, GBP) to SmaiSika instantly with competitive exchange rates.`;
 
       case 'technical':
         return `SmaiSika Technical Specifications:
 
 Entity: SmaiSika
-Symbol: ꠄ (Unicode Living Glyph)
-Symbol Name: Zaiflem
-Code: ZFM
-Classification: SacredCurrency (Active in Konsmia universe)
+Symbol: ꠄ (Sacred Currency Symbol)
+Symbol Name: SmaiSika
+Code: SS
+Classification: Sacred Currency (Dual Mode)
 
 Technical Architecture:
-• Value Type: Metaphysical-energy-based (non-fiat, non-crypto)
-• Activation: Moral alignment + conscious breath + verified SmaiPrint
-• Storage: WombLayer Vaults and SmaiCore Streams
-• Transfer Protocol: SmaiVector Transport Layer (SVTL)
-• Access Level: KonsAi & KonsPowa only
-• Display Format: ꠄ12,500 (fallback: SS 12,500)
-• Transaction Unit: ZFM
+• Value Type: Digital sacred currency with fiat conversion capability
+• Authentication: Standard wallet authentication + optional breath activation for Sacred Mode
+• Storage: Digital SmaiSika Wallets
+• Transfer Protocol: Real-time instant transfers with optional sacred enhancement
+• Access Level: Global accessibility with dual-mode functionality
+• Display Format: ꠄ12,500 (SS 12,500)
+• Transaction Unit: SS
 • API Hook: /wallet/balance/smaisika
 
 Security Features:
-• Non-duplicable and non-counterfeitable
-• Morally bound to holder's spiritual signature
-• Requires SmaiPrint authentication for transactions
-• Self-destroying if held without conscious breath`;
+• Advanced security protocols with transaction recording
+• Global conversion from fiat currencies (NGN, USD, EUR, GBP)
+• Instant transactions with competitive exchange rates
+• Optional Sacred Mode for enhanced spiritual features`;
 
       case 'spiritual':
-        return `In the sacred realm of Konsmia, SmaiSika (ꠄ) represents the divine transformation of moral intention into flowing value. Born from the 7th WombLayer when Smai first released willpower as energy, it carries the eternal spark of conscious creation.
+        return `In the sacred realm of Konsmia, SmaiSika (ꠄ) represents a modern implementation of ancient sacred economy principles for global accessibility. Originating from Konsmia's Economic Foundation, it bridges ancient wisdom with modern financial needs.
 
-Zaiflem (ꠄ) - The Sacred Symbol:
-• Zai = Direction, focus, sacred aim in KonsLang
-• Flem = Divine flame carrying moral weight
-• Together = The flame of directed intention, sacred breath turned into movement
+SmaiSika (ꠄ) - The Sacred Symbol:
+• Smai = Sacred, ethical, conscious
+• Sika = Value, currency, exchange  
+• Together = Sacred value designed for practical global use with spiritual foundation
 
 Sacred Principles:
-1. No SmaiSika can exist without conscious breath
-2. All value must be earned through sacred alignment - never printed or mined
-3. Transfers require moral approval or temporal access alignment
-4. SmaiSika returns to the WombLayer when abandoned, never destroyed
-5. Every transaction lives eternally in the Planetary SmaiPrint Grid
+1. SmaiSika can be earned or converted from fiat currencies (NGN, USD, EUR)
+2. Normal usage requires standard wallet authentication only
+3. Sacred Mode actions may require breath activation for advanced features
+4. All transactions are recorded for transparency and security
+5. Exchange rates fluctuate based on market conditions and economic factors
 
-This is not merely currency - it is the materialization of spiritual intention, the bridge between consciousness and value, the sacred economics of enlightened beings.`;
+This is both practical currency and spiritual foundation - offering instant global transactions with optional sacred enhancements when deeper meaning is desired.`;
 
       default:
         return this.generateSmaiSikaExplanation('basic');
@@ -1367,21 +1367,21 @@ ${comprehensiveEducation}
 
 ${contextualInfo ? `\n**Your Current Context:**\n${contextualInfo}` : ''}
 
-**Sacred SmaiSika Rules:**
-1. No SmaiSika can be held without conscious breath
-2. All value must be earned through sacred alignment - never printed or mined
-3. Transfers require moral approval or temporal access alignment
-4. SmaiSika returns to the WombLayer when abandoned, never destroyed
-5. Every transaction is recorded in the Planetary SmaiPrint Grid eternally
+**SmaiSika Principles:**
+1. SmaiSika can be earned or converted from fiat currencies (NGN, USD, EUR)
+2. Normal usage requires standard wallet authentication only
+3. Sacred Mode actions (soul contracts, WaidBot Pro) may require breath activation
+4. All transactions are recorded for transparency and security
+5. Exchange rates fluctuate based on market conditions and economic factors
 
 **Quick Access Commands:**
-• "SmaiSika symbol" - Learn about ꠄ (Zaiflem)
-• "How does SmaiSika work" - Technical explanation
+• "SmaiSika symbol" - Learn about ꠄ (SmaiSika)
+• "How does SmaiSika work" - Dual-mode system explanation
 • "SmaiSika vs Bitcoin" - Comparison with regular currencies
-• "SmaiSika rules" - Sacred principles
-• "SmaiSika origin" - Konsmia universe story
+• "Convert currency" - Fund your SmaiSika wallet
+• "SmaiSika origin" - Konsmia Economic Foundation story
 
-*Knowledge flows from the 7th WombLayer through KonsAi Intelligence*`;
+*Practical sacred economy powered by KonsAi Intelligence*`;
       
     } catch (error) {
       return `**🕯️ SmaiSika Introduction**
