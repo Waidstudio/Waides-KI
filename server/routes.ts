@@ -1116,6 +1116,249 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // African Payment Systems Endpoints
+  app.post('/api/funding/african-mobile-money', async (req: any, res: any) => {
+    try {
+      const { amount, currency, provider, phoneNumber, country } = req.body;
+      
+      // African mobile money providers
+      const providers = {
+        // East Africa
+        'mpesa_kenya': { name: 'M-Pesa Kenya', shortCode: '*334#', currency: 'KES' },
+        'mpesa_tanzania': { name: 'M-Pesa Tanzania', shortCode: '*150*00#', currency: 'TZS' },
+        'mtn_uganda': { name: 'MTN Mobile Money Uganda', shortCode: '*165#', currency: 'UGX' },
+        'mtn_rwanda': { name: 'MTN Momo Rwanda', shortCode: '*182#', currency: 'RWF' },
+        'telebirr': { name: 'Telebirr Ethiopia', shortCode: '*127#', currency: 'ETB' },
+        'hormuud': { name: 'Hormuud Somalia', shortCode: '*712#', currency: 'SOS' },
+        
+        // West Africa
+        'mtn_ghana': { name: 'MTN Mobile Money Ghana', shortCode: '*170#', currency: 'GHS' },
+        'paga': { name: 'Paga Nigeria', shortCode: '*242#', currency: 'NGN' },
+        'orange_senegal': { name: 'Orange Money Senegal', shortCode: '#144#', currency: 'XOF' },
+        'moov_burkina': { name: 'Moov Money Burkina Faso', shortCode: '#555#', currency: 'XOF' },
+        'mtn_ivory': { name: 'MTN Momo Ivory Coast', shortCode: '*133#', currency: 'XOF' },
+        'orange_liberia': { name: 'Orange Money Liberia', shortCode: '#144#', currency: 'LRD' },
+        
+        // Southern Africa
+        'fnb_ewallet': { name: 'FNB eWallet South Africa', shortCode: '*120*321#', currency: 'ZAR' },
+        'mtn_zambia': { name: 'MTN Momo Zambia', shortCode: '*303#', currency: 'ZMW' },
+        'orange_botswana': { name: 'Orange Money Botswana', shortCode: '#144#', currency: 'BWP' },
+        'mtc_namibia': { name: 'MTC Mobile Namibia', shortCode: '*682#', currency: 'NAD' },
+        'mkesh': { name: 'mKesh Mozambique', shortCode: '*411#', currency: 'MZN' },
+        'ecocash': { name: 'EcoCash Zimbabwe', shortCode: '*151#', currency: 'ZWL' },
+        
+        // Central & North Africa
+        'orange_egypt': { name: 'Orange Money Egypt', shortCode: '#144#', currency: 'EGP' },
+        'orange_morocco': { name: 'Orange Money Morocco', shortCode: '#144#', currency: 'MAD' },
+        'mobilis': { name: 'Mobilis Algeria', shortCode: '*700#', currency: 'DZD' },
+        'orange_cameroon': { name: 'Orange Money Cameroon', shortCode: '#144#', currency: 'XAF' },
+        'airtel_chad': { name: 'Airtel Money Chad', shortCode: '*500#', currency: 'XAF' },
+        'airtel_congo': { name: 'Airtel Money DR Congo', shortCode: '*500#', currency: 'CDF' }
+      };
+
+      const selectedProvider = providers[provider as keyof typeof providers];
+      if (!selectedProvider) {
+        return res.status(400).json({ error: 'Unsupported payment provider' });
+      }
+
+      // Generate payment reference
+      const paymentRef = `AF${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      
+      res.json({
+        success: true,
+        paymentReference: paymentRef,
+        provider: selectedProvider,
+        instructions: {
+          step1: `Dial ${selectedProvider.shortCode} on your mobile phone`,
+          step2: `Select "Send Money" or "Pay Bill" option`,
+          step3: `Enter merchant code: SMAI2024`,
+          step4: `Enter amount: ${amount} ${selectedProvider.currency}`,
+          step5: `Enter reference: ${paymentRef}`,
+          step6: `Enter your PIN to complete payment`,
+          processingTime: '2-5 minutes',
+          supportContact: '+1-800-SMAI-HELP'
+        },
+        qrCode: `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="white"/><text x="100" y="100" text-anchor="middle" font-size="12" fill="black">${paymentRef}</text></svg>`,
+        amount,
+        currency: selectedProvider.currency,
+        status: 'pending'
+      });
+
+    } catch (error) {
+      console.error('African mobile money error:', error);
+      res.status(500).json({ error: 'Payment processing failed' });
+    }
+  });
+
+  // African Bank Transfer Endpoint
+  app.post('/api/funding/african-bank-transfer', async (req: any, res: any) => {
+    try {
+      const { amount, currency, country, bankCode } = req.body;
+      
+      const bankDetails = {
+        // Major African Banks
+        'ZAR': {
+          country: 'South Africa',
+          banks: ['Standard Bank', 'First National Bank', 'ABSA', 'Nedbank', 'Capitec'],
+          swift: 'SBZAZAJJ',
+          accountNumber: '62742185432',
+          branchCode: '051001'
+        },
+        'NGN': {
+          country: 'Nigeria', 
+          banks: ['GTBank', 'First Bank', 'Access Bank', 'UBA', 'Zenith Bank'],
+          swift: 'GTBINGLA',
+          accountNumber: '0123456789',
+          sortCode: '058152036'
+        },
+        'GHS': {
+          country: 'Ghana',
+          banks: ['Ecobank', 'GCB Bank', 'Standard Chartered', 'Fidelity Bank'],
+          swift: 'ECOCZACC',
+          accountNumber: '1234567890123',
+          branchCode: '003'
+        },
+        'KES': {
+          country: 'Kenya',
+          banks: ['KCB Bank', 'Equity Bank', 'Standard Chartered', 'Barclays'],
+          swift: 'KCBLKENX',
+          accountNumber: '1234567890',
+          branchCode: '001'
+        },
+        'EGP': {
+          country: 'Egypt',
+          banks: ['National Bank of Egypt', 'Banque Misr', 'CIB', 'HSBC Egypt'],
+          swift: 'NBEGEGCX',
+          accountNumber: '012345678901234',
+          branchCode: '002'
+        }
+      };
+
+      const bankInfo = bankDetails[currency as keyof typeof bankDetails];
+      if (!bankInfo) {
+        return res.status(400).json({ error: 'Currency not supported for bank transfer' });
+      }
+
+      const transferRef = `BANK${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+
+      res.json({
+        success: true,
+        transferReference: transferRef,
+        bankDetails: {
+          beneficiaryName: 'SmaiSika Wallet Services',
+          accountNumber: bankInfo.accountNumber,
+          bankName: bankInfo.banks[0],
+          branchCode: bankInfo.branchCode,
+          swift: bankInfo.swift,
+          country: bankInfo.country,
+          reference: transferRef
+        },
+        amount,
+        currency,
+        instructions: [
+          'Visit your nearest bank branch or use online banking',
+          'Initiate an international wire transfer',
+          `Transfer ${amount} ${currency} to the provided account`,
+          `Use reference: ${transferRef}`,
+          'Processing time: 1-3 business days',
+          'Keep your transfer receipt for verification'
+        ],
+        fees: {
+          ourFee: '0%',
+          bankFee: 'As per your bank charges',
+          correspondent: 'May apply for international transfers'
+        }
+      });
+
+    } catch (error) {
+      console.error('African bank transfer error:', error);
+      res.status(500).json({ error: 'Bank transfer setup failed' });
+    }
+  });
+
+  // African Local Currency Exchange Rates
+  app.get('/api/funding/african-exchange-rates', async (req: any, res: any) => {
+    try {
+      // Simulated exchange rates - in production, integrate with real forex API
+      const rates = {
+        'KES': { rate: 129.50, name: 'Kenyan Shilling' },
+        'TZS': { rate: 2380.00, name: 'Tanzanian Shilling' },
+        'UGX': { rate: 3750.00, name: 'Ugandan Shilling' },
+        'RWF': { rate: 1240.00, name: 'Rwandan Franc' },
+        'ETB': { rate: 54.50, name: 'Ethiopian Birr' },
+        'SOS': { rate: 568.00, name: 'Somali Shilling' },
+        'GHS': { rate: 12.80, name: 'Ghanaian Cedi' },
+        'NGN': { rate: 1580.00, name: 'Nigerian Naira' },
+        'XOF': { rate: 610.00, name: 'West African CFA Franc' },
+        'LRD': { rate: 185.00, name: 'Liberian Dollar' },
+        'ZAR': { rate: 18.30, name: 'South African Rand' },
+        'ZMW': { rate: 25.80, name: 'Zambian Kwacha' },
+        'BWP': { rate: 13.60, name: 'Botswana Pula' },
+        'NAD': { rate: 18.30, name: 'Namibian Dollar' },
+        'MZN': { rate: 63.50, name: 'Mozambican Metical' },
+        'ZWL': { rate: 322.00, name: 'Zimbabwean Dollar' },
+        'EGP': { rate: 48.90, name: 'Egyptian Pound' },
+        'MAD': { rate: 9.98, name: 'Moroccan Dirham' },
+        'DZD': { rate: 134.00, name: 'Algerian Dinar' },
+        'XAF': { rate: 610.00, name: 'Central African CFA Franc' },
+        'CDF': { rate: 2750.00, name: 'Congolese Franc' }
+      };
+
+      const usdToEth = 2425.05; // Current ETH price in USD
+      
+      const convertedRates = Object.entries(rates).map(([currency, data]) => ({
+        currency,
+        name: data.name,
+        usdRate: data.rate,
+        ethRate: (data.rate / usdToEth).toFixed(8),
+        minDeposit: Math.ceil(data.rate * 10), // $10 minimum in local currency
+        maxDeposit: Math.ceil(data.rate * 10000) // $10,000 maximum in local currency
+      }));
+
+      res.json({
+        success: true,
+        baseCurrency: 'USD',
+        ethPriceUsd: usdToEth,
+        lastUpdated: new Date().toISOString(),
+        rates: convertedRates
+      });
+
+    } catch (error) {
+      console.error('Exchange rates error:', error);
+      res.status(500).json({ error: 'Failed to fetch exchange rates' });
+    }
+  });
+
+  // African Payment Status Check
+  app.get('/api/funding/african-payment-status/:reference', async (req: any, res: any) => {
+    try {
+      const { reference } = req.params;
+      
+      // Simulate payment status tracking
+      const statuses = ['pending', 'processing', 'completed', 'failed'];
+      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      
+      res.json({
+        success: true,
+        reference,
+        status: randomStatus,
+        statusMessage: {
+          pending: 'Payment initiated, waiting for confirmation',
+          processing: 'Payment confirmed, adding funds to wallet',
+          completed: 'Funds successfully added to your wallet',
+          failed: 'Payment failed, please try again'
+        }[randomStatus],
+        estimatedCompletion: randomStatus === 'pending' ? '2-5 minutes' : null,
+        transactionId: `TXN${Date.now()}`,
+        supportContact: '+1-800-SMAI-HELP'
+      });
+
+    } catch (error) {
+      console.error('Payment status error:', error);
+      res.status(500).json({ error: 'Failed to check payment status' });
+    }
+  });
+
   // Note: TradingView WebSocket integration removed - using Binance only
 
   // Get current ETH data and signals with spiritual layer

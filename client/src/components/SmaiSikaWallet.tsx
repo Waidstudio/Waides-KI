@@ -309,15 +309,15 @@ export default function SmaiSikaWallet() {
                     <span>Add Funds</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-slate-800 border-slate-600 max-w-4xl">
+                <DialogContent className="bg-slate-800 border-slate-600 max-w-6xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                    <DialogTitle className="text-xl md:text-2xl bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
                       Add Funds to Your Wallet
                     </DialogTitle>
                   </DialogHeader>
                   
                   <Tabs defaultValue="card" className="w-full">
-                    <TabsList className="grid w-full grid-cols-5 bg-slate-700/50 mb-6">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 bg-slate-700/50 mb-6 overflow-x-auto">
                       <TabsTrigger value="card" className="flex items-center gap-1">
                         <CreditCard className="w-4 h-4" />
                         Card
@@ -513,50 +513,238 @@ export default function SmaiSikaWallet() {
                     </TabsContent>
 
                     {/* Mobile Money */}
-                    <TabsContent value="mobile" className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          <h3 className="text-lg font-semibold text-orange-400">Mobile Money</h3>
-                          <p className="text-sm text-gray-400">Mobile payments for Africa, Asia, and emerging markets.</p>
+                    <TabsContent value="mobile" className="space-y-4 md:space-y-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                        <div className="space-y-3 md:space-y-4">
+                          <h3 className="text-base md:text-lg font-semibold text-orange-400">Mobile Money</h3>
+                          <p className="text-xs md:text-sm text-gray-400">Mobile payments for Africa, Asia, and emerging markets.</p>
                           
-                          <div className="space-y-3">
-                            <h4 className="font-medium">Nigeria</h4>
-                            <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-3 max-h-80 md:max-h-none overflow-y-auto">
+                            <h4 className="font-medium text-sm md:text-base">Nigeria</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                               <Button 
                                 variant="outline" 
-                                className="h-16 flex flex-col gap-1"
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
                                 onClick={() => handleGlobalFunding('mobile_money', 'ngn')}
                               >
-                                <span className="text-sm font-bold">Paystack</span>
+                                <span className="text-xs md:text-sm font-bold">Paystack</span>
                                 <span className="text-xs text-gray-400">All Nigerian banks</span>
                               </Button>
                               <Button 
                                 variant="outline" 
-                                className="h-16 flex flex-col gap-1"
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
                                 onClick={() => handleGlobalFunding('mobile_money', 'ngn')}
                               >
-                                <span className="text-sm font-bold">Flutterwave</span>
+                                <span className="text-xs md:text-sm font-bold">Flutterwave</span>
                                 <span className="text-xs text-gray-400">Cards + USSD</span>
                               </Button>
                             </div>
                             
-                            <h4 className="font-medium mt-4">East Africa</h4>
-                            <div className="grid grid-cols-2 gap-2">
+                            <h4 className="font-medium mt-4">🌍 East Africa</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                              <Button 
+                                variant="outline" 
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
+                                onClick={() => handleGlobalFunding('mobile_money', 'kes')}
+                              >
+                                <span className="text-xs md:text-sm font-bold">M-Pesa</span>
+                                <span className="text-xs text-gray-400">🇰🇪 Kenya</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
+                                onClick={() => handleGlobalFunding('mobile_money', 'tzs')}
+                              >
+                                <span className="text-xs md:text-sm font-bold">M-Pesa TZ</span>
+                                <span className="text-xs text-gray-400">🇹🇿 Tanzania</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
+                                onClick={() => handleGlobalFunding('mobile_money', 'ugx')}
+                              >
+                                <span className="text-xs md:text-sm font-bold">MTN Mobile</span>
+                                <span className="text-xs text-gray-400">🇺🇬 Uganda</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
+                                onClick={() => handleGlobalFunding('mobile_money', 'rwf')}
+                              >
+                                <span className="text-xs md:text-sm font-bold">MTN Momo</span>
+                                <span className="text-xs text-gray-400">🇷🇼 Rwanda</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
+                                onClick={() => handleGlobalFunding('mobile_money', 'etb')}
+                              >
+                                <span className="text-xs md:text-sm font-bold">Telebirr</span>
+                                <span className="text-xs text-gray-400">🇪🇹 Ethiopia</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-12 md:h-16 flex flex-col gap-1 text-xs md:text-sm"
+                                onClick={() => handleGlobalFunding('mobile_money', 'sos')}
+                              >
+                                <span className="text-xs md:text-sm font-bold">Hormuud</span>
+                                <span className="text-xs text-gray-400">🇸🇴 Somalia</span>
+                              </Button>
+                            </div>
+                            
+                            <h4 className="font-medium mt-4">🌍 West Africa</h4>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                               <Button 
                                 variant="outline" 
                                 className="h-16 flex flex-col gap-1"
-                                onClick={() => handleGlobalFunding('mobile_money', 'kes')}
+                                onClick={() => handleGlobalFunding('mobile_money', 'ghs')}
                               >
-                                <span className="text-sm font-bold">M-Pesa</span>
-                                <span className="text-xs text-gray-400">Kenya, Tanzania</span>
+                                <span className="text-sm font-bold">MTN Momo</span>
+                                <span className="text-xs text-gray-400">🇬🇭 Ghana</span>
                               </Button>
                               <Button 
                                 variant="outline" 
                                 className="h-16 flex flex-col gap-1"
-                                onClick={() => handleGlobalFunding('mobile_money', 'ugx')}
+                                onClick={() => handleGlobalFunding('mobile_money', 'ngn')}
                               >
-                                <span className="text-sm font-bold">MTN Mobile</span>
-                                <span className="text-xs text-gray-400">Uganda, Ghana</span>
+                                <span className="text-sm font-bold">Paga</span>
+                                <span className="text-xs text-gray-400">🇳🇬 Nigeria</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'xof')}
+                              >
+                                <span className="text-sm font-bold">Orange Money</span>
+                                <span className="text-xs text-gray-400">🇸🇳 Senegal</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'xof')}
+                              >
+                                <span className="text-sm font-bold">Moov Money</span>
+                                <span className="text-xs text-gray-400">🇧🇫 Burkina Faso</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'xof')}
+                              >
+                                <span className="text-sm font-bold">MTN Momo</span>
+                                <span className="text-xs text-gray-400">🇨🇮 Ivory Coast</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'lrd')}
+                              >
+                                <span className="text-sm font-bold">Orange Money</span>
+                                <span className="text-xs text-gray-400">🇱🇷 Liberia</span>
+                              </Button>
+                            </div>
+                            
+                            <h4 className="font-medium mt-4">🌍 Southern Africa</h4>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'zar')}
+                              >
+                                <span className="text-sm font-bold">FNB eWallet</span>
+                                <span className="text-xs text-gray-400">🇿🇦 South Africa</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'zmw')}
+                              >
+                                <span className="text-sm font-bold">MTN Momo</span>
+                                <span className="text-xs text-gray-400">🇿🇲 Zambia</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'bwp')}
+                              >
+                                <span className="text-sm font-bold">Orange Money</span>
+                                <span className="text-xs text-gray-400">🇧🇼 Botswana</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'nad')}
+                              >
+                                <span className="text-sm font-bold">MTC Mobile</span>
+                                <span className="text-xs text-gray-400">🇳🇦 Namibia</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'mzn')}
+                              >
+                                <span className="text-sm font-bold">mKesh</span>
+                                <span className="text-xs text-gray-400">🇲🇿 Mozambique</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'zwl')}
+                              >
+                                <span className="text-sm font-bold">EcoCash</span>
+                                <span className="text-xs text-gray-400">🇿🇼 Zimbabwe</span>
+                              </Button>
+                            </div>
+                            
+                            <h4 className="font-medium mt-4">🌍 Central & North Africa</h4>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'egp')}
+                              >
+                                <span className="text-sm font-bold">Orange Money</span>
+                                <span className="text-xs text-gray-400">🇪🇬 Egypt</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'mad')}
+                              >
+                                <span className="text-sm font-bold">Orange Money</span>
+                                <span className="text-xs text-gray-400">🇲🇦 Morocco</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'dzd')}
+                              >
+                                <span className="text-sm font-bold">Mobilis</span>
+                                <span className="text-xs text-gray-400">🇩🇿 Algeria</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'xaf')}
+                              >
+                                <span className="text-sm font-bold">Orange Money</span>
+                                <span className="text-xs text-gray-400">🇨🇲 Cameroon</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'xaf')}
+                              >
+                                <span className="text-sm font-bold">Airtel Money</span>
+                                <span className="text-xs text-gray-400">🇹🇩 Chad</span>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'cdf')}
+                              >
+                                <span className="text-sm font-bold">Airtel Money</span>
+                                <span className="text-xs text-gray-400">🇨🇩 DR Congo</span>
                               </Button>
                             </div>
                             
