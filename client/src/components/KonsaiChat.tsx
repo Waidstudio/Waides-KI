@@ -203,52 +203,59 @@ export default function KonsaiChat() {
       </div>
 
       {/* Fixed Chat Input at Bottom */}
-      <div className="relative z-10 bg-black/60 backdrop-blur-sm border-t border-emerald-500/20 p-6">
-        <div className="flex gap-4 max-w-4xl mx-auto w-full">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Ask Konsai anything... (e.g., 'Generate a new strategy', 'Fund my account with USDT', 'Start WaidBot Pro')"
-            className="flex-1 bg-gray-900/80 border border-emerald-500/30 rounded-lg px-6 py-4 text-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-sm"
-          />
-          <button 
-            onClick={handleSendMessage}
-            disabled={!input.trim()}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-8 py-4 rounded-lg transition-all flex items-center gap-3 text-lg font-medium"
-          >
-            <Send className="w-5 h-5" />
-            Send
-          </button>
-        </div>
-        
-        {/* Quick Suggestions */}
-        <div className="flex flex-wrap gap-3 mt-4 max-w-4xl mx-auto w-full">
-          <button 
-            onClick={() => handleSuggestionClick("Generate a bullish ETH strategy")}
-            className="px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-sm rounded-full border border-emerald-500/30 transition-all font-medium hover:scale-105"
-          >
-            "Generate a bullish ETH strategy"
-          </button>
-          <button 
-            onClick={() => handleSuggestionClick("Start all trading bots")}
-            className="px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-sm rounded-full border border-emerald-500/30 transition-all font-medium hover:scale-105"
-          >
-            "Start all trading bots"
-          </button>
-          <button 
-            onClick={() => handleSuggestionClick("How do I fund my account?")}
-            className="px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-sm rounded-full border border-emerald-500/30 transition-all font-medium hover:scale-105"
-          >
-            "How do I fund my account?"
-          </button>
-          <button 
-            onClick={() => handleSuggestionClick("Show me current trading performance")}
-            className="px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-sm rounded-full border border-emerald-500/30 transition-all font-medium hover:scale-105"
-          >
-            "Show me current trading performance"
-          </button>
+      <div className="relative z-10 bg-black/80 backdrop-blur-xl border-t border-emerald-500/20 p-4">
+        <div className="max-w-4xl mx-auto w-full space-y-3">
+          {/* Quick Suggestions - Compact Design */}
+          <div className="flex flex-wrap gap-2 justify-center animate-fade-in">
+            <button 
+              onClick={() => handleSuggestionClick("Generate a bullish ETH strategy")}
+              className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs rounded-full border border-emerald-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-emerald-500/20 backdrop-blur-sm"
+            >
+              ⚡ Generate Strategy
+            </button>
+            <button 
+              onClick={() => handleSuggestionClick("Start all trading bots")}
+              className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-xs rounded-full border border-blue-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-blue-500/20 backdrop-blur-sm"
+            >
+              🤖 Start Bots
+            </button>
+            <button 
+              onClick={() => handleSuggestionClick("How do I fund my account?")}
+              className="px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs rounded-full border border-purple-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-purple-500/20 backdrop-blur-sm"
+            >
+              💰 Fund Account
+            </button>
+            <button 
+              onClick={() => handleSuggestionClick("Show me current trading performance")}
+              className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-cyan-500/20 backdrop-blur-sm"
+            >
+              📊 Trading Status
+            </button>
+          </div>
+          
+          {/* Input Row */}
+          <div className="flex gap-3 items-center">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Type your message to Konsai..."
+                className="w-full bg-gray-900/90 border border-emerald-500/30 rounded-full px-5 py-3 pr-12 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/70 backdrop-blur-sm text-sm transition-all duration-200 focus:bg-gray-900/95"
+              />
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <Eye className="w-4 h-4 opacity-60" />
+              </div>
+            </div>
+            <button 
+              onClick={handleSendMessage}
+              disabled={!input.trim()}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:from-gray-700 disabled:to-gray-800 disabled:cursor-not-allowed text-white px-5 py-3 rounded-full transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-lg hover:shadow-emerald-500/25 hover:scale-105 active:scale-95"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
