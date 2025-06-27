@@ -55,7 +55,7 @@ export default function KonsaiChat() {
       }
 
       // Add intelligence metadata to any response
-      response += `\n\n*Powered by KonsAi Intelligence Engine v1.0 - Advanced Trading AI*`;
+      response += `\n\n*Powered by KonsAi*`;
 
       // Create and add bot response
       const botMessage: ChatMessage = {
@@ -333,7 +333,7 @@ For more specific assistance, please ask about:
 
 I'm here to help you navigate the cryptocurrency markets with confidence and precision.
 
-*Powered by KonsAi Intelligence Engine - Your Advanced Trading AI Companion*`;
+*Powered by KonsAi*`;
     }
   };
 
@@ -403,7 +403,7 @@ I combine advanced AI with spiritual market wisdom to provide unparalleled tradi
       }
 
       // Add intelligence metadata
-      response += `\n\n*Powered by KonsAi Intelligence Engine v1.0 - Advanced Trading AI*`;
+      response += `\n\n*Powered by KonsAi*`;
 
       const konsaiResponse: ChatMessage = {
         id: `konsai-${Date.now()}`,
