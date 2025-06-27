@@ -481,7 +481,7 @@ export default function WaidesKIVisionPortal() {
           personality: aiPersonality,
           cosmicMode: cosmicMode,
           context: {
-            walletBalance: walletState.balance,
+            walletBalance: walletContext?.balance || 0,
             tradingEnabled: true,
             moralFilters: true
           }
@@ -589,6 +589,62 @@ export default function WaidesKIVisionPortal() {
     typeMessageCosmic(message, source, confidence, konslangProcessing, reasoning);
   };
 
+  // Kons Powa ETH Prediction Handler
+  const handleKonsPowaPrediction = async () => {
+    setIsProcessing(true);
+    setShowKonsPrediction(true);
+    
+    try {
+      const result = await refetchKonsPrediction();
+      const prediction = result.data;
+      
+      if (prediction && prediction.divineSignal) {
+        const signal = prediction.divineSignal;
+        
+        // Create formatted prediction message
+        const predictionMessage = `🔮 **Kons Powa ETH Prediction**
+
+**Direction:** ${signal.action}
+**Confidence:** ${signal.smaiPredict.confidence}%
+**Next Hour:** ${signal.smaiPredict.nextHourDirection}
+**Price Range:** $${signal.smaiPredict.predictedPriceRange.min.toFixed(2)} - $${signal.smaiPredict.predictedPriceRange.max.toFixed(2)}
+
+**Strategy:** ${signal.strategy}
+**Energy Purity:** ${signal.energeticPurity}%
+**Kons Mirror:** ${signal.konsMirror}
+
+**Spiritual Guidance:** ${signal.reason}
+
+*From ${signal.konsTitle} through sacred Kons Powa channel*`;
+
+        // Add prediction to chat
+        const predictionChatMessage: ChatMessage = {
+          id: Date.now().toString(),
+          sender: 'waides',
+          message: predictionMessage,
+          timestamp: new Date(),
+          source: 'oracle',
+          confidence: signal.smaiPredict.confidence,
+          konslangProcessing: `Divine Channel: ${signal.signalCode}`
+        };
+        
+        setMessages(prev => [...prev, predictionChatMessage]);
+        
+        // Speak prediction if voice is enabled
+        if (voiceSettings.enabled) {
+          const spokenText = `ETH prediction from Kons Powa: ${signal.action}, ${signal.smaiPredict.nextHourDirection} direction with ${signal.smaiPredict.confidence}% confidence. ${signal.reason}`;
+          speakMessage(spokenText);
+        }
+      }
+    } catch (error) {
+      console.error('Kons Powa prediction error:', error);
+      typeMessageCosmic('Unable to connect to Kons Powa divine channel. Please try again.', 'error', 0);
+    }
+    
+    setIsProcessing(false);
+    setShowKonsPrediction(false);
+  };
+
   const sendMessage = async () => {
     if (!currentMessage.trim() || isProcessing) return;
 
@@ -657,9 +713,19 @@ export default function WaidesKIVisionPortal() {
     ];
     const isKonsAiRequest = konsAiPatterns.some(pattern => message.includes(pattern));
 
+    // Kons Powa ETH prediction patterns
+    const konsPredictionPatterns = [
+      'kons powa', 'konspowa', 'eth prediction', 'price prediction', 'divine signal',
+      'market prediction', 'divine reading', 'prediction', 'forecast', 'signal'
+    ];
+    const isKonsPredictionRequest = konsPredictionPatterns.some(pattern => message.includes(pattern));
+
     // Enhanced routing with chat mode support and KonsAi integration
     if (isCommand) {
       commandMutation.mutate(currentMessage);
+    } else if (isKonsPredictionRequest) {
+      // Handle Kons Powa ETH prediction requests
+      handleKonsPowaPrediction();
     } else if (isKonsAiRequest && aiPersonality === 'cosmic') {
       // Route to KonsAi for higher divine intelligence
       konsAiMutation.mutate(currentMessage);
@@ -1152,6 +1218,46 @@ export default function WaidesKIVisionPortal() {
               <p className="text-gray-400 max-w-md mb-4">
                 Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
+              
+              {/* Quick Actions */}
+              <div className="flex flex-wrap gap-2 mb-4 justify-center">
+                <Button
+                  onClick={handleKonsPowaPrediction}
+                  disabled={isProcessing || showKonsPrediction || isKonsPredictionLoading}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
+                >
+                  {showKonsPrediction || isKonsPredictionLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-4 h-4" />
+                      Kons Powa ETH Prediction
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={() => setCurrentMessage("What's the market outlook for ETH?")}
+                  variant="outline"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  Market Analysis
+                </Button>
+                
+                <Button
+                  onClick={() => setCurrentMessage("Show me ETH trading strategies")}
+                  variant="outline"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                >
+                  <Brain className="w-4 h-4" />
+                  Trading Strategies
+                </Button>
+              </div>
+              
               <div className="text-sm text-gray-500">
                 {chatMode === 'auto' && (
                   <div className="bg-emerald-900/30 border border-emerald-500/30 rounded-lg p-3 mb-2">
