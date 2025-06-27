@@ -1327,6 +1327,7 @@ class KonsaiIntelligenceEngine {
     this.systemScanner = new SystemScanner();
     this.moduleConnector = new ModuleConnector();
     this.smaiSikaEducator = new SmaiSikaEducationSystem();
+    this.konsModuleManager = new KonsModuleManager();
     this.initializeEngine();
   }
 
@@ -1403,9 +1404,14 @@ class KonsaiIntelligenceEngine {
       // Get latest system scan for context
       const systemScan = this.systemScanner.getLatestScan();
       
+      // Process all Kons modules for enhanced intelligence
+      this.konsModuleManager.updateUserMessage(query);
+      this.konsModuleManager.updateMarketData(systemScan?.marketAnalysis || null);
+      const konsResults = this.konsModuleManager.processAllKonsModules();
+      
       // Analyze query type and generate intelligent response
       const queryType = this.classifyQuery(query);
-      console.log(`🔍 Query classified as: ${queryType}`);
+      console.log(`🔍 Query classified as: ${queryType}, Kons modules processed: ${Object.keys(konsResults).length}`);
       
       let response: string;
       
@@ -1454,8 +1460,11 @@ class KonsaiIntelligenceEngine {
           response = await this.handleComprehensiveQuery(query, systemScan);
       }
 
+      // Apply Kons Module Enhancements to Response
+      const enhancedResponse = this.konsModuleManager.generateEnhancedResponse(response, konsResults);
+      
       // Final security sanitization
-      return SecurityProtection.sanitizeResponse(response);
+      return SecurityProtection.sanitizeResponse(enhancedResponse);
       
     } catch (error) {
       return this.generateFallbackResponse(query);
