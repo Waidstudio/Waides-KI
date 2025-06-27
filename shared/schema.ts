@@ -397,11 +397,143 @@ export const insertExecutionLogSchema = createInsertSchema(executionLogs).omit({
   executedAt: true
 });
 
+// African Payment Systems and Global Funding Infrastructure
+export const paymentMethods = pgTable('payment_methods', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  methodType: text('method_type').notNull(), // 'mobile_money', 'bank_transfer', 'card', 'crypto'
+  provider: text('provider').notNull(), // 'M-Pesa', 'MTN_Mobile', 'Airtel_Money', etc.
+  country: text('country').notNull(),
+  currency: text('currency').notNull(),
+  accountIdentifier: text('account_identifier').notNull(), // phone number, account number, etc.
+  displayName: text('display_name').notNull(),
+  isActive: boolean('is_active').default(true),
+  isVerified: boolean('is_verified').default(false),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const walletTransactions = pgTable('wallet_transactions', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  walletId: integer('wallet_id').references(() => wallets.id),
+  transactionType: text('transaction_type').notNull(), // 'deposit', 'withdrawal', 'transfer', 'trade', 'fee'
+  amount: numeric('amount', { precision: 18, scale: 8 }).notNull(),
+  currency: text('currency').notNull().default('USD'),
+  localAmount: numeric('local_amount', { precision: 18, scale: 8 }),
+  localCurrency: text('local_currency'),
+  exchangeRate: numeric('exchange_rate', { precision: 10, scale: 6 }),
+  paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id),
+  paymentProvider: text('payment_provider'),
+  externalTransactionId: text('external_transaction_id'),
+  status: text('status').notNull().default('pending'), // 'pending', 'processing', 'completed', 'failed', 'cancelled'
+  description: text('description'),
+  fees: numeric('fees', { precision: 18, scale: 8 }).default('0'),
+  balanceBefore: numeric('balance_before', { precision: 18, scale: 8 }),
+  balanceAfter: numeric('balance_after', { precision: 18, scale: 8 }),
+  processedAt: timestamp('processed_at'),
+  failureReason: text('failure_reason'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const africanPaymentProviders = pgTable('african_payment_providers', {
+  id: serial('id').primaryKey(),
+  country: text('country').notNull(),
+  countryCode: text('country_code').notNull(),
+  provider: text('provider').notNull(),
+  providerType: text('provider_type').notNull(), // 'mobile_money', 'bank', 'fintech'
+  currency: text('currency').notNull(),
+  minAmount: numeric('min_amount', { precision: 10, scale: 2 }).default('1.00'),
+  maxAmount: numeric('max_amount', { precision: 10, scale: 2 }).default('10000.00'),
+  fees: numeric('fees', { precision: 5, scale: 4 }).default('0.025'), // 2.5%
+  processingTime: text('processing_time').default('instant'), // 'instant', '5min', '1hour', '24hour'
+  isActive: boolean('is_active').default(true),
+  supportedOperations: jsonb('supported_operations').default(['deposit', 'withdrawal']),
+  requiresKYC: boolean('requires_kyc').default(false),
+  logo: text('logo'),
+  description: text('description'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const exchangeRates = pgTable('exchange_rates', {
+  id: serial('id').primaryKey(),
+  fromCurrency: text('from_currency').notNull(),
+  toCurrency: text('to_currency').notNull(),
+  rate: numeric('rate', { precision: 12, scale: 6 }).notNull(),
+  source: text('source').default('fixer.io'), // 'fixer.io', 'coinbase', 'binance'
+  lastUpdated: timestamp('last_updated').defaultNow(),
+  metadata: jsonb('metadata').default({}),
+});
+
+export const kycVerifications = pgTable('kyc_verifications', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  verificationType: text('verification_type').notNull(), // 'identity', 'address', 'phone', 'bank_account'
+  status: text('status').notNull().default('pending'), // 'pending', 'verified', 'rejected', 'expired'
+  documentType: text('document_type'), // 'passport', 'national_id', 'drivers_license', 'utility_bill'
+  documentNumber: text('document_number'),
+  documentUrl: text('document_url'),
+  verificationCode: text('verification_code'),
+  verifiedAt: timestamp('verified_at'),
+  expiresAt: timestamp('expires_at'),
+  rejectionReason: text('rejection_reason'),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 export const insertProphecyLogSchema = createInsertSchema(prophecyLogs).omit({
   id: true,
   createdAt: true,
   updatedAt: true
 });
+
+// Insert schemas for new payment system tables
+export const insertPaymentMethodSchema = createInsertSchema(paymentMethods).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWalletTransactionSchema = createInsertSchema(walletTransactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertAfricanPaymentProviderSchema = createInsertSchema(africanPaymentProviders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertExchangeRateSchema = createInsertSchema(exchangeRates).omit({
+  id: true,
+  lastUpdated: true,
+});
+
+export const insertKycVerificationSchema = createInsertSchema(kycVerifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type exports for new payment system tables
+export type PaymentMethod = typeof paymentMethods.$inferSelect;
+export type InsertPaymentMethod = z.infer<typeof insertPaymentMethodSchema>;
+export type WalletTransaction = typeof walletTransactions.$inferSelect;
+export type InsertWalletTransaction = z.infer<typeof insertWalletTransactionSchema>;
+export type AfricanPaymentProvider = typeof africanPaymentProviders.$inferSelect;
+export type InsertAfricanPaymentProvider = z.infer<typeof insertAfricanPaymentProviderSchema>;
+export type ExchangeRate = typeof exchangeRates.$inferSelect;
+export type InsertExchangeRate = z.infer<typeof insertExchangeRateSchema>;
+export type KycVerification = typeof kycVerifications.$inferSelect;
+export type InsertKycVerification = z.infer<typeof insertKycVerificationSchema>;
 
 // Wallet types
 export type SmaiWallet = typeof smaiWallets.$inferSelect;

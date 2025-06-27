@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import { 
   Wallet, TrendingUp, History, ArrowRightLeft, Plus, DollarSign, Shield, Zap, Heart, Lock, Eye,
   CreditCard, Coins, BarChart3, Settings, Bell, Gift, Smartphone, Globe, TrendingDown,
