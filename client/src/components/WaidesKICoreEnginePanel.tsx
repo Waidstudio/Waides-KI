@@ -123,28 +123,28 @@ export function WaidesKICoreEnginePanel() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/30">
-        <CardHeader className="text-center">
+    <div className="w-full h-full flex flex-col">
+      {/* Simplified Header - No Card Wrapper */}
+      <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-6 mb-6">
+        <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500">
               <Brain className="w-6 h-6 text-white" />
             </div>
-            <CardTitle className="text-2xl bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
               Waides KI Core Intelligence Engine
-            </CardTitle>
+            </h2>
             <div className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
-              <Heart className="w-6 h-6 text-white" />
+              <Heart className="w-6 h-6 text-white animate-pulse" />
             </div>
           </div>
-          <CardDescription className="text-purple-300">
+          <p className="text-purple-300">
             The Heart of Waides Ki - Autonomous spiritual trading intelligence
-          </CardDescription>
-        </CardHeader>
-      </Card>
+          </p>
+        </div>
+      </div>
 
-      <Tabs defaultValue="dashboard" className="w-full">
+      <Tabs defaultValue="dashboard" className="flex-1 flex flex-col">
         <div className="w-full overflow-x-auto">
           <TabsList className="flex w-max min-w-full bg-gray-800/50 p-1">
             <TabsTrigger value="dashboard" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
