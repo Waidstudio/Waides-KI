@@ -1804,32 +1804,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               </div>
             </div>
 
-            {/* KonsAi Status */}
-            <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-6">
-              <h3 className="text-lg font-semibold text-orange-300 mb-3">KonsAi System Status</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="w-3 h-3 bg-green-400 rounded-full mx-auto mb-2 animate-pulse"></div>
-                  <div className="text-xs text-gray-400">Neural Core</div>
-                  <div className="text-sm font-semibold text-green-300">Online</div>
-                </div>
-                <div className="text-center">
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full mx-auto mb-2 animate-pulse"></div>
-                  <div className="text-xs text-gray-400">Wisdom Engine</div>
-                  <div className="text-sm font-semibold text-yellow-300">Active</div>
-                </div>
-                <div className="text-center">
-                  <div className="w-3 h-3 bg-purple-400 rounded-full mx-auto mb-2 animate-pulse"></div>
-                  <div className="text-xs text-gray-400">Prediction Core</div>
-                  <div className="text-sm font-semibold text-purple-300">Learning</div>
-                </div>
-                <div className="text-center">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full mx-auto mb-2 animate-pulse"></div>
-                  <div className="text-xs text-gray-400">Trade Engine</div>
-                  <div className="text-sm font-semibold text-blue-300">Ready</div>
-                </div>
-              </div>
-            </div>
+
 
             {/* KonsAi Commands */}
             <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-4 text-center">
