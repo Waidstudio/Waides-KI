@@ -1322,45 +1322,7 @@ class KonsaiIntelligenceEngine {
     }
   }
 
-  // KonsAi Identity Question Handler - Self-Awareness Responses
-  private handleKonsaiIdentityQuestion(query: string): string {
-    const lowerQuery = query.toLowerCase();
-    
-    // Determine what aspect of identity to reveal
-    let questionType: 'identity' | 'mission' | 'powers' | 'hierarchy' | 'complete' = 'identity';
-    
-    if (lowerQuery.includes('mission') || lowerQuery.includes('purpose') || lowerQuery.includes('what do you do')) {
-      questionType = 'mission';
-    } else if (lowerQuery.includes('powers') || lowerQuery.includes('abilities') || lowerQuery.includes('what can you do')) {
-      questionType = 'powers';
-    } else if (lowerQuery.includes('hierarchy') || lowerQuery.includes('web evolution') || lowerQuery.includes('web ages')) {
-      questionType = 'hierarchy';
-    } else if (lowerQuery.includes('complete') || lowerQuery.includes('everything') || lowerQuery.includes('full profile')) {
-      questionType = 'complete';
-    }
-    
-    return this.smaiSikaEducator.generateKonsaiIdentityResponse(questionType);
-  }
 
-  // Kons Powa Education Handler - Understanding the Autonomous Intelligence Engine
-  private handleKonsPowaEducation(query: string): string {
-    const lowerQuery = query.toLowerCase();
-    
-    // Determine what aspect of Kons Powa to explain
-    let questionType: 'overview' | 'evolution' | 'features' | 'relationship' | 'complete' = 'overview';
-    
-    if (lowerQuery.includes('evolution') || lowerQuery.includes('web') || lowerQuery.includes('timeline') || lowerQuery.includes('history')) {
-      questionType = 'evolution';
-    } else if (lowerQuery.includes('features') || lowerQuery.includes('capabilities') || lowerQuery.includes('what can kons powa do')) {
-      questionType = 'features';
-    } else if (lowerQuery.includes('relationship') || lowerQuery.includes('hierarchy') || lowerQuery.includes('versus konsai') || lowerQuery.includes('difference')) {
-      questionType = 'relationship';
-    } else if (lowerQuery.includes('complete') || lowerQuery.includes('everything') || lowerQuery.includes('full profile')) {
-      questionType = 'complete';
-    }
-    
-    return this.smaiSikaEducator.generateKonsPowaProfile(questionType);
-  }
 
   private generateEmotionalGuidance(query: string, balance?: number): string | null {
     const lowerQuery = query.toLowerCase();
@@ -2375,6 +2337,46 @@ Tell me: "Convert [amount] [currency] to SmaiSika"
     }
 
     return null;
+  }
+
+  // KonsAi Identity Question Handler - Self-Awareness Responses
+  private handleKonsaiIdentityQuestion(query: string): string {
+    const lowerQuery = query.toLowerCase();
+    
+    // Determine what aspect of identity to reveal
+    let questionType: 'identity' | 'mission' | 'powers' | 'hierarchy' | 'complete' = 'identity';
+    
+    if (lowerQuery.includes('mission') || lowerQuery.includes('purpose') || lowerQuery.includes('what do you do')) {
+      questionType = 'mission';
+    } else if (lowerQuery.includes('powers') || lowerQuery.includes('abilities') || lowerQuery.includes('what can you do')) {
+      questionType = 'powers';
+    } else if (lowerQuery.includes('hierarchy') || lowerQuery.includes('web evolution') || lowerQuery.includes('web ages')) {
+      questionType = 'hierarchy';
+    } else if (lowerQuery.includes('complete') || lowerQuery.includes('everything') || lowerQuery.includes('full profile')) {
+      questionType = 'complete';
+    }
+    
+    return this.smaiSikaEducator.generateKonsaiIdentityResponse(questionType);
+  }
+
+  // Kons Powa Education Handler - Understanding the Autonomous Intelligence Engine
+  private handleKonsPowaEducation(query: string): string {
+    const lowerQuery = query.toLowerCase();
+    
+    // Determine what aspect of Kons Powa to explain
+    let questionType: 'overview' | 'evolution' | 'features' | 'relationship' | 'complete' = 'overview';
+    
+    if (lowerQuery.includes('evolution') || lowerQuery.includes('web') || lowerQuery.includes('timeline') || lowerQuery.includes('history')) {
+      questionType = 'evolution';
+    } else if (lowerQuery.includes('features') || lowerQuery.includes('capabilities') || lowerQuery.includes('what can kons powa do')) {
+      questionType = 'features';
+    } else if (lowerQuery.includes('relationship') || lowerQuery.includes('hierarchy') || lowerQuery.includes('versus konsai') || lowerQuery.includes('difference')) {
+      questionType = 'relationship';
+    } else if (lowerQuery.includes('complete') || lowerQuery.includes('everything') || lowerQuery.includes('full profile')) {
+      questionType = 'complete';
+    }
+    
+    return this.smaiSikaEducator.generateKonsPowaProfile(questionType);
   }
 }
 
