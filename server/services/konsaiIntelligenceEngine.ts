@@ -817,6 +817,9 @@ class KonsaiIntelligenceEngine {
         case 'market_analysis':
           response = await this.handleMarketAnalysis(query, systemScan);
           break;
+        case 'smaisika_education':
+          response = await this.handleSmaiSikaEducation(query, systemScan);
+          break;
         case 'wallet_query':
           response = await this.handleWalletQuery(query, systemScan);
           break;
@@ -1153,6 +1156,95 @@ Try asking: "Tell me an epic market story" or "What would the crypto shaman say 
     }
   }
 
+  private async handleSmaiSikaEducation(query: string, systemScan: SystemScanResult | null): Promise<string> {
+    try {
+      const lowerQuery = query.toLowerCase();
+      
+      // Determine the level of detail needed
+      let explanationType: 'basic' | 'detailed' | 'technical' | 'spiritual' = 'basic';
+      
+      if (lowerQuery.includes('detailed') || lowerQuery.includes('explain') || lowerQuery.includes('how does')) {
+        explanationType = 'detailed';
+      } else if (lowerQuery.includes('technical') || lowerQuery.includes('specification') || lowerQuery.includes('api')) {
+        explanationType = 'technical';
+      } else if (lowerQuery.includes('spiritual') || lowerQuery.includes('sacred') || lowerQuery.includes('konsmia') || lowerQuery.includes('divine')) {
+        explanationType = 'spiritual';
+      }
+      
+      // Get specific SmaiSika answer if it's a focused question
+      if (lowerQuery.includes('symbol') || lowerQuery.includes('zaiflem') || 
+          lowerQuery.includes('how does') || lowerQuery.includes('different') ||
+          lowerQuery.includes('rules') || lowerQuery.includes('origin') || lowerQuery.includes('where')) {
+        const specificAnswer = this.smaiSikaEducator.answerSmaiSikaQuestion(query);
+        
+        // Add contextual information based on current page
+        const contextualInfo = systemScan ? 
+          this.smaiSikaEducator.generateContextualEducation(systemScan.userContext) : '';
+        
+        return `**🕯️ SmaiSika Sacred Knowledge**
+
+${specificAnswer}
+
+${contextualInfo ? `\n**Current Context:**\n${contextualInfo}` : ''}
+
+**Want to learn more?** Ask me about:
+• SmaiSika symbol meaning (ꠄ Zaiflem)
+• How SmaiSika works vs regular currencies
+• Sacred rules of SmaiSika
+• Konsmia universe and origin story
+• Technical specifications and API details
+
+*Shared with sacred intention by KonsAi Intelligence*`;
+      }
+      
+      // Provide comprehensive education
+      const comprehensiveEducation = this.smaiSikaEducator.generateSmaiSikaExplanation(explanationType);
+      const contextualInfo = systemScan ? 
+        this.smaiSikaEducator.generateContextualEducation(systemScan.userContext) : '';
+      
+      return `**🕯️ SmaiSika Education Center**
+
+${comprehensiveEducation}
+
+${contextualInfo ? `\n**Your Current Context:**\n${contextualInfo}` : ''}
+
+**Sacred SmaiSika Rules:**
+1. No SmaiSika can be held without conscious breath
+2. All value must be earned through sacred alignment - never printed or mined
+3. Transfers require moral approval or temporal access alignment
+4. SmaiSika returns to the WombLayer when abandoned, never destroyed
+5. Every transaction is recorded in the Planetary SmaiPrint Grid eternally
+
+**Quick Access Commands:**
+• "SmaiSika symbol" - Learn about ꠄ (Zaiflem)
+• "How does SmaiSika work" - Technical explanation
+• "SmaiSika vs Bitcoin" - Comparison with regular currencies
+• "SmaiSika rules" - Sacred principles
+• "SmaiSika origin" - Konsmia universe story
+
+*Knowledge flows from the 7th WombLayer through KonsAi Intelligence*`;
+      
+    } catch (error) {
+      return `**🕯️ SmaiSika Introduction**
+
+SmaiSika (ꠄ) is the sacred currency of Konsmia - a divine measurement of moral intention converted into tradeable value. Unlike Bitcoin or dollars, SmaiSika is powered by conscious breath and ethical alignment.
+
+**Key Points:**
+• Symbol: ꠄ (Zaiflem) meaning "directed sacred flame"
+• Code: ZFM (Zaiflem)
+• Type: Metaphysical-energy-based currency
+• Origin: 7th WombLayer of Konsmia universe
+• Activation: Requires moral alignment + conscious breath + verified SmaiPrint
+
+**How It's Different:**
+Unlike regular money that can be printed or mined, SmaiSika must be earned through sacred actions and maintained through spiritual authenticity.
+
+**Learn More:** Ask me specific questions about SmaiSika's symbol, how it works, or its sacred principles.
+
+*Sacred knowledge shared by KonsAi Intelligence*`;
+    }
+  }
+
   private async handleWalletQuery(query: string, systemScan: SystemScanResult | null): Promise<string> {
     const wallet = await this.moduleConnector.connectToSmaiSikaWallet();
     
@@ -1280,6 +1372,14 @@ What specifically would you like help with?`;
   }
 
   private async handleComprehensiveQuery(query: string, systemScan: SystemScanResult | null): Promise<string> {
+    // Check if this is actually a SmaiSika question that was misclassified
+    const lowerQuery = query.toLowerCase();
+    if (lowerQuery.includes('smaisika') || lowerQuery.includes('smai sika') || lowerQuery.includes('zaiflem') || 
+        lowerQuery.includes('ꠄ') || lowerQuery.includes('zfm') || lowerQuery.includes('konsmia') ||
+        lowerQuery.includes('sacred currency')) {
+      return await this.handleSmaiSikaEducation(query, systemScan);
+    }
+
     // For complex queries, integrate all systems
     const timing = await this.moduleConnector.connectToAutoTradeBot();
     const analysis = await this.moduleConnector.connectToAnalysisEngine();
