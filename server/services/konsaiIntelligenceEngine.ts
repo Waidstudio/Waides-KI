@@ -434,6 +434,9 @@ class KonsaiIntelligenceEngine {
       let response: string;
       
       switch (queryType) {
+        case 'eth_trading_advice':
+          response = await this.handleETHTradingAdvice(query, systemScan);
+          break;
         case 'timing_question':
           response = await this.handleTimingQuestion(query, systemScan);
           break;
@@ -467,23 +470,114 @@ class KonsaiIntelligenceEngine {
   private classifyQuery(query: string): string {
     const lowerQuery = query.toLowerCase();
     
-    if (lowerQuery.includes('when') && (lowerQuery.includes('trade') || lowerQuery.includes('time'))) {
+    // ETH Trading and Entry/Exit Questions - Highest Priority
+    if ((lowerQuery.includes('eth') || lowerQuery.includes('ethereum')) && 
+        (lowerQuery.includes('buy') || lowerQuery.includes('sell') || lowerQuery.includes('trade') || 
+         lowerQuery.includes('entry') || lowerQuery.includes('exit') || lowerQuery.includes('price') ||
+         lowerQuery.includes('target') || lowerQuery.includes('should i') || lowerQuery.includes('when'))) {
+      return 'eth_trading_advice';
+    }
+    
+    // General Timing Questions
+    if (lowerQuery.includes('when') && (lowerQuery.includes('trade') || lowerQuery.includes('time') || lowerQuery.includes('optimal'))) {
       return 'timing_question';
     }
-    if (lowerQuery.includes('market') || lowerQuery.includes('analysis') || lowerQuery.includes('price')) {
+    
+    // Market Analysis Questions
+    if (lowerQuery.includes('market') || lowerQuery.includes('analysis') || lowerQuery.includes('trend') || 
+        lowerQuery.includes('signals') || lowerQuery.includes('technical')) {
       return 'market_analysis';
     }
-    if (lowerQuery.includes('wallet') || lowerQuery.includes('balance') || lowerQuery.includes('fund')) {
+    
+    // Wallet and Balance Questions
+    if (lowerQuery.includes('wallet') || lowerQuery.includes('balance') || lowerQuery.includes('fund') || 
+        lowerQuery.includes('deposit') || lowerQuery.includes('withdraw')) {
       return 'wallet_query';
     }
-    if (lowerQuery.includes('how') && (lowerQuery.includes('use') || lowerQuery.includes('work'))) {
+    
+    // Feature Guidance Questions
+    if (lowerQuery.includes('how') && (lowerQuery.includes('use') || lowerQuery.includes('work') || 
+        lowerQuery.includes('guide') || lowerQuery.includes('tutorial'))) {
       return 'feature_guidance';
     }
-    if (lowerQuery.includes('strategy') || lowerQuery.includes('advice') || lowerQuery.includes('recommend')) {
+    
+    // Trading Strategy Questions
+    if (lowerQuery.includes('strategy') || lowerQuery.includes('advice') || lowerQuery.includes('recommend') ||
+        lowerQuery.includes('plan') || lowerQuery.includes('approach')) {
       return 'trading_advice';
     }
     
     return 'general_wisdom';
+  }
+
+  private async handleETHTradingAdvice(query: string, systemScan: SystemScanResult | null): Promise<string> {
+    try {
+      // Connect to ETH Advisor for specialized trading guidance
+      const ethAdvisor = await this.moduleConnector.connectToETHAdvisor();
+      
+      // Get comprehensive ETH trading advice
+      const tradingAdvice = await ethAdvisor.getFormattedTradingAdvice(query);
+      
+      // Get optimal time windows
+      const timeWindows = await ethAdvisor.getOptimalTimeWindows();
+      const isOptimalTime = await ethAdvisor.isOptimalTradingTime();
+      const sessionAnalysis = await ethAdvisor.getSessionAnalysis();
+      
+      // Combine ETH Advisor recommendations with KonsAi intelligence
+      return `**📈 ETH Trading Advisory | KonsAi Intelligence Engine**
+
+**Real-Time ETH Analysis:**
+${tradingAdvice}
+
+**⏰ Optimal Trading Windows:**
+${isOptimalTime ? '🟢 **Current Time: OPTIMAL for trading**' : '🟡 **Current Time: Exercise caution**'}
+
+**Session Analysis:**
+${sessionAnalysis.currentSession ? `📍 **Current Session:** ${sessionAnalysis.currentSession.name} (${sessionAnalysis.currentSession.timezone})` : ''}
+${sessionAnalysis.recommendation}
+
+**Next Optimal Windows:**
+${timeWindows.slice(0, 3).map(window => 
+  `• **${window.start} - ${window.end}** (${window.priority} priority)\n  ${window.reason}`
+).join('\n')}
+
+**⚡ KonsAi Integration:**
+• Real-time market data analysis
+• Technical indicator fusion (RSI, EMA, VWAP)
+• Sacred timing alignment with market sessions
+• Risk-adjusted position sizing recommendations
+• Entry/exit precision timing
+
+*This analysis combines live market data with advanced trading algorithms and optimal timing intelligence.*`;
+
+    } catch (error) {
+      console.error('ETH Trading Advice error:', error);
+      
+      // Fallback to general trading guidance
+      return `**📈 ETH Trading Guidance | KonsAi Intelligence**
+
+I'm analyzing your ETH trading question: "${query}"
+
+**Current Market Context:**
+${systemScan ? `• ETH Price: $${systemScan.marketAnalysis?.ethPrice || 'Loading...'}
+• Trend: ${systemScan.marketAnalysis?.trend || 'Analyzing...'}
+• Volatility: ${systemScan.marketAnalysis?.volatility || 'Moderate'}` : '• Connecting to live market data...'}
+
+**General ETH Trading Principles:**
+• **Entry Strategy:** Wait for RSI < 30 (oversold) or break above key resistance
+• **Exit Strategy:** Take profits at RSI > 70 (overbought) or at predetermined targets  
+• **Risk Management:** Never risk more than 2-3% of portfolio per trade
+• **Timing:** Best during US/European market overlap (8-11 AM EST)
+
+**Recommended Approach:**
+1. Analyze current support/resistance levels
+2. Check RSI and volume confirmation
+3. Set stop-loss at 5-8% below entry
+4. Take partial profits at 10-15% gains
+5. Trail stop-loss for remaining position
+
+*For real-time entry/exit signals, please ensure market data connections are active.*`;
+    }
   }
 
   private async handleTimingQuestion(query: string, systemScan: SystemScanResult | null): Promise<string> {
