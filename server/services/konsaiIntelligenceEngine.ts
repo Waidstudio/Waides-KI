@@ -150,7 +150,7 @@ class SmaiSikaEducationSystem {
   }
 
   private initializeBreathMonitoring() {
-    // Breath quality tracking for Zaiflem value fluctuation
+    // Breath quality tracking for SmaiSika value fluctuation
     console.log('🧬 Living Intelligence: Breath monitoring initialized for SmaiSika consciousness');
   }
 
@@ -1347,10 +1347,10 @@ ${contextualInfo ? `\n**Current Context:**\n${contextualInfo}` : ''}
 ${emotionalGuidance ? `\n**Sacred Guidance:**\n${emotionalGuidance}` : ''}
 
 **Want to learn more?** Ask me about:
-• SmaiSika symbol meaning (ꠄ Zaiflem)
+• SmaiSika symbol meaning (ꠄ SmaiSika)
 • How SmaiSika works vs regular currencies
-• Sacred rules of SmaiSika
-• Konsmia universe and origin story
+• SmaiSika principles
+• Konsmia Economic Foundation and origin story
 • Technical specifications and API details
 
 *Shared with sacred intention by KonsAi Intelligence*`;
@@ -1386,17 +1386,17 @@ ${contextualInfo ? `\n**Your Current Context:**\n${contextualInfo}` : ''}
     } catch (error) {
       return `**🕯️ SmaiSika Introduction**
 
-SmaiSika (ꠄ) is the sacred currency of Konsmia - a divine measurement of moral intention converted into tradeable value. Unlike Bitcoin or dollars, SmaiSika is powered by conscious breath and ethical alignment.
+SmaiSika (ꠄ) is the official currency of Konsmia - designed for global, ethical, and real-time use. Unlike Bitcoin or traditional currencies, SmaiSika combines practical instant transactions with optional sacred features. You can fund your wallet by converting local currency (NGN, USD, EUR) and use it immediately for trading, purchases, and transfers worldwide.
 
 **Key Points:**
-• Symbol: ꠄ (Zaiflem) meaning "directed sacred flame"
-• Code: ZFM (Zaiflem)
-• Type: Metaphysical-energy-based currency
-• Origin: 7th WombLayer of Konsmia universe
-• Activation: Requires moral alignment + conscious breath + verified SmaiPrint
+• Symbol: ꠄ (SmaiSika) meaning "sacred value"
+• Code: SS (SmaiSika)
+• Type: Practical currency with optional sacred features
+• Origin: Konsmia Economic Foundation
+• Activation: Standard wallet authentication for Normal Mode, optional breath activation for Sacred Mode
 
 **How It's Different:**
-Unlike regular money that can be printed or mined, SmaiSika must be earned through sacred actions and maintained through spiritual authenticity.
+Unlike regular currencies, SmaiSika offers instant global transactions with ethical foundations and optional spiritual enhancements for advanced features.
 
 **Learn More:** Ask me specific questions about SmaiSika's symbol, how it works, or its sacred principles.
 
