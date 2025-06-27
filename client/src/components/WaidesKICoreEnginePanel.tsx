@@ -900,8 +900,6 @@ export function WaidesKICoreEnginePanel() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="autonomous">Autonomous</SelectItem>
-                      <SelectItem value="WaidBot">WaidBot</SelectItem>
-                      <SelectItem value="WaidBotPro">WaidBot Pro</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
