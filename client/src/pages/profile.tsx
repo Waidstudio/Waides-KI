@@ -166,16 +166,26 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
 
   // Fetch user profile
-  const { data: profile, isLoading: profileLoading } = useQuery<UserProfile>({
+  const { data: profile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile>({
     queryKey: ['/api/profile'],
-    retry: false
+    retry: 1
   });
 
   // Fetch user settings
-  const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
+  const { data: settings, isLoading: settingsLoading, error: settingsError } = useQuery<UserSettings>({
     queryKey: ['/api/settings'],
-    retry: false
+    retry: 1
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Profile data:', profile);
+    console.log('Settings data:', settings);
+    console.log('Profile loading:', profileLoading);
+    console.log('Settings loading:', settingsLoading);
+    console.log('Profile error:', profileError);
+    console.log('Settings error:', settingsError);
+  }, [profile, settings, profileLoading, settingsLoading, profileError, settingsError]);
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
