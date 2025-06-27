@@ -1443,8 +1443,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* Action Menu - Only show when not in chat or konsai tab */}
-      {activeTab !== 'chat' && activeTab !== 'konsai' && (
+      {/* System Components section removed for cleaner mobile interface */}
+      {false && (
         <div className="relative z-10 mx-4 mb-4">
         <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
           <CardHeader className="pb-2">
