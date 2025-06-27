@@ -172,7 +172,7 @@ function Router() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/autonomous-wealth" className="cursor-pointer">
+                    <Link href="/full-engine" className="cursor-pointer">
                       <span className="mr-2">💰</span>
                       <span>SmaiSika Wallet</span>
                     </Link>
@@ -204,7 +204,7 @@ function Router() {
           <Route path="/strategy-autogen" component={StrategyAutogenPage} />
           <Route path="/voice-command" component={VoiceCommandPage} />
           <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
-          <Route path="/autonomous-wealth" component={SmaiSikaWalletPage} />
+
           <Route path="/learning" component={LearningPage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />

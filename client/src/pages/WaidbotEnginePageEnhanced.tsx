@@ -759,7 +759,7 @@ export default function WaidbotEnginePageEnhanced() {
               <Button 
                 variant="outline" 
                 className="w-full border-purple-400/40 text-purple-400 hover:bg-purple-400/10"
-                onClick={() => window.location.href = '/autonomous-wealth'}
+                onClick={() => window.location.href = '/full-engine'}
               >
                 Open Autonomous Interface
               </Button>

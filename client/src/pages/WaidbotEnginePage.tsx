@@ -545,7 +545,7 @@ export default function WaidbotEnginePage() {
               <Button 
                 variant="outline" 
                 className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
-                onClick={() => window.location.href = '/autonomous-wealth'}
+                onClick={() => window.location.href = '/full-engine'}
               >
                 <Globe className="w-4 h-4 mr-2" />
                 Open Autonomous
