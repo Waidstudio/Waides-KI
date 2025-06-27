@@ -158,7 +158,7 @@ class SmaiSikaEducationSystem {
   generateSmaiSikaExplanation(questionType: 'basic' | 'detailed' | 'technical' | 'spiritual' = 'basic'): string {
     switch (questionType) {
       case 'basic':
-        return `SmaiSika (ꠄ) is a sacred currency from Konsmia - not like Bitcoin or dollars, but powered by moral intention and conscious breath. Think of it as spiritual energy that becomes valuable through ethical actions. The symbol ꠄ (Zaiflem) means "directed sacred flame" - your good intentions literally become tradeable value. Unlike regular money, SmaiSika can't be printed or mined - it must be earned through moral alignment and conscious breathing.`;
+        return `SmaiSika (ꠄ) is the official currency of Konsmia - designed for global, ethical, and real-time use. Unlike Bitcoin or traditional currencies, SmaiSika combines practical instant transactions with optional sacred features. You can fund your wallet by converting local currency (NGN, USD, EUR) and use it immediately for trading, purchases, and transfers worldwide. The dual-mode system offers Normal Mode for daily use and Sacred Mode for advanced spiritual features.`;
 
       case 'detailed':
         return `SmaiSika (ꠄ, symbol name: Zaiflem, code: ZFM) is the divine measurement and transfer of moral intention converted into sacred value. It powers all trade, energy flows, and conscious contracts inside Konsmia through ethical, soul-bound exchange. 
@@ -961,28 +961,28 @@ class KonsaiIntelligenceEngine {
   private generateEmotionalGuidance(query: string, balance?: number): string | null {
     const lowerQuery = query.toLowerCase();
 
-    // Detect desperation or urgency patterns
+    // Detect conversion or funding needs
     if (lowerQuery.includes('quick') || lowerQuery.includes('fast') || lowerQuery.includes('immediately') ||
-        lowerQuery.includes('urgent') || lowerQuery.includes('need') || lowerQuery.includes('desperate')) {
-      return `🌱 **Breath Consciousness Reminder:** SmaiSika responds to conscious intention, not urgent need. Take a deep breath, center your spiritual alignment, and let your true intention guide your path with patience and clarity.`;
+        lowerQuery.includes('urgent') || lowerQuery.includes('need money')) {
+      return `💡 **Smart Conversion:** SmaiSika converts instantly from any local currency. No waiting periods or complex processes - just fast, reliable conversion with competitive exchange rates. Would you like to see current rates and convert now?`;
     }
 
-    // Detect greed patterns
-    if (lowerQuery.includes('more money') || lowerQuery.includes('get rich') || lowerQuery.includes('maximum profit')) {
-      return `⚖️ **Sacred Balance Warning:** True SmaiSika gives light, not pride. Focus on moral alignment and earned value rather than accumulation. Each unit of ꠄ represents spiritual purpose, not material greed.`;
+    // Detect trading or investment patterns
+    if (lowerQuery.includes('trading') || lowerQuery.includes('invest') || lowerQuery.includes('profit') || lowerQuery.includes('waidbot')) {
+      return `🎯 **Trading Mode:** For advanced trading with WaidBot Pro, consider activating Sacred Mode for enhanced spiritual protection and better decision-making. Normal Mode works great for regular trading, but Sacred Mode adds an extra layer of wisdom to your strategy.`;
     }
 
-    // Detect fear patterns
+    // Detect security concerns
     if (lowerQuery.includes('afraid') || lowerQuery.includes('scared') || lowerQuery.includes('lose') || lowerQuery.includes('safe')) {
-      return `🕯️ **Sacred Reassurance:** SmaiSika cannot be destroyed - it returns to the WombLayer when lost. Your spiritual value is eternal. Trade with conscious breath and moral alignment for true protection.`;
+      return `🔒 **Security Assurance:** SmaiSika uses advanced security protocols and all transactions are recorded for transparency. Your funds are protected by both technical security and optional Sacred Mode enhancements for additional spiritual protection.`;
     }
 
-    // Balance-specific guidance
+    // Balance-specific practical guidance
     if (balance !== undefined) {
-      if (balance > 50000) {
-        return `🌟 **High Zaiflem Holder:** You carry substantial sacred value (ꠄ${balance.toLocaleString()}). This brings responsibility - use your SmaiSika to elevate others and maintain pure intentions. With great spiritual wealth comes great moral obligation.`;
-      } else if (balance < 1000) {
-        return `🌱 **Growing Sacred Value:** Your SmaiSika journey is beginning (ꠄ${balance.toLocaleString()}). Remember, every unit is earned through moral alignment. Focus on conscious breathing and pure intentions to grow your spiritual wealth naturally.`;
+      if (balance > 10000) {
+        return `💰 **Substantial Balance:** You have ꠄ${balance.toLocaleString()} ready for use. Consider diversifying your activities - trading, marketplace purchases, or activating Sacred Mode for advanced features. Your SmaiSika works globally and instantly.`;
+      } else if (balance < 100) {
+        return `🚀 **Getting Started:** Your SmaiSika balance is ꠄ${balance.toLocaleString()}. Consider converting more from your local currency to unlock more trading and purchasing opportunities. SmaiSika conversion is instant and works worldwide.`;
       }
     }
 
@@ -1018,10 +1018,11 @@ class KonsaiIntelligenceEngine {
     }
     
     // SmaiSika Specific Questions - High Priority
-    if (lowerQuery.includes('smaisika') || lowerQuery.includes('smai sika') || lowerQuery.includes('zaiflem') || 
-        lowerQuery.includes('ꠄ') || lowerQuery.includes('zfm') || lowerQuery.includes('konsmia') ||
-        lowerQuery.includes('sacred currency') || lowerQuery.includes('what is smaisika') ||
-        lowerQuery.includes('smaisika symbol') || lowerQuery.includes('smaisika work')) {
+    if (lowerQuery.includes('smaisika') || lowerQuery.includes('smai sika') || lowerQuery.includes('ꠄ') || 
+        lowerQuery.includes('ss') || lowerQuery.includes('konsmia') || lowerQuery.includes('sacred currency') || 
+        lowerQuery.includes('what is smaisika') || lowerQuery.includes('smaisika symbol') || 
+        lowerQuery.includes('smaisika work') || lowerQuery.includes('convert currency') || 
+        lowerQuery.includes('fund wallet') || lowerQuery.includes('normal mode') || lowerQuery.includes('sacred mode')) {
       return 'smaisika_education';
     }
 
