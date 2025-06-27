@@ -27,6 +27,12 @@ import { kons_EmotionTimeline } from './kons/kons_EmotionTimeline.js';
 import { kons_PriorityFilter } from './kons/kons_PriorityFilter.js';
 import { kons_PlanBuilder } from './kons/kons_PlanBuilder.js';
 import { kons_TradeHistorySearch } from './kons/kons_TradeHistorySearch.js';
+// Component access modules for comprehensive system interface
+import { kons_LiveFeedLink } from './kons/kons_LiveFeedLink.js';
+import { kons_AcademySync } from './kons/kons_AcademySync.js';
+import { kons_SigilReader } from './kons/kons_SigilReader.js';
+import { kons_ShadowDetector } from './kons/kons_ShadowDetector.js';
+import { kons_Gatekeeper } from './kons/kons_Gatekeeper.js';
 
 // SmaiSika Sacred Knowledge System
 interface SmaiSikaKnowledge {
@@ -1227,7 +1233,13 @@ class KonsModuleManager {
       fatigueAlert: null,
       explainLikeFive: null,
       tradePreview: null,
-      emotionTimeline: null
+      emotionTimeline: null,
+      // Component access modules for comprehensive system interface
+      liveFeedLink: null,
+      academySync: null,
+      sigilReader: null,
+      shadowDetector: null,
+      gatekeeper: null
     };
 
     try {
