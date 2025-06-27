@@ -1143,7 +1143,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       {activeTab === 'chat' && (
         <>
           {/* Chat Suggestions */}
-          <div className="relative z-10 flex flex-wrap gap-2 p-4 max-w-6xl mx-auto">
+          <div className="relative z-10 flex flex-wrap gap-2 p-2 w-full">
             {suggestions.map((suggestion, index) => (
               <Button
                 key={index}
@@ -1158,8 +1158,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           </div>
 
       {/* Chat Window */}
-      <div className={`relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 overflow-hidden max-w-6xl mx-auto ${
-        activeTab === 'chat' ? 'h-[calc(100vh-35px)]' : 'h-[calc(100vh-235px)]'
+      <div className={`relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden w-full ${
+        activeTab === 'chat' ? 'h-[calc(100vh-120px)]' : 'h-[calc(100vh-235px)]'
       }`}>
         <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
           {messages.length === 0 && (
@@ -1211,52 +1211,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 </Button>
               </div>
 
-              {/* Suggested Questions Section */}
-              <div className="mt-4 space-y-2">
-                <div className="text-xs text-gray-400 font-medium px-1">
-                  Suggested Questions
-                </div>
-                <div className="max-h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50">
-                  <div className="flex flex-wrap gap-2 pr-2">
-                    <button
-                      onClick={() => setCurrentMessage("Who are you?")}
-                      className="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs rounded-full border border-emerald-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-emerald-500/20 backdrop-blur-sm"
-                    >
-                      Who are you?
-                    </button>
-                    <button
-                      onClick={() => setCurrentMessage("What can you do?")}
-                      className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-xs rounded-full border border-blue-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-blue-500/20 backdrop-blur-sm"
-                    >
-                      What can you do?
-                    </button>
-                    <button
-                      onClick={() => setCurrentMessage("Tell me about ETH trading")}
-                      className="px-3 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs rounded-full border border-purple-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-purple-500/20 backdrop-blur-sm"
-                    >
-                      Tell me about ETH trading
-                    </button>
-                    <button
-                      onClick={() => setCurrentMessage("Your capabilities")}
-                      className="px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-cyan-500/20 backdrop-blur-sm"
-                    >
-                      Your capabilities
-                    </button>
-                    <button
-                      onClick={() => setCurrentMessage("Predict ETH now")}
-                      className="px-3 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-300 text-xs rounded-full border border-yellow-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-yellow-500/20 backdrop-blur-sm"
-                    >
-                      Predict ETH now
-                    </button>
-                    <button
-                      onClick={() => setCurrentMessage("Market analysis")}
-                      className="px-3 py-1.5 bg-pink-500/10 hover:bg-pink-500/20 text-pink-300 text-xs rounded-full border border-pink-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-pink-500/20 backdrop-blur-sm"
-                    >
-                      Market analysis
-                    </button>
-                  </div>
-                </div>
-              </div>
+
               
               <div className="text-sm text-gray-500">
                 {chatMode === 'auto' && (
@@ -1483,7 +1438,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       </div>
 
           {/* Chat Input */}
-          <div className="relative z-10 p-4 max-w-6xl mx-auto">
+          <div className="relative z-10 p-2 w-full">
             <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
               <Input
                 value={currentMessage}
