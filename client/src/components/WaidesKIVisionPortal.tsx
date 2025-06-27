@@ -123,6 +123,12 @@ export default function WaidesKIVisionPortal() {
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
+  
+  // Autonomous Trading State
+  const [isAutonomousActive, setIsAutonomousActive] = useState(false);
+  const [autonomousStats, setAutonomousStats] = useState<any>(null);
+  const [showAutonomousPanel, setShowAutonomousPanel] = useState(false);
+  
   const [botState, setBotState] = useState<{
     action?: 'wallet' | 'trade' | 'price' | 'open-page' | 'behavior-suggestion' | 'flow' | 'bot-setup';
     page?: string;

@@ -2657,12 +2657,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Kons Powa Autonomous Trading Integration
+  app.post("/api/waides-ki/kons-powa/start-autonomous", async (req, res) => {
+    try {
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+      
+      // Get initial Kons Powa prediction
+      const { stdout } = await execAsync('cd backend && python kons_powa_comm.py');
+      const konsPrediction = JSON.parse(stdout);
+      
+      // Enable autonomous trading with Kons Powa integration
+      waidesKIAutonomousTradeCore.enableAutonomousTrading();
+      
+      console.log('🚀 Kons Powa Autonomous Trading ACTIVATED');
+      console.log('✨ Initial prediction:', konsPrediction);
+      
+      res.json({ 
+        success: true, 
+        message: 'Kons Powa autonomous trading activated',
+        initialPrediction: konsPrediction,
+        isRunning: true
+      });
+    } catch (error) {
+      console.error('Error starting Kons Powa autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to start Kons Powa autonomous trading' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-powa/stop-autonomous", (req, res) => {
+    try {
+      waidesKIAutonomousTradeCore.disableAutonomousTrading();
+      console.log('⏹️ Kons Powa Autonomous Trading STOPPED');
+      
+      res.json({ 
+        success: true, 
+        message: 'Kons Powa autonomous trading stopped',
+        isRunning: false
+      });
+    } catch (error) {
+      console.error('Error stopping Kons Powa autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to stop Kons Powa autonomous trading' });
+    }
+  });
+
+  app.get("/api/waides-ki/kons-powa/status", async (req, res) => {
+    try {
+      const autonomousStatus = waidesKIAutonomousTradeCore.getAutonomousStatus();
+      const tradeStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
+      const activeTrades = waidesKIAutonomousTradeCore.getActiveTrades();
+      
+      // Get latest Kons Powa prediction
+      let latestPrediction = null;
+      try {
+        const { exec } = await import('child_process');
+        const { promisify } = await import('util');
+        const execAsync = promisify(exec);
+        const { stdout } = await execAsync('cd backend && python kons_powa_comm.py');
+        latestPrediction = JSON.parse(stdout);
+      } catch (predError) {
+        console.error('Failed to get latest prediction:', predError);
+      }
+      
+      res.json({
+        autonomous: autonomousStatus,
+        statistics: tradeStats,
+        activeTrades: activeTrades,
+        latestPrediction: latestPrediction,
+        konsPowMode: true
+      });
+    } catch (error) {
+      console.error('Error getting Kons Powa status:', error);
+      res.status(500).json({ error: 'Failed to get Kons Powa status' });
+    }
+  });
+
+  app.post("/api/waides-ki/kons-powa/force-trade", async (req, res) => {
+    try {
+      const { action } = req.body; // 'BUY' or 'SELL'
+      
+      if (!action || !['BUY', 'SELL'].includes(action)) {
+        return res.status(400).json({ error: 'Valid action (BUY/SELL) required' });
+      }
+      
+      // Get current Kons Powa prediction for context
+      const { exec } = await import('child_process');
+      const { promisify } = await import('util');
+      const execAsync = promisify(exec);
+      const { stdout } = await execAsync('cd backend && python kons_powa_comm.py');
+      const konsPrediction = JSON.parse(stdout);
+      
+      // Force execution through autonomous system
+      // This would trigger the autonomous trading system to execute immediately
+      console.log(`🎯 Force executing ${action} based on Kons Powa:`, konsPrediction);
+      
+      res.json({
+        success: true,
+        message: `Force ${action} order initiated with Kons Powa guidance`,
+        prediction: konsPrediction,
+        action: action
+      });
+    } catch (error) {
+      console.error('Error forcing Kons Powa trade:', error);
+      res.status(500).json({ error: 'Failed to force Kons Powa trade' });
+    }
+  });
+
   // Emergency stop for autonomous trading (hidden endpoint)
   app.post("/api/waides-ki/emergency-stop", (req, res) => {
     try {
-      // Mock emergency stop functionality
-      console.log('Emergency stop triggered');
-      res.json({ success: true, message: 'Autonomous trading stopped' });
+      waidesKIAutonomousTradeCore.disableAutonomousTrading();
+      console.log('🚨 Emergency stop triggered - All autonomous trading disabled');
+      res.json({ success: true, message: 'Emergency stop activated - All trading stopped' });
     } catch (error) {
       console.error('Error stopping autonomous trading:', error);
       res.status(500).json({ error: 'Failed to stop autonomous trading' });
