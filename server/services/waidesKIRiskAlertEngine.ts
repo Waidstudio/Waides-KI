@@ -381,8 +381,25 @@ export class WaidesKIRiskAlertEngine {
   }
 
   private async sendToSMS(endpoint: string, content: { title: string; message: string }): Promise<void> {
-    // SMS implementation would go here
-    console.log(`SMS alert sent to ${endpoint}:`, content);
+    try {
+      const { smsService } = await import('./smsService.js');
+      
+      const result = await smsService.sendSMS({
+        to: endpoint,
+        title: content.title,
+        message: content.message
+      });
+
+      if (result.success) {
+        console.log(`📱 SMS alert sent successfully to ${endpoint}: ${result.messageId}`);
+      } else {
+        console.error(`❌ SMS alert failed to ${endpoint}: ${result.error}`);
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error(`❌ SMS sending error:`, error);
+      throw error;
+    }
   }
 
   private async sendToPush(endpoint: string, content: { title: string; message: string }): Promise<void> {

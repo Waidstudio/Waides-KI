@@ -8,7 +8,8 @@ interface NotificationConfig {
   enabled: boolean;
   cooldownPeriod: number; // Minutes between similar notifications
   severity: 'low' | 'medium' | 'high' | 'critical';
-  channels: ('ui' | 'audio' | 'websocket')[];
+  channels: ('ui' | 'audio' | 'websocket' | 'sms')[];
+  smsPhoneNumber?: string; // Phone number for SMS notifications
 }
 
 interface TradingAlert {
@@ -357,6 +358,13 @@ class SmartNotify {
     // Audio notification for critical alerts
     if (this.config.channels.includes('audio') && alert.severity === 'critical') {
       this.triggerAudioAlert(alert);
+    }
+
+    // SMS notification for high and critical alerts
+    if (this.config.channels.includes('sms') && 
+        (alert.severity === 'high' || alert.severity === 'critical') &&
+        this.config.smsPhoneNumber) {
+      this.sendSMSNotification(alert);
     }
   }
 
