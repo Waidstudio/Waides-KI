@@ -45,7 +45,7 @@ import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
 import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
-
+import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 
 import NotFound from "@/pages/not-found";
 
@@ -56,6 +56,7 @@ function Router() {
     { path: "/", label: "Vision Portal" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/waidbot-engine", label: "Waidbot Engine" },
+    { path: "/market-storytelling", label: "Market Stories" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
@@ -190,6 +191,7 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/live-data" component={LiveDataPage} />
           <Route path="/waidbot-engine" component={WaidbotEnginePage} />
+          <Route path="/market-storytelling" component={InteractiveMarketTrendStorytellingEngine} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
           <Route path="/strategy-autogen" component={StrategyAutogenPage} />
