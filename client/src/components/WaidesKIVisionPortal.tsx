@@ -1073,7 +1073,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             >
               <div className="flex items-center gap-1">
                 <Eye className="w-2.5 h-2.5" />
-                <span>Vision Spirit</span>
+                <span>Konsai</span>
               </div>
             </button>
           </div>
@@ -1743,18 +1743,18 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* Vision Spirit Tab Content */}
+      {/* Konsai Tab Content */}
       {activeTab === 'konsai' && (
         <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-emerald-500/20 p-6 overflow-hidden max-w-6xl mx-auto h-[calc(100vh-35px)]">
           <div className="h-full flex flex-col">
             
-            {/* Vision Spirit Header */}
+            {/* Konsai Header */}
             <div className="text-center mb-4">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 mx-auto animate-pulse">
                 <Eye className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-                Vision Spirit
+                Konsai
               </h2>
               <p className="text-gray-400 text-sm mt-2">
                 Your AI trading companion - Ask anything, generate strategies, command trading bots
@@ -1771,7 +1771,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                     <Eye className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-emerald-300 font-semibold mb-1">Vision Spirit</div>
+                    <div className="text-emerald-300 font-semibold mb-1">Konsai</div>
                     <div className="text-gray-300 text-sm">
                       Welcome! I can help you with:
                       <ul className="list-disc list-inside mt-2 space-y-1">
@@ -1829,7 +1829,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               <div className="flex gap-3">
                 <input
                   type="text"
-                  placeholder="Ask Vision Spirit anything... (e.g., 'Generate a new strategy', 'Fund my account with USDT', 'Start WaidBot Pro')"
+                  placeholder="Ask Konsai anything... (e.g., 'Generate a new strategy', 'Fund my account with USDT', 'Start WaidBot Pro')"
                   className="flex-1 bg-gray-900/60 border border-emerald-500/30 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
                 />
                 <button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg transition-all flex items-center gap-2">
