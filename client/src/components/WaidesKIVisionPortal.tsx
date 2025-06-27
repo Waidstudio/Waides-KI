@@ -703,26 +703,28 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     }
   };
 
-  const forceExecuteTrade = async (action: 'BUY' | 'SELL') => {
+  const forceExecuteTrade = async (direction: 'BUY' | 'SELL') => {
     try {
       const response = await fetch('/api/waides-ki/kons-powa/force-trade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action })
+        body: JSON.stringify({ direction, amount: 0.01 })
       });
       const data = await response.json();
       
       if (data.success) {
-        typeMessageCosmic(`🎯 Force ${action} order initiated! Kons Powa guidance: ${data.prediction?.action || 'PROCESSING'}`, 'oracle', 90);
-        fetchAutonomousStats();
+        typeMessageCosmic(`⚡ Force ${direction} trade executed! Trade ID: ${data.tradeId}`, 'oracle', 90);
+        fetchAutonomousStats(); // Refresh stats after force trade
       } else {
-        typeMessageCosmic(`Failed to force ${action} order.`, 'error', 0);
+        typeMessageCosmic(`❌ Failed to execute force ${direction} trade: ${data.error}`, 'error', 0);
       }
     } catch (error) {
       console.error('Force trade error:', error);
-      typeMessageCosmic(`Error executing force ${action} order.`, 'error', 0);
+      typeMessageCosmic(`❌ Error executing force ${direction} trade.`, 'error', 0);
     }
   };
+
+
 
   const sendMessage = async () => {
     if (!currentMessage.trim() || isProcessing) return;
