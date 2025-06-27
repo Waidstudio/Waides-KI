@@ -39,6 +39,11 @@ import { kons_FastCommand } from './kons/kons_FastCommand.js';
 import { kons_FeelShiftDetector } from './kons/kons_FeelShiftDetector.js';
 import { kons_DecisionWebBuilder } from './kons/kons_DecisionWebBuilder.js';
 
+// Self-Evolution + System Control Modules
+import { kons_PowaActivator } from './kons/kons_PowaActivator.js';
+import { kons_AutoFixCore } from './kons/kons_AutoFixCore.js';
+import { kons_WaidBotController } from './kons/kons_WaidBotController.js';
+
 // SmaiSika Sacred Knowledge System
 interface SmaiSikaKnowledge {
   entity: string;
@@ -1248,7 +1253,11 @@ class KonsModuleManager {
       // 8-Layer Kons Module System
       fastCommand: null,
       feelShiftDetector: null,
-      decisionWebBuilder: null
+      decisionWebBuilder: null,
+      // Self-Evolution + System Control Modules
+      powaActivator: null,
+      autoFixCore: null,
+      waidBotController: null
     };
 
     try {
@@ -1331,6 +1340,19 @@ class KonsModuleManager {
       const decisionWebState = this.moduleStates.get('decisionWebBuilder') || {};
       konsResults.decisionWebBuilder = kons_DecisionWebBuilder(this.userMessage, this.marketData, decisionWebState);
       this.moduleStates.set('decisionWebBuilder', konsResults.decisionWebBuilder);
+
+      // Process Self-Evolution + System Control Modules
+      const powaActivatorState = this.moduleStates.get('powaActivator') || {};
+      konsResults.powaActivator = kons_PowaActivator(this.userMessage, this.marketData, powaActivatorState);
+      this.moduleStates.set('powaActivator', konsResults.powaActivator);
+
+      const autoFixCoreState = this.moduleStates.get('autoFixCore') || {};
+      konsResults.autoFixCore = kons_AutoFixCore(this.userMessage, this.marketData, autoFixCoreState);
+      this.moduleStates.set('autoFixCore', konsResults.autoFixCore);
+
+      const waidBotControllerState = this.moduleStates.get('waidBotController') || {};
+      konsResults.waidBotController = kons_WaidBotController(this.userMessage, this.marketData, waidBotControllerState);
+      this.moduleStates.set('waidBotController', konsResults.waidBotController);
 
       // Process additional modules (placeholder for future implementation)
       // konsResults.tradeSense = kons_TradeSense(this.userMessage, this.marketData, {});
