@@ -259,18 +259,49 @@ export default function Dashboard() {
               <>
                 {/* Tabs Container */}
                 <Tabs defaultValue="realtime" className="w-full">
-                  <TabsList className="grid w-full grid-cols-6 bg-slate-800 border-slate-700">
-                    <TabsTrigger value="realtime" className="data-[state=active]:bg-slate-700">Divine Trading</TabsTrigger>
-                    <TabsTrigger value="brain" className="data-[state=active]:bg-slate-700">Trading Brain</TabsTrigger>
-                    <TabsTrigger value="schedule" className="data-[state=active]:bg-slate-700">Weekly Schedule</TabsTrigger>
-                    <TabsTrigger value="charts" className="data-[state=active]:bg-slate-700">Real-time Charts</TabsTrigger>
-                    <TabsTrigger value="waidbot" className="data-[state=active]:bg-slate-700">
-                      <Link href="/waidbot" className="w-full">WaidBot</Link>
-                    </TabsTrigger>
-                    <TabsTrigger value="pro" className="data-[state=active]:bg-slate-700">
-                      <Link href="/waidbot-pro" className="w-full">WaidBot Pro</Link>
-                    </TabsTrigger>
-                  </TabsList>
+                  {/* Responsive Tab Navigation */}
+                  <div className="bg-slate-800 border border-slate-700 rounded-lg p-1 mb-6">
+                    <ScrollArea className="w-full">
+                      <TabsList className="flex w-max min-w-full bg-transparent gap-1 p-0 h-auto">
+                        <TabsTrigger 
+                          value="realtime" 
+                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+                        >
+                          Divine Trading
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="brain" 
+                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+                        >
+                          Trading Brain
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="schedule" 
+                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+                        >
+                          Weekly Schedule
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="charts" 
+                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+                        >
+                          Real-time Charts
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="waidbot" 
+                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+                        >
+                          <Link href="/waidbot" className="w-full">WaidBot</Link>
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="pro" 
+                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+                        >
+                          <Link href="/waidbot-pro" className="w-full">WaidBot Pro</Link>
+                        </TabsTrigger>
+                      </TabsList>
+                    </ScrollArea>
+                  </div>
 
                   <TabsContent value="realtime" className="space-y-6">
                     {/* ETH Price & Signal Overview */}
