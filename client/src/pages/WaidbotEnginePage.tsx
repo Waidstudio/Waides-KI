@@ -266,8 +266,13 @@ export default function WaidbotEnginePage() {
                   Start WaidBot
                 </Button>
               )}
-              <Button variant="outline" className="border-green-500/30 text-green-400 hover:bg-green-500/10">
-                <Settings className="w-4 h-4" />
+              <Button 
+                variant="outline" 
+                className="border-green-500/30 text-green-400 hover:bg-green-500/10"
+                onClick={() => window.location.href = '/waidbot'}
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Open WaidBot
               </Button>
             </div>
           </CardContent>
@@ -399,8 +404,13 @@ export default function WaidbotEnginePage() {
                   Start WaidBot Pro
                 </Button>
               )}
-              <Button variant="outline" className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10">
-                <Settings className="w-4 h-4" />
+              <Button 
+                variant="outline" 
+                className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                onClick={() => window.location.href = '/waidbot-pro'}
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                Open WaidBot Pro
               </Button>
             </div>
           </CardContent>
@@ -532,8 +542,13 @@ export default function WaidbotEnginePage() {
                   Start Autonomous
                 </Button>
               )}
-              <Button variant="outline" className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10">
-                <Settings className="w-4 h-4" />
+              <Button 
+                variant="outline" 
+                className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10"
+                onClick={() => window.location.href = '/autonomous-wealth'}
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Open Autonomous
               </Button>
             </div>
           </CardContent>

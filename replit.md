@@ -700,6 +700,8 @@ Changelog:
   - Updated all navigation routes and imports to use new comprehensive three-bot engine system
   - New Waidbot Engine features three distinct trading bots: WaidBot (ETH uptrend), WaidBot Pro (ETH3L/ETH3S), Autonomous Trader (24/7)
   - System now provides unified multi-bot management interface with individual performance metrics and controls
+  - Added navigation buttons for each bot: WaidBot→/waidbot, WaidBot Pro→/waidbot-pro, Autonomous→/autonomous-wealth
+  - Each bot card now includes dedicated "Open" button for accessing individual bot interfaces
 - June 27, 2025. Enhanced Konsai Response Generation with Detailed Structured Format
   - Implemented comprehensive detailed response format with headers (1, 2) and extensive body content for better reader understanding
   - Enhanced all 8 suggestion button responses with multi-section analysis including overview, technical details, recommendations, and context
