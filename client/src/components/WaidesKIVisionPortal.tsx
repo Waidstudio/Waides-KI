@@ -2199,8 +2199,8 @@ function LocalWalletTab() {
         </CardContent>
       </Card>
 
-      {/* System Components Footer - Always visible at bottom */}
-      <div className="mt-6 mb-4 mx-4">
+      {/* System Components Footer - Hidden to free up space for Heart of Waides KI */}
+      {/* <div className="mt-6 mb-4 mx-4"> */}
         <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-center text-purple-300 text-sm">System Components</CardTitle>
@@ -2453,7 +2453,7 @@ function LocalWalletTab() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      {/* </div> */}
     </div>
   );
 }
