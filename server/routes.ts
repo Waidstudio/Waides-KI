@@ -18731,6 +18731,67 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
+  // Save user settings for Waides KI configuration
+  app.post('/api/waides-ki/settings', async (req, res) => {
+    try {
+      const settings = req.body;
+      
+      // Store settings in memory for now (can be enhanced with database persistence)
+      global.userSettings = settings;
+      
+      res.json({
+        success: true,
+        message: 'Settings saved successfully',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Settings save error:', error);
+      res.status(500).json({ error: 'Failed to save settings' });
+    }
+  });
+
+  // Load user settings for Waides KI configuration
+  app.get('/api/waides-ki/settings', (req, res) => {
+    try {
+      const settings = global.userSettings || {
+        riskTolerance: 50,
+        maxPositionSize: 25,
+        stopLossPercentage: 2,
+        takeProfitRatio: 2.5,
+        tradingHours: { enabled: true, startHour: 6, endHour: 22, timezone: 'UTC' },
+        aiPersonality: 'balanced',
+        spiritualMode: true,
+        konsaiVoiceEnabled: true,
+        divineGuidanceLevel: 75,
+        theme: 'dark',
+        animationsEnabled: true,
+        soundEffects: true,
+        voiceAlerts: false,
+        displayMode: 'detailed',
+        quantumProcessing: true,
+        temporalAnalysis: true,
+        cosmicAlignment: true,
+        biometricSync: false,
+        humanityService: true,
+        alertChannels: { email: true, sms: false, push: true, voice: false },
+        alertThresholds: { profitAlert: 5, lossAlert: -3, volatilityAlert: 15 },
+        language: 'en-US',
+        currency: 'USD',
+        dateFormat: 'MM/DD/YYYY',
+        timeFormat: '24h',
+        twoFactorAuth: false,
+        biometricAuth: false,
+        sessionTimeout: 60,
+        encryptionLevel: 'military'
+      };
+
+      res.json(settings);
+    } catch (error) {
+      console.error('Settings load error:', error);
+      res.status(500).json({ error: 'Failed to load settings' });
+    }
+  });
+
   // Manual trade execution through core engine
   app.post('/api/waides-ki/core/execute-trade', async (req, res) => {
     try {
