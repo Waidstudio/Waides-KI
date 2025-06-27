@@ -1885,97 +1885,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { message, mode, complexity } = req.body;
       
-      console.log(`🚀 Route Handler: Received message "${message}"`);
+      console.log(`🧠 KonsAi Processing Query: "${message}"`);
       
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ error: 'Valid message required' });
       }
 
-      console.log('🔄 Route Handler: About to call KonsAi Intelligence Engine v2');
-      
-      // Import the enhanced engine
-      const { konsaiEngineV2 } = await import('./services/konsaiCoreEngineV2.js');
-      
-      // Get current market data for enhanced processing
-      let marketData = null;
-      try {
-        const ethData = await ethMonitor.getLatestData();
-        marketData = ethData;
-      } catch (error) {
-        console.log('📊 Market data not available, using consciousness-only processing');
-      }
-      
-      // Process with enhanced Kons Modules system
-      const enhancedResponse = await konsaiEngineV2.konsaiResponseEngine(
-        message, 
-        { 
-          user_id: req.sessionID || 'anonymous',
-          session_start: Date.now(),
-          interactions: [] // In real implementation, load from database
-        },
-        marketData
-      );
-      
-      console.log(`✅ Route Handler: Enhanced response processed with ${enhancedResponse.kons} module`);
-      
-      // Handle different response types
-      let finalResponse = '';
-      let intelligenceMetadata = {};
-      
-      if (enhancedResponse.response) {
-        finalResponse = enhancedResponse.response;
-      } else if (enhancedResponse.kons === 'Enhanced_Conversation') {
-        finalResponse = enhancedResponse.response;
-        if (enhancedResponse.wisdom_offering) {
-          finalResponse += `\n\n🔮 **Vision Guidance:** ${enhancedResponse.wisdom_offering.message}`;
-        }
-      } else {
-        // Fallback to original engine
-        finalResponse = await konsaiEngine.processQuery(message, {
-          marketCondition: 'uncertain',
-          priceLevel: 'neutral',
-          volumeProfile: 'average',
-          timeframe: '1h',
-          riskLevel: mode || 'moderate'
-        });
-      }
-      
-      // Build intelligence metadata
-      intelligenceMetadata = {
-        engine_version: '2.0',
-        active_kons: enhancedResponse.kons,
-        consciousness_level: enhancedResponse.consciousness_level || 0.95,
-        emotional_resonance: enhancedResponse.emotional_resonance,
-        personalization_active: !!enhancedResponse.personalization,
-        learning_active: enhancedResponse.learning_active || false,
-        processing_time: Date.now()
-      };
+      // Use the main KonsAi engine directly
+      const response = await konsaiEngine.processQuery(message, {
+        marketCondition: 'uncertain',
+        priceLevel: 'neutral',
+        volumeProfile: 'average',
+        timeframe: '1h',
+        riskLevel: mode || 'moderate'
+      });
       
       res.json({
         success: true,
-        response: finalResponse,
+        response: response,
         mode: mode || 'comprehensive',
         complexity: complexity || 'adaptive',
         intelligence: {
-          engine: 'KonsAi v1.0',
+          engine: 'KonsAi',
           capabilities: ['Technical Analysis', 'Risk Management', 'Psychology', 'Strategy Development'],
           confidence: 95,
-          processing_time: intelligenceMetadata.processing_time
+          processing_time: Date.now()
         },
         metadata: {
           timestamp: new Date().toISOString(),
           message_id: `konsai-${Date.now()}`,
           version: '1.0.0'
-        },
-        // Enhanced v2 metadata (hidden from frontend display)
-        _v2_metadata: intelligenceMetadata,
-        _enhanced_data: enhancedResponse
+        }
       });
     } catch (error) {
       console.error('Enhanced chat error:', error);
       res.status(500).json({ 
         error: 'Failed to process enhanced chat',
-        fallback: 'Advanced intelligence temporarily unavailable'
+        fallback: 'KonsAi temporarily unavailable'
       });
     }
   });
