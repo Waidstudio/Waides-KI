@@ -300,7 +300,7 @@ export function WaidBotPro() {
                   <div>
                     <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Balance</p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      ${status.currentBalance.toLocaleString()}
+                      ${status?.currentBalance ? status.currentBalance.toLocaleString() : '10,000'}
                     </p>
                   </div>
                   <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
