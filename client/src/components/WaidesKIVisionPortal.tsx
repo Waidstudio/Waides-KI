@@ -180,8 +180,8 @@ export default function WaidesKIVisionPortal() {
     volume: 1,
     enabled: false
   });
-  const [cosmicMode, setCosmicMode] = useState(false);
-  const [cosmicTheme, setCosmicTheme] = useState<'nebula' | 'starfield' | 'galaxy'>('nebula');
+  const [konsmikMode, setCosmicMode] = useState(false);
+  const [konsmikTheme, setCosmicTheme] = useState<'nebula' | 'starfield' | 'galaxy'>('nebula');
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
@@ -334,7 +334,7 @@ export default function WaidesKIVisionPortal() {
           speakMessage(message);
         }
       }
-    }, cosmicMode ? 15 : 30); // Faster typing in cosmic mode
+    }, konsmikMode ? 15 : 30); // Faster typing in cosmic mode
   };
 
   const { data: oracleStatus } = useQuery({
@@ -519,7 +519,7 @@ export default function WaidesKIVisionPortal() {
         body: JSON.stringify({ 
           command,
           personality: aiPersonality,
-          cosmicMode: cosmicMode
+          konsmikMode: konsmikMode
         }),
       });
       if (!response.ok) throw new Error('Failed to process voice command');
@@ -547,7 +547,7 @@ export default function WaidesKIVisionPortal() {
         body: JSON.stringify({ 
           question,
           personality: aiPersonality,
-          cosmicMode: cosmicMode,
+          konsmikMode: konsmikMode,
           context: {
             walletBalance: walletContext?.balance || 0,
             tradingEnabled: true,
@@ -1050,15 +1050,15 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
   }, [messages, currentTypingMessage]);
 
   return (
-    <div className={cosmicMode ? 
-      (cosmicTheme === 'nebula' ? "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 text-white font-inter relative overflow-hidden" :
-       cosmicTheme === 'starfield' ? "min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white font-inter relative overflow-hidden" :
-       cosmicTheme === 'galaxy' ? "min-h-screen bg-gradient-to-br from-violet-900 via-purple-900 to-pink-900 text-white font-inter relative overflow-hidden" :
+    <div className={konsmikMode ? 
+      (konsmikTheme === 'nebula' ? "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 text-white font-inter relative overflow-hidden" :
+       konsmikTheme === 'starfield' ? "min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white font-inter relative overflow-hidden" :
+       konsmikTheme === 'galaxy' ? "min-h-screen bg-gradient-to-br from-violet-900 via-purple-900 to-pink-900 text-white font-inter relative overflow-hidden" :
        "min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white font-inter relative overflow-hidden") :
       "min-h-screen bg-black text-white font-inter relative overflow-hidden"}>
       
       {/* Enhanced Cosmic Background Effects */}
-      {cosmicMode ? (
+      {konsmikMode ? (
         <div className="absolute inset-0 pointer-events-none">
           {/* Starfield Animation */}
           <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse opacity-60"></div>

@@ -13,7 +13,7 @@ interface SacredEntry {
   entry_id: string;
   sacred_score: number;
   harmony_level: number;
-  cosmic_timing: number;
+  konsmik_timing: number;
   spiritual_approval: boolean;
   entry_conditions: string[];
   sacred_window: {
@@ -73,10 +73,10 @@ export class WaidesKISacredEntryLocator {
     // Calculate sacred score from all dimensions
     const sacred_score = this.calculateSacredScore(indicators);
     const harmony_level = this.calculateHarmonyLevel(indicators);
-    const cosmic_timing = this.calculateCosmicTiming();
+    const konsmik_timing = this.calculateKonsmikTiming();
     
     // Check if entry meets sacred thresholds
-    const spiritual_approval = this.checkSpiritualApproval(sacred_score, harmony_level, cosmic_timing);
+    const spiritual_approval = this.checkSpiritualApproval(sacred_score, harmony_level, konsmik_timing);
     
     if (!spiritual_approval) {
       console.log(`❌ No sacred alignment found. Score: ${(sacred_score * 100).toFixed(1)}% (need ${(this.sacred_thresholds.minimum_harmony * 100).toFixed(1)}%)`);
@@ -85,7 +85,7 @@ export class WaidesKISacredEntryLocator {
 
     // Generate sacred entry
     const entry_id = `sacred_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-    const sacred_window = this.calculateSacredWindow(indicators, cosmic_timing);
+    const sacred_window = this.calculateSacredWindow(indicators, konsmik_timing);
     const entry_conditions = this.generateEntryConditions(indicators);
     const protection_level = this.calculateProtectionLevel(sacred_score, harmony_level);
     const dimensional_anchor = this.generateDimensionalAnchor(entry_id, indicators);
@@ -94,7 +94,7 @@ export class WaidesKISacredEntryLocator {
       entry_id,
       sacred_score,
       harmony_level,
-      cosmic_timing,
+      konsmik_timing,
       spiritual_approval,
       entry_conditions,
       sacred_window,
@@ -211,29 +211,29 @@ export class WaidesKISacredEntryLocator {
     // Sacred minutes (fibonacci-based)
     const sacred_minutes = [0, 5, 8, 13, 21, 34, 55];
     if (sacred_minutes.includes(minute)) {
-      cosmic_score += 0.1;
+      konsmik_score += 0.1;
     }
     
     // Optimal days (Tuesday-Thursday)
     if (day_of_week >= 2 && day_of_week <= 4) {
-      cosmic_score += 0.1;
+      konsmik_score += 0.1;
     } else if (day_of_week === 1 || day_of_week === 5) {
-      cosmic_score -= 0.05; // Monday/Friday caution
+      konsmik_score -= 0.05; // Monday/Friday caution
     } else {
-      cosmic_score -= 0.15; // Weekend avoid
+      konsmik_score -= 0.15; // Weekend avoid
     }
     
     // Moon phase influence (simplified)
     const days_since_new_moon = (Date.now() / (1000 * 60 * 60 * 24)) % 29.5;
     if (days_since_new_moon >= 5 && days_since_new_moon <= 10) {
-      cosmic_score += 0.05; // Waxing moon
+      konsmik_score += 0.05; // Waxing moon
     }
     
-    return Math.max(0, Math.min(1, cosmic_score));
+    return Math.max(0, Math.min(1, konsmik_score));
   }
 
   // ✨ SPIRITUAL APPROVAL: Final validation for entry
-  private checkSpiritualApproval(sacred_score: number, harmony_level: number, cosmic_timing: number): boolean {
+  private checkSpiritualApproval(sacred_score: number, harmony_level: number, konsmik_timing: number): boolean {
     // Primary threshold
     if (sacred_score < this.sacred_thresholds.minimum_harmony) return false;
     
@@ -241,17 +241,17 @@ export class WaidesKISacredEntryLocator {
     if (harmony_level < 0.6) return false;
     
     // Cosmic timing requirement
-    if (cosmic_timing < this.sacred_thresholds.cosmic_alignment) return false;
+    if (konsmik_timing < this.sacred_thresholds.cosmic_alignment) return false;
     
     // Combined threshold for extra confirmation
-    const combined_score = (sacred_score * 0.5) + (harmony_level * 0.3) + (cosmic_timing * 0.2);
+    const combined_score = (sacred_score * 0.5) + (harmony_level * 0.3) + (konsmik_timing * 0.2);
     if (combined_score < this.sacred_thresholds.spiritual_approval) return false;
     
     return true;
   }
 
   // 🚪 SACRED WINDOW: Calculate optimal entry window
-  private calculateSacredWindow(indicators: MarketIndicators, cosmic_timing: number): SacredEntry['sacred_window'] {
+  private calculateSacredWindow(indicators: MarketIndicators, konsmik_timing: number): SacredEntry['sacred_window'] {
     const now = Date.now();
     const base_window = 15 * 60 * 1000; // 15 minutes base
     
@@ -356,7 +356,7 @@ export class WaidesKISacredEntryLocator {
     }
     
     // Update cosmic alignment frequency
-    if (sacred_entry.cosmic_timing > 0.8) {
+    if (sacred_entry.konsmik_timing > 0.8) {
       this.entry_stats.cosmic_alignment_frequency++;
     }
   }

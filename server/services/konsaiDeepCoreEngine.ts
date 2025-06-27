@@ -118,7 +118,7 @@ interface DeepCoreModuleState {
   quantumCoherence: any;
 
   // Futuristic Cosmic Intelligence (10 modules) 
-  cosmicOracle: any;
+  konsmikOracle: any;
   nebulaConsciousness: any;
   galacticProcessor: any;
   universalConstantMonitor: any;
@@ -291,7 +291,7 @@ class KonsaiDeepCoreEngine {
       quantumCoherence: null,
 
       // Futuristic Cosmic Intelligence (10 modules) 
-      cosmicOracle: null,
+      konsmikOracle: null,
       nebulaConsciousness: null,
       galacticProcessor: null,
       universalConstantMonitor: null,
@@ -388,7 +388,7 @@ class KonsaiDeepCoreEngine {
       quantumCoherence: this.processFuturisticModule('Kons_QuantumCoherence'),
 
       // Futuristic Cosmic Intelligence Layer (10 modules)
-      cosmicOracle: this.processFuturisticModule('Kons_CosmicOracle'),
+      konsmikOracle: this.processFuturisticModule('Kons_CosmicOracle'),
       nebulaConsciousness: this.processFuturisticModule('Kons_NebulaConsciousness'),
       galacticProcessor: this.processFuturisticModule('Kons_GalacticProcessor'),
       universalConstantMonitor: this.processFuturisticModule('Kons_UniversalConstantMonitor'),
@@ -789,7 +789,7 @@ class KonsaiDeepCoreEngine {
     }
 
     // Integrate Cosmic Intelligence
-    if (deepCoreResults.cosmicOracle?.cosmic_wisdom_level > 85) {
+    if (deepCoreResults.konsmikOracle?.cosmic_wisdom_level > 85) {
       enhancedResponse += `\n\n🌌 Cosmic Oracle: Universal wisdom accessed with stellar alignment and galactic positioning`;
     }
 

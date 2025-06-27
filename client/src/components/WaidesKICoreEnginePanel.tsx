@@ -326,7 +326,7 @@ export function WaidesKICoreEnginePanel() {
             <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
             <TabsTrigger value="quantum" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Quantum AI</TabsTrigger>
             <TabsTrigger value="neural" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Neural Network</TabsTrigger>
-            <TabsTrigger value="cosmic" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Cosmic Link</TabsTrigger>
+            <TabsTrigger value="cosmic" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
             <TabsTrigger value="biometric" className="data-[state=active]:bg-orange-600 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
             <TabsTrigger value="temporal" className="data-[state=active]:bg-indigo-600 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
             <TabsTrigger value="humanity" className="data-[state=active]:bg-green-600 whitespace-nowrap px-4 py-2">Humanity Service</TabsTrigger>
@@ -527,12 +527,12 @@ export function WaidesKICoreEnginePanel() {
               </CardContent>
             </Card>
 
-            {/* Cosmic Connection */}
+            {/* Konsmik Connection */}
             <Card className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-purple-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Satellite className="w-5 h-5 text-purple-400" />
-                  Cosmic Communication
+                  Konsmik Communication
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -554,7 +554,7 @@ export function WaidesKICoreEnginePanel() {
                 </div>
                 <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Channel Cosmic Energy
+                  Channel Konsmik Energy
                 </Button>
               </CardContent>
             </Card>
@@ -887,17 +887,17 @@ export function WaidesKICoreEnginePanel() {
           </div>
         </TabsContent>
 
-        {/* Cosmic Link Tab - Universal Connection */}
+        {/* Konsmik Link Tab - Universal Connection */}
         <TabsContent value="cosmic" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Cosmic Communication Array */}
+            {/* Konsmik Communication Array */}
             <Card className="bg-gradient-to-br from-pink-900/30 to-rose-900/30 border-pink-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <div className="p-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500">
                     <Satellite className="w-5 h-5 text-white animate-pulse" />
                   </div>
-                  Cosmic Array
+                  Konsmik Array
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -916,7 +916,7 @@ export function WaidesKICoreEnginePanel() {
                   </div>
                   <div className="text-xs text-gray-400 space-y-1">
                     <div>📡 Connected to: Andromeda Markets</div>
-                    <div>🌌 Receiving: Cosmic Market Patterns</div>
+                    <div>🌌 Receiving: Konsmik Market Patterns</div>
                     <div>⭐ Status: Universal Harmony Achieved</div>
                   </div>
                 </div>
@@ -937,7 +937,7 @@ export function WaidesKICoreEnginePanel() {
                 <div className="space-y-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-amber-400 animate-pulse">DIVINE INSIGHT</div>
-                    <div className="text-sm text-gray-400">Cosmic Market Wisdom</div>
+                    <div className="text-sm text-gray-400">Konsmik Market Wisdom</div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
@@ -1888,7 +1888,7 @@ export function WaidesKICoreEnginePanel() {
                         <SelectContent>
                           <SelectItem value="dark">Dark - Classic dark theme</SelectItem>
                           <SelectItem value="light">Light - Clean light interface</SelectItem>
-                          <SelectItem value="cosmic">Cosmic - Mystical space theme</SelectItem>
+                          <SelectItem value="cosmic">Konsmik - Mystical space theme</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -1966,7 +1966,7 @@ export function WaidesKICoreEnginePanel() {
                         checked={settings.cosmicAlignment}
                         onCheckedChange={(checked) => handleSettingChange('cosmicAlignment', checked)}
                       />
-                      <span className="text-sm">Cosmic Market Alignment</span>
+                      <span className="text-sm">Konsmik Market Alignment</span>
                     </div>
                   </div>
                   <div className="space-y-3">
