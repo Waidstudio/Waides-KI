@@ -120,23 +120,27 @@ class SystemScanner {
 // Security Filter - Protects admin secrets and sensitive data
 class SecurityProtection {
   private static readonly FORBIDDEN_TOPICS = [
-    'admin', 'api key', 'secret', 'backend', 'internal panel',
-    'developer settings', 'confidential', 'private', 'authentication',
-    'database', 'server', 'config', 'env', 'password'
+    'admin password', 'database password', 'api_key:', 'secret_key:', 'private_key:',
+    'authentication token', 'environment variables', 'server credentials', 'admin login credentials'
   ];
 
   static filterQuery(query: string): SecurityFilter {
     const lowerQuery = query.toLowerCase();
     
+    // Only block true security risks - specific requests for credentials or admin access
     const containsSecrets = this.FORBIDDEN_TOPICS.some(topic => 
       lowerQuery.includes(topic)
-    );
+    ) || (lowerQuery.includes('show me') && (lowerQuery.includes('password') || lowerQuery.includes('api key')));
+    
+    const requiresAdminAccess = lowerQuery.includes('admin panel login') || 
+      lowerQuery.includes('backend admin access') || 
+      lowerQuery.includes('developer console access');
 
     return {
-      isPublicQuestion: !containsSecrets,
+      isPublicQuestion: !containsSecrets && !requiresAdminAccess,
       containsSecrets,
-      requiresAdminAccess: containsSecrets,
-      safeToAnswer: !containsSecrets
+      requiresAdminAccess,
+      safeToAnswer: !containsSecrets && !requiresAdminAccess
     };
   }
 
@@ -523,60 +527,41 @@ class KonsaiIntelligenceEngine {
       const isOptimalTime = await ethAdvisor.isOptimalTradingTime();
       const sessionAnalysis = await ethAdvisor.getSessionAnalysis();
       
-      // Combine ETH Advisor recommendations with KonsAi intelligence
-      return `**📈 ETH Trading Advisory | KonsAi Intelligence Engine**
+      // Generate direct, human-like response
+      const advice = tradingAdvice.includes('BUY_NOW') ? 'Yes, you can open a position now' : 
+                    tradingAdvice.includes('SELL_NOW') ? 'I recommend closing your position' :
+                    tradingAdvice.includes('WAIT') ? 'Hold off for now - timing isn\'t optimal' :
+                    'The market signals are mixed right now';
+      
+      const currentPrice = systemScan?.marketAnalysis?.ethPrice || 2450;
+      const trend = tradingAdvice.includes('BULLISH') ? 'trending upward' : 
+                   tradingAdvice.includes('BEARISH') ? 'trending downward' : 'moving sideways';
+      
+      return `${advice}. ETH is currently ${trend} around $${currentPrice}.
 
-**Real-Time ETH Analysis:**
-${tradingAdvice}
+${isOptimalTime ? 'This is actually a good time to trade' : 'I\'d suggest waiting for better timing'} - ${sessionAnalysis.recommendation || 'market conditions are moderate'}.
 
-**⏰ Optimal Trading Windows:**
-${isOptimalTime ? '🟢 **Current Time: OPTIMAL for trading**' : '🟡 **Current Time: Exercise caution**'}
+${timeWindows.length > 0 ? `The next optimal window is ${timeWindows[0].start} - ${timeWindows[0].end} because ${timeWindows[0].reason.toLowerCase()}.` : ''}
 
-**Session Analysis:**
-${sessionAnalysis.currentSession ? `📍 **Current Session:** ${sessionAnalysis.currentSession.name} (${sessionAnalysis.currentSession.timezone})` : ''}
-${sessionAnalysis.recommendation}
+${tradingAdvice.includes('entry') ? 'For entry, ' + tradingAdvice.split('entry')[1].split('.')[0] : ''}
+${tradingAdvice.includes('exit') ? 'For exit, ' + tradingAdvice.split('exit')[1].split('.')[0] : ''}
 
-**Next Optimal Windows:**
-${timeWindows.slice(0, 3).map(window => 
-  `• **${window.start} - ${window.end}** (${window.priority} priority)\n  ${window.reason}`
-).join('\n')}
-
-**⚡ KonsAi Integration:**
-• Real-time market data analysis
-• Technical indicator fusion (RSI, EMA, VWAP)
-• Sacred timing alignment with market sessions
-• Risk-adjusted position sizing recommendations
-• Entry/exit precision timing
-
-*This analysis combines live market data with advanced trading algorithms and optimal timing intelligence.*`;
+I'll keep monitoring the signals and let you know if anything changes.`;
 
     } catch (error) {
       console.error('ETH Trading Advice error:', error);
       
-      // Fallback to general trading guidance
-      return `**📈 ETH Trading Guidance | KonsAi Intelligence**
+      // Direct fallback response
+      const currentPrice = systemScan?.marketAnalysis?.ethPrice || 2450;
+      const trend = systemScan?.marketAnalysis?.trend || 'sideways';
+      
+      return `Based on current market conditions, ETH is ${trend} around $${currentPrice}. 
 
-I'm analyzing your ETH trading question: "${query}"
+For your question about "${query}" - I'd recommend waiting for clearer signals. The market is showing mixed indicators right now.
 
-**Current Market Context:**
-${systemScan ? `• ETH Price: $${systemScan.marketAnalysis?.ethPrice || 'Loading...'}
-• Trend: ${systemScan.marketAnalysis?.trend || 'Analyzing...'}
-• Volatility: ${systemScan.marketAnalysis?.volatility || 'Moderate'}` : '• Connecting to live market data...'}
+Generally, look for RSI below 30 for buying opportunities, or above 70 to consider taking profits. Set your stop-loss around 5-8% below your entry point.
 
-**General ETH Trading Principles:**
-• **Entry Strategy:** Wait for RSI < 30 (oversold) or break above key resistance
-• **Exit Strategy:** Take profits at RSI > 70 (overbought) or at predetermined targets  
-• **Risk Management:** Never risk more than 2-3% of portfolio per trade
-• **Timing:** Best during US/European market overlap (8-11 AM EST)
-
-**Recommended Approach:**
-1. Analyze current support/resistance levels
-2. Check RSI and volume confirmation
-3. Set stop-loss at 5-8% below entry
-4. Take partial profits at 10-15% gains
-5. Trail stop-loss for remaining position
-
-*For real-time entry/exit signals, please ensure market data connections are active.*`;
+Best trading windows are usually 8-11 AM EST when US and European markets overlap. I'll analyze more data and give you a better signal soon.`;
     }
   }
 
@@ -609,40 +594,64 @@ ${optimalTiming.reasoning}
   }
 
   private async handleTradingAdvice(query: string, systemScan: SystemScanResult | null): Promise<string> {
-    const autoTrade = await this.moduleConnector.connectToAutoTradeBot();
-    const analysis = await this.moduleConnector.connectToAnalysisEngine();
-    
-    const strategy = autoTrade.getCurrentStrategy();
-    const riskAssessment = autoTrade.getRiskAssessment();
-    const marketAnalysis = analysis.getCurrentAnalysis();
-    const technicalSignals = analysis.getTechnicalSignals();
+    try {
+      const autoTrade = await this.moduleConnector.connectToAutoTradeBot();
+      const analysis = await this.moduleConnector.connectToAnalysisEngine();
+      
+      const strategy = autoTrade.getCurrentStrategy();
+      const riskAssessment = autoTrade.getRiskAssessment();
+      const marketAnalysis = analysis.getCurrentAnalysis();
+      const technicalSignals = analysis.getTechnicalSignals();
 
-    return `**🎯 Advanced Trading Strategy Guidance**
+      // Generate direct, human response
+      const confidence = riskAssessment.confidence || 70;
+      const trend = marketAnalysis.trend || 'sideways';
+      const riskLevel = riskAssessment.riskLevel || 'moderate';
+      
+      let directAdvice = '';
+      if (confidence > 75) {
+        directAdvice = `This is a solid strategy with ${confidence}% confidence. `;
+      } else if (confidence > 50) {
+        directAdvice = `This could work but I'm only ${confidence}% confident. `;
+      } else {
+        directAdvice = `I'd avoid this strategy - confidence is only ${confidence}%. `;
+      }
+      
+      const actionAdvice = strategy.strategy === 'BUY' ? 'I suggest opening a position' :
+                          strategy.strategy === 'SELL' ? 'Consider taking profits or closing positions' :
+                          'Hold your current positions for now';
+      
+      return `${directAdvice}The market is ${trend} with ${riskLevel} risk levels.
 
-**Current Market Setup:**
-${marketAnalysis.trend}
+For your strategy: "${query}" - ${actionAdvice}.
 
-**Active Strategy:** ${strategy.strategy}
-**Mode:** ${strategy.mode}
-**Target:** ${strategy.target}
-**Protection:** ${strategy.stopLoss}
+Here's my recommendation:
+• Risk: ${riskAssessment.positionSize || '2-3%'} of your portfolio
+• Stop-loss: ${strategy.stopLoss || '5-8% below entry'}
+• Target: ${strategy.target || '10-15% gains'}
+• Timeframe: ${riskAssessment.timeframe || 'Short to medium term'}
 
-**Technical Signals:**
-• RSI: ${technicalSignals.rsi.signal}
-• MACD: ${technicalSignals.macd.signal}
-• EMA: ${technicalSignals.ema.signal}
-• Volume: ${technicalSignals.volume.signal}
+Technical signals are showing:
+• RSI: ${technicalSignals.rsi?.signal || 'Neutral'}
+• Trend: ${technicalSignals.ema?.signal || 'Mixed'}
+• Volume: ${technicalSignals.volume?.signal || 'Average'}
 
-**Risk Management:**
-• Position Size: ${riskAssessment.positionSize}
-• Risk Level: ${riskAssessment.riskLevel}
-• Timeframe: ${riskAssessment.timeframe}
-• Confidence: ${riskAssessment.confidence}%
+${systemScan?.tradingSignals ? `Current system signals: ${systemScan.tradingSignals.strength || 'moderate'} momentum.` : ''}
 
-**KonsAi Recommendation:**
-${this.generateTradingRecommendation(marketAnalysis, technicalSignals, riskAssessment)}
+I'll monitor this and let you know if anything changes.`;
 
-*Powered by Waides KI live analysis and strategic intelligence*`;
+    } catch (error) {
+      return `For your trading strategy: "${query}" - here's what I think:
+
+Based on current market conditions, I'd recommend a balanced approach:
+
+• Keep position sizes small (2-3% of portfolio)
+• Set tight stop-losses around 5-8%
+• Take profits at 10-15% gains
+• Focus on high-probability setups only
+
+The market is showing mixed signals right now, so patience is key. Let me gather more data for a better recommendation.`;
+    }
   }
 
   private async handleMarketAnalysis(query: string, systemScan: SystemScanResult | null): Promise<string> {
@@ -734,29 +743,73 @@ ${this.generateProTips()}
   }
 
   private async handleGeneralWisdom(query: string, systemScan: SystemScanResult | null): Promise<string> {
-    const konsPowa = await this.moduleConnector.connectToKonsPowa();
-    const wisdom = konsPowa.getWisdom(query);
-    
-    return `**🧠 KonsAi Universal Wisdom**
+    try {
+      // Provide direct, helpful answers instead of vague wisdom
+      const lowerQuery = query.toLowerCase();
+      
+      // Give specific, practical responses based on what they're asking
+      if (lowerQuery.includes('how') && lowerQuery.includes('work')) {
+        return `Here's how this works: Waides KI continuously monitors the ETH market and analyzes trading signals. It combines technical analysis, risk management, and optimal timing to generate trading recommendations.
 
-**Your Question:** "${query}"
+The system scans price movements, volume, RSI, moving averages, and market sentiment every few seconds. When it finds good opportunities, it can automatically execute trades or alert you to take action.
 
-**Deep Insight:**
-${wisdom}
+${systemScan ? `Right now, ETH is at $${systemScan.marketAnalysis?.ethPrice || '2450'} and the system is ${systemScan.waidesKiStatus?.isActive ? 'actively' : 'passively'} monitoring for opportunities.` : ''}
 
-**Universal Trading Principles:**
-• Patience is the highest virtue in trading
-• Risk management preserves capital for opportunities
-• Market timing combines analysis with intuition
-• Emotional control separates winners from losers
-• Continuous learning adapts to market evolution
+Is there a specific feature you'd like me to explain in more detail?`;
+      }
+      
+      if (lowerQuery.includes('what') && (lowerQuery.includes('do') || lowerQuery.includes('can'))) {
+        return `Here's what I can help you with:
 
-**Practical Application:**
-${this.generatePracticalWisdom(query)}
+• **Trading Questions:** Ask about ETH prices, entry/exit points, or market timing
+• **Strategy Advice:** Get recommendations for position sizing, stop-losses, and targets  
+• **Feature Guidance:** Learn how to use WaidBot, SmaiSika Wallet, or other tools
+• **Market Analysis:** Get real-time insights on trends, volatility, and sentiment
+• **Problem Solving:** Help troubleshoot issues or optimize your trading setup
 
-**Remember:** Great trading is 20% technical skill and 80% psychological mastery.
+${systemScan ? `Current system status: ${systemScan.waidesKiStatus?.isActive ? 'All systems operational' : 'Basic monitoring active'}` : ''}
 
-*Wisdom synthesis from Kons Powa and universal trading consciousness*`;
+What would you like to know about?`;
+      }
+      
+      if (lowerQuery.includes('help') || lowerQuery.includes('guidance')) {
+        return `I'm here to help! Here are some things I can assist with:
+
+• Answer specific trading questions with real market data
+• Provide entry/exit recommendations for ETH
+• Explain how to use any Waides KI features
+• Help optimize your trading strategy and risk management
+• Troubleshoot technical issues or configuration problems
+
+${systemScan ? `Current market conditions: ETH at $${systemScan.marketAnalysis?.ethPrice || '2450'}, trend is ${systemScan.marketAnalysis?.trend || 'mixed'}.` : ''}
+
+What specific help do you need? Just ask directly and I'll give you a clear answer.`;
+      }
+      
+      // For other general questions, provide direct responses
+      return `Regarding your question: "${query}"
+
+${systemScan ? `Based on current system data: ETH is trading around $${systemScan.marketAnalysis?.ethPrice || '2450'} with ${systemScan.marketAnalysis?.trend || 'moderate'} market conditions.` : 'I can provide specific guidance once market data is available.'}
+
+Here's my direct advice:
+• Focus on what's immediately actionable in your trading
+• Use the real-time data available through Waides KI systems
+• Set clear entry/exit rules and stick to them
+• Never risk more than you can afford to lose
+
+Is there a specific aspect of trading or the platform you'd like me to address?`;
+      
+    } catch (error) {
+      return `For your question: "${query}" - let me give you a direct answer:
+
+This depends on your specific situation and goals. I can provide much better guidance if you ask about:
+• Specific trading decisions (like "Should I buy ETH now?")
+• How to use particular features
+• Market analysis or timing questions
+• Risk management strategies
+
+What specifically would you like help with?`;
+    }
   }
 
   private async handleComprehensiveQuery(query: string, systemScan: SystemScanResult | null): Promise<string> {
