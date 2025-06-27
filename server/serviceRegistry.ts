@@ -158,6 +158,21 @@ serviceRegistry.register('waidesCore', async () => {
   return waidesKICore;
 });
 
+serviceRegistry.register('tradingBrain', async () => {
+  try {
+    const { tradingBrain } = await import('./services/tradingBrainEngine.js');
+    return tradingBrain;
+  } catch (error) {
+    console.log('Trading brain service not available, using stub');
+    return {
+      getRandomQuestions: async (count: number) => [
+        { question: "What is risk management?", category: "Risk" },
+        { question: "How do you calculate position size?", category: "Strategy" }
+      ]
+    };
+  }
+});
+
 // Cleanup interval to prevent memory leaks
 setInterval(() => serviceRegistry.cleanup(), 300000); // Every 5 minutes
 

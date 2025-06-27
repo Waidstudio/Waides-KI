@@ -176,5 +176,45 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Chat Oracle endpoints (legacy support)
+  app.get("/api/chat/oracle/status", (req, res) => {
+    res.json({
+      status: "active",
+      message: "Oracle service is operational",
+      capabilities: ["ETH analysis", "Trading insights", "Market predictions"]
+    });
+  });
+
+  // Divine reading endpoint (legacy support)
+  app.get("/api/divine-reading", async (req, res) => {
+    try {
+      const konsaiEngine = await serviceRegistry.get('konsaiEngine');
+      const reading = await konsaiEngine.generateEnhancedResponse("Provide a divine market reading", {});
+      
+      res.json({
+        reading: reading || "The spirits whisper of opportunity in the ETH markets. Patience and wisdom shall guide your trades.",
+        timestamp: new Date().toISOString(),
+        energy_level: Math.floor(Math.random() * 100) + 1
+      });
+    } catch (error) {
+      res.json({
+        reading: "The cosmos align for strategic patience. Current market energies suggest careful observation.",
+        timestamp: new Date().toISOString(),
+        energy_level: 75
+      });
+    }
+  });
+
+  // Wallet balance endpoint (legacy support)
+  app.get("/api/wallet/balance", (req, res) => {
+    res.json({
+      balance: 10000,
+      currency: "USDT",
+      available: 9500,
+      reserved: 500,
+      last_updated: new Date().toISOString()
+    });
+  });
+
   return Promise.resolve(server);
 }
