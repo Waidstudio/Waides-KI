@@ -168,13 +168,45 @@ export default function ProfilePage() {
   // Fetch user profile
   const { data: profile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile>({
     queryKey: ['/api/profile'],
-    retry: 1
+    retry: 1,
+    queryFn: async () => {
+      console.log('Fetching profile data...');
+      const response = await fetch('/api/profile', { credentials: 'include' });
+      console.log('Profile response status:', response.status);
+      console.log('Profile response headers:', response.headers.get('content-type'));
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Profile error response:', errorText);
+        throw new Error(`Profile API error: ${response.status} ${errorText}`);
+      }
+      
+      const jsonData = await response.json();
+      console.log('Profile JSON data received:', jsonData);
+      return jsonData;
+    }
   });
 
   // Fetch user settings
   const { data: settings, isLoading: settingsLoading, error: settingsError } = useQuery<UserSettings>({
     queryKey: ['/api/settings'],
-    retry: 1
+    retry: 1,
+    queryFn: async () => {
+      console.log('Fetching settings data...');
+      const response = await fetch('/api/settings', { credentials: 'include' });
+      console.log('Settings response status:', response.status);
+      console.log('Settings response headers:', response.headers.get('content-type'));
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Settings error response:', errorText);
+        throw new Error(`Settings API error: ${response.status} ${errorText}`);
+      }
+      
+      const jsonData = await response.json();
+      console.log('Settings JSON data received:', jsonData);
+      return jsonData;
+    }
   });
 
   // Debug logging
@@ -279,11 +311,42 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
         <div className="max-w-7xl mx-auto">
+          <div className="text-white text-center py-8">
+            <div className="animate-spin w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p>Loading profile data...</p>
+          </div>
           <div className="animate-pulse space-y-6">
             <div className="h-32 bg-slate-800/50 rounded-xl"></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="h-96 bg-slate-800/50 rounded-xl"></div>
               <div className="lg:col-span-2 h-96 bg-slate-800/50 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (profileError || settingsError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-8">
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-6 text-white">
+              <AlertTriangle className="h-8 w-8 mx-auto mb-4 text-red-400" />
+              <h2 className="text-xl font-bold mb-2">Error Loading Profile</h2>
+              <p className="mb-4">There was a problem loading your profile data.</p>
+              <div className="text-sm text-left bg-slate-800/50 p-4 rounded-lg">
+                {profileError && <div className="mb-2">Profile Error: {profileError.message}</div>}
+                {settingsError && <div>Settings Error: {settingsError.message}</div>}
+              </div>
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="mt-4 bg-purple-600 hover:bg-purple-700"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reload Page
+              </Button>
             </div>
           </div>
         </div>
