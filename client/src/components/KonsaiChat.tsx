@@ -502,45 +502,69 @@ Performance Grade: **A**
 
 **Volatility:** 22.1% (Moderate-High risk)
 
-## 4. Asset Performance Deep Dive
+**4. Asset Performance Deep Dive**
 
-### Ethereum (ETH) Analysis
-- **Technical Status:** Strong uptrend confirmed
-- **Support Levels:** $2,380, $2,340, $2,280
-- **Resistance Levels:** $2,520, $2,580, $2,650
-- **Momentum:** Bullish (+RSI 58.3)
-- **Recommendation:** Hold with profit-taking above $2,550
+**Ethereum (ETH) Analysis**
 
-### Bitcoin (BTC) Analysis
-- **Technical Status:** Consolidation phase
-- **Support Levels:** $43,800, $42,500, $41,200
-- **Resistance Levels:** $45,500, $47,200, $48,800
-- **Momentum:** Neutral-Bullish (+RSI 52.1)
-- **Recommendation:** Accumulate on dips below $44,000
+**Technical Status:** Strong uptrend confirmed
 
-## 5. Portfolio Optimization Recommendations
+**Support Levels:** $2,380, $2,340, $2,280
 
-### Immediate Actions (Next 24-48 Hours)
-1. **ETH Position Management**
-   - Consider taking 15% profits above $2,520
-   - Set trailing stop at $2,380 for remaining position
-   - Target rebalancing to 55-60% allocation
+**Resistance Levels:** $2,520, $2,580, $2,650
 
-2. **BTC Position Enhancement**
-   - Add $${(usdtAmount * 0.3).toFixed(2)} on any dip below $44,000
-   - Target 15% allocation (current 10%)
-   - Dollar-cost average over 3-5 days
+**Momentum:** **Bullish** (+RSI 58.3)
 
-3. **USDT Deployment Strategy**
-   - Deploy $${(usdtAmount * 0.4).toFixed(2)} into high-probability setups
-   - Keep $${(usdtAmount * 0.6).toFixed(2)} as dry powder for major opportunities
-   - Consider 5% allocation to SOL or AVAX
+**Recommendation:** Hold with profit-taking above $2,550
 
-### Long-Term Strategy (1-3 Months)
-- **Target Allocation:** 55% ETH, 25% BTC, 15% USDT, 5% Altcoins
-- **Rebalancing Frequency:** Weekly or on 10%+ moves
-- **Risk Management:** Never exceed 70% in single asset
-- **Profit Taking:** Scale out in 20% increments
+**Bitcoin (BTC) Analysis**
+
+**Technical Status:** Consolidation phase
+
+**Support Levels:** $43,800, $42,500, $41,200
+
+**Resistance Levels:** $45,500, $47,200, $48,800
+
+**Momentum:** Neutral-Bullish (+RSI 52.1)
+
+**Recommendation:** Accumulate on dips below $44,000
+
+**5. Portfolio Optimization Recommendations**
+
+**Immediate Actions (Next 24-48 Hours)**
+
+**1. ETH Position Management**
+
+Consider taking **15% profits** above $2,520
+
+Set trailing stop at $2,380 for remaining position
+
+Target rebalancing to **55-60% allocation**
+
+**2. BTC Position Enhancement**
+
+Add $${(usdtAmount * 0.3).toFixed(2)} on any dip below $44,000
+
+Target **15% allocation** (current 10%)
+
+Dollar-cost average over 3-5 days
+
+**3. USDT Deployment Strategy**
+
+Deploy $${(usdtAmount * 0.4).toFixed(2)} into **high-probability setups**
+
+Keep $${(usdtAmount * 0.6).toFixed(2)} as dry powder for major opportunities
+
+Consider **5% allocation** to SOL or AVAX
+
+**Long-Term Strategy (1-3 Months)**
+
+**Target Allocation:** 55% ETH, 25% BTC, 15% USDT, 5% Altcoins
+
+**Rebalancing Frequency:** Weekly or on 10%+ moves
+
+**Risk Management:** Never exceed **70%** in single asset
+
+**Profit Taking:** Scale out in **20% increments**
 
 ## 6. Market Context & Timing
 
@@ -555,73 +579,112 @@ Performance Grade: **A**
 - **BTC:** Next 2-3 days for accumulation
 - **Market:** Avoid major moves during weekend
 
-## 7. Risk Management Dashboard
+**7. Risk Management Dashboard**
 
-### Current Risk Level: MODERATE-HIGH
-- **Portfolio Correlation:** 0.81 (High - needs diversification)
-- **Concentration Risk:** High (65% in ETH)
-- **Liquidity Risk:** Low (All major assets)
-- **Timing Risk:** Medium (Near resistance levels)
+**Current Risk Level: MODERATE-HIGH**
 
-### Protective Measures
-- **Stop Losses:** Set on all positions
-- **Position Limits:** 70% max per asset
-- **Diversification:** Add 1-2 more assets urgently
-- **Emergency Plan:** 25% stablecoin buffer maintained
+**Portfolio Correlation:** 0.81 (**High** - needs diversification)
+
+**Concentration Risk:** **High** (65% in ETH)
+
+**Liquidity Risk:** Low (All major assets)
+
+**Timing Risk:** Medium (Near resistance levels)
+
+**Protective Measures**
+
+**Stop Losses:** Set on all positions
+
+**Position Limits:** **70% max** per asset
+
+**Diversification:** Add **1-2 more assets urgently**
+
+**Emergency Plan:** **25% stablecoin buffer** maintained
 
 **Portfolio Status: 🟡 Strong performance but needs better diversification**`;
           break;
 
         case 'alerts':
           const alertPrice = 2450 + Math.random() * 100;
-          response = `# 🚨 Smart Alert System - Real-Time Monitoring Dashboard
+          response = `**🚨 Smart Alert System - Real-Time Monitoring Dashboard**
 
-## 1. Alert System Overview
+**1. Alert System Overview**
+
 **System Status:** 🟢 All Monitoring Active
+
 **Last Update:** ${new Date().toLocaleString()}
+
 **Response Time:** <50ms average
-**Success Rate:** 99.7% delivery rate
 
-## 2. Active Alert Configurations
+**Success Rate:** **99.7% delivery rate**
 
-### Price-Based Alerts
-- **ETH Breakout Alert:** $${alertPrice.toFixed(2)} resistance break (LONG signal)
-  - Status: ⚡ Active Monitoring
-  - Trigger: Price closes above $${alertPrice.toFixed(2)} for 5 minutes
-  - Action: Immediate buy signal + position sizing recommendation
-  - Priority: High
+**2. Active Alert Configurations**
 
-- **BTC Support Alert:** $43,800 support test
-  - Status: ⚡ Active Monitoring  
-  - Trigger: Price touches support with volume confirmation
-  - Action: Accumulation opportunity notification
-  - Priority: Medium
+**Price-Based Alerts**
 
-### Technical Indicator Alerts
-- **RSI Oversold Alert:** RSI < 30 (Opportunity Detection)
-  - Current RSI: 42.3 (Normal range)
-  - Trigger: 4H RSI drops below 30 with divergence
-  - Action: Reversal setup notification + entry strategy
-  - Last Triggered: 2 days ago (ETH at $2,380)
+**ETH Breakout Alert:** $${alertPrice.toFixed(2)} resistance break (**LONG signal**)
 
-- **Volume Spike Alert:** >500% average volume
-  - Current Volume: 143% of average (Normal)
-  - Trigger: Sudden volume increase with price momentum
-  - Action: Breakout/breakdown confirmation alert
-  - Sensitivity: High (reduces false signals)
+Status: ⚡ **Active Monitoring**
 
-### Advanced Pattern Alerts
-- **Whale Movement Alert:** Large transaction detection
-  - Threshold: >$10M ETH transfers
-  - Status: Monitoring 247 whale wallets
-  - Last Alert: 6 hours ago ($15M accumulation)
-  - Impact: Market sentiment shift warning
+Trigger: Price closes above $${alertPrice.toFixed(2)} for **5 minutes**
 
-- **News Sentiment Alert:** Major market events
-  - Sources: 50+ verified crypto news feeds
-  - AI Sentiment Score: Currently 68/100 (Neutral-Bullish)
-  - Trigger: Score change >15 points in 1 hour
-  - Action: Context-aware trading recommendations
+Action: Immediate buy signal + position sizing recommendation
+
+Priority: **High**
+
+**BTC Support Alert:** $43,800 support test
+
+Status: ⚡ **Active Monitoring**
+
+Trigger: Price touches support with volume confirmation
+
+Action: Accumulation opportunity notification
+
+Priority: Medium
+
+**Technical Indicator Alerts**
+
+**RSI Oversold Alert:** RSI < 30 (Opportunity Detection)
+
+Current RSI: 42.3 (Normal range)
+
+Trigger: 4H RSI drops below **30** with divergence
+
+Action: Reversal setup notification + entry strategy
+
+Last Triggered: 2 days ago (ETH at $2,380)
+
+**Volume Spike Alert:** >500% average volume
+
+Current Volume: 143% of average (Normal)
+
+Trigger: Sudden volume increase with price momentum
+
+Action: Breakout/breakdown confirmation alert
+
+Sensitivity: **High** (reduces false signals)
+
+**Advanced Pattern Alerts**
+
+**Whale Movement Alert:** Large transaction detection
+
+Threshold: >**$10M ETH transfers**
+
+Status: Monitoring **247 whale wallets**
+
+Last Alert: 6 hours ago (**$15M accumulation**)
+
+Impact: Market sentiment shift warning
+
+**News Sentiment Alert:** Major market events
+
+Sources: **50+ verified crypto news feeds**
+
+AI Sentiment Score: Currently **68/100** (Neutral-Bullish)
+
+Trigger: Score change >**15 points** in 1 hour
+
+Action: Context-aware trading recommendations
 
 ## 3. Notification Delivery Channels
 
