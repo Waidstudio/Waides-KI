@@ -165,81 +165,45 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
-  // Fetch user profile
+  // Fetch user profile with background updates
   const { data: profile, isLoading: profileLoading, error: profileError } = useQuery<UserProfile>({
     queryKey: ['/api/profile'],
     retry: 1,
+    refetchInterval: 30000, // Background refresh every 30 seconds
+    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
+    staleTime: 20000, // Data stays fresh for 20 seconds
+    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
     queryFn: async () => {
-      console.log('Fetching profile data...');
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const response = await fetch('/api/profile', { 
+        credentials: 'include'
+      });
       
-      try {
-        const response = await fetch('/api/profile', { 
-          credentials: 'include',
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        
-        console.log('Profile response status:', response.status);
-        console.log('Profile response headers:', response.headers.get('content-type'));
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.log('Profile error response:', errorText);
-          throw new Error(`Profile API error: ${response.status} ${errorText}`);
-        }
-        
-        const jsonData = await response.json();
-        console.log('Profile JSON data received:', jsonData);
-        return jsonData;
-      } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-          console.log('Profile request timed out');
-          throw new Error('Profile request timed out after 10 seconds');
-        }
-        throw error;
+      if (!response.ok) {
+        throw new Error(`Profile API error: ${response.status}`);
       }
+      
+      return response.json();
     }
   });
 
-  // Fetch user settings
+  // Fetch user settings with background updates
   const { data: settings, isLoading: settingsLoading, error: settingsError } = useQuery<UserSettings>({
     queryKey: ['/api/settings'],
     retry: 1,
+    refetchInterval: 30000, // Background refresh every 30 seconds
+    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
+    staleTime: 20000, // Data stays fresh for 20 seconds
+    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
     queryFn: async () => {
-      console.log('Fetching settings data...');
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const response = await fetch('/api/settings', { 
+        credentials: 'include'
+      });
       
-      try {
-        const response = await fetch('/api/settings', { 
-          credentials: 'include',
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        
-        console.log('Settings response status:', response.status);
-        console.log('Settings response headers:', response.headers.get('content-type'));
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.log('Settings error response:', errorText);
-          throw new Error(`Settings API error: ${response.status} ${errorText}`);
-        }
-        
-        const jsonData = await response.json();
-        console.log('Settings JSON data received:', jsonData);
-        return jsonData;
-      } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-          console.log('Settings request timed out');
-          throw new Error('Settings request timed out after 10 seconds');
-        }
-        throw error;
+      if (!response.ok) {
+        throw new Error(`Settings API error: ${response.status}`);
       }
+      
+      return response.json();
     }
   });
 
@@ -341,7 +305,10 @@ export default function ProfilePage() {
     'speed_trader': Timer
   };
 
-  if (profileLoading || settingsLoading) {
+  // Show content with default values immediately, update in background
+  const isInitialLoading = (profileLoading && !profile) || (settingsLoading && !settings);
+  
+  if (isInitialLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
         <div className="max-w-7xl mx-auto">

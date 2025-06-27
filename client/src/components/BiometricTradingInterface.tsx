@@ -42,22 +42,34 @@ const BiometricTradingInterface: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch wallet data
+  // Fetch wallet data with background updates
   const { data: wallet, isLoading: walletLoading } = useQuery<WalletData>({
     queryKey: ['/api/smai-wallet'],
-    refetchInterval: 5000
+    refetchInterval: 60000, // Background refresh every 60 seconds
+    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
+    staleTime: 30000, // Data stays fresh for 30 seconds
+    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
+    retry: 1
   });
 
-  // Fetch trading history
+  // Fetch trading history with background updates
   const { data: tradeHistory } = useQuery<{ trades: TradeHistory[] }>({
     queryKey: ['/api/smai-trade/history'],
-    refetchInterval: 10000
+    refetchInterval: 120000, // Background refresh every 2 minutes
+    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
+    staleTime: 60000, // Data stays fresh for 1 minute
+    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
+    retry: 1
   });
 
-  // Fetch biometric status
+  // Fetch biometric status with background updates
   const { data: biometricStatus } = useQuery<BiometricStatus>({
     queryKey: ['/api/biometric/status'],
-    refetchInterval: 30000
+    refetchInterval: 300000, // Background refresh every 5 minutes
+    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
+    staleTime: 240000, // Data stays fresh for 4 minutes
+    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
+    retry: 1
   });
 
   // Lock funds mutation
@@ -172,7 +184,10 @@ const BiometricTradingInterface: React.FC = () => {
     }
   };
 
-  if (walletLoading) {
+  // Show content with default values immediately, update in background
+  const isInitialLoading = walletLoading && !wallet;
+  
+  if (isInitialLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading SmaiSika Moral Trading Platform...</div>
