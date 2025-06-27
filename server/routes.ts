@@ -1463,10 +1463,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { message, mode, complexity } = req.body;
       
+      console.log(`🚀 Route Handler: Received message "${message}"`);
+      
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ error: 'Message required' });
       }
 
+      console.log('🔄 Route Handler: About to call konsaiEngine.processQuery');
+      
       // Process with advanced intelligence
       const response = await konsaiEngine.processQuery(message, {
         marketCondition: 'uncertain',
@@ -1475,6 +1479,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timeframe: '1h',
         riskLevel: mode || 'moderate'
       });
+      
+      console.log(`✅ Route Handler: Received response "${response.substring(0, 100)}..."`)
       
       res.json({
         success: true,
