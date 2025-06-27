@@ -171,19 +171,36 @@ export default function ProfilePage() {
     retry: 1,
     queryFn: async () => {
       console.log('Fetching profile data...');
-      const response = await fetch('/api/profile', { credentials: 'include' });
-      console.log('Profile response status:', response.status);
-      console.log('Profile response headers:', response.headers.get('content-type'));
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log('Profile error response:', errorText);
-        throw new Error(`Profile API error: ${response.status} ${errorText}`);
+      try {
+        const response = await fetch('/api/profile', { 
+          credentials: 'include',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        console.log('Profile response status:', response.status);
+        console.log('Profile response headers:', response.headers.get('content-type'));
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.log('Profile error response:', errorText);
+          throw new Error(`Profile API error: ${response.status} ${errorText}`);
+        }
+        
+        const jsonData = await response.json();
+        console.log('Profile JSON data received:', jsonData);
+        return jsonData;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          console.log('Profile request timed out');
+          throw new Error('Profile request timed out after 10 seconds');
+        }
+        throw error;
       }
-      
-      const jsonData = await response.json();
-      console.log('Profile JSON data received:', jsonData);
-      return jsonData;
     }
   });
 
@@ -193,19 +210,36 @@ export default function ProfilePage() {
     retry: 1,
     queryFn: async () => {
       console.log('Fetching settings data...');
-      const response = await fetch('/api/settings', { credentials: 'include' });
-      console.log('Settings response status:', response.status);
-      console.log('Settings response headers:', response.headers.get('content-type'));
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log('Settings error response:', errorText);
-        throw new Error(`Settings API error: ${response.status} ${errorText}`);
+      try {
+        const response = await fetch('/api/settings', { 
+          credentials: 'include',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        console.log('Settings response status:', response.status);
+        console.log('Settings response headers:', response.headers.get('content-type'));
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.log('Settings error response:', errorText);
+          throw new Error(`Settings API error: ${response.status} ${errorText}`);
+        }
+        
+        const jsonData = await response.json();
+        console.log('Settings JSON data received:', jsonData);
+        return jsonData;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          console.log('Settings request timed out');
+          throw new Error('Settings request timed out after 10 seconds');
+        }
+        throw error;
       }
-      
-      const jsonData = await response.json();
-      console.log('Settings JSON data received:', jsonData);
-      return jsonData;
     }
   });
 
