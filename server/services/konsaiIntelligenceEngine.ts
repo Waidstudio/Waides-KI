@@ -1460,6 +1460,28 @@ class KonsModuleManager {
       enhancedResponse += `\nRecommended path: ${konsResults.decisionWebBuilder.decision_tree.recommended_path.path_id}`;
     }
 
+    // Integrate Self-Evolution + System Control Module insights
+    if (konsResults.powaActivator?.powa_status?.activation_level !== 'DORMANT') {
+      enhancedResponse += `\n\n🔮 Kons Powa: ${konsResults.powaActivator.powa_status.activation_level} (${konsResults.powaActivator.divine_command.title})`;
+      if (konsResults.powaActivator.powa_status.activation_level === 'TRANSCENDENT') {
+        enhancedResponse += `\n✨ Divine mode activated - enhanced insight available`;
+      }
+    }
+
+    if (konsResults.autoFixCore?.system_health?.status !== 'excellent') {
+      enhancedResponse += `\n\n🔧 System Status: ${konsResults.autoFixCore.system_health.status} (${konsResults.autoFixCore.system_health.score}%)`;
+      if (konsResults.autoFixCore.fix_actions?.overall_status === 'success') {
+        enhancedResponse += `\n✅ AutoFix: ${konsResults.autoFixCore.fix_actions.success_count} repairs completed successfully`;
+      }
+    }
+
+    if (konsResults.waidBotController?.bot_status?.overall_health !== 'excellent') {
+      enhancedResponse += `\n\n🤖 Bot Network: ${konsResults.waidBotController.bot_status.overall_health} - ${konsResults.waidBotController.bot_status.sync_status}`;
+      if (konsResults.waidBotController.master_override?.active) {
+        enhancedResponse += `\n⚡ Master Override: ${konsResults.waidBotController.master_override.level} permissions active`;
+      }
+    }
+
     return enhancedResponse;
   }
 
