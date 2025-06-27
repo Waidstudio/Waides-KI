@@ -212,7 +212,7 @@ export default function TradingBrainPanel() {
         </Card>
 
         {/* Waides KI Status (Minimal Info) */}
-        {waidesKIStatus && waidesKIStatus.performance && (
+        {waidesKIStatus && (
           <Card className="bg-slate-900/50 border-slate-800">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-sm">
@@ -291,12 +291,36 @@ export default function TradingBrainPanel() {
       </div>
 
       <Tabs defaultValue="knowledge" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
-          <TabsTrigger value="knowledge" className="data-[state=active]:bg-slate-700">Knowledge Base</TabsTrigger>
-          <TabsTrigger value="advisor" className="data-[state=active]:bg-slate-700">AI Advisor</TabsTrigger>
-          <TabsTrigger value="scorecard" className="data-[state=active]:bg-slate-700">Scorecard</TabsTrigger>
-          <TabsTrigger value="psychology" className="data-[state=active]:bg-slate-700">Market Psychology</TabsTrigger>
-        </TabsList>
+        <div className="bg-slate-800 border border-slate-700 rounded-lg p-1 mb-6">
+          <div className="overflow-x-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+            <TabsList className="flex w-max bg-transparent gap-1 p-0 h-auto min-w-fit">
+              <TabsTrigger 
+                value="knowledge" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Knowledge Base
+              </TabsTrigger>
+              <TabsTrigger 
+                value="advisor" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                AI Advisor
+              </TabsTrigger>
+              <TabsTrigger 
+                value="scorecard" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Scorecard
+              </TabsTrigger>
+              <TabsTrigger 
+                value="psychology" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Market Psychology
+              </TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
 
         <TabsContent value="knowledge" className="space-y-6">
           {/* Search and Categories */}
