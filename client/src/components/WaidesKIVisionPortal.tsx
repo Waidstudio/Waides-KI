@@ -1110,15 +1110,19 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             </button>
             <button
               onClick={() => setActiveTab('core')}
-              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
+              className={`px-2 py-0.5 rounded-sm text-xs transition-all relative ${
                 activeTab === 'core'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-purple-700/50 hover:to-pink-700/50 border border-purple-500/30'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Heart className="w-2.5 h-2.5" />
+                <Heart className={`w-2.5 h-2.5 ${activeTab !== 'core' ? 'text-purple-400' : ''}`} />
                 <span>Heart of Waides Ki</span>
+                {/* New features indicator */}
+                {activeTab !== 'core' && (
+                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse"></div>
+                )}
               </div>
             </button>
             <button
@@ -1137,6 +1141,24 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           </div>
         </div>
       </div>
+
+      {/* Enhanced Features Notification */}
+      {activeTab === 'chat' && (
+        <div className="mx-4 mb-2 p-2 bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-lg">
+          <div className="flex items-center gap-2 text-xs">
+            <div className="w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse"></div>
+            <span className="text-purple-300">
+              <span className="font-semibold">New:</span> Enhanced configuration options available in 
+              <button 
+                onClick={() => setActiveTab('core')}
+                className="ml-1 text-pink-300 hover:text-pink-200 underline font-medium"
+              >
+                Heart of Waides Ki
+              </button>
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Tab Content */}
       {activeTab === 'chat' && (
