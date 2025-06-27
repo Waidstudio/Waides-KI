@@ -1028,7 +1028,13 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       )}
 
       {/* Top Status Bar - Minimal Scrollable */}
-      <div className="relative z-10 flex justify-center items-center py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
+      <div className="relative z-10 flex justify-between items-center px-4 py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
+          <span className="text-xs text-gray-400">•</span>
+          <span className="text-xs text-blue-300 font-medium">Konsmik Intelligence</span>
+        </div>
+        
         <div className="flex items-center">
           {/* Tab Navigation - Minimal */}
           <div className="flex bg-gray-800/40 rounded-sm p-0.5">
@@ -1060,209 +1066,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             </button>
           </div>
         </div>
-        <div className="hidden">
-          
-          {/* Cosmic AI Controls */}
-          <div className="flex items-center gap-2">
-            {/* Cosmic Mode Toggle */}
-            <Button
-              onClick={() => setCosmicMode(!cosmicMode)}
-              variant="ghost"
-              size="sm"
-              className={`h-8 px-3 text-xs font-medium ${
-                cosmicMode
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border border-purple-400/50' 
-                  : 'text-gray-400 hover:bg-gray-700/50 border border-gray-600'
-              }`}
-            >
-              <Sparkles className="w-3 h-3 mr-1" />
-              Cosmic
-            </Button>
-
-            {/* Cosmic Theme Selector (only visible when cosmic mode is on) */}
-            {cosmicMode && (
-              <Select value={cosmicTheme} onValueChange={(value: any) => setCosmicTheme(value)}>
-                <SelectTrigger className="w-20 h-8 bg-gray-800/60 border-purple-400/50 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-purple-400">
-                  <SelectItem value="nebula">Nebula</SelectItem>
-                  <SelectItem value="starfield">Starfield</SelectItem>
-                  <SelectItem value="galaxy">Galaxy</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-
-            {/* AI Personality Selector */}
-            <Select value={aiPersonality.mode} onValueChange={(value: any) => setAiPersonality(prev => ({ ...prev, mode: value }))}>
-              <SelectTrigger className="w-24 h-8 bg-gray-800/60 border-gray-600 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-600">
-                <SelectItem value="spiritual">
-                  <div className="flex items-center gap-2">
-                    <Star className="w-3 h-3" />
-                    Spiritual
-                  </div>
-                </SelectItem>
-                <SelectItem value="analytical">
-                  <div className="flex items-center gap-2">
-                    <Brain className="w-3 h-3" />
-                    Analytical
-                  </div>
-                </SelectItem>
-                <SelectItem value="creative">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-3 h-3" />
-                    Creative
-                  </div>
-                </SelectItem>
-                <SelectItem value="balanced">
-                  <div className="flex items-center gap-2">
-                    <Circle className="w-3 h-3" />
-                    Balanced
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Voice Controls */}
-            <Button
-              onClick={() => setVoiceSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
-              variant="ghost"
-              size="sm"
-              className={`w-8 h-8 p-0 ${
-                voiceSettings.enabled
-                  ? 'bg-purple-600 text-white' 
-                  : 'text-gray-400 hover:bg-gray-700/50'
-              }`}
-            >
-              {voiceSettings.enabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </Button>
-
-            {/* Cosmic Mode Toggle */}
-            <Button
-              onClick={() => setCosmicMode(!cosmicMode)}
-              variant="ghost"
-              size="sm"
-              className={`w-8 h-8 p-0 ${
-                cosmicMode
-                  ? 'bg-purple-600 text-white animate-pulse' 
-                  : 'text-gray-400 hover:bg-gray-700/50'
-              }`}
-            >
-              <Sparkles className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          {/* Enhanced Chat Mode Selection */}
-          <div className="flex items-center gap-1 bg-gray-800/60 rounded-lg p-1">
-            <Button
-              onClick={() => {
-                setChatMode('auto');
-                setOracleEnabled(false);
-                setReasoningMode(false);
-              }}
-              variant="ghost"
-              size="sm"
-              className={`text-xs px-2 py-1 ${
-                chatMode === 'auto'
-                  ? 'bg-emerald-600 text-white' 
-                  : 'text-gray-300 hover:bg-gray-700/50'
-              }`}
-            >
-              🔄 Auto
-            </Button>
-            <Button
-              onClick={() => {
-                setChatMode('openai');
-                setOracleEnabled(false);
-                setReasoningMode(false);
-              }}
-              variant="ghost"
-              size="sm"
-              className={`text-xs px-2 py-1 ${
-                chatMode === 'openai'
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-300 hover:bg-gray-700/50'
-              }`}
-            >
-              🧠 Universal
-            </Button>
-            <Button
-              onClick={() => {
-                setChatMode('spiritual');
-                setOracleEnabled(false);
-                setReasoningMode(false);
-              }}
-              variant="ghost"
-              size="sm"
-              className={`text-xs px-2 py-1 ${
-                chatMode === 'spiritual'
-                  ? 'bg-purple-600 text-white' 
-                  : 'text-gray-300 hover:bg-gray-700/50'
-              }`}
-            >
-              ✨ Spiritual
-            </Button>
-            <Button
-              onClick={() => {
-                setChatMode('oracle');
-                setOracleEnabled(true);
-                setReasoningMode(false);
-              }}
-              variant="ghost"
-              size="sm"
-              className={`text-xs px-2 py-1 ${
-                chatMode === 'oracle'
-                  ? 'bg-cyan-600 text-white' 
-                  : 'text-gray-300 hover:bg-gray-700/50'
-              }`}
-            >
-              🔮 Oracle
-            </Button>
-            <Button
-              onClick={() => {
-                setChatMode('konsai');
-                setOracleEnabled(false);
-                setReasoningMode(true);
-              }}
-              variant="ghost"
-              size="sm"
-              className={`text-xs px-2 py-1 ${
-                chatMode === 'konsai'
-                  ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white' 
-                  : 'text-gray-300 hover:bg-gray-700/50'
-              }`}
-            >
-              🧬 KonsAi
-            </Button>
-          </div>
-
-          {/* Voice Control Module */}
-          <div className="flex items-center gap-2 bg-gray-800/60 rounded-lg p-1">
-            <Button
-              onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
-              variant="ghost"
-              size="sm"
-              className={`text-xs px-3 py-1 transition-all ${
-                voiceEnabled
-                  ? 'bg-red-600 text-white animate-pulse'
-                  : speechSupported
-                  ? 'bg-green-600/80 text-white hover:bg-green-600'
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              }`}
-              disabled={!speechSupported}
-            >
-              {voiceEnabled ? '🎤 Listening...' : speechSupported ? '🎤 Voice' : '🎤 Not Supported'}
-            </Button>
-            {isVoiceProcessing && (
-              <div className="text-xs text-purple-300 animate-pulse">
-                Processing voice command...
-              </div>
-            )}
-          </div>
-        </div>
+        
+        <div className="w-24"></div> {/* Spacer for balance */}
       </div>
 
       {/* Tab Content */}
