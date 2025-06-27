@@ -1766,8 +1766,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
 
             {/* KonsAi Features */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-4">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                <div className="flex items-center justify-center gap-3 mb-3">
                   <Brain className="w-5 h-5 text-yellow-400" />
                   <h3 className="text-lg font-semibold text-yellow-300">Neural Analysis</h3>
                 </div>
@@ -1776,8 +1776,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-orange-500/10 to-red-600/10 border border-orange-500/20 rounded-xl p-4">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="bg-gradient-to-br from-orange-500/10 to-red-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                <div className="flex items-center justify-center gap-3 mb-3">
                   <Star className="w-5 h-5 text-orange-400" />
                   <h3 className="text-lg font-semibold text-orange-300">Sacred Wisdom</h3>
                 </div>
@@ -1786,8 +1786,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border border-orange-500/20 rounded-xl p-4">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                <div className="flex items-center justify-center gap-3 mb-3">
                   <Zap className="w-5 h-5 text-purple-400" />
                   <h3 className="text-lg font-semibold text-purple-300">Real-time Predictions</h3>
                 </div>
@@ -1796,8 +1796,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-orange-500/20 rounded-xl p-4">
-                <div className="flex items-center gap-3 mb-3">
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                <div className="flex items-center justify-center gap-3 mb-3">
                   <TrendingUp className="w-5 h-5 text-green-400" />
                   <h3 className="text-lg font-semibold text-green-300">Autonomous Trading</h3>
                 </div>
@@ -1835,9 +1835,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             </div>
 
             {/* KonsAi Commands */}
-            <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-4">
+            <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-4 text-center">
               <h3 className="text-lg font-semibold text-orange-300 mb-3">Quick Commands</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 justify-center">
                 <button className="px-3 py-1 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs rounded hover:from-yellow-500 hover:to-orange-500 transition-all">
                   Analyze Market
                 </button>
