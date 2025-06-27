@@ -285,13 +285,42 @@ export default function WaidesFullEngine() {
 
       {/* Detailed Analytics */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="ml-kelly">ML + Kelly</TabsTrigger>
-          <TabsTrigger value="risk">Risk Management</TabsTrigger>
-          <TabsTrigger value="trades">Active Trades</TabsTrigger>
-        </TabsList>
+        <div className="bg-slate-800 border border-slate-700 rounded-lg p-1 mb-6">
+          <div className="overflow-x-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+            <TabsList className="flex w-max bg-transparent gap-1 p-0 h-auto min-w-fit">
+              <TabsTrigger 
+                value="overview" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="performance" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Performance
+              </TabsTrigger>
+              <TabsTrigger 
+                value="ml-kelly" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                ML + Kelly
+              </TabsTrigger>
+              <TabsTrigger 
+                value="risk" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Risk Management
+              </TabsTrigger>
+              <TabsTrigger 
+                value="trades" 
+                className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
+              >
+                Active Trades
+              </TabsTrigger>
+            </TabsList>
+          </div>
+        </div>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
