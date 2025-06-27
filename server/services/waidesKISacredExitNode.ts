@@ -180,7 +180,7 @@ export class WaidesKISacredExitNode {
     const timing_assessment = this.assessTiming(context);
     const profit_assessment = this.assessProfitConditions(context);
     const risk_assessment = this.assessRiskFactors(context);
-    const cosmic_assessment = this.assessCosmicTiming();
+    const konsmik_assessment = this.assessKonsmikTiming();
     
     // Determine exit decision
     const exit_decision = this.determineExitAction(
@@ -189,7 +189,7 @@ export class WaidesKISacredExitNode {
       timing_assessment,
       profit_assessment,
       risk_assessment,
-      cosmic_assessment
+      konsmik_assessment
     );
     
     // Generate sacred timing
@@ -375,9 +375,9 @@ export class WaidesKISacredExitNode {
     };
   }
 
-  // 🌙 COSMIC TIMING: Assess cosmic/time factors
-  private assessCosmicTiming(): {
-    cosmic_score: number;
+  // 🌙 KONSMIK TIMING: Assess konsmik/time factors
+  private assessKonsmikTiming(): {
+    konsmik_score: number;
     moon_phase_factor: number;
     trading_session_factor: number;
     day_cycle_factor: number;
@@ -403,10 +403,10 @@ export class WaidesKISacredExitNode {
     const days_since_new_moon = (Date.now() / (1000 * 60 * 60 * 24)) % 29.5;
     const moon_phase_factor = 0.5 + Math.sin((days_since_new_moon / 29.5) * 2 * Math.PI) * 0.2;
     
-    const cosmic_score = (trading_session_factor * 0.4) + (day_cycle_factor * 0.4) + (moon_phase_factor * 0.2);
+    const konsmik_score = (trading_session_factor * 0.4) + (day_cycle_factor * 0.4) + (moon_phase_factor * 0.2);
     
     return {
-      cosmic_score,
+      konsmik_score,
       moon_phase_factor,
       trading_session_factor,
       day_cycle_factor

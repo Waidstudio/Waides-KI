@@ -190,22 +190,22 @@ export class WaidesKISacredEntryLocator {
     return Math.min(1, average * 0.7 + harmony_from_consistency * 0.3 + harmony_boost);
   }
 
-  // 🌙 COSMIC TIMING: Calculate time-based alignment factors
-  private calculateCosmicTiming(): number {
+  // 🌙 KONSMIK TIMING: Calculate time-based alignment factors
+  private calculateKonsmikTiming(): number {
     const now = new Date();
     const hour = now.getUTCHours();
     const minute = now.getMinutes();
     const day_of_week = now.getDay(); // 0 = Sunday
     
-    let cosmic_score = 0.5; // Base score
+    let konsmik_score = 0.5; // Base score
     
     // Optimal trading hours (London/NY overlap)
     if (hour >= 13 && hour <= 17) { // 1 PM - 5 PM UTC
-      cosmic_score += 0.2;
+      konsmik_score += 0.2;
     } else if (hour >= 8 && hour <= 12) { // London session
-      cosmic_score += 0.15;
+      konsmik_score += 0.15;
     } else if (hour >= 18 && hour <= 22) { // NY session
-      cosmic_score += 0.15;
+      konsmik_score += 0.15;
     }
     
     // Sacred minutes (fibonacci-based)
