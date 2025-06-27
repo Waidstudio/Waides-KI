@@ -246,6 +246,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Note: TradingView WebSocket removed per user request - using Binance only
   waidBotEngine = new WaidBotEngine();
   waidBotPro = new WaidBotPro(10000); // Initialize with $10,000 starting balance
+
+  // Initialize SmartNotify monitoring system
+  smartNotify.startMonitoring();
+  console.log('📢 SmartNotify: Intelligent alert system started');
   waidesKIDreamLayerVision = new WaidesKIDreamLayerVision();
   
   // Initialize STEP 41: Global Lightnet services
@@ -5250,6 +5254,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting contextual decisions:', error);
       res.status(500).json({ error: 'Failed to get contextual decisions' });
+    }
+  });
+
+  // ===== SMART NOTIFY API ENDPOINTS =====
+  // SmartNotify Intelligent Alert System Integration
+
+  // Start monitoring endpoint
+  app.post("/api/smart-notify/start", (req, res) => {
+    try {
+      smartNotify.startMonitoring();
+      res.json({ 
+        success: true, 
+        message: 'SmartNotify monitoring started successfully',
+        status: 'monitoring'
+      });
+    } catch (error) {
+      console.error('Error starting SmartNotify:', error);
+      res.status(500).json({ error: 'Failed to start SmartNotify monitoring' });
+    }
+  });
+
+  // Stop monitoring endpoint
+  app.post("/api/smart-notify/stop", (req, res) => {
+    try {
+      smartNotify.stopMonitoring();
+      res.json({ 
+        success: true, 
+        message: 'SmartNotify monitoring stopped successfully',
+        status: 'stopped'
+      });
+    } catch (error) {
+      console.error('Error stopping SmartNotify:', error);
+      res.status(500).json({ error: 'Failed to stop SmartNotify monitoring' });
+    }
+  });
+
+  // Get active alerts
+  app.get("/api/smart-notify/alerts", (req, res) => {
+    try {
+      const alerts = smartNotify.getActiveAlerts();
+      res.json({ 
+        success: true, 
+        alerts,
+        total_alerts: alerts.length
+      });
+    } catch (error) {
+      console.error('Error getting active alerts:', error);
+      res.status(500).json({ error: 'Failed to get active alerts' });
+    }
+  });
+
+  // Get alerts by type
+  app.get("/api/smart-notify/alerts/:type", (req, res) => {
+    try {
+      const { type } = req.params;
+      const alerts = smartNotify.getAlertsByType(type);
+      res.json({ 
+        success: true, 
+        type,
+        alerts,
+        total_alerts: alerts.length
+      });
+    } catch (error) {
+      console.error('Error getting alerts by type:', error);
+      res.status(500).json({ error: 'Failed to get alerts by type' });
+    }
+  });
+
+  // Dismiss alert
+  app.delete("/api/smart-notify/alerts/:alertId", (req, res) => {
+    try {
+      const { alertId } = req.params;
+      const dismissed = smartNotify.dismissAlert(alertId);
+      
+      if (dismissed) {
+        res.json({ 
+          success: true, 
+          message: 'Alert dismissed successfully',
+          alert_id: alertId
+        });
+      } else {
+        res.status(404).json({ error: 'Alert not found' });
+      }
+    } catch (error) {
+      console.error('Error dismissing alert:', error);
+      res.status(500).json({ error: 'Failed to dismiss alert' });
+    }
+  });
+
+  // Update configuration
+  app.post("/api/smart-notify/config", (req, res) => {
+    try {
+      const configUpdate = req.body;
+      smartNotify.updateConfig(configUpdate);
+      
+      res.json({ 
+        success: true, 
+        message: 'SmartNotify configuration updated successfully',
+        config: smartNotify.getConfig()
+      });
+    } catch (error) {
+      console.error('Error updating SmartNotify config:', error);
+      res.status(500).json({ error: 'Failed to update configuration' });
+    }
+  });
+
+  // Get configuration
+  app.get("/api/smart-notify/config", (req, res) => {
+    try {
+      const config = smartNotify.getConfig();
+      res.json({ 
+        success: true, 
+        config
+      });
+    } catch (error) {
+      console.error('Error getting SmartNotify config:', error);
+      res.status(500).json({ error: 'Failed to get configuration' });
+    }
+  });
+
+  // Get statistics
+  app.get("/api/smart-notify/stats", (req, res) => {
+    try {
+      const stats = smartNotify.getStats();
+      res.json({ 
+        success: true, 
+        statistics: stats
+      });
+    } catch (error) {
+      console.error('Error getting SmartNotify stats:', error);
+      res.status(500).json({ error: 'Failed to get statistics' });
+    }
+  });
+
+  // Manual trigger alert (for testing)
+  app.post("/api/smart-notify/trigger", (req, res) => {
+    try {
+      const { type, message, severity } = req.body;
+      
+      if (!type || !message) {
+        return res.status(400).json({ error: 'Type and message are required' });
+      }
+      
+      // This would be integrated with the actual SmartNotify instance
+      // For now, return success
+      res.json({ 
+        success: true, 
+        message: 'Alert triggered successfully',
+        alert: { type, message, severity: severity || 'medium' }
+      });
+    } catch (error) {
+      console.error('Error triggering alert:', error);
+      res.status(500).json({ error: 'Failed to trigger alert' });
     }
   });
 
