@@ -324,7 +324,7 @@ export function WaidesKICoreEnginePanel() {
             <TabsTrigger value="dashboard" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
             <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
             <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
-            <TabsTrigger value="quantum" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Quantum AI</TabsTrigger>
+            <TabsTrigger value="quantum" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Kons Powa AI</TabsTrigger>
             <TabsTrigger value="neural" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Neural Network</TabsTrigger>
             <TabsTrigger value="konsmik" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
             <TabsTrigger value="biometric" className="data-[state=active]:bg-orange-600 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
@@ -469,18 +469,18 @@ export function WaidesKICoreEnginePanel() {
         {/* Intelligence Matrix Tab */}
         <TabsContent value="intelligence" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Quantum Core */}
+            {/* Kons Powa Core */}
             <Card className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 border-blue-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <AtomIcon className="w-5 h-5 text-blue-400" />
-                  Quantum Processing
+                  Kons Powa Processing
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Quantum State</span>
+                    <span className="text-gray-300">Kons Powa State</span>
                     <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500">
                       SUPERPOSITION
                     </Badge>
@@ -672,23 +672,23 @@ export function WaidesKICoreEnginePanel() {
           )}
         </TabsContent>
 
-        {/* Quantum AI Tab - Next-Generation Processing */}
+        {/* Kons Powa AI Tab - Next-Generation Processing */}
         <TabsContent value="quantum" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Quantum Processing Core */}
+            {/* Kons Powa Processing Core */}
             <Card className="bg-gradient-to-br from-cyan-900/30 to-blue-900/30 border-cyan-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <div className="p-2 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500">
                     <Zap className="w-5 h-5 text-white animate-pulse" />
                   </div>
-                  Quantum Core
+                  Kons Powa Core
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Quantum State</span>
+                    <span className="text-gray-300">Kons Powa State</span>
                     <Badge className="bg-cyan-600 animate-pulse">SUPERPOSITION</Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -702,7 +702,7 @@ export function WaidesKICoreEnginePanel() {
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
                   </div>
-                  <p className="text-xs text-gray-400">Quantum entanglement with global markets</p>
+                  <p className="text-xs text-gray-400">Kons Powa entanglement with global markets</p>
                 </div>
               </CardContent>
             </Card>
@@ -740,7 +740,7 @@ export function WaidesKICoreEnginePanel() {
               </CardContent>
             </Card>
 
-            {/* Quantum Algorithms */}
+            {/* Kons Powa Algorithms */}
             <Card className="bg-gradient-to-br from-teal-900/30 to-cyan-900/30 border-teal-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -1512,7 +1512,7 @@ export function WaidesKICoreEnginePanel() {
                   </div>
                   <div className="text-xs text-gray-400 space-y-1">
                     <div>⚡ Unlimited clean fusion</div>
-                    <div>🔋 Quantum battery storage</div>
+                    <div>🔋 Kons Powa battery storage</div>
                     <div>🌍 Powering entire civilizations</div>
                   </div>
                 </div>
@@ -1952,7 +1952,7 @@ export function WaidesKICoreEnginePanel() {
                         checked={settings.quantumProcessing}
                         onCheckedChange={(checked) => handleSettingChange('quantumProcessing', checked)}
                       />
-                      <span className="text-sm">Quantum Processing Core (2,048 qubits)</span>
+                      <span className="text-sm">Kons Powa Processing Core (2,048 qubits)</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Switch
@@ -2185,7 +2185,7 @@ export function WaidesKICoreEnginePanel() {
                         <SelectContent>
                           <SelectItem value="standard">Standard - AES-256</SelectItem>
                           <SelectItem value="military">Military - AES-512</SelectItem>
-                          <SelectItem value="quantum">Quantum - Unbreakable</SelectItem>
+                          <SelectItem value="quantum">Kons Powa - Unbreakable</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

@@ -3,7 +3,7 @@ import { DivineSignal } from './divineCommLayer';
 import { mlEngine } from './mlEngine';
 import { portfolioManager } from './portfolioManager';
 import { storage } from '../storage';
-import { divineQuantumFluxStrategy } from './divineQuantumFluxStrategy';
+import { divineKons PowaFluxStrategy } from './divineKons PowaFluxStrategy';
 
 export interface WaidDecision {
   action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
@@ -111,10 +111,10 @@ export class WaidBotEngine {
     
     let decision: WaidDecision;
     
-    // Get historical data for quantum analysis
+    // Get historical data for kons powa analysis
     const historicalData = await storage.getEthDataHistory(20);
     
-    // Convert to quantum market data format
+    // Convert to kons powa market data format
     const ethDataWithId = { 
       ...ethData, 
       id: 1,
@@ -123,12 +123,12 @@ export class WaidBotEngine {
       priceChange24h: ethData.priceChange24h || 0,
       timestamp: new Date(ethData.timestamp)
     }; // Add missing properties for compatibility
-    const marketData = divineQuantumFluxStrategy.convertEthDataToMarketData(ethDataWithId, historicalData);
+    const marketData = divineKons PowaFluxStrategy.convertEthDataToMarketData(ethDataWithId, historicalData);
     
-    // Generate quantum signal using Divine Quantum Flux Strategy
-    const quantumSignal = divineQuantumFluxStrategy.generateSignal(marketData);
+    // Generate kons powa signal using Divine Kons Powa Flux Strategy
+    const kons powaSignal = divineKons PowaFluxStrategy.generateSignal(marketData);
     
-    // KonsLang Decision Matrix with Quantum Enhancement
+    // KonsLang Decision Matrix with Kons Powa Enhancement
     if (konsAnalysis.tradingWindow === 'FORBIDDEN') {
       decision = {
         action: 'OBSERVE',
@@ -142,69 +142,69 @@ export class WaidBotEngine {
         nextGenStrategy: 'QUANTUM_SUPERPOSITION'
       };
     }
-    // Divine Quantum Flux Strategy Decision Matrix
-    else if (quantumSignal.strategy === 'QUANTUM_ENTANGLEMENT_BUY') {
+    // Divine Kons Powa Flux Strategy Decision Matrix
+    else if (kons powaSignal.strategy === 'QUANTUM_ENTANGLEMENT_BUY') {
       decision = {
         action: 'BUY_ETH',
-        reasoning: `Divine Quantum Flux: Singularity-level alignment detected - ${quantumSignal.confidence * 100}% quantum certainty. Maximum ETH accumulation at perfect entry point`,
-        confidence: quantumSignal.confidence * 100,
-        konsWisdom: 'Quantum entanglement achieved - ride the singularity wave with full conviction',
+        reasoning: `Divine Kons Powa Flux: Singularity-level alignment detected - ${kons powaSignal.confidence * 100}% kons powa certainty. Maximum ETH accumulation at perfect entry point`,
+        confidence: kons powaSignal.confidence * 100,
+        konsWisdom: 'Kons Powa entanglement achieved - ride the singularity wave with full conviction',
         ethPosition: 'LONG',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
+        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
         urgency: 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: quantumSignal.strategy
+        nextGenStrategy: kons powaSignal.strategy
       };
     }
-    else if (quantumSignal.strategy === 'HYPER_MOMENTUM_ACCUMULATION') {
+    else if (kons powaSignal.strategy === 'HYPER_MOMENTUM_ACCUMULATION') {
       decision = {
         action: 'BUY_ETH',
-        reasoning: `Divine Quantum Flux: Strong momentum alignment - ${(quantumSignal.confidence * 100).toFixed(1)}% quantum confidence. Strategic ETH accumulation`,
-        confidence: quantumSignal.confidence * 100,
-        konsWisdom: 'Momentum flows in our favor - accumulate with quantum precision',
+        reasoning: `Divine Kons Powa Flux: Strong momentum alignment - ${(kons powaSignal.confidence * 100).toFixed(1)}% kons powa confidence. Strategic ETH accumulation`,
+        confidence: kons powaSignal.confidence * 100,
+        konsWisdom: 'Momentum flows in our favor - accumulate with kons powa precision',
         ethPosition: 'LONG',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
-        urgency: quantumSignal.timeframe === '5m' ? 'WITHIN_HOUR' : 'IMMEDIATE',
+        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
+        urgency: kons powaSignal.timeframe === '5m' ? 'WITHIN_HOUR' : 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: quantumSignal.strategy
+        nextGenStrategy: kons powaSignal.strategy
       };
     }
-    else if (quantumSignal.strategy === 'DEFENSIVE_LIQUIDATION') {
+    else if (kons powaSignal.strategy === 'DEFENSIVE_LIQUIDATION') {
       decision = {
         action: 'SELL_ETH',
-        reasoning: `Divine Quantum Flux: Critical defensive signal - ${(quantumSignal.confidence * 100).toFixed(1)}% quantum certainty. Immediate protective liquidation required`,
-        confidence: quantumSignal.confidence * 100,
-        konsWisdom: 'Quantum collapse imminent - preserve capital through immediate liquidation',
+        reasoning: `Divine Kons Powa Flux: Critical defensive signal - ${(kons powaSignal.confidence * 100).toFixed(1)}% kons powa certainty. Immediate protective liquidation required`,
+        confidence: kons powaSignal.confidence * 100,
+        konsWisdom: 'Kons Powa collapse imminent - preserve capital through immediate liquidation',
         ethPosition: 'NEUTRAL',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
+        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
         urgency: 'IMMEDIATE',
         microMovementCapture: true,
-        nextGenStrategy: quantumSignal.strategy
+        nextGenStrategy: kons powaSignal.strategy
       };
     }
-    else if (quantumSignal.strategy === 'PROTECTIVE_SELLING') {
+    else if (kons powaSignal.strategy === 'PROTECTIVE_SELLING') {
       decision = {
         action: 'SELL_ETH',
-        reasoning: `Divine Quantum Flux: Moderate protective signal - ${(quantumSignal.confidence * 100).toFixed(1)}% quantum confidence. Strategic position reduction`,
-        confidence: quantumSignal.confidence * 100,
-        konsWisdom: 'Quantum waves suggest defensive positioning - protect accumulated gains',
+        reasoning: `Divine Kons Powa Flux: Moderate protective signal - ${(kons powaSignal.confidence * 100).toFixed(1)}% kons powa confidence. Strategic position reduction`,
+        confidence: kons powaSignal.confidence * 100,
+        konsWisdom: 'Kons Powa waves suggest defensive positioning - protect accumulated gains',
         ethPosition: 'NEUTRAL',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateQuantumPosition(quantumSignal.size, quantumSignal.confidence),
-        urgency: quantumSignal.timeframe === '15m' ? 'WITHIN_HOUR' : 'WHEN_READY',
+        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
+        urgency: kons powaSignal.timeframe === '15m' ? 'WITHIN_HOUR' : 'WHEN_READY',
         microMovementCapture: false,
-        nextGenStrategy: quantumSignal.strategy
+        nextGenStrategy: kons powaSignal.strategy
       };
     }
     else {
       decision = {
         action: 'HOLD',
-        reasoning: `Divine Quantum Flux: Quantum superposition state - ${(quantumSignal.confidence * 100).toFixed(1)}% confidence. Awaiting quantum collapse into actionable signal`,
-        confidence: quantumSignal.confidence * 100,
-        konsWisdom: 'Quantum patience preserves capital while awaiting perfect alignment',
+        reasoning: `Divine Kons Powa Flux: Kons Powa superposition state - ${(kons powaSignal.confidence * 100).toFixed(1)}% confidence. Awaiting kons powa collapse into actionable signal`,
+        confidence: kons powaSignal.confidence * 100,
+        konsWisdom: 'Kons Powa patience preserves capital while awaiting perfect alignment',
         ethPosition: 'NEUTRAL',
         tradingPair: 'NONE',
         quantity: 0,
@@ -242,18 +242,18 @@ export class WaidBotEngine {
     return Math.round(baseSize * multiplier); // Full position for ETH accumulation
   }
 
-  private calculateQuantumPosition(size: string | undefined, confidence: number): number {
-    // Quantum position calculation based on Divine Quantum Flux Strategy
-    const baseSize = 200; // Base USDT amount for quantum trading
-    const quantumMultiplier = confidence;
+  private calculateKons PowaPosition(size: string | undefined, confidence: number): number {
+    // Kons Powa position calculation based on Divine Kons Powa Flux Strategy
+    const baseSize = 200; // Base USDT amount for kons powa trading
+    const kons powaMultiplier = confidence;
     
     switch (size) {
       case 'full_position':
-        return Math.floor(baseSize * quantumMultiplier * 2); // Maximum position
+        return Math.floor(baseSize * kons powaMultiplier * 2); // Maximum position
       case 'half_position':
-        return Math.floor(baseSize * quantumMultiplier); // Standard position
+        return Math.floor(baseSize * kons powaMultiplier); // Standard position
       default:
-        return Math.floor(baseSize * quantumMultiplier * 0.5); // Conservative position
+        return Math.floor(baseSize * kons powaMultiplier * 0.5); // Conservative position
     }
   }
 
@@ -328,18 +328,18 @@ export class WaidBotEngine {
     }
 
     // Here you would integrate with actual exchange APIs
-    // Simulate trade execution and calculate PnL for quantum learning
+    // Simulate trade execution and calculate PnL for kons powa learning
     const simulatedPnL = Math.random() > 0.3 ? Math.random() * 100 : -Math.random() * 50; // 70% win rate simulation
     
-    // Update Divine Quantum Flux Strategy based on trade outcome
-    divineQuantumFluxStrategy.updateQuantumState({ pnl: simulatedPnL });
+    // Update Divine Kons Powa Flux Strategy based on trade outcome
+    divineKons PowaFluxStrategy.updateKons PowaState({ pnl: simulatedPnL });
     
     console.log(`🚀 WaidBot executing: ${decision.action} ${decision.quantity} USDT on ${decision.tradingPair}`);
-    console.log(`⚛️ Quantum state adapted with PnL: ${simulatedPnL.toFixed(2)}`);
+    console.log(`⚛️ Kons Powa state adapted with PnL: ${simulatedPnL.toFixed(2)}`);
     
     return {
       success: true,
-      message: `Executed ${decision.action} for ${decision.quantity} USDT - Quantum state evolved`
+      message: `Executed ${decision.action} for ${decision.quantity} USDT - Kons Powa state evolved`
     };
   }
 
