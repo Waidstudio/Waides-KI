@@ -5,40 +5,52 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Skull, ArrowUp, Brain, Flame, Eye, Timer, Target, Zap } from 'lucide-react';
+import { Skull, ArrowUp, Brain, Flame, Eye, Timer, Target, Zap, Bird } from 'lucide-react';
 
 export function ReincarnationLoop() {
   const queryClient = useQueryClient();
 
-  // Fetch reincarnation data
+  // Fetch reincarnation data with background updates
   const { data: memoryVault } = useQuery({
     queryKey: ['/api/waides-ki/reincarnation/memory-vault'],
-    refetchInterval: 30000
+    refetchInterval: 120000, // 2 minutes
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false
   });
 
   const { data: reincarnationStats } = useQuery({
     queryKey: ['/api/waides-ki/reincarnation/stats'],
-    refetchInterval: 30000
+    refetchInterval: 180000, // 3 minutes
+    staleTime: 120000, // 2 minutes
+    refetchOnWindowFocus: false
   });
 
   const { data: phoenixStats } = useQuery({
     queryKey: ['/api/waides-ki/reincarnation/phoenix-stats'],
-    refetchInterval: 15000
+    refetchInterval: 90000, // 1.5 minutes
+    staleTime: 60000, // 1 minute
+    refetchOnWindowFocus: false
   });
 
   const { data: sacredWisdom } = useQuery({
     queryKey: ['/api/waides-ki/reincarnation/sacred-wisdom'],
-    refetchInterval: 30000
+    refetchInterval: 300000, // 5 minutes
+    staleTime: 180000, // 3 minutes
+    refetchOnWindowFocus: false
   });
 
   const { data: evolutionStats } = useQuery({
     queryKey: ['/api/waides-ki/reincarnation/evolution-stats'],
-    refetchInterval: 30000
+    refetchInterval: 240000, // 4 minutes
+    staleTime: 120000, // 2 minutes
+    refetchOnWindowFocus: false
   });
 
   const { data: recentEvolutions } = useQuery({
     queryKey: ['/api/waides-ki/reincarnation/recent-evolutions'],
-    refetchInterval: 30000
+    refetchInterval: 180000, // 3 minutes
+    staleTime: 120000, // 2 minutes
+    refetchOnWindowFocus: false
   });
 
   // Mutations for reincarnation actions
@@ -99,7 +111,7 @@ export function ReincarnationLoop() {
         <Card className="bg-slate-900/50 border-slate-800">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Phoenix className="w-5 h-5 text-orange-400" />
+              <Bird className="w-5 h-5 text-orange-400" />
               <div>
                 <div className="text-xs text-slate-400">Reincarnations</div>
                 <div className="text-lg font-bold text-slate-100">
@@ -180,7 +192,7 @@ export function ReincarnationLoop() {
             <Card className="bg-slate-900/50 border-slate-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Phoenix className="w-5 h-5 text-orange-400" />
+                  <Bird className="w-5 h-5 text-orange-400" />
                   Most Reincarnated
                 </CardTitle>
               </CardHeader>
