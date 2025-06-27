@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
+import KonsaiChat from './KonsaiChat';
 
 import { useLocation } from 'wouter';
 import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine.js';
@@ -88,6 +89,65 @@ export default function WaidesKIVisionPortal() {
   const [currentTypingMessage, setCurrentTypingMessage] = useState('');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [konsaiInput, setKonsaiInput] = useState('');
+
+  // Konsai chat handlers
+  const handleQuickAction = (action: string) => {
+    setShowWelcomeMessage(false);
+    const actionMessages: { [key: string]: string } = {
+      'generate-strategy': 'Generate a new trading strategy for ETH',
+      'command-bots': 'Start all trading bots (WaidBot, WaidBot Pro, Waides Full Engine, SmaiSika Autonomous)',
+      'fund-account': 'How do I fund my account with USDT?',
+      'market-analysis': 'Provide current market analysis and trading insights',
+      'live-trading': 'Show me current live trading status and performance',
+      'ask-anything': 'I have a question about trading'
+    };
+    
+    const message = actionMessages[action] || 'Help me with trading';
+    handleSendKonsaiMessage(message);
+  };
+
+  const handleSendMessage = () => {
+    if (!konsaiInput.trim()) return;
+    setShowWelcomeMessage(false);
+    handleSendKonsaiMessage(konsaiInput);
+    setKonsaiInput('');
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setShowWelcomeMessage(false);
+    handleSendKonsaiMessage(suggestion);
+  };
+
+  const handleSendKonsaiMessage = async (messageText: string) => {
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      sender: 'user',
+      message: messageText,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsTyping(true);
+
+    try {
+      // Simulate AI response for now
+      setTimeout(() => {
+        const konsaiResponse: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          sender: 'waides',
+          message: `I understand you want: "${messageText}". I'm here to help with all your trading needs including strategy generation, bot management, account funding, and market analysis. How can I assist you further?`,
+          timestamp: new Date(),
+          source: 'incite'
+        };
+        
+        setMessages(prev => [...prev, konsaiResponse]);
+        setIsTyping(false);
+      }, 1500);
+    } catch (error) {
+      setIsTyping(false);
+      console.error('Error sending message:', error);
+    }
+  };
   const [isListening, setIsListening] = useState(false);
   const [oracleEnabled, setOracleEnabled] = useState(false);
   const [reasoningMode, setReasoningMode] = useState(false);
@@ -870,10 +930,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     setCurrentMessage('');
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setCurrentMessage(suggestion);
-    setTimeout(() => sendMessage(), 100);
-  };
+
 
   const startVoiceRecognition = () => {
     if (!('webkitSpeechRecognition' in window)) {
@@ -1747,30 +1804,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
 
       {/* Konsai Tab Content */}
       {activeTab === 'konsai' && (
-        <div className="relative z-10 flex-1 bg-black/40 backdrop-blur-sm border border-emerald-500/20 overflow-hidden w-full h-full">
-          <div className="h-full flex flex-col p-6">
-            
-            {/* Chat Messages Container */}
-            <div className="flex-1 overflow-y-auto space-y-6 scrollbar-thin scrollbar-thumb-emerald-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-6 min-h-[80vh]">
-              
-              {/* Konsai Introduction Message */}
-              {showWelcomeMessage && (
-              <div className="bg-gradient-to-r from-emerald-500/10 to-teal-600/10 border border-emerald-500/20 rounded-xl p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0">
-                    <Eye className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-emerald-300 font-bold text-xl mb-2">Konsai</div>
-                    <div className="text-gray-400 text-base mb-4">Your AI trading companion - Ask anything, generate strategies, command trading bots</div>
-                    
-                    <div className="text-gray-300 text-base">
-                      Welcome! I can help you with:
-                      <ul className="list-disc list-inside mt-3 space-y-2 text-gray-300">
-                        <li>Answering any trading or crypto questions</li>
-                        <li>Generating custom trading strategies</li>
-                        <li>Commanding WaidBot, WaidBot Pro, Waides Full Engine, and SmaiSika Autonomous</li>
-                        <li>Providing real-time trading details and market analysis</li>
+        <div className="relative z-10 flex-1 overflow-hidden w-full h-full">
+          <KonsaiChat />
                         <li>Account funding assistance with USDT transfers</li>
                         <li>General conversation and guidance</li>
                       </ul>
