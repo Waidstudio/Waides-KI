@@ -349,6 +349,10 @@ export class WaidesKILiveFeed {
     return await this.fetchLiveETHData();
   }
 
+  async getMarketData(): Promise<LiveETHData | null> {
+    return await this.fetchLiveETHData();
+  }
+
   async getDetailedMarketData(): Promise<{
     liveData: LiveETHData | null;
     marketStats: MarketStats | null;

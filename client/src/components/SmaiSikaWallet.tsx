@@ -1153,14 +1153,35 @@ export default function SmaiSikaWallet() {
                       </div>
                     </TabsContent>
                   </Tabs>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+                </DialogContent>
+              </Dialog>
+
+              {/* Other Quick Actions */}
+              <Button className="bg-blue-600 hover:bg-blue-700 h-16 flex flex-col gap-2">
+                <ArrowRightLeft className="w-6 h-6" />
+                <span>Convert</span>
+              </Button>
+              
+              <Button className="bg-purple-600 hover:bg-purple-700 h-16 flex flex-col gap-2">
+                <Send className="w-6 h-6" />
+                <span>Send</span>
+              </Button>
+              
+              <Button className="bg-amber-600 hover:bg-amber-700 h-16 flex flex-col gap-2">
+                <Download className="w-6 h-6" />
+                <span>Withdraw</span>
+              </Button>
+            </div>
+
+            {/* Rest of component content */}
+            <div className="text-center text-gray-400 mt-8">
+              <p>Wallet functionality is under development</p>
+            </div>
+          </TabsContent>
+
+          {/* Other Tabs can be added here */}
+        </Tabs>
       </div>
     </div>
   );
 }
-
-export default SmaiSikaWallet;
