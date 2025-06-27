@@ -2225,6 +2225,9 @@ export function WaidesKICoreEnginePanel() {
             </Card>
           </div>
         </TabsContent>
+
+        {/* Engine Status Tab */}
+        <TabsContent value="status" className="flex-1 overflow-y-auto space-y-6 p-1">
           <Card className="bg-gray-800/50 border-purple-500/30">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
