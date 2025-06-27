@@ -1168,9 +1168,50 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 <Brain className="w-10 h-10 text-white" />
               </div>
               <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
-              <p className="text-gray-400 max-w-md mb-6">
+              <p className="text-gray-400 max-w-md mb-4">
                 Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
+              
+              {/* Quick Actions */}
+              <div className="flex flex-wrap gap-2 mb-4 justify-center">
+                <Button
+                  onClick={handleKonsPowaPrediction}
+                  disabled={isProcessing || showKonsPrediction || isKonsPredictionLoading}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
+                >
+                  {showKonsPrediction || isKonsPredictionLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-4 h-4" />
+                      Kons Powa ETH Prediction
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={() => setCurrentMessage("What's the market outlook for ETH?")}
+                  variant="outline"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  Market Analysis
+                </Button>
+                
+                <Button
+                  onClick={() => setCurrentMessage("Show me ETH trading strategies")}
+                  variant="outline"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                >
+                  <Brain className="w-4 h-4" />
+                  Trading Strategies
+                </Button>
+              </div>
+
+
               
               <div className="text-sm text-gray-500">
                 {chatMode === 'auto' && (
@@ -1443,8 +1484,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* System Components section removed for cleaner mobile interface */}
-      {false && (
+      {/* Action Menu - Only show when not in chat or konsai tab */}
+      {activeTab !== 'chat' && activeTab !== 'konsai' && (
         <div className="relative z-10 mx-4 mb-4">
         <Card className="bg-gray-900/60 backdrop-blur-sm border-purple-500/30 text-white">
           <CardHeader className="pb-2">

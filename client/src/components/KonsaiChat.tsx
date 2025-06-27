@@ -1491,7 +1491,47 @@ Simply type any of these commands:
 
       {/* Fixed Chat Input at Bottom */}
       <div className="relative z-10 bg-black/80 backdrop-blur-xl border-t border-emerald-500/20 p-4">
-        <div className="max-w-4xl mx-auto w-full">
+        <div className="max-w-4xl mx-auto w-full space-y-3">
+          {/* Quick Suggestions - Compact Design */}
+          <div className="flex flex-wrap gap-2 justify-center animate-fade-in">
+            <button 
+              onClick={() => handleQuickQuestion('Who are you?')}
+              className="px-2 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs rounded-full border border-emerald-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-emerald-500/20 backdrop-blur-sm"
+            >
+              🤖 Who are you?
+            </button>
+            <button 
+              onClick={() => handleQuickQuestion('What can you do?')}
+              className="px-2 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 text-xs rounded-full border border-blue-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-blue-500/20 backdrop-blur-sm"
+            >
+              ⚡ What can you do?
+            </button>
+            <button 
+              onClick={() => handleQuickQuestion('Tell me about ETH trading')}
+              className="px-2 py-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs rounded-full border border-purple-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-purple-500/20 backdrop-blur-sm"
+            >
+              💎 Tell me about ETH trading
+            </button>
+            <button 
+              onClick={() => handleQuickQuestion('Your capabilities')}
+              className="px-2 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-cyan-500/20 backdrop-blur-sm"
+            >
+              🧠 Your capabilities
+            </button>
+            <button 
+              onClick={() => handleQuickQuestion('Predict ETH now')}
+              className="px-2 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-300 text-xs rounded-full border border-orange-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-orange-500/20 backdrop-blur-sm"
+            >
+              🔮 Predict ETH now
+            </button>
+            <button 
+              onClick={() => handleQuickQuestion('Market analysis')}
+              className="px-2 py-1.5 bg-pink-500/10 hover:bg-pink-500/20 text-pink-300 text-xs rounded-full border border-pink-500/20 transition-all duration-200 font-medium hover:scale-105 hover:shadow-sm hover:shadow-pink-500/20 backdrop-blur-sm"
+            >
+              📊 Market analysis
+            </button>
+          </div>
+          
           {/* Input Row */}
           <div className="flex gap-3 items-center">
             <div className="flex-1 relative">
