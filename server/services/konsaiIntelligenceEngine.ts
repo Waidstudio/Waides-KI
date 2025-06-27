@@ -18,6 +18,12 @@ import { kons_TradeSense } from './kons/kons_TradeSense.js';
 import { kons_WaidSelector } from './kons/kons_WaidSelector.js';
 import { kons_HumanTalk } from './kons/kons_HumanTalk.js';
 import { kons_EmotionalSync } from './kons/kons_EmotionalSync.js';
+// New comprehensive Kons modules for enhanced user experience
+import { kons_SessionTimer } from './kons/kons_SessionTimer.js';
+import { kons_FatigueAlert } from './kons/kons_FatigueAlert.js';
+import { kons_ExplainLikeFive } from './kons/kons_ExplainLikeFive.js';
+import { kons_TradePreview } from './kons/kons_TradePreview.js';
+import { kons_EmotionTimeline } from './kons/kons_EmotionTimeline.js';
 
 // SmaiSika Sacred Knowledge System
 interface SmaiSikaKnowledge {
@@ -1212,7 +1218,13 @@ class KonsModuleManager {
       tradeSense: null,
       waidSelector: null,
       humanTalk: null,
-      emotionalSync: null
+      emotionalSync: null,
+      // New comprehensive Kons modules
+      sessionTimer: null,
+      fatigueAlert: null,
+      explainLikeFive: null,
+      tradePreview: null,
+      emotionTimeline: null
     };
 
     try {
