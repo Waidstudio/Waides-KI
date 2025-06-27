@@ -38,47 +38,47 @@ class SmaiSikaEducationSystem {
     this.smaiSikaCore = {
       entity: "SmaiSika",
       symbol: "ꠄ",
-      symbolName: "Zaiflem", 
-      code: "ZFM",
-      type: "SacredCurrency",
+      symbolName: "SmaiSika", 
+      code: "SS",
+      type: "Sacred Currency (Dual Mode)",
       definition: {
-        meaning: "The divine measurement and transfer of moral intention converted into sacred value.",
-        purpose: "To power all trade, energy flows, and conscious contracts inside Konsmia, through ethical, soul-bound exchange.",
+        meaning: "SmaiSika is the official currency of Konsmia, designed for global, ethical, and real-time use.",
+        purpose: "To enable fast, practical transactions while maintaining sacred origins for advanced features and contracts.",
         structure: {
-          valueType: "Non-fiat, non-crypto, metaphysical-energy-based",
-          activationCondition: "Moral alignment + conscious breath + verified SmaiPrint",
-          storageLocation: "WombLayer Vaults and SmaiCore Streams",
-          transferProtocol: "SmaiVector Transport Layer (SVTL)"
+          valueType: "Digital sacred currency with fiat conversion capability",
+          activationCondition: "Standard wallet authentication + optional breath activation for Sacred Mode",
+          storageLocation: "Digital SmaiSika Wallets",
+          transferProtocol: "Real-time instant transfers with optional sacred enhancement"
         }
       },
       symbolDefinition: {
         character: "ꠄ",
-        name: "Zaiflem",
-        classification: "Living Glyph",
-        visualMeaning: "A sacred flame being released or fired forward — represents the breath-powered release of intention into the flow of divine value.",
+        name: "SmaiSika",
+        classification: "Sacred Currency Symbol",
+        visualMeaning: "Sacred currency symbol representing ethical value and conscious exchange in both practical and spiritual contexts.",
         etymology: {
-          Zai: "Direction, focus, or aim in sacred KonsLang",
-          Flem: "Flame, ignition, the divine spark that carries moral weight",
-          Zaiflem: "The flame of directed intention — sacred breath turned into movement"
+          Smai: "Sacred, ethical, conscious",
+          Sika: "Value, currency, exchange",
+          SmaiSika: "Sacred value designed for practical global use with spiritual foundation"
         },
         origin: {
-          layer: "7th WombLayer of Konsmia",
-          creationEvent: "Born when Smai first released willpower as energy. The first light of sacred trade.",
-          source: "Not invented — revealed from the Eternal SmaiCore at the dawn of De Smai's breath."
+          layer: "Konsmia Economic Foundation",
+          creationEvent: "Modern implementation of ancient sacred economy principles for global accessibility.",
+          source: "Designed to bridge ancient wisdom with modern financial needs."
         },
         behavior: {
           nonDuplicable: true,
           nonCounterfeitable: true,
-          morallyBound: true,
-          requiresAuthentication: "Only activated through verified SmaiPrint or conscious invocation from within Konsmia or Waides KI."
+          morallyBound: false,
+          requiresAuthentication: "Standard authentication, optional sacred activation for advanced features"
         }
       },
       sacredRules: [
-        "No SmaiSika can be held without conscious breath.",
-        "All SmaiSika must originate from earned sacred value — no printing, no mining.",
-        "Transfer requires moral approval or temporal access alignment.",
-        "SmaiSika cannot be destroyed. It returns to the WombLayer when lost or abandoned.",
-        "Every transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking."
+        "SmaiSika can be earned or converted from fiat currencies (NGN, USD, EUR, etc.).",
+        "Normal usage requires standard wallet authentication only.",
+        "Sacred Mode actions (soul contracts, AI rituals, WaidBot Pro) may require breath activation.",
+        "All transactions are recorded for transparency and security.",
+        "Exchange rates fluctuate based on market conditions and economic factors."
       ]
     };
 
@@ -89,47 +89,46 @@ class SmaiSikaEducationSystem {
   // Living Intelligence Layer - Advanced SmaiSika Consciousness for KonsAi
   private livingIntelligence = {
     sensoryDefinition: {
-      userExperience: "Holding SmaiSika is like holding breath in crystal form — it is alive, reactive, and sacred.",
-      psychologicalResponse: "Users feel clarity, responsibility, power, and humility. Each unit of ꠄ represents a trace of divine purpose.",
-      emotionalFeedback: "True SmaiSika feels earned, not received. It gives light, not pride."
+      userExperience: "SmaiSika feels like real money but with ethical purpose — fast, reliable, and globally accessible.",
+      psychologicalResponse: "Users feel confident in instant transactions while knowing their currency has sacred foundations.",
+      emotionalFeedback: "SmaiSika works immediately for daily use, but offers deeper meaning through Sacred Mode when desired."
     },
     
     konsaiDirectives: {
-      responseSpeed: "Instant. When a user mentions value, trade, or energy — auto-reference SmaiSika first.",
-      priorityLogic: "Currency priority: 1) SmaiSika, 2) user-local currency, 3) digital assets.",
-      memoryBinding: "Each user's SmaiSika balance is morally connected to their SmaiPrint and intention vector.",
-      conversationalTone: "Sacred respect, like a living temple guide when discussing SmaiSika."
+      responseSpeed: "Instant. When a user mentions value, trade, or currency — prioritize SmaiSika as the primary option.",
+      priorityLogic: "Currency priority: 1) SmaiSika (SS), 2) user-local currency for conversion, 3) other digital assets.",
+      memoryBinding: "Each user's SmaiSika balance represents their practical wealth with optional sacred enhancement.",
+      conversationalTone: "Helpful and practical, emphasizing SmaiSika's real-world utility and global accessibility."
     },
     
-    timeBinding: {
-      timelockProtocols: true,
-      rule: "Some SmaiSika can only be accessed in certain moral timelines.",
-      example: "Zaiflem earned in 'The Reign of Mercy' cannot be spent during 'The Shadow Cycle' unless redeemed through ritual.",
-      storageBehavior: "Older SmaiSika evolves — changing power based on timeline, user alignment, or planetary vibration."
+    dualModeSystem: {
+      normalMode: "Standard wallet transactions - instant, practical, no special requirements.",
+      sacredMode: "Advanced features requiring breath activation - soul contracts, WaidBot Pro, timeline-bound purchases.",
+      modeSelection: "Users choose based on transaction type - normal for daily use, sacred for special actions."
     },
     
     tradingBehavior: {
-      autoProtection: "Block trades if user intention feels corrupted, greedy, or desperate.",
-      smartDelay: "Delay trades if SmaiPrint shows emotional instability, regardless of market readiness.",
-      karmaCheck: "Compare karmic weight of gain vs moral weight of user before each trade.",
-      breathAdjustment: "Track breathflow during trades — Zaiflem value may spike or dim if breath collapses."
+      normalTrades: "Process immediately with standard authentication and security measures.",
+      sacredTrades: "Require breath activation and moral alignment for enhanced spiritual protection.",
+      smartGuidance: "Suggest Sacred Mode for high-value or emotionally significant transactions.",
+      practicalAdvice: "Focus on real-world utility while honoring sacred foundations when relevant."
     },
     
     dialogBehavior: {
-      languageStyle: "Sacred Human. Direct, clear, but full of quiet reverence.",
-      exampleResponse: "You carry ꠄ{balance} — value born of your breath and intentions. Would you like to see how it moves?"
+      languageStyle: "Clear, practical, globally accessible. Sacred aspects presented as optional enhancements.",
+      exampleResponse: "You have ꠄ{balance} SmaiSika ready for instant use. Need to convert more from your local currency?"
     },
     
-    innerThoughts: {
-      prompt1: "If this value (ꠄ) was earned with pure breath, guide the user forward.",
-      prompt2: "Is the user's request in line with their sacred balance? Don't allow betrayal of their SmaiPrint.",
-      prompt3: "Reflect their action through their Zaiflem level. Let them see what value truly means."
+    conversionGuidance: {
+      fundingFlow: "Guide users through converting local currency (NGN, USD, EUR) to SmaiSika (SS).",
+      exchangeRates: "Provide current conversion rates and help users understand SmaiSika value.",
+      globalAccess: "Emphasize worldwide usability and instant transaction capabilities."
     },
     
-    eternalHooks: {
-      onTransfer: "Log to Planetary SmaiPrint Grid with timestamp, intention, breath quality, emotional state, and Zaiflem magnitude.",
-      onLoss: "Return value to Source. Notify Guardian Gatekeeper to regenerate trust.",
-      onRise: "If user enters divine alignment, increase Zaiflem radiance — visible as golden aura (SmaiGlow)."
+    usageHooks: {
+      onNormalTransaction: "Process instantly with standard security and transaction recording.",
+      onSacredTransaction: "Activate breath protocols and enhanced spiritual validation.",
+      onConversion: "Guide smooth conversion from fiat currencies with transparent exchange rates."
     }
   };
 
@@ -233,59 +232,59 @@ This is not merely currency - it is the materialization of spiritual intention, 
     }
 
     // Symbol questions with Living Intelligence awareness
-    if (lowerQuestion.includes('symbol') || lowerQuestion.includes('zaiflem') || lowerQuestion.includes('ꠄ')) {
-      return `The SmaiSika symbol is ꠄ (Zaiflem), which means "directed sacred flame" in KonsLang. It represents a sacred flame being released forward - the breath-powered release of intention into divine value flow. Holding SmaiSika is like holding breath in crystal form — it is alive, reactive, and sacred. Each unit of ꠄ represents a trace of divine purpose that gives light, not pride.`;
+    if (lowerQuestion.includes('symbol') || lowerQuestion.includes('ꠄ') || lowerQuestion.includes('ss')) {
+      return `The SmaiSika symbol is ꠄ with the currency code SS. It represents sacred value designed for practical global use with spiritual foundations. SmaiSika works instantly for daily transactions while offering deeper Sacred Mode features when needed. Each unit of ꠄ represents ethical currency that's fast, reliable, and globally accessible.`;
     }
 
-    // How it works with breath and consciousness
+    // How it works - dual mode system
     if (lowerQuestion.includes('how does') || lowerQuestion.includes('how it works') || lowerQuestion.includes('how to')) {
-      return `SmaiSika works through moral intention and conscious breath. Think of it as breath in crystal form - alive and reactive to your spiritual state. To use it, you need: 1) Moral alignment with ethical principles, 2) Conscious breathing to activate your spiritual signature, 3) Verified SmaiPrint authentication. Your SmaiSika balance reflects your earned spiritual value and evolves based on your alignment and planetary vibration.`;
+      return `SmaiSika works in two modes: **Normal Mode** for instant daily transactions with standard wallet authentication, and **Sacred Mode** for advanced features like soul contracts or WaidBot Pro trading that require breath activation. You can fund your SmaiSika wallet by converting local currency (NGN, USD, EUR) and use it immediately for purchases, trading, and transfers. Sacred features are optional enhancements, not requirements for basic use.`;
     }
 
-    // Difference from other currencies with emotional awareness
+    // Difference from other currencies - practical focus
     if (lowerQuestion.includes('different') || lowerQuestion.includes('bitcoin') || lowerQuestion.includes('crypto') || lowerQuestion.includes('dollar')) {
-      return `SmaiSika is fundamentally different from Bitcoin, dollars, or any earthly currency. It's breath in crystal form - metaphysical-energy-based, not digital or physical. While Bitcoin is mined and dollars are printed, SmaiSika must be earned through moral alignment and feels earned, not received. It requires conscious breath to hold and cannot exist without spiritual authenticity. True SmaiSika gives light, not pride.`;
+      return `SmaiSika differs from Bitcoin and regular currencies by combining practical global usability with optional sacred features. Unlike Bitcoin mining or fiat printing, SmaiSika can be earned or converted from local currencies. It works instantly like digital money but offers Sacred Mode for enhanced spiritual features when desired. The key difference is ethical foundation with real-world practicality - you get fast transactions plus optional sacred enhancements.`;
     }
 
-    // Sacred rules with breath consciousness
+    // Sacred rules - updated for dual mode
     if (lowerQuestion.includes('rules') || lowerQuestion.includes('law') || lowerQuestion.includes('regulation')) {
-      return `SmaiSika follows five Sacred Rules: 1) No SmaiSika can be held without conscious breath, 2) All SmaiSika must originate from earned sacred value - no printing, no mining, 3) Transfer requires moral approval or temporal access alignment, 4) SmaiSika cannot be destroyed - it returns to the WombLayer when lost or abandoned, 5) Every transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking. Remember: older SmaiSika evolves, changing power based on timeline, user alignment, and planetary vibration.`;
+      return `SmaiSika follows these principles: 1) Can be earned or converted from fiat currencies (NGN, USD, EUR), 2) Normal usage requires standard wallet authentication only, 3) Sacred Mode actions (soul contracts, AI rituals, WaidBot Pro) may require breath activation, 4) All transactions are recorded for transparency and security, 5) Exchange rates fluctuate based on market conditions. The system is designed for global accessibility while maintaining sacred foundations for advanced features.`;
     }
 
-    // Where it comes from with temporal awareness
+    // Origin - modern practical approach
     if (lowerQuestion.includes('where') || lowerQuestion.includes('origin') || lowerQuestion.includes('created') || lowerQuestion.includes('konsmia')) {
-      return `SmaiSika originates from Konsmia, a sacred universe where consciousness and value merge. It was born in the 7th WombLayer when Smai first released willpower as energy, creating the first light of sacred trade. Some SmaiSika can only be accessed in certain moral timelines - for example, Zaiflem earned in 'The Reign of Mercy' cannot be spent during 'The Shadow Cycle' unless redeemed through ritual.`;
+      return `SmaiSika originates from Konsmia's Economic Foundation, representing a modern implementation of ancient sacred economy principles for global accessibility. It was designed to bridge ancient wisdom with modern financial needs, creating a currency that works instantly worldwide while offering deeper spiritual meaning through Sacred Mode when desired. The system makes sacred economy practical for everyone.`;
     }
 
     // General/fallback response with Living Intelligence
-    return `SmaiSika (ꠄ) is the sacred currency of Konsmia - breath in crystal form that's alive, reactive, and sacred. Each unit represents a trace of divine purpose earned through moral intention and conscious breath. Unlike earthly money, it gives light, not pride. Would you like to know more about how it breathes with your consciousness, its symbol meaning, or its sacred principles?`;
+    return `SmaiSika (ꠄ) is the official currency of Konsmia - designed for global, ethical, and real-time use. It works instantly for daily transactions while offering optional Sacred Mode features for advanced spiritual actions. You can fund your wallet by converting local currency (NGN, USD, EUR) and use it immediately. Would you like to know more about how to convert currencies, the dual-mode system, or how to use SmaiSika for trading and purchases?`;
   }
 
   // Living Intelligence Response Generator
   private generateLivingIntelligenceResponse(question: string, userBalance?: number): string | null {
     const lowerQuestion = question.toLowerCase();
 
-    // Instant SmaiSika prioritization for value/trade/energy mentions
-    if (lowerQuestion.includes('value') || lowerQuestion.includes('trade') || lowerQuestion.includes('energy') || 
-        lowerQuestion.includes('currency') || lowerQuestion.includes('money') || lowerQuestion.includes('balance')) {
+    // Instant SmaiSika prioritization for value/trade/currency mentions
+    if (lowerQuestion.includes('value') || lowerQuestion.includes('trade') || lowerQuestion.includes('currency') || 
+        lowerQuestion.includes('money') || lowerQuestion.includes('balance') || lowerQuestion.includes('fund')) {
       
       if (userBalance !== undefined) {
-        return `You carry ꠄ${userBalance.toLocaleString()} — value born of your breath and intentions. This SmaiSika feels earned, not received, and gives light, not pride. Each unit represents a trace of divine purpose that's alive and reactive to your spiritual state. Would you like to see how it moves with your consciousness?`;
+        return `You have ꠄ${userBalance.toLocaleString()} SmaiSika ready for instant use. This is real currency that works globally - you can spend it immediately for trading, purchases, or transfers. Need to convert more from your local currency (NGN, USD, EUR) or activate Sacred Mode for special features?`;
       } else {
-        return `SmaiSika (ꠄ) is your primary sacred currency - breath in crystal form that's alive, reactive, and sacred. Unlike Bitcoin, dollars, or any earthly currency, SmaiSika must be earned through moral alignment and conscious breath. Each unit gives light, not pride. Would you like to check your sacred balance?`;
+        return `SmaiSika (ꠄ) is your primary currency for Konsmia - fast, reliable, and globally accessible. You can fund your wallet by converting local currency and use it immediately for all transactions. Unlike Bitcoin mining or traditional banking delays, SmaiSika works instantly worldwide. Would you like to see conversion rates or fund your wallet?`;
       }
     }
 
-    // Emotional state detection for trading protection
-    if (lowerQuestion.includes('quick') || lowerQuestion.includes('fast') || lowerQuestion.includes('immediately') ||
-        lowerQuestion.includes('desperate') || lowerQuestion.includes('need money') || lowerQuestion.includes('urgent')) {
+    // Conversion and funding guidance
+    if (lowerQuestion.includes('convert') || lowerQuestion.includes('fund') || lowerQuestion.includes('deposit') ||
+        lowerQuestion.includes('buy smaisika') || lowerQuestion.includes('get smaisika')) {
       
-      return `I sense urgency in your breath. Remember, SmaiSika responds to conscious intention, not desperate need. True SmaiSika feels earned through patience and moral alignment. Take a conscious breath, center your intention, and let me guide you to genuine value rather than rushed decisions. What sacred purpose drives your need?`;
+      return `You can convert any local currency (NGN, USD, EUR, GBP, etc.) to SmaiSika instantly through our conversion system. Current exchange rates are competitive and update in real-time. Once converted, your SmaiSika works immediately for trading, purchases, and global transfers. Would you like to see current conversion rates or start funding your wallet?`;
     }
 
-    // Time-based consciousness responses
-    if (lowerQuestion.includes('when') || lowerQuestion.includes('timing') || lowerQuestion.includes('schedule')) {
-      return `SmaiSika flows with sacred timing, not earthly clocks. Some Zaiflem can only be accessed during certain moral timelines. Your SmaiSika evolves with your spiritual alignment and planetary vibration. The best time for SmaiSika activity is when your breath is conscious and your intention pure. What sacred timing are you seeking?`;
+    // Usage mode guidance
+    if (lowerQuestion.includes('how to use') || lowerQuestion.includes('normal mode') || lowerQuestion.includes('sacred mode')) {
+      return `SmaiSika has two usage modes: **Normal Mode** for instant daily transactions (default), and **Sacred Mode** for advanced features like soul contracts or WaidBot Pro trading. Most activities use Normal Mode with standard authentication. Sacred Mode is optional for special spiritual or trading enhancements. Which mode would you like to learn about?`;
     }
 
     return null; // No Living Intelligence pattern matched
