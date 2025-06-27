@@ -154,14 +154,15 @@ export default function WaidesFullEngine() {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Waides Full Engine</h1>
-          <p className="text-muted-foreground">Autonomous ETH Trading Orchestrator</p>
-        </div>
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Waides Full Engine</h1>
+            <p className="text-muted-foreground">Autonomous ETH Trading Orchestrator</p>
+          </div>
+          <div className="flex items-center gap-3">
           <Badge 
             variant={getStatusColor(engineStatus.is_running, engineStatus.emergency_stop_active)}
             className="px-3 py-1"
@@ -169,13 +170,13 @@ export default function WaidesFullEngine() {
             {engineStatus.emergency_stop_active ? 'EMERGENCY STOP' : 
              engineStatus.is_running ? 'RUNNING' : 'STOPPED'}
           </Badge>
-          <div className={`w-3 h-3 rounded-full ${getRiskLevelColor(engineStatus.risk_level)}`} />
-          <span className="text-sm font-medium">{engineStatus.risk_level} RISK</span>
+            <div className={`w-3 h-3 rounded-full ${getRiskLevelColor(engineStatus.risk_level)}`} />
+            <span className="text-sm font-medium">{engineStatus.risk_level} RISK</span>
+          </div>
         </div>
-      </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
@@ -212,21 +213,21 @@ export default function WaidesFullEngine() {
             <p className="text-2xl font-bold">{(analytics?.sharpe_ratio || 1.2).toFixed(2)}</p>
           </CardContent>
         </Card>
-      </div>
+        </div>
 
-      {/* Control Panel */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            Engine Control Panel
-          </CardTitle>
-          <CardDescription>
-            Start, stop, and manage the autonomous trading engine
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
+        {/* Control Panel */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              Engine Control Panel
+            </CardTitle>
+            <CardDescription>
+              Start, stop, and manage the autonomous trading engine
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3">
             <Button
               onClick={() => startEngine.mutate()}
               disabled={engineStatus.is_running || startEngine.isPending}
@@ -718,11 +719,12 @@ export default function WaidesFullEngine() {
         </TabsContent>
       </Tabs>
 
-      {statusLoading && (
-        <div className="text-center py-4 text-muted-foreground">
-          Loading engine status...
-        </div>
-      )}
+        {statusLoading && (
+          <div className="text-center py-4 text-muted-foreground">
+            Loading engine status...
+          </div>
+        )}
+      </div>
     </div>
   );
 }
