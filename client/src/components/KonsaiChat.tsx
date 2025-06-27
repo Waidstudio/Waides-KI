@@ -89,13 +89,19 @@ Scale into position with **3 equal entries**
 Move stop to **breakeven at +5% profit**
 
 Scale out **1/3 position at +10%**
-- Trail remaining position with 8% stop
-- Monitor for trend exhaustion signals
 
-## 4. Market Context Analysis
+Trail remaining position with **8% stop**
+
+Monitor for **trend exhaustion signals**
+
+**4. Market Context Analysis**
+
 **Current ETH Price:** $2,455
+
 **Support Levels:** $2,420, $2,380, $2,340
+
 **Resistance Levels:** $2,480, $2,520, $2,580
+
 **Volume Profile:** Accumulation phase detected
 
 **Strategy deployed to all trading engines and ready for execution.**`;
@@ -109,78 +115,147 @@ Scale out **1/3 position at +10%**
             body: JSON.stringify({ bots: ['waidbot', 'waidbot-pro', 'waides-full', 'smaisika'] })
           });
           const botData = await botRes.json();
-          response = `# 🤖 Advanced Trading Bot Fleet Activation
+          response = `**🤖 Advanced Trading Bot Fleet Activation**
 
-## 1. Bot Deployment Status
+**1. Bot Deployment Status**
+
 **Activation Time:** ${new Date().toLocaleTimeString()}
+
 **Total Bots Deployed:** 4/4 Successfully Online
+
 **System Status:** All Systems Operational
 
-## 2. Individual Bot Analysis
+**2. Individual Bot Analysis**
 
-### WaidBot (Divine Quantum Flux Engine)
-- **Status:** ✅ Active & Scanning Markets
-- **Strategy:** Divine Quantum Flux with 8-dimensional analysis
-- **Capital Allocation:** $2,500 (25% of total)
-- **Risk Profile:** Conservative with quantum protection
-- **Current Focus:** ETH/USDT momentum detection
-- **Performance:** 87.3% accuracy over last 30 days
+**WaidBot (Divine Quantum Flux Engine)**
 
-### WaidBot Pro (Neural Quantum Singularity)
-- **Status:** ✅ Neural Networks Online
-- **Strategy:** Advanced LSTM + Quantum algorithms
-- **Capital Allocation:** $2,500 (25% of total)
-- **Risk Profile:** Moderate with AI risk management
-- **Current Focus:** Multi-timeframe pattern recognition
-- **Performance:** 91.7% win rate with 1:3.2 avg R:R
+**Status:** ✅ Active & Scanning Markets
 
-### Waides Full Engine (Comprehensive Analysis)
-- **Status:** ✅ Quantum Analysis Running
-- **Strategy:** Full-spectrum market analysis
-- **Capital Allocation:** $2,500 (25% of total)
-- **Risk Profile:** Balanced with sentiment integration
-- **Current Focus:** Cross-market correlation analysis
-- **Performance:** 89.1% success in volatile conditions
+**Strategy:** Divine Quantum Flux with 8-dimensional analysis
 
-### SmaiSika Autonomous (Spiritual AI Trading)
-- **Status:** ✅ AI Trading Enabled
-- **Strategy:** Biometric + spiritual market reading
-- **Capital Allocation:** $2,500 (25% of total)
-- **Risk Profile:** Adaptive with moral trading controls
-- **Current Focus:** Energy-based market timing
-- **Performance:** 94.2% accuracy in trend reversals
+**Capital Allocation:** $2,500 (25% of total)
 
-## 3. Fleet Configuration
+**Risk Profile:** Conservative with quantum protection
 
-### Capital Management
-- **Total Available Capital:** $10,000
-- **Reserved for Opportunities:** $1,000
-- **Active Trading Capital:** $9,000
-- **Risk per Trade:** Maximum 1% per bot (0.25% total)
+**Current Focus:** ETH/USDT momentum detection
 
-### Risk Controls
-- **Daily Loss Limit:** 2% ($200)
-- **Maximum Drawdown:** 5% ($500)
-- **Position Sizing:** Dynamic based on volatility
-- **Emergency Stop:** Activated at 3% daily loss
+**Performance:** **87.3% accuracy** over last 30 days
 
-### Coordination Protocol
-- **Trade Conflicts:** Advanced collision detection
-- **Signal Sharing:** Real-time bot communication
-- **Performance Monitoring:** Every 15 minutes
-- **Rebalancing:** Automatic based on performance
+**WaidBot Pro (Neural Quantum Singularity)**
 
-## 4. Market Monitoring Dashboard
+**Status:** ✅ Neural Networks Online
+
+**Strategy:** Advanced LSTM + Quantum algorithms
+
+**Capital Allocation:** $2,500 (25% of total)
+
+**Risk Profile:** Moderate with AI risk management
+
+**Current Focus:** Multi-timeframe pattern recognition
+
+**Performance:** **91.7% win rate** with 1:3.2 avg R:R
+
+**Waides Full Engine (Comprehensive Analysis)**
+
+**Status:** ✅ Quantum Analysis Running
+
+**Strategy:** Full-spectrum market analysis
+
+**Capital Allocation:** $2,500 (25% of total)
+
+**Risk Profile:** Balanced with sentiment integration
+
+**Current Focus:** Cross-market correlation analysis
+
+**Performance:** **89.1% success** in volatile conditions
+
+**SmaiSika Autonomous (Spiritual AI Trading)**
+
+**Status:** ✅ AI Trading Enabled
+
+**Strategy:** Biometric + spiritual market reading
+
+**Capital Allocation:** $2,500 (25% of total)
+
+**Risk Profile:** Adaptive with moral trading controls
+
+**Current Focus:** Energy-based market timing
+
+**Performance:** **94.2% accuracy** in trend reversals
+
+**3. Fleet Configuration**
+
+**Capital Management**
+
+**Total Available Capital:** $10,000
+
+**Reserved for Opportunities:** $1,000
+
+**Active Trading Capital:** $9,000
+
+**Risk per Trade:** Maximum **1% per bot** (0.25% total)
+
+**Risk Controls**
+
+**Daily Loss Limit:** **2%** ($200)
+
+**Maximum Drawdown:** **5%** ($500)
+
+**Position Sizing:** Dynamic based on volatility
+
+**Emergency Stop:** Activated at **3% daily loss**
+
+**Coordination Protocol**
+
+**Trade Conflicts:** Advanced collision detection
+
+**Signal Sharing:** Real-time bot communication
+
+**Performance Monitoring:** Every **15 minutes**
+
+**Rebalancing:** Automatic based on performance
+
+**4. Market Monitoring Dashboard**
+
 **Active Pairs:** ETH/USDT, BTC/USDT, SOL/USDT
-**Scan Frequency:** Every 5 seconds
+
+**Scan Frequency:** Every **5 seconds**
+
 **Signal Generation:** Multi-bot consensus required
-**Execution Speed:** Average 50ms order placement
+
+**Execution Speed:** Average **50ms** order placement
 
 **All trading bots are now actively monitoring markets and ready for autonomous execution.**`;
           break;
 
         case 'fund-account':
-          response = `💰 Account Funding Guide\n\n📱 Deposit Methods:\n• USDT (TRC-20): Instant, Low Fees\n• USDT (ERC-20): Standard Ethereum\n• Bank Transfer: 1-3 Business Days\n• Credit Card: Instant (3% Fee)\n\n🏦 Account Details:\nAccount: SA-${Math.random().toString(36).substr(2, 8).toUpperCase()}\nRouting: 084009519\nSwift: WAIDSUS33\n\n⚡ Quick Deposit: Send USDT to:\nTRX: TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE\nETH: 0x742d35Cc6532C04cFf7d5bbD8b9b3A54\n\n📞 Support: +1-800-WAIDES or support@waides.ai`;
+          response = `**💰 Account Funding Guide**
+
+**📱 Deposit Methods:**
+
+**USDT (TRC-20):** Instant, Low Fees
+
+**USDT (ERC-20):** Standard Ethereum
+
+**Bank Transfer:** 1-3 Business Days
+
+**Credit Card:** Instant (3% Fee)
+
+**🏦 Account Details:**
+
+**Account:** SA-${Math.random().toString(36).substr(2, 8).toUpperCase()}
+
+**Routing:** 084009519
+
+**Swift:** WAIDSUS33
+
+**⚡ Quick Deposit: Send USDT to:**
+
+**TRX:** TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE
+
+**ETH:** 0x742d35Cc6532C04cFf7d5bbD8b9b3A54
+
+**📞 Support:** +1-800-WAIDES or support@waides.ai`;
           break;
 
         case 'trading-status':
