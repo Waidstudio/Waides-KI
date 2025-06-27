@@ -1028,14 +1028,13 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       )}
 
       {/* Top Status Bar - Minimal Scrollable */}
-      <div className="relative z-10 flex justify-between items-center px-4 py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
+      <div className="relative z-10 flex items-center justify-center px-4 py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
         <div className="flex items-center gap-2">
           <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
           <span className="text-xs text-gray-400">•</span>
           <span className="text-xs text-blue-300 font-medium">Konsmik Intelligence</span>
-        </div>
-        
-        <div className="flex items-center">
+          <span className="text-xs text-gray-400">|</span>
+          
           {/* Tab Navigation - Minimal */}
           <div className="flex bg-gray-800/40 rounded-sm p-0.5">
             <button
@@ -1079,8 +1078,6 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             </button>
           </div>
         </div>
-        
-        <div className="w-24"></div> {/* Spacer for balance */}
       </div>
 
       {/* Tab Content */}
