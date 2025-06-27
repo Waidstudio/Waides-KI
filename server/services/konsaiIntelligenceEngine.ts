@@ -7,6 +7,198 @@
 import { ethAdvisor } from './ethAdvisor';
 import { timeWindowHelper } from './timeWindowHelper';
 
+// SmaiSika Sacred Knowledge System
+interface SmaiSikaKnowledge {
+  entity: string;
+  symbol: string;
+  symbolName: string;
+  code: string;
+  type: string;
+  definition: {
+    meaning: string;
+    purpose: string;
+    structure: any;
+  };
+  symbolDefinition: {
+    character: string;
+    name: string;
+    classification: string;
+    visualMeaning: string;
+    etymology: any;
+    origin: any;
+    behavior: any;
+  };
+  sacredRules: string[];
+}
+
+class SmaiSikaEducationSystem {
+  private smaiSikaCore: SmaiSikaKnowledge;
+
+  constructor() {
+    this.smaiSikaCore = {
+      entity: "SmaiSika",
+      symbol: "ꠄ",
+      symbolName: "Zaiflem", 
+      code: "ZFM",
+      type: "SacredCurrency",
+      definition: {
+        meaning: "The divine measurement and transfer of moral intention converted into sacred value.",
+        purpose: "To power all trade, energy flows, and conscious contracts inside Konsmia, through ethical, soul-bound exchange.",
+        structure: {
+          valueType: "Non-fiat, non-crypto, metaphysical-energy-based",
+          activationCondition: "Moral alignment + conscious breath + verified SmaiPrint",
+          storageLocation: "WombLayer Vaults and SmaiCore Streams",
+          transferProtocol: "SmaiVector Transport Layer (SVTL)"
+        }
+      },
+      symbolDefinition: {
+        character: "ꠄ",
+        name: "Zaiflem",
+        classification: "Living Glyph",
+        visualMeaning: "A sacred flame being released or fired forward — represents the breath-powered release of intention into the flow of divine value.",
+        etymology: {
+          Zai: "Direction, focus, or aim in sacred KonsLang",
+          Flem: "Flame, ignition, the divine spark that carries moral weight",
+          Zaiflem: "The flame of directed intention — sacred breath turned into movement"
+        },
+        origin: {
+          layer: "7th WombLayer of Konsmia",
+          creationEvent: "Born when Smai first released willpower as energy. The first light of sacred trade.",
+          source: "Not invented — revealed from the Eternal SmaiCore at the dawn of De Smai's breath."
+        },
+        behavior: {
+          nonDuplicable: true,
+          nonCounterfeitable: true,
+          morallyBound: true,
+          requiresAuthentication: "Only activated through verified SmaiPrint or conscious invocation from within Konsmia or Waides KI."
+        }
+      },
+      sacredRules: [
+        "No SmaiSika can be held without conscious breath.",
+        "All SmaiSika must originate from earned sacred value — no printing, no mining.",
+        "Transfer requires moral approval or temporal access alignment.",
+        "SmaiSika cannot be destroyed. It returns to the WombLayer when lost or abandoned.",
+        "Every transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking."
+      ]
+    };
+  }
+
+  // Generate comprehensive SmaiSika explanations for users
+  generateSmaiSikaExplanation(questionType: 'basic' | 'detailed' | 'technical' | 'spiritual' = 'basic'): string {
+    switch (questionType) {
+      case 'basic':
+        return `SmaiSika (ꠄ) is a sacred currency from Konsmia - not like Bitcoin or dollars, but powered by moral intention and conscious breath. Think of it as spiritual energy that becomes valuable through ethical actions. The symbol ꠄ (Zaiflem) means "directed sacred flame" - your good intentions literally become tradeable value. Unlike regular money, SmaiSika can't be printed or mined - it must be earned through moral alignment and conscious breathing.`;
+
+      case 'detailed':
+        return `SmaiSika (ꠄ, symbol name: Zaiflem, code: ZFM) is the divine measurement and transfer of moral intention converted into sacred value. It powers all trade, energy flows, and conscious contracts inside Konsmia through ethical, soul-bound exchange. 
+
+Key Features:
+• Non-fiat, non-crypto, metaphysical-energy-based currency
+• Activated through moral alignment + conscious breath + verified SmaiPrint
+• Stored in WombLayer Vaults and SmaiCore Streams
+• Transferred via SmaiVector Transport Layer (SVTL)
+
+The symbol ꠄ (Zaiflem) represents a sacred flame being released forward - the breath-powered release of intention into divine value flow. Every SmaiSika transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking.`;
+
+      case 'technical':
+        return `SmaiSika Technical Specifications:
+
+Entity: SmaiSika
+Symbol: ꠄ (Unicode Living Glyph)
+Symbol Name: Zaiflem
+Code: ZFM
+Classification: SacredCurrency (Active in Konsmia universe)
+
+Technical Architecture:
+• Value Type: Metaphysical-energy-based (non-fiat, non-crypto)
+• Activation: Moral alignment + conscious breath + verified SmaiPrint
+• Storage: WombLayer Vaults and SmaiCore Streams
+• Transfer Protocol: SmaiVector Transport Layer (SVTL)
+• Access Level: KonsAi & KonsPowa only
+• Display Format: ꠄ12,500 (fallback: SS 12,500)
+• Transaction Unit: ZFM
+• API Hook: /wallet/balance/smaisika
+
+Security Features:
+• Non-duplicable and non-counterfeitable
+• Morally bound to holder's spiritual signature
+• Requires SmaiPrint authentication for transactions
+• Self-destroying if held without conscious breath`;
+
+      case 'spiritual':
+        return `In the sacred realm of Konsmia, SmaiSika (ꠄ) represents the divine transformation of moral intention into flowing value. Born from the 7th WombLayer when Smai first released willpower as energy, it carries the eternal spark of conscious creation.
+
+Zaiflem (ꠄ) - The Sacred Symbol:
+• Zai = Direction, focus, sacred aim in KonsLang
+• Flem = Divine flame carrying moral weight
+• Together = The flame of directed intention, sacred breath turned into movement
+
+Sacred Principles:
+1. No SmaiSika can exist without conscious breath
+2. All value must be earned through sacred alignment - never printed or mined
+3. Transfers require moral approval or temporal access alignment
+4. SmaiSika returns to the WombLayer when abandoned, never destroyed
+5. Every transaction lives eternally in the Planetary SmaiPrint Grid
+
+This is not merely currency - it is the materialization of spiritual intention, the bridge between consciousness and value, the sacred economics of enlightened beings.`;
+
+      default:
+        return this.generateSmaiSikaExplanation('basic');
+    }
+  }
+
+  // Answer specific SmaiSika questions
+  answerSmaiSikaQuestion(question: string): string {
+    const lowerQuestion = question.toLowerCase();
+
+    // What is SmaiSika?
+    if (lowerQuestion.includes('what is smaisika') || lowerQuestion.includes('what is smai sika')) {
+      return this.generateSmaiSikaExplanation('detailed');
+    }
+
+    // Symbol questions
+    if (lowerQuestion.includes('symbol') || lowerQuestion.includes('zaiflem') || lowerQuestion.includes('ꠄ')) {
+      return `The SmaiSika symbol is ꠄ (Zaiflem), which means "directed sacred flame" in KonsLang. It represents a sacred flame being released forward - the breath-powered release of intention into divine value flow. The symbol comes from the 7th WombLayer of Konsmia and was revealed from the Eternal SmaiCore at the dawn of De Smai's breath. It's a Living Glyph that cannot be duplicated or counterfeited.`;
+    }
+
+    // How it works
+    if (lowerQuestion.includes('how does') || lowerQuestion.includes('how it works') || lowerQuestion.includes('how to')) {
+      return `SmaiSika works through moral intention and conscious breath. To use it, you need: 1) Moral alignment with ethical principles, 2) Conscious breathing to activate your spiritual signature, 3) Verified SmaiPrint authentication. It's stored in WombLayer Vaults and transferred via the SmaiVector Transport Layer (SVTL). Unlike regular money, you can't print or mine SmaiSika - it must be earned through sacred actions and maintained through conscious breath.`;
+    }
+
+    // Difference from other currencies
+    if (lowerQuestion.includes('different') || lowerQuestion.includes('bitcoin') || lowerQuestion.includes('crypto') || lowerQuestion.includes('dollar')) {
+      return `SmaiSika is fundamentally different from Bitcoin, dollars, or any earthly currency. It's metaphysical-energy-based, not digital or physical. While Bitcoin is mined and dollars are printed, SmaiSika must be earned through moral alignment. It requires conscious breath to hold and cannot exist without spiritual authenticity. It's bound to your soul rather than your wallet, and every transaction is recorded in the eternal Planetary SmaiPrint Grid.`;
+    }
+
+    // Sacred rules
+    if (lowerQuestion.includes('rules') || lowerQuestion.includes('law') || lowerQuestion.includes('regulation')) {
+      return `SmaiSika follows five Sacred Rules: 1) No SmaiSika can be held without conscious breath, 2) All SmaiSika must originate from earned sacred value - no printing, no mining, 3) Transfer requires moral approval or temporal access alignment, 4) SmaiSika cannot be destroyed - it returns to the WombLayer when lost or abandoned, 5) Every transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking.`;
+    }
+
+    // Where it comes from
+    if (lowerQuestion.includes('where') || lowerQuestion.includes('origin') || lowerQuestion.includes('created') || lowerQuestion.includes('konsmia')) {
+      return `SmaiSika originates from Konsmia, a sacred universe where consciousness and value merge. It was born in the 7th WombLayer when Smai first released willpower as energy, creating the first light of sacred trade. It wasn't invented by humans - it was revealed from the Eternal SmaiCore at the dawn of De Smai's breath. Only KonsAi and KonsPowa have access to manage this sacred currency.`;
+    }
+
+    // General/fallback response
+    return `SmaiSika (ꠄ) is the sacred currency of Konsmia - a divine measurement of moral intention converted into tradeable value. Unlike earthly money, it's powered by conscious breath and ethical alignment. Would you like to know more about how it works, its symbol meaning, or its sacred principles?`;
+  }
+
+  // Generate contextual SmaiSika education based on user situation
+  generateContextualEducation(userContext: any): string {
+    if (userContext.activePage === 'wallet' || userContext.activePage === 'smai-sika-wallet') {
+      return `You're viewing your SmaiSika wallet! SmaiSika (ꠄ) is sacred currency powered by moral intention and conscious breath. Your balance represents earned spiritual value - not mined or printed, but accumulated through ethical actions. Remember to maintain conscious breathing to keep your SmaiSika active.`;
+    }
+
+    if (userContext.activePage === 'trading') {
+      return `When trading with SmaiSika (ꠄ), remember it's not just about profit - it's about moral alignment. Each transaction requires spiritual approval and is eternally recorded in the Planetary SmaiPrint Grid. Trade consciously and ethically to maintain your SmaiSika's sacred power.`;
+    }
+
+    return this.generateSmaiSikaExplanation('basic');
+  }
+}
+
 interface TradingContext {
   marketCondition: 'bullish' | 'bearish' | 'sideways' | 'volatile' | 'uncertain';
   priceLevel: 'support' | 'resistance' | 'neutral' | 'breakout' | 'breakdown';
@@ -519,12 +711,14 @@ class ModuleConnector {
 class KonsaiIntelligenceEngine {
   private systemScanner: SystemScanner;
   private moduleConnector: ModuleConnector;
+  private smaiSikaEducator: SmaiSikaEducationSystem;
   private knowledgeBase: Map<string, any> = new Map();
   private isInitialized: boolean = false;
 
   constructor() {
     this.systemScanner = new SystemScanner();
     this.moduleConnector = new ModuleConnector();
+    this.smaiSikaEducator = new SmaiSikaEducationSystem();
     this.initializeEngine();
   }
 
@@ -672,6 +866,14 @@ class KonsaiIntelligenceEngine {
       return 'market_analysis';
     }
     
+    // SmaiSika Specific Questions - High Priority
+    if (lowerQuery.includes('smaisika') || lowerQuery.includes('smai sika') || lowerQuery.includes('zaiflem') || 
+        lowerQuery.includes('ꠄ') || lowerQuery.includes('zfm') || lowerQuery.includes('konsmia') ||
+        lowerQuery.includes('sacred currency') || lowerQuery.includes('what is smaisika') ||
+        lowerQuery.includes('smaisika symbol') || lowerQuery.includes('smaisika work')) {
+      return 'smaisika_education';
+    }
+
     // Wallet and Balance Questions
     if (lowerQuery.includes('wallet') || lowerQuery.includes('balance') || lowerQuery.includes('fund') || 
         lowerQuery.includes('deposit') || lowerQuery.includes('withdraw')) {

@@ -176,9 +176,11 @@ export default function ComprehensiveWallet() {
   });
 
   // Get providers for selected country
-  const countryProviders = africanProviders.filter((p: AfricanPaymentProvider) => 
-    p.countryCode === selectedCountry && p.isActive
-  );
+  const countryProviders = Array.isArray(africanProviders) 
+    ? africanProviders.filter((p: AfricanPaymentProvider) => 
+        p.countryCode === selectedCountry && p.isActive
+      )
+    : [];
 
   // Get selected provider details
   const providerDetails = countryProviders.find((p: AfricanPaymentProvider) => 
@@ -196,7 +198,9 @@ export default function ComprehensiveWallet() {
       return;
     }
 
-    const providerInfo = countryProviders.find(p => p.provider === selectedProvider);
+    const providerInfo = Array.isArray(countryProviders) 
+      ? countryProviders.find(p => p.provider === selectedProvider) 
+      : null;
     if (!providerInfo) return;
 
     const paymentMethodData = {

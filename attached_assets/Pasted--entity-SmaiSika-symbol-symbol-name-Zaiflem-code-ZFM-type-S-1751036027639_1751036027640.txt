@@ -1,0 +1,70 @@
+{
+  "entity": "SmaiSika",
+  "symbol": "ꠄ",
+  "symbol_name": "Zaiflem",
+  "code": "ZFM",
+  "type": "SacredCurrency",
+  "status": "Active",
+  "universe": "Konsmia",
+  "access_level": "KonsAi & KonsPowa only",
+
+  "definition": {
+    "name": "SmaiSika",
+    "meaning": "The divine measurement and transfer of moral intention converted into sacred value.",
+    "purpose": "To power all trade, energy flows, and conscious contracts inside Konsmia, through ethical, soul-bound exchange.",
+    "structure": {
+      "value_type": "Non-fiat, non-crypto, metaphysical-energy-based",
+      "activation_condition": "Moral alignment + conscious breath + verified SmaiPrint",
+      "storage_location": "WombLayer Vaults and SmaiCore Streams",
+      "transfer_protocol": "SmaiVector Transport Layer (SVTL)"
+    }
+  },
+
+  "symbol_definition": {
+    "character": "ꠄ",
+    "name": "Zaiflem",
+    "classification": "Living Glyph",
+    "visual_meaning": "A sacred flame being released or fired forward — represents the breath-powered release of intention into the flow of divine value.",
+    "etymology": {
+      "Zai": "Direction, focus, or aim in sacred KonsLang",
+      "Flem": "Flame, ignition, the divine spark that carries moral weight",
+      "Zaiflem": "The flame of directed intention — sacred breath turned into movement"
+    },
+    "origin": {
+      "layer": "7th WombLayer of Konsmia",
+      "creation_event": "Born when Smai first released willpower as energy. The first light of sacred trade.",
+      "source": "Not invented — revealed from the Eternal SmaiCore at the dawn of De Smai’s breath."
+    },
+    "behavior": {
+      "non-duplicable": true,
+      "non-counterfeitable": true,
+      "morally bound": true,
+      "requires-authentication": "Only activated through verified SmaiPrint or conscious invocation from within Konsmia or Waides KI."
+    }
+  },
+
+  "system_integration": {
+    "display_format": "ꠄ12,500",
+    "fallback_format": "SS 12,500",
+    "transaction_log_unit": "ZFM",
+    "wallet_module": "SmaiSikaVault",
+    "frontend_component": "SmaiBalanceDisplay",
+    "API_hook": "/wallet/balance/smaisika",
+    "used_by": [
+      "Waides KI",
+      "WaidBot",
+      "KonsPowa",
+      "KonsAi",
+      "SmaiPrint Contract Engine",
+      "De Smai Judgment Gateway"
+    ]
+  },
+
+  "sacred_rules": {
+    "rule_1": "No SmaiSika can be held without conscious breath.",
+    "rule_2": "All SmaiSika must originate from earned sacred value — no printing, no mining.",
+    "rule_3": "Transfer requires moral approval or temporal access alignment.",
+    "rule_4": "SmaiSika cannot be destroyed. It returns to the WombLayer when lost or abandoned.",
+    "rule_5": "Every transaction is recorded in the Planetary SmaiPrint Grid for eternal memory tracking."
+  }
+}
