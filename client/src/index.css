@@ -35,6 +35,22 @@
   --text-secondary: hsl(217, 9%, 61%);
 }
 
+/* Custom scrollbar styles for horizontal scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scrolling for mobile */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
 .dark {
   --background: hsl(220, 26%, 8%);
   --foreground: hsl(210, 40%, 95%);

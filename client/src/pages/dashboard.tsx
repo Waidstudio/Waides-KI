@@ -261,8 +261,8 @@ export default function Dashboard() {
                 <Tabs defaultValue="realtime" className="w-full">
                   {/* Responsive Tab Navigation */}
                   <div className="bg-slate-800 border border-slate-700 rounded-lg p-1 mb-6">
-                    <ScrollArea className="w-full">
-                      <TabsList className="flex w-max min-w-full bg-transparent gap-1 p-0 h-auto">
+                    <div className="overflow-x-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+                      <TabsList className="flex w-max bg-transparent gap-1 p-0 h-auto min-w-fit">
                         <TabsTrigger 
                           value="realtime" 
                           className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
@@ -300,7 +300,7 @@ export default function Dashboard() {
                           <Link href="/waidbot-pro" className="w-full">WaidBot Pro</Link>
                         </TabsTrigger>
                       </TabsList>
-                    </ScrollArea>
+                    </div>
                   </div>
 
                   <TabsContent value="realtime" className="space-y-6">
