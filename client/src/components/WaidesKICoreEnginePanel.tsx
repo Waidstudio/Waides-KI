@@ -171,16 +171,18 @@ export function WaidesKICoreEnginePanel() {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-8 bg-gray-800/50">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600">Overview</TabsTrigger>
-          <TabsTrigger value="quantum" className="data-[state=active]:bg-blue-600">Quantum AI</TabsTrigger>
-          <TabsTrigger value="neural" className="data-[state=active]:bg-emerald-600">Neural Net</TabsTrigger>
-          <TabsTrigger value="memory" className="data-[state=active]:bg-purple-600">Memory</TabsTrigger>
-          <TabsTrigger value="trading" className="data-[state=active]:bg-purple-600">Trading</TabsTrigger>
-          <TabsTrigger value="analysis" className="data-[state=active]:bg-purple-600">Analysis</TabsTrigger>
-          <TabsTrigger value="cosmic" className="data-[state=active]:bg-pink-600">Cosmic Link</TabsTrigger>
-          <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600">Controls</TabsTrigger>
-        </TabsList>
+        <div className="w-full overflow-x-auto">
+          <TabsList className="flex w-max min-w-full bg-gray-800/50 p-1">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Overview</TabsTrigger>
+            <TabsTrigger value="quantum" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Quantum AI</TabsTrigger>
+            <TabsTrigger value="neural" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Neural Net</TabsTrigger>
+            <TabsTrigger value="memory" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Memory</TabsTrigger>
+            <TabsTrigger value="trading" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Trading</TabsTrigger>
+            <TabsTrigger value="analysis" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Analysis</TabsTrigger>
+            <TabsTrigger value="cosmic" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Cosmic Link</TabsTrigger>
+            <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Controls</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
