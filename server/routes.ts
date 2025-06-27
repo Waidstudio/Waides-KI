@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
 import { EthMonitor } from "./services/ethMonitor.js";
 import { SignalAnalyzer } from "./services/signalAnalyzer.js";
+import { MarketStorytellingEngine } from "./services/marketStorytellingEngine.js";
 import { KonsEngine } from "./services/konsEngine.js";
 import { SpiritualBridge } from "./services/spiritualBridge.js";
 import { DivineCommLayer } from "./services/divineCommLayer.js";
@@ -171,6 +172,7 @@ import smartNotify from './services/smartNotify';
 let ethMonitor: EthMonitor;
 let signalAnalyzer: SignalAnalyzer;
 let konsEngine: KonsEngine;
+let marketStorytellingEngine: MarketStorytellingEngine;
 let spiritualBridge: SpiritualBridge;
 let divineCommLayer: DivineCommLayer;
 let waidTrader: WaidTrader;
@@ -238,6 +240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   ethMonitor = new EthMonitor();
   signalAnalyzer = new SignalAnalyzer();
   konsEngine = new KonsEngine();
+  marketStorytellingEngine = new MarketStorytellingEngine(ethMonitor);
   spiritualBridge = new SpiritualBridge();
   divineCommLayer = new DivineCommLayer();
   waidTrader = new WaidTrader();
@@ -17223,6 +17226,61 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
       res.status(500).json({ 
         error: 'Failed to generate response',
         fallback: 'The spiritual connection is momentarily disrupted. Please try again.'
+      });
+    }
+  });
+
+  // ==========================================================================
+  // MARKET STORYTELLING API ENDPOINTS - Interactive Market Trend Narratives
+  // ==========================================================================
+
+  // Generate market story based on persona and mode
+  app.get('/api/market-storytelling/story', async (req, res) => {
+    try {
+      const { persona = 'sage_trader', mode = 'epic' } = req.query;
+      
+      const story = await marketStorytellingEngine.generateMarketStory(
+        persona as string, 
+        mode as string
+      );
+      
+      res.json({
+        success: true,
+        story,
+        persona,
+        mode,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Market storytelling error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate market story',
+        fallback: 'Unable to craft market narrative at this time. Please try again.'
+      });
+    }
+  });
+
+  // Get story metrics and analytics
+  app.get('/api/market-storytelling/metrics', async (req, res) => {
+    try {
+      const metrics = await marketStorytellingEngine.getStoryMetrics();
+      
+      res.json({
+        success: true,
+        metrics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Story metrics error:', error);
+      res.status(500).json({ 
+        error: 'Failed to get story metrics',
+        fallback: {
+          totalChapters: 4,
+          currentVolatility: 2.5,
+          trendStrength: 65,
+          emotionalIntensity: 55,
+          narrativeComplexity: 75
+        }
       });
     }
   });
