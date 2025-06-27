@@ -491,9 +491,9 @@ export default function WaidesKIVisionPortal() {
         typeMessage(data.message, 'waidbot_summon', data.success ? 95 : 50);
         
         // Handle navigation suggestion for WaidBot activation
-        if (data.data?.navigationSuggestion === '/waidbot' && data.data?.waidbotActivated) {
+        if (data.data?.navigationSuggestion === '/waidbot-engine' && data.data?.waidbotActivated) {
           setTimeout(() => {
-            typeMessage("Navigate to WaidBot interface? Type 'yes' to proceed or continue chatting here.", 'waidbot_summon', 100);
+            typeMessage("Navigate to Waidbot Engine interface? Type 'yes' to proceed or continue chatting here.", 'waidbot_summon', 100);
           }, 2000);
         }
       } else {
@@ -1516,7 +1516,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               
               <button
                 className="h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                onClick={() => window.location.href = '/waidbot'}
+                onClick={() => window.location.href = '/waidbot-engine'}
               >
                 <Bot className="w-5 h-5 mb-1" />
                 <span>WaidBot</span>
