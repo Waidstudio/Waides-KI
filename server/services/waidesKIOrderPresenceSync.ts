@@ -48,19 +48,19 @@ export class WaidesKIOrderPresenceSync {
   }
 
   /**
-   * Start periodic broadcasting to peers
+   * Start periodic broadcasting to peers (DISABLED to prevent constant reloading)
    */
   private startPeriodicBroadcast(): void {
     if (this.isRunning) return;
     
-    this.isRunning = true;
+    this.isRunning = false; // Keep disabled to prevent API spam
     
-    // Broadcast every 5 seconds
-    this.broadcastInterval = setInterval(() => {
-      this.broadcastOrderPresence();
-    }, 5000);
+    // DISABLED: Broadcast every 5 seconds - causes constant reloading
+    // this.broadcastInterval = setInterval(() => {
+    //   this.broadcastOrderPresence();
+    // }, 5000);
 
-    console.log('🔄 Started periodic order presence broadcasting');
+    console.log('🔄 Order presence broadcasting disabled to prevent constant reloading');
   }
 
   /**

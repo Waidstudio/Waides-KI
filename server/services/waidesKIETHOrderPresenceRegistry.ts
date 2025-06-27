@@ -40,18 +40,18 @@ export class WaidesKIETHOrderPresenceRegistry {
   }
 
   /**
-   * Start automatic order presence updates
+   * Start automatic order presence updates (DISABLED to prevent constant reloading)
    */
   private startAutoUpdate(): void {
     if (this.isRunning) return;
     
-    this.isRunning = true;
-    console.log('🔄 Starting ETH Order Presence auto-update loop');
+    this.isRunning = false; // Keep disabled to prevent API spam
+    console.log('🔄 ETH Order Presence auto-update disabled to prevent constant reloading');
     
-    // Update every 100ms for real-time responsiveness
-    this.updateInterval = setInterval(() => {
-      this.updateFromSentry();
-    }, 100);
+    // DISABLED: Update every 100ms - causes constant reloading
+    // this.updateInterval = setInterval(() => {
+    //   this.updateFromSentry();
+    // }, 100);
   }
 
   /**

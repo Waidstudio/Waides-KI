@@ -1941,22 +1941,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('🛑 Real-time automated trading stopped');
   };
 
-  // Store data every 60 seconds (reduced frequency for faster performance)
-  setInterval(async () => {
-    try {
-      const ethData = await ethMonitor.fetchEthData();
-      
-      // Store the data (reduced API calls)
-      await storage.createEthData({
-        price: ethData.price,
-        volume: ethData.volume || null,
-        marketCap: ethData.marketCap || null,
-        priceChange24h: ethData.priceChange24h || null
-      });
-    } catch (error) {
-      // Silent error handling to avoid log spam
-    }
-  }, 60000);
+  // Disabled automatic data fetching to prevent constant reloading
+  // Note: ETH data will be fetched on-demand when APIs are called
+  // setInterval(async () => {
+  //   try {
+  //     const ethData = await ethMonitor.fetchEthData();
+  //     
+  //     // Store the data (reduced API calls)
+  //     await storage.createEthData({
+  //       price: ethData.price,
+  //       volume: ethData.volume || null,
+  //       marketCap: ethData.marketCap || null,
+  //       priceChange24h: ethData.priceChange24h || null
+  //     });
+  //   } catch (error) {
+  //     // Silent error handling to avoid log spam
+  //   }
+  // }, 60000);
 
   // Real-time trading control endpoints
   app.post("/api/realtime-trading/start", (req, res) => {

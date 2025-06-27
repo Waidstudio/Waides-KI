@@ -43,26 +43,29 @@ export class WaidesKIOrderPresenceService {
   }
 
   /**
-   * Start integration checks for trading decisions
+   * Start integration checks for trading decisions (DISABLED to prevent constant restarting)
    */
   private startIntegrationChecks(): void {
-    // Periodic check for system health and integration status
-    this.checkInterval = setInterval(() => {
-      this.performHealthCheck();
-    }, 30000); // Every 30 seconds
+    // DISABLED: Periodic check causes constant restart cycles
+    // this.checkInterval = setInterval(() => {
+    //   this.performHealthCheck();
+    // }, 30000); // Every 30 seconds
+    console.log('✅ Integration checks disabled to prevent restart cycles');
   }
 
   /**
-   * Perform system health check
+   * Perform system health check (DISABLED to prevent restart loops)
    */
   private performHealthCheck(): void {
-    const registryHealth = waidesKIETHOrderPresenceRegistry.getHealthStatus();
-    const sentryHealth = waidesKIOrderBookSentry.getConnectionHealth();
-    
-    if (!registryHealth.auto_update_running || registryHealth.connection_quality === 'poor') {
-      console.log('⚠️ Order Presence System health degraded, attempting recovery...');
-      waidesKIETHOrderPresenceRegistry.restart();
-    }
+    // DISABLED: Health check causes restart loops when systems are intentionally disabled
+    // const registryHealth = waidesKIETHOrderPresenceRegistry.getHealthStatus();
+    // const sentryHealth = waidesKIOrderBookSentry.getConnectionHealth();
+    // 
+    // if (!registryHealth.auto_update_running || registryHealth.connection_quality === 'poor') {
+    //   console.log('⚠️ Order Presence System health degraded, attempting recovery...');
+    //   waidesKIETHOrderPresenceRegistry.restart();
+    // }
+    console.log('✅ Health check disabled to prevent restart cycles');
   }
 
   /**

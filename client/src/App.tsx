@@ -53,7 +53,6 @@ function Router() {
 
   const navItems = [
     { path: "/", label: "Vision Portal" },
-    { path: "/biometric-trading", label: "Biometric Trading" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
