@@ -103,8 +103,8 @@ function getWalletInsights(q, walletContext) {
   // Wallet balance queries
   if (q.includes('balance') || q.includes('money') || q.includes('wallet') || q.includes('smai')) {
     return `🔐 **SmaiSika Wallet Status:**
-- Available: ₭${smaiBalance?.toLocaleString() || 0} SMAI
-- Locked for Trading: ₭${lockedForTrade?.toLocaleString() || 0}
+- Available: ꠄ${smaiBalance?.toLocaleString() || 0} SMAI
+- Locked for Trading: ꠄ${lockedForTrade?.toLocaleString() || 0}
 - Local Currency: ₦${localBalance?.toLocaleString() || 0}
 
 💫 **Konsmic Intelligence:**
@@ -236,15 +236,15 @@ export default function getSmartAnswer(userInput, setBotState, walletContext = n
   // 💰 WALLET-AWARE RESPONSES - Enhanced with real-time wallet data
   if (walletContext && (q.includes("balance") || q.includes("how much") || q.includes("wallet") || q.includes("money") || q.includes("funds"))) {
     if (q.includes("balance") || q.includes("how much")) {
-      return `💰 Your SmaiWallet Balance:\n• SmaiKa (₭): ${walletContext.smaiBalance.toLocaleString()}\n• Local Balance: $${walletContext.localBalance.toLocaleString()}\n• Total Transactions: ${walletContext.totalTransactions}\n\n${walletContext.canAfford(100) ? "✅ Ready for trading" : "⚠️ Consider adding funds for trading"}`;
+      return `💰 Your SmaiWallet Balance:\n• SmaiKa (ꠄ): ${walletContext.smaiBalance.toLocaleString()}\n• Local Balance: $${walletContext.localBalance.toLocaleString()}\n• Total Transactions: ${walletContext.totalTransactions}\n\n${walletContext.canAfford(100) ? "✅ Ready for trading" : "⚠️ Consider adding funds for trading"}`;
     }
     if (q.includes("can i trade") || q.includes("afford")) {
       const canTrade = walletContext.canAfford(100);
       return canTrade ? 
-        `✅ Yes! You have ₭${walletContext.smaiBalance.toLocaleString()} SmaiKa available for trading. Your wallet is ready for WaidBot operations.` :
-        `⚠️ Your current balance is ₭${walletContext.smaiBalance.toLocaleString()}. Consider adding more SmaiKa for optimal trading capacity.`;
+        `✅ Yes! You have ꠄ${walletContext.smaiBalance.toLocaleString()} SmaiKa available for trading. Your wallet is ready for WaidBot operations.` :
+        `⚠️ Your current balance is ꠄ${walletContext.smaiBalance.toLocaleString()}. Consider adding more SmaiKa for optimal trading capacity.`;
     }
-    if (q.includes("wallet")) return `🔐 SmaiWallet Status: ₭${walletContext.smaiBalance.toLocaleString()} SmaiKa | $${walletContext.localBalance.toLocaleString()} Local | ${walletContext.totalTransactions} transactions completed.`;
+    if (q.includes("wallet")) return `🔐 SmaiWallet Status: ꠄ${walletContext.smaiBalance.toLocaleString()} SmaiKa | $${walletContext.localBalance.toLocaleString()} Local | ${walletContext.totalTransactions} transactions completed.`;
   }
 
   // ✅ SECOND: Search inside key topics
