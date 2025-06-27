@@ -166,6 +166,8 @@ import { enhancedWaidBotController } from './services/enhancedWaidBotController.
 import { WaidesKiCoreEngine, type WalletState } from './services/waidesKiCoreEngine.js';
 // SMART NOTIFY: Intelligent Alert System
 import smartNotify from './services/smartNotify';
+// AFRICAN PAYMENT SYSTEM: Mobile Money & Bank Integration
+import { africanPaymentService } from './services/africanPaymentService.js';
 
 
 
@@ -525,6 +527,183 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error unlocking funds:', error);
       res.status(500).json({ error: 'Failed to unlock funds' });
+    }
+  });
+
+  // ============================================================
+  // AFRICAN PAYMENT SYSTEM API ROUTES
+  // ============================================================
+
+  // GET /api/wallet/african-providers - Get all African payment providers
+  app.get('/api/wallet/african-providers', async (req, res) => {
+    try {
+      const providers = await africanPaymentService.getAfricanProviders();
+      res.json(providers);
+    } catch (error) {
+      console.error('Error fetching African providers:', error);
+      res.status(500).json({ error: 'Failed to fetch payment providers' });
+    }
+  });
+
+  // GET /api/wallet/countries - Get supported countries
+  app.get('/api/wallet/countries', async (req, res) => {
+    try {
+      const countries = await africanPaymentService.getSupportedCountries();
+      res.json(countries);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      res.status(500).json({ error: 'Failed to fetch supported countries' });
+    }
+  });
+
+  // GET /api/wallet/payment-methods - Get user payment methods
+  app.get('/api/wallet/payment-methods', auth, async (req: any, res: any) => {
+    try {
+      const methods = await africanPaymentService.getUserPaymentMethods(req.user.id);
+      res.json(methods);
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+      res.status(500).json({ error: 'Failed to fetch payment methods' });
+    }
+  });
+
+  // POST /api/wallet/payment-methods - Add new payment method
+  app.post('/api/wallet/payment-methods', auth, async (req: any, res: any) => {
+    try {
+      const { methodType, provider, country, currency, accountIdentifier, displayName } = req.body;
+
+      if (!methodType || !provider || !country || !currency || !accountIdentifier || !displayName) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      const methodData = {
+        userId: req.user.id,
+        methodType,
+        provider,
+        country,
+        currency,
+        accountIdentifier,
+        displayName,
+        isVerified: false,
+        isActive: true
+      };
+
+      const method = await africanPaymentService.addPaymentMethod(req.user.id, methodData);
+      res.json(method);
+    } catch (error) {
+      console.error('Error adding payment method:', error);
+      res.status(500).json({ error: 'Failed to add payment method' });
+    }
+  });
+
+  // GET /api/wallet/transactions - Get user wallet transactions
+  app.get('/api/wallet/transactions', auth, async (req: any, res: any) => {
+    try {
+      const { limit = 50 } = req.query;
+      const transactions = await africanPaymentService.getUserTransactions(req.user.id, parseInt(limit));
+      res.json(transactions);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+  });
+
+  // POST /api/wallet/deposit - Process deposit transaction
+  app.post('/api/wallet/deposit', auth, async (req: any, res: any) => {
+    try {
+      const { amount, paymentMethodId, localAmount, localCurrency } = req.body;
+
+      if (!amount || !paymentMethodId || !localAmount || !localCurrency) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Get user wallet
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      // Get exchange rate
+      const exchangeRate = await africanPaymentService.getExchangeRate(localCurrency, 'USD');
+
+      // Process deposit
+      const transaction = await africanPaymentService.processDeposit(
+        req.user.id,
+        userWallet[0].id,
+        amount,
+        'USD',
+        localAmount,
+        localCurrency,
+        paymentMethodId,
+        exchangeRate.toString()
+      );
+
+      res.json(transaction);
+    } catch (error) {
+      console.error('Error processing deposit:', error);
+      res.status(500).json({ error: 'Failed to process deposit' });
+    }
+  });
+
+  // POST /api/wallet/withdraw - Process withdrawal transaction
+  app.post('/api/wallet/withdraw', auth, async (req: any, res: any) => {
+    try {
+      const { amount, paymentMethodId, localAmount, localCurrency } = req.body;
+
+      if (!amount || !paymentMethodId || !localAmount || !localCurrency) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Get user wallet
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, req.user.id)).limit(1);
+      
+      if (!userWallet.length) {
+        return res.status(404).json({ error: 'Wallet not found' });
+      }
+
+      // Check sufficient balance
+      const currentBalance = parseFloat(userWallet[0].balance.toString());
+      if (currentBalance < parseFloat(amount)) {
+        return res.status(400).json({ error: 'Insufficient balance' });
+      }
+
+      // Get exchange rate
+      const exchangeRate = await africanPaymentService.getExchangeRate('USD', localCurrency);
+
+      // Process withdrawal
+      const transaction = await africanPaymentService.processWithdrawal(
+        req.user.id,
+        userWallet[0].id,
+        amount,
+        'USD',
+        localAmount,
+        localCurrency,
+        paymentMethodId,
+        exchangeRate.toString()
+      );
+
+      res.json(transaction);
+    } catch (error) {
+      console.error('Error processing withdrawal:', error);
+      res.status(500).json({ error: 'Failed to process withdrawal' });
+    }
+  });
+
+  // GET /api/wallet/exchange-rate - Get exchange rate between currencies
+  app.get('/api/wallet/exchange-rate', async (req, res) => {
+    try {
+      const { from, to } = req.query;
+
+      if (!from || !to) {
+        return res.status(400).json({ error: 'Missing currency parameters' });
+      }
+
+      const rate = await africanPaymentService.getExchangeRate(from as string, to as string);
+      res.json({ from, to, rate });
+    } catch (error) {
+      console.error('Error fetching exchange rate:', error);
+      res.status(500).json({ error: 'Failed to fetch exchange rate' });
     }
   });
 

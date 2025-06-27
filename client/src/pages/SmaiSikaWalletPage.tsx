@@ -1,6 +1,6 @@
 import React from 'react';
-import SmaiSikaWallet from '@/components/SmaiSikaWallet';
+import ComprehensiveWallet from '@/components/ComprehensiveWallet';
 
 export default function SmaiSikaWalletPage() {
-  return <SmaiSikaWallet />;
+  return <ComprehensiveWallet />;
 }
