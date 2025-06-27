@@ -236,7 +236,7 @@ export default function WaidbotEnginePageEnhanced() {
             Waides KI Konsai Command Center
           </h1>
           <p className="text-base lg:text-xl text-slate-300 max-w-4xl mx-auto">
-            Advanced AI-powered trading intelligence with real-time neural network analysis and autonomous decision-making capabilities
+            Advanced AI-powered trading intelligence with real-time konsai network analysis and autonomous decision-making capabilities
           </p>
         </div>
 
