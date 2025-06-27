@@ -818,7 +818,7 @@ export default function SmaiSikaWallet() {
                                 onClick={() => handleGlobalFunding('crypto', 'eth')}
                               >
                                 <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
-                                <span className="text-sm">Ethereum</span>
+                                <span className="text-xs md:text-sm">Ethereum</span>
                                 <span className="text-xs text-gray-400">ETH</span>
                               </Button>
                               <Button 
@@ -827,7 +827,7 @@ export default function SmaiSikaWallet() {
                                 onClick={() => handleGlobalFunding('crypto', 'usdt')}
                               >
                                 <div className="w-6 h-6 bg-green-500 rounded-full"></div>
-                                <span className="text-sm">USDT</span>
+                                <span className="text-xs md:text-sm">USDT</span>
                                 <span className="text-xs text-gray-400">Tether</span>
                               </Button>
                               <Button 
@@ -836,7 +836,7 @@ export default function SmaiSikaWallet() {
                                 onClick={() => handleGlobalFunding('crypto', 'usdc')}
                               >
                                 <div className="w-6 h-6 bg-blue-400 rounded-full"></div>
-                                <span className="text-sm">USDC</span>
+                                <span className="text-xs md:text-sm">USDC</span>
                                 <span className="text-xs text-gray-400">USD Coin</span>
                               </Button>
                             </div>
@@ -1104,7 +1104,7 @@ export default function SmaiSikaWallet() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Karma Score</span>
+                      <span className="text-xs md:text-sm">Karma Score</span>
                       <span className={`font-bold ${getKarmaColor()}`}>{karmaScore}/100</span>
                     </div>
                     <Progress value={karmaScore} className="h-2" />
@@ -1112,21 +1112,21 @@ export default function SmaiSikaWallet() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Trade Energy</span>
+                      <span className="text-xs md:text-sm">Trade Energy</span>
                       <span className="font-bold text-blue-400">{tradeEnergy}/100</span>
                     </div>
                     <Progress value={tradeEnergy} className="h-2" />
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Moral Status</span>
+                    <span className="text-xs md:text-sm">Moral Status</span>
                     <Badge variant="outline" className={getMoralColor()}>
                       {moralIndicator}
                     </Badge>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Divine Approval</span>
+                    <span className="text-xs md:text-sm">Divine Approval</span>
                     <Badge variant={divineApproval ? "default" : "secondary"}>
                       {divineApproval ? "Blessed" : "Pending"}
                     </Badge>
@@ -1632,7 +1632,7 @@ export default function SmaiSikaWallet() {
                   <div className="flex items-center justify-between p-2 bg-green-500/10 rounded-lg">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span className="text-sm">First Trade</span>
+                      <span className="text-xs md:text-sm">First Trade</span>
                     </div>
                     <Badge className="bg-green-500/20 text-green-300 text-xs">+50 pts</Badge>
                   </div>
@@ -1640,7 +1640,7 @@ export default function SmaiSikaWallet() {
                   <div className="flex items-center justify-between p-2 bg-green-500/10 rounded-lg">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="w-4 h-4 text-green-400" />
-                      <span className="text-sm">Profit Streak</span>
+                      <span className="text-xs md:text-sm">Profit Streak</span>
                     </div>
                     <Badge className="bg-green-500/20 text-green-300 text-xs">+100 pts</Badge>
                   </div>
@@ -1648,7 +1648,7 @@ export default function SmaiSikaWallet() {
                   <div className="flex items-center justify-between p-2 bg-slate-600/30 rounded-lg">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm">Volume Trader</span>
+                      <span className="text-xs md:text-sm">Volume Trader</span>
                     </div>
                     <Badge variant="secondary" className="text-xs">Locked</Badge>
                   </div>
@@ -1656,7 +1656,7 @@ export default function SmaiSikaWallet() {
                   <div className="flex items-center justify-between p-2 bg-slate-600/30 rounded-lg">
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm">HODLer</span>
+                      <span className="text-xs md:text-sm">HODLer</span>
                     </div>
                     <Badge variant="secondary" className="text-xs">Locked</Badge>
                   </div>
