@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Mic, Send, Plus, Zap, TrendingUp, Eye, Sparkles, Brain, Wallet, Bot, BarChart3, 
   MicOff, Volume2, VolumeX, Heart, Settings, MessageCircle, User, Activity, 
@@ -89,6 +91,7 @@ export default function WaidesKIVisionPortal() {
   const [currentTypingMessage, setCurrentTypingMessage] = useState('');
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [konsaiInput, setKonsaiInput] = useState('');
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   // Konsai chat handlers
   const handleQuickAction = (action: string) => {
@@ -1081,7 +1084,12 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         <div className="flex items-center gap-2">
           <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
           <span className="text-xs text-gray-400">•</span>
-          <span className="text-xs text-blue-300 font-medium">Wallet</span>
+          <button 
+            onClick={() => setShowWalletModal(true)}
+            className="text-xs text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer"
+          >
+            Wallet
+          </button>
           <span className="text-xs text-gray-400">|</span>
           
           {/* Tab Navigation - Minimal */}
@@ -1786,6 +1794,386 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           <KonsaiChat />
         </div>
       )}
+      
+      {/* Comprehensive Wallet Modal */}
+      <Dialog open={showWalletModal} onOpenChange={setShowWalletModal}>
+        <DialogContent className="max-w-4xl h-[80vh] bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white border-purple-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+              🔐 Comprehensive Wallet Center
+            </DialogTitle>
+          </DialogHeader>
+          
+          <Tabs defaultValue="smaisika" className="flex-1 overflow-hidden">
+            <TabsList className="grid w-full grid-cols-2 bg-slate-800/50">
+              <TabsTrigger value="smaisika" className="data-[state=active]:bg-purple-600">
+                💰 SmaiSika Wallet
+              </TabsTrigger>
+              <TabsTrigger value="local" className="data-[state=active]:bg-blue-600">
+                🏪 Local Wallet
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="smaisika" className="flex-1 overflow-auto mt-4">
+              <SmaiSikaWalletTab />
+            </TabsContent>
+            
+            <TabsContent value="local" className="flex-1 overflow-auto mt-4">
+              <LocalWalletTab />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// SmaiSika Wallet Tab Component
+function SmaiSikaWalletTab() {
+  const { 
+    smaiBalance, 
+    localBalance, 
+    lockedForTrade, 
+    karmaScore, 
+    tradeEnergy, 
+    divineApproval,
+    transactions,
+    isLoading
+  } = useSmaiWallet();
+  const { toast } = useToast();
+  const [fundAmount, setFundAmount] = useState('');
+  const [convertAmount, setConvertAmount] = useState('');
+
+  const conversionRate = 500; // 1 ₭ = ₦500
+
+  return (
+    <div className="space-y-6">
+      {/* Balance Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-purple-900/30 border-purple-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-300">₭{smaiBalance?.toLocaleString() || '0'}</div>
+              <div className="text-sm text-gray-400">SmaiKa Balance</div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-blue-900/30 border-blue-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-300">₦{localBalance?.toLocaleString() || '0'}</div>
+              <div className="text-sm text-gray-400">Local Currency</div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-green-900/30 border-green-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-300">₭{lockedForTrade?.toLocaleString() || '0'}</div>
+              <div className="text-sm text-gray-400">Locked for Trading</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Spiritual Metrics */}
+      <Card className="bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border-purple-500/30">
+        <CardHeader>
+          <CardTitle className="text-lg text-purple-300">✨ Spiritual Metrics</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="text-center">
+            <div className="text-xl font-bold text-purple-300">{karmaScore || 0}/200</div>
+            <div className="text-sm text-gray-400">Karma Score</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-bold text-cyan-300">{tradeEnergy || 0}/100</div>
+            <div className="text-sm text-gray-400">Trade Energy</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-bold text-green-300">{divineApproval ? 'Granted' : 'Pending'}</div>
+            <div className="text-sm text-gray-400">Divine Approval</div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-slate-800/50 border-purple-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-purple-300">💳 Fund Account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              type="number"
+              placeholder="Amount in Naira (₦)"
+              value={fundAmount}
+              onChange={(e) => setFundAmount(e.target.value)}
+              className="bg-slate-700/50 border-purple-500/30 text-white"
+            />
+            <Button className="w-full bg-purple-600 hover:bg-purple-700">
+              Add Funds via Paystack
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-cyan-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-cyan-300">🔄 Convert Currency</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              type="number"
+              placeholder="Amount in Naira (₦)"
+              value={convertAmount}
+              onChange={(e) => setConvertAmount(e.target.value)}
+              className="bg-slate-700/50 border-cyan-500/30 text-white"
+            />
+            <div className="text-sm text-gray-400">
+              = ₭{convertAmount ? (parseFloat(convertAmount) / conversionRate).toFixed(2) : '0.00'} SmaiKa
+            </div>
+            <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
+              Convert to SmaiKa
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Transactions */}
+      <Card className="bg-slate-800/50 border-gray-500/30">
+        <CardHeader>
+          <CardTitle className="text-lg text-gray-300">📋 Recent Transactions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {transactions?.slice(0, 5).map((tx: any) => (
+              <div key={tx.id} className="flex justify-between items-center p-2 bg-slate-700/30 rounded">
+                <div>
+                  <div className="text-sm font-medium">{tx.description}</div>
+                  <div className="text-xs text-gray-400">{tx.date}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium">{tx.amount}</div>
+                  <Badge variant={tx.status === 'completed' ? 'default' : 'secondary'}>
+                    {tx.status}
+                  </Badge>
+                </div>
+              </div>
+            )) || (
+              <div className="text-center text-gray-400 py-4">No transactions yet</div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Local Wallet Tab Component
+function LocalWalletTab() {
+  const { toast } = useToast();
+  const [bankAccount, setBankAccount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  
+  // Mock local wallet data - replace with real API calls
+  const localWalletData = {
+    nairaBalance: 75000,
+    dollarBalance: 45.50,
+    euroBalance: 38.25,
+    totalPortfolio: 125000,
+    bankAccounts: [
+      { id: 1, bank: 'Access Bank', account: '1234567890', type: 'Savings' },
+      { id: 2, bank: 'GTBank', account: '0987654321', type: 'Current' }
+    ],
+    recentTransactions: [
+      { id: 1, type: 'deposit', amount: '+₦25,000', date: '2025-06-27', description: 'Bank Transfer' },
+      { id: 2, type: 'withdrawal', amount: '-₦10,000', date: '2025-06-26', description: 'ATM Withdrawal' },
+      { id: 3, type: 'conversion', amount: '+$15.50', date: '2025-06-25', description: 'Currency Exchange' }
+    ]
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Multi-Currency Balance */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="bg-green-900/30 border-green-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-300">₦{localWalletData.nairaBalance.toLocaleString()}</div>
+              <div className="text-sm text-gray-400">Nigerian Naira</div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-blue-900/30 border-blue-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-300">${localWalletData.dollarBalance}</div>
+              <div className="text-sm text-gray-400">US Dollar</div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-yellow-900/30 border-yellow-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-yellow-300">€{localWalletData.euroBalance}</div>
+              <div className="text-sm text-gray-400">Euro</div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-purple-900/30 border-purple-500/30">
+          <CardContent className="p-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-300">₦{localWalletData.totalPortfolio.toLocaleString()}</div>
+              <div className="text-sm text-gray-400">Total Portfolio</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Banking Operations */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-slate-800/50 border-green-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-300">🏦 Bank Transfer</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Select value={bankAccount} onValueChange={setBankAccount}>
+              <SelectTrigger className="bg-slate-700/50 border-green-500/30 text-white">
+                <SelectValue placeholder="Select bank account" />
+              </SelectTrigger>
+              <SelectContent>
+                {localWalletData.bankAccounts.map(account => (
+                  <SelectItem key={account.id} value={account.id.toString()}>
+                    {account.bank} - {account.account}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="number"
+              placeholder="Amount to deposit"
+              className="bg-slate-700/50 border-green-500/30 text-white"
+            />
+            <Button className="w-full bg-green-600 hover:bg-green-700">
+              Deposit from Bank
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-red-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-red-300">💸 Withdraw Funds</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              type="number"
+              placeholder="Amount to withdraw"
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              className="bg-slate-700/50 border-red-500/30 text-white"
+            />
+            <Select>
+              <SelectTrigger className="bg-slate-700/50 border-red-500/30 text-white">
+                <SelectValue placeholder="Withdrawal method" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="bank">Bank Transfer</SelectItem>
+                <SelectItem value="card">Debit Card</SelectItem>
+                <SelectItem value="mobile">Mobile Money</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button className="w-full bg-red-600 hover:bg-red-700">
+              Withdraw Funds
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Currency Exchange */}
+      <Card className="bg-slate-800/50 border-cyan-500/30">
+        <CardHeader>
+          <CardTitle className="text-lg text-cyan-300">💱 Currency Exchange</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm text-gray-400">From</label>
+              <Select>
+                <SelectTrigger className="bg-slate-700/50 border-cyan-500/30 text-white">
+                  <SelectValue placeholder="NGN" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ngn">Nigerian Naira (₦)</SelectItem>
+                  <SelectItem value="usd">US Dollar ($)</SelectItem>
+                  <SelectItem value="eur">Euro (€)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-gray-400">To</label>
+              <Select>
+                <SelectTrigger className="bg-slate-700/50 border-cyan-500/30 text-white">
+                  <SelectValue placeholder="USD" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="usd">US Dollar ($)</SelectItem>
+                  <SelectItem value="ngn">Nigerian Naira (₦)</SelectItem>
+                  <SelectItem value="eur">Euro (€)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-gray-400">Amount</label>
+              <Input
+                type="number"
+                placeholder="0.00"
+                className="bg-slate-700/50 border-cyan-500/30 text-white"
+              />
+            </div>
+          </div>
+          <Button className="w-full mt-4 bg-cyan-600 hover:bg-cyan-700">
+            Exchange Currency
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Local Transactions */}
+      <Card className="bg-slate-800/50 border-gray-500/30">
+        <CardHeader>
+          <CardTitle className="text-lg text-gray-300">📊 Recent Local Transactions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {localWalletData.recentTransactions.map((tx) => (
+              <div key={tx.id} className="flex justify-between items-center p-2 bg-slate-700/30 rounded">
+                <div>
+                  <div className="text-sm font-medium">{tx.description}</div>
+                  <div className="text-xs text-gray-400">{tx.date}</div>
+                </div>
+                <div className="text-right">
+                  <div className={`text-sm font-medium ${
+                    tx.type === 'deposit' ? 'text-green-400' : 
+                    tx.type === 'withdrawal' ? 'text-red-400' : 'text-blue-400'
+                  }`}>
+                    {tx.amount}
+                  </div>
+                  <Badge variant="outline" className={
+                    tx.type === 'deposit' ? 'border-green-500 text-green-400' :
+                    tx.type === 'withdrawal' ? 'border-red-500 text-red-400' : 'border-blue-500 text-blue-400'
+                  }>
+                    {tx.type}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
