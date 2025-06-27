@@ -19607,5 +19607,307 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
+  // Enhanced global wallet funding endpoints
+  app.post('/api/wallet/fund-global', async (req, res) => {
+    try {
+      const { amount, paymentMethod, currency = 'NGN' } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+
+      // Convert to base currency (NGN) if needed
+      const conversionRates: Record<string, number> = {
+        'NGN': 1,
+        'USD': 1650,    // 1 USD = 1650 NGN
+        'EUR': 1800,    // 1 EUR = 1800 NGN
+        'GBP': 2100,    // 1 GBP = 2100 NGN
+        'CAD': 1200,    // 1 CAD = 1200 NGN
+        'AUD': 1100,    // 1 AUD = 1100 NGN
+        'JPY': 11,      // 1 JPY = 11 NGN
+        'CHF': 1850,    // 1 CHF = 1850 NGN
+        'CNY': 230,     // 1 CNY = 230 NGN
+        'INR': 20       // 1 INR = 20 NGN
+      };
+
+      const convertedAmount = Math.round(amount * (conversionRates[currency] || 1));
+      
+      // Simulate payment processing based on method
+      const processingTime = {
+        'stripe': 1000,
+        'paypal': 1500,
+        'paystack': 800,
+        'bank_transfer': 3000,
+        'crypto': 500,
+        'mobile_money': 1200
+      };
+
+      await new Promise(resolve => setTimeout(resolve, processingTime[paymentMethod as keyof typeof processingTime] || 2000));
+      
+      // For demo purposes, add funds directly
+      const userId = 'demo-user';
+      const wallet = await storage.getWallet(userId);
+      if (wallet) {
+        const newBalance = (wallet.localBalance || 0) + convertedAmount;
+        await storage.updateWallet(userId, { localBalance: newBalance });
+        
+        // Record transaction
+        const transaction = {
+          id: `txn_${Date.now()}`,
+          type: 'deposit' as const,
+          amount: convertedAmount.toString(),
+          date: new Date().toLocaleDateString(),
+          status: 'completed' as const,
+          description: `${paymentMethod.toUpperCase()} deposit - ${amount} ${currency}`,
+          paymentMethod,
+          currency,
+          originalAmount: amount
+        };
+
+        res.json({ 
+          success: true, 
+          message: `Successfully added ${amount} ${currency} (₦${convertedAmount.toLocaleString()}) to your wallet`,
+          newBalance: newBalance,
+          transaction
+        });
+      } else {
+        res.status(404).json({ error: 'Wallet not found' });
+      }
+    } catch (error) {
+      console.error('Funding error:', error);
+      res.status(500).json({ error: 'Failed to process payment' });
+    }
+  });
+
+  // Get supported payment methods by country
+  app.get('/api/wallet/payment-methods/:country', async (req, res) => {
+    try {
+      const { country } = req.params;
+      
+      const paymentMethods: Record<string, any> = {
+        'NG': {
+          cards: ['visa', 'mastercard'],
+          banks: ['paystack', 'flutterwave', 'gtb', 'zenith', 'access', 'uba'],
+          mobile: ['paystack_ussd', 'bank_transfer'],
+          crypto: ['btc', 'eth', 'usdt'],
+          other: ['paypal']
+        },
+        'US': {
+          cards: ['visa', 'mastercard', 'amex', 'discover'],
+          banks: ['ach', 'wire', 'zelle'],
+          mobile: ['apple_pay', 'google_pay'],
+          crypto: ['btc', 'eth', 'usdt', 'usdc'],
+          other: ['paypal', 'stripe']
+        },
+        'GB': {
+          cards: ['visa', 'mastercard', 'amex'],
+          banks: ['faster_payments', 'bacs', 'chaps'],
+          mobile: ['apple_pay', 'google_pay'],
+          crypto: ['btc', 'eth', 'usdt'],
+          other: ['paypal', 'wise']
+        },
+        'DE': {
+          cards: ['visa', 'mastercard'],
+          banks: ['sepa', 'sofort', 'giropay'],
+          mobile: ['paypal', 'apple_pay'],
+          crypto: ['btc', 'eth'],
+          other: ['wise', 'klarna']
+        },
+        'IN': {
+          cards: ['visa', 'mastercard', 'rupay'],
+          banks: ['upi', 'neft', 'rtgs', 'imps'],
+          mobile: ['paytm', 'phonepe', 'gpay_india'],
+          crypto: ['btc', 'eth'],
+          other: ['paypal', 'razorpay']
+        }
+      };
+
+      const defaultMethods = {
+        cards: ['visa', 'mastercard'],
+        banks: ['swift_wire', 'local_bank'],
+        mobile: ['paypal'],
+        crypto: ['btc', 'eth', 'usdt'],
+        other: ['paypal', 'wise']
+      };
+
+      res.json({
+        country,
+        methods: paymentMethods[country.toUpperCase()] || defaultMethods,
+        currencies: ['USD', 'EUR', 'GBP', 'NGN']
+      });
+    } catch (error) {
+      console.error('Payment methods error:', error);
+      res.status(500).json({ error: 'Failed to get payment methods' });
+    }
+  });
+
+  // Stripe payment intent endpoint
+  app.post('/api/wallet/stripe/payment-intent', async (req, res) => {
+    try {
+      const { amount, currency = 'usd' } = req.body;
+      
+      // Simulate Stripe payment intent creation
+      const paymentIntent = {
+        id: `pi_${Date.now()}`,
+        client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
+        amount: amount * 100, // Stripe uses cents
+        currency: currency.toLowerCase(),
+        status: 'requires_payment_method'
+      };
+
+      res.json(paymentIntent);
+    } catch (error) {
+      console.error('Stripe payment intent error:', error);
+      res.status(500).json({ error: 'Failed to create payment intent' });
+    }
+  });
+
+  // PayPal order creation endpoint
+  app.post('/api/wallet/paypal/create-order', async (req, res) => {
+    try {
+      const { amount, currency = 'USD' } = req.body;
+      
+      // Simulate PayPal order creation
+      const order = {
+        id: `PAY-${Date.now()}`,
+        status: 'CREATED',
+        links: [
+          {
+            href: `https://www.sandbox.paypal.com/checkoutnow?token=PAY-${Date.now()}`,
+            rel: 'approve',
+            method: 'GET'
+          }
+        ],
+        amount,
+        currency
+      };
+
+      res.json(order);
+    } catch (error) {
+      console.error('PayPal order error:', error);
+      res.status(500).json({ error: 'Failed to create PayPal order' });
+    }
+  });
+
+  // Crypto deposit address generation
+  app.post('/api/wallet/crypto/generate-address', async (req, res) => {
+    try {
+      const { cryptocurrency = 'ETH' } = req.body;
+      
+      // Simulate address generation for different cryptocurrencies
+      const addresses = {
+        'BTC': `1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa`,
+        'ETH': `0x742d35Cc6532C97D67b87A6e5238B8e9B8C9876B`,
+        'USDT': `0x742d35Cc6532C97D67b87A6e5238B8e9B8C9876B`,
+        'USDC': `0x742d35Cc6532C97D67b87A6e5238B8e9B8C9876B`
+      };
+
+      const networks = {
+        'BTC': 'Bitcoin',
+        'ETH': 'Ethereum',
+        'USDT': 'Ethereum (ERC-20)',
+        'USDC': 'Ethereum (ERC-20)'
+      };
+
+      res.json({
+        cryptocurrency,
+        address: addresses[cryptocurrency as keyof typeof addresses] || addresses.ETH,
+        network: networks[cryptocurrency as keyof typeof networks] || 'Ethereum',
+        qrCode: `data:image/svg+xml;base64,${Buffer.from(`<svg>QR Code for ${cryptocurrency}</svg>`).toString('base64')}`,
+        minimumDeposit: cryptocurrency === 'BTC' ? '0.0001' : '0.001',
+        confirmations: cryptocurrency === 'BTC' ? 6 : 12
+      });
+    } catch (error) {
+      console.error('Crypto address error:', error);
+      res.status(500).json({ error: 'Failed to generate deposit address' });
+    }
+  });
+
+  // Mobile money payment initiation
+  app.post('/api/wallet/mobile-money/initiate', async (req, res) => {
+    try {
+      const { amount, provider, phoneNumber, country } = req.body;
+      
+      const providers = {
+        'mpesa': { name: 'M-Pesa', countries: ['KE', 'TZ', 'UG'] },
+        'mtn': { name: 'MTN Mobile Money', countries: ['UG', 'GH', 'CI'] },
+        'airtel': { name: 'Airtel Money', countries: ['KE', 'UG', 'TZ'] },
+        'paystack': { name: 'Paystack', countries: ['NG', 'GH', 'ZA'] },
+        'flutterwave': { name: 'Flutterwave', countries: ['NG', 'KE', 'GH', 'UG', 'ZA'] }
+      };
+
+      const payment = {
+        id: `mobile_${Date.now()}`,
+        provider: providers[provider as keyof typeof providers]?.name || provider,
+        amount,
+        phoneNumber,
+        country,
+        status: 'pending',
+        instructions: `Please check your phone for ${provider.toUpperCase()} payment prompt and enter your PIN to complete the transaction.`,
+        reference: `REF${Date.now()}`,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 minutes
+      };
+
+      res.json(payment);
+    } catch (error) {
+      console.error('Mobile money error:', error);
+      res.status(500).json({ error: 'Failed to initiate mobile money payment' });
+    }
+  });
+
+  // Bank transfer details
+  app.get('/api/wallet/bank-transfer/:country', async (req, res) => {
+    try {
+      const { country } = req.params;
+      
+      const bankDetails: Record<string, any> = {
+        'NG': {
+          bankName: 'SmaiSika Virtual Bank',
+          accountName: 'SmaiSika Holdings Ltd',
+          accountNumber: '0123456789',
+          sortCode: '058152',
+          routingNumber: null,
+          swiftCode: 'SMAISINGN',
+          reference: `WALLET_${Date.now()}`
+        },
+        'US': {
+          bankName: 'SmaiSika Bank USA',
+          accountName: 'SmaiSika Holdings Inc',
+          accountNumber: '1234567890123456',
+          routingNumber: '123456789',
+          swiftCode: 'SMAISIUS1',
+          reference: `WALLET_${Date.now()}`
+        },
+        'GB': {
+          bankName: 'SmaiSika Bank UK',
+          accountName: 'SmaiSika Holdings Ltd',
+          accountNumber: '12345678',
+          sortCode: '12-34-56',
+          swiftCode: 'SMAISGB2L',
+          reference: `WALLET_${Date.now()}`
+        }
+      };
+
+      const defaultDetails = {
+        bankName: 'SmaiSika International Bank',
+        accountName: 'SmaiSika Holdings',
+        swiftCode: 'SMAISXXX',
+        reference: `WALLET_${Date.now()}`,
+        note: 'Please include the reference number in your transfer description'
+      };
+
+      res.json({
+        country,
+        details: bankDetails[country.toUpperCase()] || defaultDetails,
+        processingTime: '1-3 business days',
+        minimumAmount: country === 'NG' ? 5000 : 10,
+        currency: country === 'NG' ? 'NGN' : 'USD'
+      });
+    } catch (error) {
+      console.error('Bank transfer error:', error);
+      res.status(500).json({ error: 'Failed to get bank transfer details' });
+    }
+  });
+
   return httpServer;
 }

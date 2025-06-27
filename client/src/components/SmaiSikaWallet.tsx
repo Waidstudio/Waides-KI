@@ -132,6 +132,57 @@ export default function SmaiSikaWallet() {
     }
   };
 
+  // Handle global funding
+  const handleGlobalFunding = async (paymentMethod: string, currency: string) => {
+    const amount = parseFloat(fundAmount);
+    if (!amount || amount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid amount to add",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/wallet/fund-global', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+          paymentMethod,
+          currency
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setFundAmount('');
+        toast({
+          title: "Payment Successful",
+          description: result.message,
+        });
+        // Refresh wallet data
+        fetchWalletData();
+      } else {
+        toast({
+          title: "Payment Failed",
+          description: result.error || "Unknown error occurred",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Payment Error",
+        description: "Failed to process payment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Simulate staking
   const handleStaking = () => {
     const amount = parseFloat(stakingAmount);
@@ -248,6 +299,449 @@ export default function SmaiSikaWallet() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="bg-green-600 hover:bg-green-700 h-16 flex flex-col gap-2">
+                    <Plus className="w-6 h-6" />
+                    <span>Add Funds</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-slate-800 border-slate-600 max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                      Add Funds to Your Wallet
+                    </DialogTitle>
+                  </DialogHeader>
+                  
+                  <Tabs defaultValue="card" className="w-full">
+                    <TabsList className="grid w-full grid-cols-5 bg-slate-700/50 mb-6">
+                      <TabsTrigger value="card" className="flex items-center gap-1">
+                        <CreditCard className="w-4 h-4" />
+                        Card
+                      </TabsTrigger>
+                      <TabsTrigger value="bank" className="flex items-center gap-1">
+                        <Banknote className="w-4 h-4" />
+                        Bank
+                      </TabsTrigger>
+                      <TabsTrigger value="mobile" className="flex items-center gap-1">
+                        <Smartphone className="w-4 h-4" />
+                        Mobile
+                      </TabsTrigger>
+                      <TabsTrigger value="crypto" className="flex items-center gap-1">
+                        <Bitcoin className="w-4 h-4" />
+                        Crypto
+                      </TabsTrigger>
+                      <TabsTrigger value="global" className="flex items-center gap-1">
+                        <Globe className="w-4 h-4" />
+                        Global
+                      </TabsTrigger>
+                    </TabsList>
+
+                    {/* Credit/Debit Card */}
+                    <TabsContent value="card" className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-green-400">Credit/Debit Card</h3>
+                          <p className="text-sm text-gray-400">Secure payments powered by Stripe. Accepted worldwide.</p>
+                          
+                          <div className="space-y-3">
+                            <div className="space-y-2">
+                              <Label>Amount</Label>
+                              <Input
+                                placeholder="Enter amount..."
+                                value={fundAmount}
+                                onChange={(e) => setFundAmount(e.target.value)}
+                                className="bg-slate-700/50"
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label>Currency</Label>
+                              <Select defaultValue="ngn">
+                                <SelectTrigger className="bg-slate-700/50">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="ngn">🇳🇬 Nigerian Naira (NGN)</SelectItem>
+                                  <SelectItem value="usd">🇺🇸 US Dollar (USD)</SelectItem>
+                                  <SelectItem value="eur">🇪🇺 Euro (EUR)</SelectItem>
+                                  <SelectItem value="gbp">🇬🇧 British Pound (GBP)</SelectItem>
+                                  <SelectItem value="cad">🇨🇦 Canadian Dollar (CAD)</SelectItem>
+                                  <SelectItem value="aud">🇦🇺 Australian Dollar (AUD)</SelectItem>
+                                  <SelectItem value="jpy">🇯🇵 Japanese Yen (JPY)</SelectItem>
+                                  <SelectItem value="chf">🇨🇭 Swiss Franc (CHF)</SelectItem>
+                                  <SelectItem value="cny">🇨🇳 Chinese Yuan (CNY)</SelectItem>
+                                  <SelectItem value="inr">🇮🇳 Indian Rupee (INR)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          
+                          <Button 
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                            onClick={() => handleGlobalFunding('stripe', document.querySelector<HTMLSelectElement>('select')?.value || 'ngn')}
+                          >
+                            <CreditCard className="w-4 h-4 mr-2" />
+                            Pay with Stripe
+                          </Button>
+                        </div>
+                        
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                          <h4 className="font-medium mb-3">Supported Cards</h4>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-5 bg-blue-600 rounded flex items-center justify-center text-xs text-white font-bold">VISA</div>
+                              <span>Visa</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-5 bg-red-600 rounded flex items-center justify-center text-xs text-white font-bold">MC</div>
+                              <span>Mastercard</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-5 bg-blue-800 rounded flex items-center justify-center text-xs text-white font-bold">AMEX</div>
+                              <span>American Express</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-5 bg-orange-600 rounded flex items-center justify-center text-xs text-white font-bold">DIS</div>
+                              <span>Discover</span>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 p-3 bg-green-500/10 rounded border border-green-500/30">
+                            <div className="flex items-center gap-2 text-green-400 text-sm">
+                              <Shield className="w-4 h-4" />
+                              <span>256-bit SSL encryption</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    {/* Bank Transfer */}
+                    <TabsContent value="bank" className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-blue-400">Bank Transfer</h3>
+                          <p className="text-sm text-gray-400">Direct bank transfers and wire payments worldwide.</p>
+                          
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                                <span className="text-xs">🇺🇸 US</span>
+                                <span className="text-xs">ACH Transfer</span>
+                              </Button>
+                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                                <span className="text-xs">🇪🇺 EU</span>
+                                <span className="text-xs">SEPA Transfer</span>
+                              </Button>
+                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                                <span className="text-xs">🇬🇧 UK</span>
+                                <span className="text-xs">Faster Payments</span>
+                              </Button>
+                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                                <span className="text-xs">🌍 Global</span>
+                                <span className="text-xs">SWIFT Wire</span>
+                              </Button>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label>Select Country</Label>
+                              <Select>
+                                <SelectTrigger className="bg-slate-700/50">
+                                  <SelectValue placeholder="Choose your country..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="ng">🇳🇬 Nigeria</SelectItem>
+                                  <SelectItem value="us">🇺🇸 United States</SelectItem>
+                                  <SelectItem value="gb">🇬🇧 United Kingdom</SelectItem>
+                                  <SelectItem value="ca">🇨🇦 Canada</SelectItem>
+                                  <SelectItem value="au">🇦🇺 Australia</SelectItem>
+                                  <SelectItem value="de">🇩🇪 Germany</SelectItem>
+                                  <SelectItem value="fr">🇫🇷 France</SelectItem>
+                                  <SelectItem value="jp">🇯🇵 Japan</SelectItem>
+                                  <SelectItem value="in">🇮🇳 India</SelectItem>
+                                  <SelectItem value="br">🇧🇷 Brazil</SelectItem>
+                                  <SelectItem value="mx">🇲🇽 Mexico</SelectItem>
+                                  <SelectItem value="za">🇿🇦 South Africa</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                          <h4 className="font-medium mb-3">Transfer Details</h4>
+                          <div className="space-y-3 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Processing Time:</span>
+                              <span>1-3 business days</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Fees:</span>
+                              <span className="text-green-400">Free for amounts &gt; $100</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Minimum:</span>
+                              <span>$10 / ₦5,000</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Maximum:</span>
+                              <span>$50,000 daily</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    {/* Mobile Money */}
+                    <TabsContent value="mobile" className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-orange-400">Mobile Money</h3>
+                          <p className="text-sm text-gray-400">Mobile payments for Africa, Asia, and emerging markets.</p>
+                          
+                          <div className="space-y-3">
+                            <h4 className="font-medium">Nigeria</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <span className="text-sm font-bold">Paystack</span>
+                                <span className="text-xs text-gray-400">All Nigerian banks</span>
+                              </Button>
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <span className="text-sm font-bold">Flutterwave</span>
+                                <span className="text-xs text-gray-400">Cards + USSD</span>
+                              </Button>
+                            </div>
+                            
+                            <h4 className="font-medium mt-4">East Africa</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <span className="text-sm font-bold">M-Pesa</span>
+                                <span className="text-xs text-gray-400">Kenya, Tanzania</span>
+                              </Button>
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <span className="text-sm font-bold">MTN Mobile</span>
+                                <span className="text-xs text-gray-400">Uganda, Ghana</span>
+                              </Button>
+                            </div>
+                            
+                            <h4 className="font-medium mt-4">Asia</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <span className="text-sm font-bold">GCash</span>
+                                <span className="text-xs text-gray-400">Philippines</span>
+                              </Button>
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <span className="text-sm font-bold">Paytm</span>
+                                <span className="text-xs text-gray-400">India</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                          <h4 className="font-medium mb-3">Mobile Payment Benefits</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-400" />
+                              <span>Instant transactions</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-400" />
+                              <span>No bank account required</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-400" />
+                              <span>Local currency support</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-green-400" />
+                              <span>24/7 availability</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    {/* Cryptocurrency */}
+                    <TabsContent value="crypto" className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-yellow-400">Cryptocurrency Deposit</h3>
+                          <p className="text-sm text-gray-400">Deposit popular cryptocurrencies instantly.</p>
+                          
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <Bitcoin className="w-6 h-6 text-orange-400" />
+                                <span className="text-sm">Bitcoin</span>
+                                <span className="text-xs text-gray-400">BTC</span>
+                              </Button>
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
+                                <span className="text-sm">Ethereum</span>
+                                <span className="text-xs text-gray-400">ETH</span>
+                              </Button>
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <div className="w-6 h-6 bg-green-500 rounded-full"></div>
+                                <span className="text-sm">USDT</span>
+                                <span className="text-xs text-gray-400">Tether</span>
+                              </Button>
+                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                                <div className="w-6 h-6 bg-blue-400 rounded-full"></div>
+                                <span className="text-sm">USDC</span>
+                                <span className="text-xs text-gray-400">USD Coin</span>
+                              </Button>
+                            </div>
+                            
+                            <div className="bg-slate-700/50 p-3 rounded-lg">
+                              <div className="text-sm font-medium mb-2">Deposit Address (ETH)</div>
+                              <div className="font-mono text-xs bg-slate-800 p-2 rounded break-all">
+                                0x742d35Cc6532C97D67b87A6e5238B8e9B8C9876B
+                              </div>
+                              <Button size="sm" className="mt-2 w-full" variant="outline">
+                                <ArrowRightLeft className="w-3 h-3 mr-1" />
+                                Copy Address
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                          <h4 className="font-medium mb-3">Crypto Deposit Info</h4>
+                          <div className="space-y-3 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Network:</span>
+                              <span>Ethereum (ERC-20)</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Confirmations:</span>
+                              <span>12 blocks</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Processing:</span>
+                              <span className="text-green-400">~5-15 minutes</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-400">Minimum:</span>
+                              <span>0.001 ETH</span>
+                            </div>
+                          </div>
+                          
+                          <Alert className="mt-4">
+                            <AlertTriangle className="h-4 w-4" />
+                            <AlertDescription>
+                              Only send ETH and ERC-20 tokens to this address. Other cryptocurrencies will be lost.
+                            </AlertDescription>
+                          </Alert>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    {/* Global Options */}
+                    <TabsContent value="global" className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-purple-400">Global Payment Solutions</h3>
+                          <p className="text-sm text-gray-400">International payment methods for all countries.</p>
+                          
+                          <div className="space-y-3">
+                            <Button className="w-full h-16 bg-blue-600 hover:bg-blue-700 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center">
+                                  <span className="text-white font-bold text-xs">PP</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-medium">PayPal</div>
+                                  <div className="text-xs text-blue-200">Available in 200+ countries</div>
+                                </div>
+                              </div>
+                              <ChevronRight className="w-5 h-5" />
+                            </Button>
+                            
+                            <Button variant="outline" className="w-full h-16 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                                  <DollarSign className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-medium">Wise (TransferWise)</div>
+                                  <div className="text-xs text-gray-400">Multi-currency wallet</div>
+                                </div>
+                              </div>
+                              <ChevronRight className="w-5 h-5" />
+                            </Button>
+                            
+                            <Button variant="outline" className="w-full h-16 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+                                  <Banknote className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-medium">Western Union</div>
+                                  <div className="text-xs text-gray-400">Cash pickup available</div>
+                                </div>
+                              </div>
+                              <ChevronRight className="w-5 h-5" />
+                            </Button>
+                            
+                            <Button variant="outline" className="w-full h-16 flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                                  <Smartphone className="w-5 h-5 text-white" />
+                                </div>
+                                <div className="text-left">
+                                  <div className="font-medium">Local Banks</div>
+                                  <div className="text-xs text-gray-400">Country-specific options</div>
+                                </div>
+                              </div>
+                              <ChevronRight className="w-5 h-5" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-slate-700/30 p-4 rounded-lg">
+                          <h4 className="font-medium mb-3">Supported Regions</h4>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>🌍 Africa (54 countries)</div>
+                            <div>🌏 Asia-Pacific (48 countries)</div>
+                            <div>🌎 Americas (35 countries)</div>
+                            <div>🌍 Europe (44 countries)</div>
+                            <div>🏝️ Caribbean (13 countries)</div>
+                            <div>🌊 Oceania (14 countries)</div>
+                          </div>
+                          
+                          <div className="mt-4 p-3 bg-blue-500/10 rounded border border-blue-500/30">
+                            <div className="text-sm font-medium text-blue-400">Need Help?</div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              Contact our support team for payment options specific to your country.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </DialogContent>
+              </Dialog>
+              
+              <Button variant="outline" className="h-16 flex flex-col gap-2">
+                <Send className="w-6 h-6" />
+                <span>Send Money</span>
+              </Button>
+              
+              <Button variant="outline" className="h-16 flex flex-col gap-2">
+                <ArrowRightLeft className="w-6 h-6" />
+                <span>Convert</span>
+              </Button>
+              
+              <Button variant="outline" className="h-16 flex flex-col gap-2">
+                <History className="w-6 h-6" />
+                <span>History</span>
+              </Button>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
               {/* Enhanced Balance Overview */}
