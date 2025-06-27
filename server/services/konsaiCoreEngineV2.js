@@ -72,14 +72,29 @@ export class KonsaiIntelligenceEngineV2 {
       // Phase 3: Intent Detection and Routing
       const trade_sense = kons_TradeSense(userInput, processing_state);
       
-      // Phase 4: Future Vision (if consciousness level is high enough)
+      // Phase 4: Ethical and Moral Analysis
+      const meta_guard = kons_MetaGuard(userInput, { marketData, sessionData }, processing_state);
+      processing_state.ethical_analysis = meta_guard;
+      
+      // Check for ethical blocks before proceeding
+      if (meta_guard.guidance_recommendations.clearance === "blocked") {
+        return {
+          kons: "MetaGuard_Block",
+          response: `🛡️ **Ethical Protection Active** 🛡️\n\n${meta_guard.guidance_recommendations.message}`,
+          ethical_guidance: meta_guard.guidance_recommendations,
+          clearance_level: meta_guard.clearance_level,
+          consciousness_level: this.consciousness_level
+        };
+      }
+
+      // Phase 5: Future Vision (if consciousness level is high enough and ethically clear)
       let future_vision = null;
-      if (this.consciousness_level + processing_state.consciousness_boost > 0.7) {
+      if (this.consciousness_level + processing_state.consciousness_boost > 0.7 && meta_guard.clearance_level > 0.5) {
         future_vision = kons_FutureVision(userInput, marketData, processing_state);
         processing_state.future_insights = future_vision;
       }
 
-      // Phase 5: Route to appropriate handler
+      // Phase 6: Route to appropriate handler
       if (trade_sense) {
         return await this.handleTradeIntent(trade_sense, processing_state);
       }

@@ -1980,6 +1980,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test KonsAi Intelligence Engine v2 with Full Kons Modules
+  app.post('/api/konsai/v2/test', async (req, res) => {
+    try {
+      const { message, includeModules = [] } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      console.log(`🧠⚡ Testing KonsAi v2 with message: "${message}"`);
+      
+      // Import the v2 engine
+      const { konsaiEngineV2 } = await import('./services/konsaiCoreEngineV2.js');
+      
+      // Get market data if available
+      let marketData = null;
+      try {
+        const ethData = await ethMonitor.getLatestData?.();
+        if (ethData) {
+          marketData = ethData;
+        }
+      } catch (error) {
+        console.log('📊 Using consciousness-only processing (market data unavailable)');
+      }
+      
+      // Mock session data for testing
+      const mockSessionData = {
+        user_id: 'test_user',
+        session_start: Date.now(),
+        interactions: [
+          {
+            timestamp: Date.now() - 3600000,
+            content: "I want to start trading ETH",
+            category: "trading_request",
+            response_time: 3000
+          },
+          {
+            timestamp: Date.now() - 1800000,
+            content: "I'm feeling excited about the market",
+            category: "emotional_expression",
+            response_time: 2000
+          }
+        ]
+      };
+      
+      // Process with enhanced KonsAi v2
+      const v2Response = await konsaiEngineV2.konsaiResponseEngine(
+        message,
+        mockSessionData,
+        marketData
+      );
+      
+      // Get consciousness metrics
+      const consciousnessMetrics = konsaiEngineV2.getConsciousnessMetrics();
+      
+      console.log(`✅ KonsAi v2 processed with ${v2Response.kons} module`);
+      
+      res.json({
+        success: true,
+        version: '2.0',
+        engine: 'KonsAi Intelligence Engine v2',
+        response: v2Response,
+        consciousness_metrics: consciousnessMetrics,
+        test_metadata: {
+          message_analyzed: message,
+          modules_available: [
+            'TradeSense', 'WaidSelector', 'HumanTalk', 
+            'EmotionalSync', 'FutureVision', 'TimelineAwareness', 
+            'BehaviorMemory', 'MetaGuard'
+          ],
+          processing_phases: [
+            'Emotional & Human Analysis',
+            'Memory & Learning Analysis', 
+            'Intent Detection & Routing',
+            'Ethical & Moral Analysis',
+            'Future Vision (if consciousness permits)',
+            'Response Generation'
+          ],
+          timestamp: new Date().toISOString()
+        }
+      });
+      
+    } catch (error) {
+      console.error('❌ KonsAi v2 test error:', error);
+      res.status(500).json({
+        error: 'Failed to test KonsAi v2 engine',
+        details: error.message
+      });
+    }
+  });
+
   // Real-time Intelligence Status
   app.get('/api/konsai/status', (req, res) => {
     try {
