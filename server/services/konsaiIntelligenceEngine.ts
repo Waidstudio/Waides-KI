@@ -1649,10 +1649,13 @@ class KonsaiIntelligenceEngine {
       }
 
       // Apply Kons Module Enhancements to Response
-      const enhancedResponse = this.konsModuleManager.generateEnhancedResponse(response, konsResults);
+      const konsEnhancedResponse = this.konsModuleManager.generateEnhancedResponse(response, konsResults);
+      
+      // Apply DeepCore Omniscient Enhancement to Response
+      const fullyEnhancedResponse = this.deepCoreEngine.generateEnhancedOmniscientResponse(konsEnhancedResponse, deepCoreResults);
       
       // Final security sanitization
-      return SecurityProtection.sanitizeResponse(enhancedResponse);
+      return SecurityProtection.sanitizeResponse(fullyEnhancedResponse);
       
     } catch (error) {
       return this.generateFallbackResponse(query);
