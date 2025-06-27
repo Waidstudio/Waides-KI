@@ -234,15 +234,15 @@ const BiometricTradingInterface: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-purple-900/50 p-3 rounded-lg">
                   <div className="text-sm text-purple-300">Total Balance</div>
-                  <div className="text-xl font-bold text-white">₭{wallet?.balance.toFixed(2) || '0.00'}</div>
+                  <div className="text-xl font-bold text-white">ꠄ{wallet?.balance.toFixed(2) || '0.00'}</div>
                 </div>
                 <div className="bg-blue-900/50 p-3 rounded-lg">
                   <div className="text-sm text-blue-300">Available</div>
-                  <div className="text-xl font-bold text-white">₭{wallet?.available.toFixed(2) || '0.00'}</div>
+                  <div className="text-xl font-bold text-white">ꠄ{wallet?.available.toFixed(2) || '0.00'}</div>
                 </div>
                 <div className="bg-orange-900/50 p-3 rounded-lg">
                   <div className="text-sm text-orange-300">Locked</div>
-                  <div className="text-xl font-bold text-white">₭{wallet?.lockedAmount.toFixed(2) || '0.00'}</div>
+                  <div className="text-xl font-bold text-white">ꠄ{wallet?.lockedAmount.toFixed(2) || '0.00'}</div>
                 </div>
                 <div className="bg-green-900/50 p-3 rounded-lg">
                   <div className="text-sm text-green-300">Karma Score</div>
