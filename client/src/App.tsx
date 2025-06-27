@@ -18,7 +18,7 @@ import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
-import WaidbotEnginePage from "@/pages/WaidbotEnginePage";
+import WaidbotEnginePage from "@/pages/WaidbotEnginePageNew";
 import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
 import APIDocsPage from "@/pages/APIDocsPage";
