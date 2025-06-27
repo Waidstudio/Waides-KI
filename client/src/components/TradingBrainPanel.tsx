@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -195,7 +196,9 @@ export default function TradingBrainPanel() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Brain className="w-6 h-6 text-purple-400" />
-              <span>Waides KI Trading Brain</span>
+              <Link href="/" className="hover:text-purple-300 transition-colors cursor-pointer">
+                Waides KI Trading Brain
+              </Link>
             </CardTitle>
             <CardDescription>
               Advanced trading knowledge system with 100+ professional insights
