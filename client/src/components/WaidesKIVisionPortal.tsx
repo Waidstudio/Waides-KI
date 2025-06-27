@@ -1085,10 +1085,11 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
           <span className="text-xs text-gray-400">•</span>
           <button 
-            onClick={() => setShowWalletModal(true)}
-            className="text-xs text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer"
+            onClick={() => setLocation('/wallet')}
+            className="text-xs text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-1"
           >
-            Wallet
+            <Wallet className="w-3 h-3" />
+            ₭{walletContext.smaiBalance?.toFixed(2) || '0.00'}
           </button>
           <span className="text-xs text-gray-400">|</span>
           
