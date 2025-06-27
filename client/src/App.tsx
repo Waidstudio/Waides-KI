@@ -54,9 +54,7 @@ function Router() {
   const navItems = [
     { path: "/", label: "Vision Portal" },
     { path: "/biometric-trading", label: "Biometric Trading" },
-    { path: "/profile", label: "Profile & Settings" },
     { path: "/dashboard", label: "Dashboard" },
-    { path: "/autonomous-wealth", label: "SmaiWallet" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
