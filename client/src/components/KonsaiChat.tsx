@@ -29,8 +29,27 @@ export default function KonsaiChat() {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      let response = '';
-      
+      // Use KonsAi Intelligence Engine for enhanced responses
+      const apiResponse = await fetch('/api/konsai/enhanced-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: question,
+          mode: 'comprehensive',
+          complexity: 'adaptive'
+        }),
+      });
+
+      if (!apiResponse.ok) {
+        throw new Error('Failed to get intelligent response');
+      }
+
+      const data = await apiResponse.json();
+      let response = data.response;
+
+      // Enhance specific responses with additional context
       switch (question) {
         case 'Who are you?':
           response = `**👁️ I am Konsai - Your Advanced AI Trading Assistant**
