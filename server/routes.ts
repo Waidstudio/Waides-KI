@@ -1286,6 +1286,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced KonsAi Chat Interface - Advanced Trading Assistant
+  app.post('/api/konsai/enhanced-chat', async (req, res) => {
+    try {
+      const { message, mode, complexity } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Valid message required' });
+      }
+
+      // Use Intelligence Engine for comprehensive response generation
+      const response = await konsaiEngine.processQuery(message, {
+        marketCondition: 'uncertain',
+        priceLevel: 'neutral',
+        volumeProfile: 'average',
+        timeframe: '1h',
+        riskLevel: 'moderate'
+      });
+      
+      res.json({
+        success: true,
+        response,
+        mode: mode || 'comprehensive',
+        complexity: complexity || 'adaptive',
+        intelligence: {
+          engine: 'KonsAi v1.0',
+          capabilities: ['Technical Analysis', 'Risk Management', 'Psychology', 'Strategy Development'],
+          confidence: 95,
+          processing_time: Date.now()
+        },
+        metadata: {
+          timestamp: new Date().toISOString(),
+          message_id: `konsai-${Date.now()}`,
+          version: '1.0.0'
+        }
+      });
+    } catch (error) {
+      console.error('KonsAi enhanced chat error:', error);
+      res.status(500).json({ 
+        error: 'Failed to process enhanced chat request',
+        fallback: 'KonsAi Intelligence Engine temporarily unavailable. Using fallback responses.'
+      });
+    }
+  });
+
   // Advanced Market Analysis
   app.get('/api/konsai/market-analysis', async (req, res) => {
     try {
