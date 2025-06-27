@@ -398,12 +398,12 @@ const BiometricTradingInterface: React.FC = () => {
                     <Badge variant={trade.status === 'completed' ? 'default' : 'destructive'}>
                       {trade.type}
                     </Badge>
-                    <span className="text-white">₭{parseFloat(trade.amount).toFixed(2)}</span>
+                    <span className="text-white">ꠄ{parseFloat(trade.amount).toFixed(2)}</span>
                     <span className="text-gray-400">{trade.symbol}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className={`font-semibold ${parseFloat(trade.profit) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {parseFloat(trade.profit) >= 0 ? '+' : ''}₭{parseFloat(trade.profit).toFixed(2)}
+                      {parseFloat(trade.profit) >= 0 ? '+' : ''}ꠄ{parseFloat(trade.profit).toFixed(2)}
                     </span>
                     <span className="text-gray-400 text-sm">
                       {new Date(trade.createdAt).toLocaleDateString()}

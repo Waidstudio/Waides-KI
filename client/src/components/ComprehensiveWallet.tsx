@@ -312,7 +312,7 @@ export default function ComprehensiveWallet() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-gray-400 text-sm">SmaiSika Balance</p>
-                  <p className="text-2xl font-bold text-white">₭{smaiBalance}</p>
+                  <p className="text-2xl font-bold text-white">ꠄ{smaiBalance}</p>
                 </div>
                 <Wallet className="h-8 w-8 text-purple-400" />
               </div>

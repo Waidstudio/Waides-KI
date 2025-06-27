@@ -1089,7 +1089,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             className="text-xs text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-1"
           >
             <Wallet className="w-3 h-3" />
-            ₭{walletContext.smaiBalance?.toFixed(2) || '0.00'}
+            ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}
           </button>
           <span className="text-xs text-gray-400">|</span>
           
@@ -1845,7 +1845,7 @@ function SmaiSikaWalletTab() {
   const [fundAmount, setFundAmount] = useState('');
   const [convertAmount, setConvertAmount] = useState('');
 
-  const conversionRate = 500; // 1 ₭ = ₦500
+  const conversionRate = 500; // 1 ꠄ = ₦500
 
   return (
     <div className="space-y-6">
@@ -1854,7 +1854,7 @@ function SmaiSikaWalletTab() {
         <Card className="bg-purple-900/30 border-purple-500/30">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-300 animate-pulse">₭{smaiBalance?.toLocaleString() || '5,250.75'}</div>
+              <div className="text-2xl font-bold text-purple-300 animate-pulse">ꠄ{smaiBalance?.toLocaleString() || '5,250.75'}</div>
               <div className="text-sm text-gray-400">SmaiKa Balance</div>
               <div className="text-xs text-purple-400">≈ ${((smaiBalance || 5250.75) * 1.2).toLocaleString()}</div>
             </div>
@@ -1874,7 +1874,7 @@ function SmaiSikaWalletTab() {
         <Card className="bg-green-900/30 border-green-500/30">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-300 animate-pulse">₭{lockedForTrade?.toLocaleString() || '1,200'}</div>
+              <div className="text-2xl font-bold text-green-300 animate-pulse">ꠄ{lockedForTrade?.toLocaleString() || '1,200'}</div>
               <div className="text-sm text-gray-400">Locked for Trading</div>
               <div className="text-xs text-green-400">Active Positions</div>
             </div>
@@ -1941,7 +1941,7 @@ function SmaiSikaWalletTab() {
               className="bg-slate-700/50 border-cyan-500/30 text-white"
             />
             <div className="text-sm text-gray-400">
-              = ₭{convertAmount ? (parseFloat(convertAmount) / conversionRate).toFixed(2) : '0.00'} SmaiKa
+              = ꠄ{convertAmount ? (parseFloat(convertAmount) / conversionRate).toFixed(2) : '0.00'} SmaiKa
             </div>
             <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
               Convert to SmaiKa
@@ -1987,7 +1987,7 @@ function SmaiSikaWalletTab() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div className="text-center p-2 bg-green-900/20 rounded">
-                <div className="text-sm font-bold text-green-300">₭2,500</div>
+                <div className="text-sm font-bold text-green-300">ꠄ2,500</div>
                 <div className="text-xs text-gray-400">Daily Limit</div>
               </div>
               <div className="text-center p-2 bg-green-900/20 rounded">
@@ -2047,7 +2047,7 @@ function SmaiSikaWalletTab() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="text-center">
-              <div className="text-xl font-bold text-purple-300">₭156.50</div>
+              <div className="text-xl font-bold text-purple-300">ꠄ156.50</div>
               <div className="text-xs text-gray-400">Monthly Rewards</div>
             </div>
             <div className="text-center">

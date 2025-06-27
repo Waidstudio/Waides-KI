@@ -108,7 +108,7 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     if (!canAffordTrade(amount)) {
       toast({
         title: "Insufficient Balance",
-        description: `Need ₭${amount.toFixed(2)} but only have ₭${smaiBalance.toFixed(2)}`,
+        description: `Need ꠄ${amount.toFixed(2)} but only have ꠄ${smaiBalance.toFixed(2)}`,
         variant: "destructive",
       });
       return false;
@@ -165,7 +165,7 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
         addTransaction(data.transaction);
         toast({
           title: "Trading Profit",
-          description: `Added ₭${amount.toFixed(2)} from successful trade`,
+          description: `Added ꠄ${amount.toFixed(2)} from successful trade`,
         });
       }
     } catch (error) {
@@ -180,7 +180,7 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     if (amount <= 0 || amount > smaiBalance) {
       toast({
         title: "Lock Failed",
-        description: `Cannot lock ₭${amount}. Insufficient balance or invalid amount.`,
+        description: `Cannot lock ꠄ${amount}. Insufficient balance or invalid amount.`,
         variant: "destructive",
       });
       return false;
@@ -191,7 +191,7 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     
     toast({
       title: "Trade Funds Locked",
-      description: `₭${amount} locked for trading energy`,
+      description: `ꠄ${amount} locked for trading energy`,
     });
     
     return true;
@@ -202,7 +202,7 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     if (amount <= 0 || amount > lockedForTrade) {
       toast({
         title: "Unlock Failed",
-        description: `Cannot unlock ₭${amount}. Insufficient locked funds.`,
+        description: `Cannot unlock ꠄ${amount}. Insufficient locked funds.`,
         variant: "destructive",
       });
       return false;
@@ -213,7 +213,7 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
     
     toast({
       title: "Trade Funds Unlocked",
-      description: `₭${amount} returned to available balance`,
+      description: `ꠄ${amount} returned to available balance`,
     });
     
     return true;

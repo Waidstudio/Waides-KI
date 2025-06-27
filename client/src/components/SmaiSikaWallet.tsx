@@ -66,7 +66,7 @@ export default function SmaiSikaWallet() {
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
-  const conversionRate = 500; // 1 ₭ = ₦500
+  const conversionRate = 500; // 1 ꠄ = ₦500
   const convertedAmount = convertAmount ? (parseFloat(convertAmount) / conversionRate).toFixed(2) : '0.00';
 
   // Mock data for enhanced features
@@ -108,7 +108,7 @@ export default function SmaiSikaWallet() {
       setLockAmount('');
       toast({
         title: "Funds Locked",
-        description: `₭${amount} locked for trading`,
+        description: `ꠄ${amount} locked for trading`,
       });
     }
   };
@@ -130,7 +130,7 @@ export default function SmaiSikaWallet() {
       setLockAmount('');
       toast({
         title: "Funds Unlocked",
-        description: `₭${amount} unlocked from trading`,
+        description: `ꠄ${amount} unlocked from trading`,
       });
     }
   };
@@ -200,7 +200,7 @@ export default function SmaiSikaWallet() {
 
     toast({
       title: "Staking Successful",
-      description: `₭${amount} staked at 8.5% APY for 30 days`,
+      description: `ꠄ${amount} staked at 8.5% APY for 30 days`,
     });
     setStakingAmount('');
   };

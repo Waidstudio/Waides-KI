@@ -13034,7 +13034,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
       {
         id: '2',
         type: 'conversion',
-        amount: '₦10,000 → ₭20.00',
+        amount: '₦10,000 → ꠄ20.00',
         date: '2025-06-25',
         status: 'completed',
         description: 'Local to SmaiSika conversion'
@@ -13049,7 +13049,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
         success: true,
         smaiBalance: walletData.smaiBalance,
         localBalance: walletData.localBalance,
-        conversionRate: 500 // 1 ₭ = ₦500
+        conversionRate: 500 // 1 ꠄ = ₦500
       });
     } catch (error) {
       console.error('Error fetching wallet balance:', error);
@@ -13100,7 +13100,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
   app.post("/api/wallet/convert", async (req, res) => {
     try {
       const { amount } = req.body;
-      const conversionRate = 500; // 1 ₭ = ₦500
+      const conversionRate = 500; // 1 ꠄ = ₦500
       
       if (!amount || amount <= 0) {
         return res.status(400).json({ error: 'Invalid amount' });
@@ -13123,7 +13123,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
       const newTransaction = {
         id: Date.now().toString(),
         type: 'conversion',
-        amount: `₦${parseFloat(amount).toLocaleString()} → ₭${smaiAmount.toFixed(2)}`,
+        amount: `₦${parseFloat(amount).toLocaleString()} → ꠄ${smaiAmount.toFixed(2)}`,
         date: new Date().toLocaleDateString(),
         status: 'completed',
         description: 'Local to SmaiSika conversion'
@@ -13166,7 +13166,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
       const newTransaction = {
         id: Date.now().toString(),
         type: 'trade',
-        amount: `₭${parseFloat(amount).toFixed(2)}`,
+        amount: `ꠄ${parseFloat(amount).toFixed(2)}`,
         date: new Date().toLocaleDateString(),
         status: 'completed',
         description: description || 'ETH trading operation'
@@ -13209,7 +13209,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
       const transaction = {
         id: Date.now().toString(),
         type: 'trade',
-        amount: `₭${amount.toFixed(2)}`,
+        amount: `ꠄ${amount.toFixed(2)}`,
         date: new Date().toLocaleDateString(),
         status: 'completed',
         description: `Trading balance deducted for WaidBot`
@@ -13221,7 +13221,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
         success: true,
         newBalance: walletData.smaiBalance,
         transaction,
-        message: `Deducted ₭${amount.toFixed(2)} for trading`
+        message: `Deducted ꠄ${amount.toFixed(2)} for trading`
       });
     } catch (error) {
       console.error('Error deducting trading balance:', error);
@@ -13249,7 +13249,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
       const transaction = {
         id: Date.now().toString(),
         type: 'trade',
-        amount: `+₭${amount.toFixed(2)}`,
+        amount: `+ꠄ${amount.toFixed(2)}`,
         date: new Date().toLocaleDateString(),
         status: 'completed',
         description: `Trading profit from WaidBot`
@@ -13261,7 +13261,7 @@ My divine intelligence processes infinite parallel realities to identify the hig
         success: true,
         newBalance: walletData.smaiBalance,
         transaction,
-        message: `Added ₭${amount.toFixed(2)} trading profit`
+        message: `Added ꠄ${amount.toFixed(2)} trading profit`
       });
     } catch (error) {
       console.error('Error adding trading profit:', error);
@@ -19139,7 +19139,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
 
       res.json({ 
         success: true, 
-        message: `₭${amount} locked for trading`,
+        message: `ꠄ${amount} locked for trading`,
         lockedAmount: amount,
         remainingAvailable: available - amount
       });
@@ -19179,7 +19179,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
 
       res.json({ 
         success: true, 
-        message: `₭${lockedAmount} unlocked`,
+        message: `ꠄ${lockedAmount} unlocked`,
         unlockedAmount: lockedAmount,
         newAvailable: parseFloat(wallet.balance)
       });
