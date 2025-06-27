@@ -24,6 +24,9 @@ import { kons_FatigueAlert } from './kons/kons_FatigueAlert.js';
 import { kons_ExplainLikeFive } from './kons/kons_ExplainLikeFive.js';
 import { kons_TradePreview } from './kons/kons_TradePreview.js';
 import { kons_EmotionTimeline } from './kons/kons_EmotionTimeline.js';
+import { kons_PriorityFilter } from './kons/kons_PriorityFilter.js';
+import { kons_PlanBuilder } from './kons/kons_PlanBuilder.js';
+import { kons_TradeHistorySearch } from './kons/kons_TradeHistorySearch.js';
 
 // SmaiSika Sacred Knowledge System
 interface SmaiSikaKnowledge {
@@ -1261,6 +1264,40 @@ class KonsModuleManager {
       konsResults.breathScanEngine = kons_BreathScanEngine(this.userMessage, this.marketData, breathState);
       this.moduleStates.set('breathScanEngine', konsResults.breathScanEngine);
 
+      // Process comprehensive user experience modules
+      const sessionState = this.moduleStates.get('sessionTimer') || {};
+      konsResults.sessionTimer = kons_SessionTimer(this.userMessage, this.marketData, sessionState);
+      this.moduleStates.set('sessionTimer', konsResults.sessionTimer);
+
+      const fatigueState = this.moduleStates.get('fatigueAlert') || {};
+      konsResults.fatigueAlert = kons_FatigueAlert(this.userMessage, this.marketData, fatigueState);
+      this.moduleStates.set('fatigueAlert', konsResults.fatigueAlert);
+
+      const explainState = this.moduleStates.get('explainLikeFive') || {};
+      konsResults.explainLikeFive = kons_ExplainLikeFive(this.userMessage, this.marketData, explainState);
+      this.moduleStates.set('explainLikeFive', konsResults.explainLikeFive);
+
+      const previewState = this.moduleStates.get('tradePreview') || {};
+      konsResults.tradePreview = kons_TradePreview(this.userMessage, this.marketData, previewState);
+      this.moduleStates.set('tradePreview', konsResults.tradePreview);
+
+      const emotionState = this.moduleStates.get('emotionTimeline') || {};
+      konsResults.emotionTimeline = kons_EmotionTimeline(this.userMessage, this.marketData, emotionState);
+      this.moduleStates.set('emotionTimeline', konsResults.emotionTimeline);
+
+      // Process strategic analysis modules
+      const priorityState = this.moduleStates.get('priorityFilter') || {};
+      konsResults.priorityFilter = kons_PriorityFilter(this.userMessage, this.marketData, priorityState);
+      this.moduleStates.set('priorityFilter', konsResults.priorityFilter);
+
+      const planState = this.moduleStates.get('planBuilder') || {};
+      konsResults.planBuilder = kons_PlanBuilder(this.userMessage, this.marketData, planState);
+      this.moduleStates.set('planBuilder', konsResults.planBuilder);
+
+      const historyState = this.moduleStates.get('tradeHistorySearch') || {};
+      konsResults.tradeHistorySearch = kons_TradeHistorySearch(this.userMessage, this.marketData, historyState);
+      this.moduleStates.set('tradeHistorySearch', konsResults.tradeHistorySearch);
+
       // Process additional modules (placeholder for future implementation)
       // konsResults.tradeSense = kons_TradeSense(this.userMessage, this.marketData, {});
       // konsResults.waidSelector = kons_WaidSelector(this.userMessage, this.marketData, {});
@@ -1313,6 +1350,40 @@ class KonsModuleManager {
     if (konsResults.microTradePulse?.micro_signals?.length > 0) {
       const topSignal = konsResults.microTradePulse.micro_signals[0];
       enhancedResponse += `\n\n⚡ Micro Signal: ${topSignal.type} (${(topSignal.confidence * 100).toFixed(0)}% confidence)`;
+    }
+
+    // Integrate new comprehensive module insights
+    if (konsResults.sessionTimer?.session_analysis?.status === 'FATIGUE_WARNING') {
+      enhancedResponse += `\n\n⏰ Session Alert: Trading for ${konsResults.sessionTimer.session_stats.session_duration_minutes} minutes - consider a break`;
+    }
+
+    if (konsResults.fatigueAlert?.fatigue_assessment?.level === 'HIGH') {
+      enhancedResponse += `\n\n😴 Fatigue Alert: High fatigue detected - trading performance may be impaired`;
+    }
+
+    if (konsResults.explainLikeFive?.simplified_explanation) {
+      enhancedResponse += `\n\n🧠 Simple Explanation: ${konsResults.explainLikeFive.simplified_explanation}`;
+    }
+
+    if (konsResults.tradePreview?.trade_assessment?.risk_level === 'HIGH') {
+      enhancedResponse += `\n\n⚠️ Trade Preview: High risk detected - proceed with caution`;
+    }
+
+    if (konsResults.emotionTimeline?.risk_assessment?.level === 'HIGH') {
+      enhancedResponse += `\n\n💭 Emotional State: ${konsResults.emotionTimeline.risk_assessment.recommendation}`;
+    }
+
+    // Integrate strategic analysis insights
+    if (konsResults.priorityFilter?.priority_score?.rank === 'URGENT') {
+      enhancedResponse += `\n\n🚨 Priority Alert: ${konsResults.priorityFilter.recommendations.attention_level} attention required`;
+    }
+
+    if (konsResults.planBuilder?.plan_score?.rating === 'EXCELLENT') {
+      enhancedResponse += `\n\n📋 Trading Plan: ${konsResults.planBuilder.trading_plan.title} ready for execution`;
+    }
+
+    if (konsResults.tradeHistorySearch?.analysis?.win_rate && konsResults.tradeHistorySearch.analysis.win_rate > 70) {
+      enhancedResponse += `\n\n📊 History Insight: Strong ${konsResults.tradeHistorySearch.analysis.win_rate.toFixed(1)}% win rate detected`;
     }
 
     return enhancedResponse;
