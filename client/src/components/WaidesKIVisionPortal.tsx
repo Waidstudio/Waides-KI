@@ -1067,13 +1067,13 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               onClick={() => setActiveTab('konsai')}
               className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
                 activeTab === 'konsai'
-                  ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white'
                   : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Brain className="w-2.5 h-2.5" />
-                <span>KonsAi</span>
+                <Eye className="w-2.5 h-2.5" />
+                <span>Vision Spirit</span>
               </div>
             </button>
           </div>
@@ -1743,84 +1743,114 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* KonsAi Tab Content */}
+      {/* Vision Spirit Tab Content */}
       {activeTab === 'konsai' && (
-        <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-orange-500/20 p-6 overflow-hidden max-w-6xl mx-auto h-[calc(100vh-35px)]">
-          <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-orange-600/80 scrollbar-track-gray-800/50 scroll-smooth">
+        <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-emerald-500/20 p-6 overflow-hidden max-w-6xl mx-auto h-[calc(100vh-35px)]">
+          <div className="h-full flex flex-col">
             
-            {/* KonsAi Header */}
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center mb-4 mx-auto animate-pulse">
-                <Brain className="w-8 h-8 text-white" />
+            {/* Vision Spirit Header */}
+            <div className="text-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 mx-auto animate-pulse">
+                <Eye className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                KonsAi Intelligence
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+                Vision Spirit
               </h2>
               <p className="text-gray-400 text-sm mt-2">
-                Advanced AI-powered trading analysis with sacred Kons wisdom
+                Your AI trading companion - Ask anything, generate strategies, command trading bots
               </p>
             </div>
 
-            {/* KonsAi Features */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <Brain className="w-5 h-5 text-yellow-400" />
-                  <h3 className="text-lg font-semibold text-yellow-300">Neural Analysis</h3>
+            {/* Chat Messages Container */}
+            <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-emerald-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4">
+              
+              {/* Welcome Message */}
+              <div className="bg-gradient-to-r from-emerald-500/10 to-teal-600/10 border border-emerald-500/20 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0">
+                    <Eye className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-emerald-300 font-semibold mb-1">Vision Spirit</div>
+                    <div className="text-gray-300 text-sm">
+                      Welcome! I can help you with:
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>Answering any trading or crypto questions</li>
+                        <li>Generating custom trading strategies</li>
+                        <li>Commanding WaidBot, WaidBot Pro, Waides Full Engine, and SmaiSika Autonomous</li>
+                        <li>Providing real-time trading details and market analysis</li>
+                        <li>Account funding assistance with USDT transfers</li>
+                        <li>General conversation and guidance</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-gray-300 text-sm">
-                  Advanced neural networks analyze market patterns and predict future movements with quantum precision.
-                </p>
               </div>
 
-              <div className="bg-gradient-to-br from-orange-500/10 to-red-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <Star className="w-5 h-5 text-orange-400" />
-                  <h3 className="text-lg font-semibold text-orange-300">Sacred Wisdom</h3>
-                </div>
-                <p className="text-gray-300 text-sm">
-                  Ancient Kons wisdom combined with modern AI creates unparalleled trading insights.
-                </p>
+              {/* Quick Action Buttons */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <button className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/20 rounded-xl p-3 text-center hover:from-blue-500/30 hover:to-blue-600/30 transition-all">
+                  <Brain className="w-5 h-5 text-blue-400 mx-auto mb-2" />
+                  <div className="text-xs text-blue-300">Generate Strategy</div>
+                </button>
+                
+                <button className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/20 rounded-xl p-3 text-center hover:from-green-500/30 hover:to-green-600/30 transition-all">
+                  <Bot className="w-5 h-5 text-green-400 mx-auto mb-2" />
+                  <div className="text-xs text-green-300">Command Bots</div>
+                </button>
+                
+                <button className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/20 rounded-xl p-3 text-center hover:from-purple-500/30 hover:to-purple-600/30 transition-all">
+                  <Wallet className="w-5 h-5 text-purple-400 mx-auto mb-2" />
+                  <div className="text-xs text-purple-300">Fund Account</div>
+                </button>
+                
+                <button className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/20 rounded-xl p-3 text-center hover:from-orange-500/30 hover:to-orange-600/30 transition-all">
+                  <TrendingUp className="w-5 h-5 text-orange-400 mx-auto mb-2" />
+                  <div className="text-xs text-orange-300">Market Analysis</div>
+                </button>
+                
+                <button className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 border border-cyan-500/20 rounded-xl p-3 text-center hover:from-cyan-500/30 hover:to-cyan-600/30 transition-all">
+                  <Activity className="w-5 h-5 text-cyan-400 mx-auto mb-2" />
+                  <div className="text-xs text-cyan-300">Live Trading</div>
+                </button>
+                
+                <button className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/20 rounded-xl p-3 text-center hover:from-yellow-500/30 hover:to-yellow-600/30 transition-all">
+                  <MessageCircle className="w-5 h-5 text-yellow-400 mx-auto mb-2" />
+                  <div className="text-xs text-yellow-300">Ask Anything</div>
+                </button>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <Zap className="w-5 h-5 text-purple-400" />
-                  <h3 className="text-lg font-semibold text-purple-300">Real-time Predictions</h3>
-                </div>
-                <p className="text-gray-300 text-sm">
-                  Instant market analysis with confidence scoring and risk assessment for optimal trading decisions.
-                </p>
-              </div>
-
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-orange-500/20 rounded-xl p-4 text-center">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
-                  <h3 className="text-lg font-semibold text-green-300">Autonomous Trading</h3>
-                </div>
-                <p className="text-gray-300 text-sm">
-                  Fully autonomous trading execution with intelligent risk management and profit optimization.
-                </p>
-              </div>
             </div>
 
 
 
-            {/* KonsAi Commands */}
-            <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-4 text-center">
-              <h3 className="text-lg font-semibold text-orange-300 mb-3">Quick Commands</h3>
-              <div className="flex flex-wrap gap-2 justify-center">
-                <button className="px-3 py-1 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs rounded hover:from-yellow-500 hover:to-orange-500 transition-all">
-                  Analyze Market
+            {/* Chat Input */}
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl border border-emerald-500/20 p-4">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Ask Vision Spirit anything... (e.g., 'Generate a new strategy', 'Fund my account with USDT', 'Start WaidBot Pro')"
+                  className="flex-1 bg-gray-900/60 border border-emerald-500/30 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+                />
+                <button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg transition-all flex items-center gap-2">
+                  <Send className="w-4 h-4" />
+                  Send
                 </button>
-                <button className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs rounded hover:from-purple-500 hover:to-pink-500 transition-all">
-                  Generate Prediction
+              </div>
+              
+              {/* Quick Suggestions */}
+              <div className="flex flex-wrap gap-2 mt-3">
+                <button className="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs rounded-full border border-emerald-500/30 transition-all">
+                  "Generate a bullish ETH strategy"
                 </button>
-                <button className="px-3 py-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs rounded hover:from-green-500 hover:to-emerald-500 transition-all">
-                  Execute Strategy
+                <button className="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs rounded-full border border-emerald-500/30 transition-all">
+                  "Start all trading bots"
                 </button>
-                <button className="px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs rounded hover:from-blue-500 hover:to-cyan-500 transition-all">
-                  Sacred Guidance
+                <button className="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs rounded-full border border-emerald-500/30 transition-all">
+                  "How do I fund my account?"
+                </button>
+                <button className="px-3 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-xs rounded-full border border-emerald-500/30 transition-all">
+                  "Show me current trading performance"
                 </button>
               </div>
             </div>
