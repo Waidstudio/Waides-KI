@@ -4,6 +4,9 @@
  * Follows exact specifications for security, integration, and intelligence
  */
 
+import { ethAdvisor } from './ethAdvisor';
+import { timeWindowHelper } from './timeWindowHelper';
+
 interface TradingContext {
   marketCondition: 'bullish' | 'bearish' | 'sideways' | 'volatile' | 'uncertain';
   priceLevel: 'support' | 'resistance' | 'neutral' | 'breakout' | 'breakdown';
@@ -208,6 +211,19 @@ class ModuleConnector {
     };
   }
 
+  async connectToETHAdvisor(): Promise<any> {
+    // Connect to ETH Trading Advisor for real-time trading guidance
+    ethAdvisor.setAnalysisEngine(await this.connectToAnalysisEngine());
+    ethAdvisor.setTimeWindowHelper(timeWindowHelper);
+    
+    return {
+      getFormattedTradingAdvice: (question: string) => ethAdvisor.getFormattedTradingAdvice(question),
+      getOptimalTimeWindows: () => timeWindowHelper.getOptimalWindows(),
+      isOptimalTradingTime: () => timeWindowHelper.isOptimalTradingTime(),
+      getSessionAnalysis: () => timeWindowHelper.getSessionAnalysis()
+    };
+  }
+
   private generateKonsPowisdom(question: string): string {
     // Generate Kons Powa-style wisdom for deeper insights
     const wisdomTemplates = [
@@ -368,6 +384,7 @@ class KonsaiIntelligenceEngine {
     await this.moduleConnector.connectToSmaiSikaWallet();
     await this.moduleConnector.connectToAnalysisEngine();
     await this.moduleConnector.connectToSmartNotify();
+    await this.moduleConnector.connectToETHAdvisor();
   }
 
   private initializeAdvancedKnowledge(): void {
