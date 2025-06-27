@@ -1900,7 +1900,7 @@ function SmaiSikaWalletTab() {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-slate-800/50 border-purple-500/30">
           <CardHeader>
             <CardTitle className="text-lg text-purple-300">💳 Fund Account</CardTitle>
@@ -1913,9 +1913,14 @@ function SmaiSikaWalletTab() {
               onChange={(e) => setFundAmount(e.target.value)}
               className="bg-slate-700/50 border-purple-500/30 text-white"
             />
-            <Button className="w-full bg-purple-600 hover:bg-purple-700">
-              Add Funds via Paystack
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-sm">
+                Paystack
+              </Button>
+              <Button className="bg-purple-500 hover:bg-purple-600 text-sm">
+                Flutterwave
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -1936,6 +1941,137 @@ function SmaiSikaWalletTab() {
             </div>
             <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
               Convert to SmaiKa
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-orange-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-orange-300">⚡ Quick Trade</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-2">
+              <Button className="bg-green-600 hover:bg-green-700 text-sm">
+                Buy ETH
+              </Button>
+              <Button className="bg-red-600 hover:bg-red-700 text-sm">
+                Sell ETH
+              </Button>
+            </div>
+            <Button className="w-full bg-orange-600 hover:bg-orange-700 text-sm">
+              Open Trading Panel
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Enhanced Features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="bg-slate-800/50 border-green-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-green-300">🎯 Auto-Trading Setup</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-300">Enable Auto-Trading</span>
+              <Button variant="outline" size="sm" className="border-green-500/30">
+                Configure
+              </Button>
+            </div>
+            <div className="text-xs text-gray-400">
+              Set up automated trading with risk limits and profit targets
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="text-center p-2 bg-green-900/20 rounded">
+                <div className="text-sm font-bold text-green-300">₭2,500</div>
+                <div className="text-xs text-gray-400">Daily Limit</div>
+              </div>
+              <div className="text-center p-2 bg-green-900/20 rounded">
+                <div className="text-sm font-bold text-green-300">5%</div>
+                <div className="text-xs text-gray-400">Max Risk</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-yellow-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-yellow-300">📊 Portfolio Analysis</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="text-lg font-bold text-yellow-300">+12.5%</div>
+                <div className="text-xs text-gray-400">24h P&L</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-yellow-300">4.2</div>
+                <div className="text-xs text-gray-400">Win Ratio</div>
+              </div>
+            </div>
+            <Button className="w-full bg-yellow-600 hover:bg-yellow-700">
+              View Full Analytics
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Security & Advanced Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-slate-800/50 border-red-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-red-300">🔒 Security Center</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-300">2FA Enabled</span>
+              <Badge className="bg-green-600 text-white">Active</Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-300">Biometric Lock</span>
+              <Badge className="bg-green-600 text-white">On</Badge>
+            </div>
+            <Button className="w-full bg-red-600 hover:bg-red-700 text-sm">
+              Security Settings
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-purple-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-purple-300">💎 Staking Rewards</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="text-center">
+              <div className="text-xl font-bold text-purple-300">₭156.50</div>
+              <div className="text-xs text-gray-400">Monthly Rewards</div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-bold text-purple-300">8.5% APY</div>
+              <div className="text-xs text-gray-400">Current Rate</div>
+            </div>
+            <Button className="w-full bg-purple-600 hover:bg-purple-700 text-sm">
+              Stake SmaiKa
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800/50 border-blue-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-blue-300">🌐 DeFi Bridge</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="text-center">
+              <div className="text-sm font-bold text-blue-300">Bridge to</div>
+              <div className="text-xs text-gray-400">Ethereum • BSC • Polygon</div>
+            </div>
+            <div className="grid grid-cols-3 gap-1 text-xs">
+              <Button variant="outline" size="sm" className="border-blue-500/30">ETH</Button>
+              <Button variant="outline" size="sm" className="border-blue-500/30">BSC</Button>
+              <Button variant="outline" size="sm" className="border-blue-500/30">MATIC</Button>
+            </div>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-sm">
+              Cross-Chain Transfer
             </Button>
           </CardContent>
         </Card>
@@ -2036,7 +2172,7 @@ function LocalWalletTab() {
       </div>
 
       {/* Banking Operations */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-slate-800/50 border-green-500/30">
           <CardHeader>
             <CardTitle className="text-lg text-green-300">🏦 Bank Transfer</CardTitle>
@@ -2092,7 +2228,147 @@ function LocalWalletTab() {
             </Button>
           </CardContent>
         </Card>
+
+        <Card className="bg-slate-800/50 border-orange-500/30">
+          <CardHeader>
+            <CardTitle className="text-lg text-orange-300">💳 Payment Methods</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <Button variant="outline" size="sm" className="border-orange-500/30">
+                Visa
+              </Button>
+              <Button variant="outline" size="sm" className="border-orange-500/30">
+                Mastercard
+              </Button>
+              <Button variant="outline" size="sm" className="border-orange-500/30">
+                PayPal
+              </Button>
+              <Button variant="outline" size="sm" className="border-orange-500/30">
+                Stripe
+              </Button>
+            </div>
+            <Button className="w-full bg-orange-600 hover:bg-orange-700 text-sm">
+              Add Payment Method
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Crypto Integration */}
+      <Card className="bg-slate-800/50 border-yellow-500/30">
+        <CardHeader>
+          <CardTitle className="text-lg text-yellow-300">₿ Cryptocurrency Wallet</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="text-center p-3 bg-orange-900/20 rounded">
+              <div className="text-sm font-bold text-orange-300">0.0024 BTC</div>
+              <div className="text-xs text-gray-400">≈ $167.50</div>
+            </div>
+            <div className="text-center p-3 bg-blue-900/20 rounded">
+              <div className="text-sm font-bold text-blue-300">0.95 ETH</div>
+              <div className="text-xs text-gray-400">≈ $2,310.00</div>
+            </div>
+            <div className="text-center p-3 bg-green-900/20 rounded">
+              <div className="text-sm font-bold text-green-300">450 USDT</div>
+              <div className="text-xs text-gray-400">≈ $450.00</div>
+            </div>
+            <div className="text-center p-3 bg-purple-900/20 rounded">
+              <div className="text-sm font-bold text-purple-300">25 BNB</div>
+              <div className="text-xs text-gray-400">≈ $15,500.00</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Button className="bg-green-600 hover:bg-green-700">
+              Buy Crypto
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              Sell Crypto
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Advanced Analytics Dashboard */}
+      <Card className="bg-slate-800/50 border-cyan-500/30">
+        <CardHeader>
+          <CardTitle className="text-lg text-cyan-300">📈 Wallet Analytics Dashboard</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-3 bg-cyan-900/20 rounded">
+              <div className="text-lg font-bold text-cyan-300">+8.5%</div>
+              <div className="text-xs text-gray-400">Monthly Growth</div>
+            </div>
+            <div className="text-center p-3 bg-green-900/20 rounded">
+              <div className="text-lg font-bold text-green-300">₦2.4M</div>
+              <div className="text-xs text-gray-400">Total Transactions</div>
+            </div>
+            <div className="text-center p-3 bg-blue-900/20 rounded">
+              <div className="text-lg font-bold text-blue-300">156</div>
+              <div className="text-xs text-gray-400">Active Days</div>
+            </div>
+            <div className="text-center p-3 bg-purple-900/20 rounded">
+              <div className="text-lg font-bold text-purple-300">4.2★</div>
+              <div className="text-xs text-gray-400">Credit Score</div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-cyan-300">Spending Categories</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-300">Trading</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-20 bg-gray-700 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full w-16"></div>
+                    </div>
+                    <span className="text-xs text-gray-400">80%</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-300">Transfers</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-20 bg-gray-700 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full w-3"></div>
+                    </div>
+                    <span className="text-xs text-gray-400">15%</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-300">Fees</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-20 bg-gray-700 rounded-full h-2">
+                      <div className="bg-red-500 h-2 rounded-full w-1"></div>
+                    </div>
+                    <span className="text-xs text-gray-400">5%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-cyan-300">Risk Assessment</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-300">Fraud Protection</span>
+                  <Badge className="bg-green-600 text-white text-xs">High</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-300">Account Security</span>
+                  <Badge className="bg-green-600 text-white text-xs">Strong</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-300">Transaction Risk</span>
+                  <Badge className="bg-yellow-600 text-white text-xs">Low</Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Currency Exchange */}
       <Card className="bg-slate-800/50 border-cyan-500/30">
