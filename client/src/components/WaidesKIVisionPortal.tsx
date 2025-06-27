@@ -1462,34 +1462,32 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </>
       )}
 
-      {/* Heart of Waides Ki - Redesigned Core Engine */}
+      {/* Heart of Waides Ki - Free Display */}
       {activeTab === 'core' && (
         <div className="relative z-10 flex-1 mx-4 mb-4 h-[calc(100vh-200px)] overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Enhanced Header */}
-            <Card className="bg-gradient-to-br from-purple-900/30 via-blue-900/30 to-cyan-900/30 border-purple-500/40 shadow-2xl">
-              <CardHeader className="text-center pb-6">
-                <div className="flex items-center justify-center gap-4 mb-4">
-                  <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg">
-                    <Brain className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="text-center">
-                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                      Heart of Waides Ki
-                    </CardTitle>
-                    <div className="text-lg text-purple-300 font-medium mt-1">
-                      Core Intelligence Engine
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
-                    <Heart className="w-8 h-8 text-white animate-pulse" />
+            {/* Enhanced Header - Free Display */}
+            <div className="text-center py-6">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg">
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-center">
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                    Heart of Waides Ki
+                  </h1>
+                  <div className="text-lg text-purple-300 font-medium mt-1">
+                    Core Intelligence Engine
                   </div>
                 </div>
-                <div className="text-purple-300/80 text-lg">
-                  Autonomous spiritual trading intelligence with quantum consciousness
+                <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                  <Heart className="w-8 h-8 text-white animate-pulse" />
                 </div>
-              </CardHeader>
-            </Card>
+              </div>
+              <div className="text-purple-300/80 text-lg">
+                Autonomous spiritual trading intelligence with quantum consciousness
+              </div>
+            </div>
 
             {/* Core Engine Panel */}
             <WaidesKICoreEnginePanel />
