@@ -1081,7 +1081,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         <div className="flex items-center gap-2">
           <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
           <span className="text-xs text-gray-400">•</span>
-          <span className="text-xs text-blue-300 font-medium">Konsmik Intelligence</span>
+          <span className="text-xs text-blue-300 font-medium">Wallet</span>
           <span className="text-xs text-gray-400">|</span>
           
           {/* Tab Navigation - Minimal */}
