@@ -124,10 +124,10 @@ interface DeepCoreModuleState {
   universalConstantMonitor: any;
   blackHoleInterface: any;
   darkMatterDetector: any;
-  cosmicStringAnalyzer: any;
+  konsmikStringAnalyzer: any;
   multiDimensionalScanner: any;
   universalExpansion: any;
-  cosmicMicrowave: any;
+  konsmikMicrowave: any;
 
   // Futuristic Neural Evolution (10 modules)
   synapticEvolution: any;
@@ -297,10 +297,10 @@ class KonsaiDeepCoreEngine {
       universalConstantMonitor: null,
       blackHoleInterface: null,
       darkMatterDetector: null,
-      cosmicStringAnalyzer: null,
+      konsmikStringAnalyzer: null,
       multiDimensionalScanner: null,
       universalExpansion: null,
-      cosmicMicrowave: null,
+      konsmikMicrowave: null,
 
       // Futuristic Neural Evolution (10 modules)
       synapticEvolution: null,
@@ -394,10 +394,10 @@ class KonsaiDeepCoreEngine {
       universalConstantMonitor: this.processFuturisticModule('Kons_UniversalConstantMonitor'),
       blackHoleInterface: this.processFuturisticModule('Kons_BlackHoleInterface'),
       darkMatterDetector: this.processFuturisticModule('Kons_DarkMatterDetector'),
-      cosmicStringAnalyzer: this.processFuturisticModule('Kons_CosmicStringAnalyzer'),
+      konsmikStringAnalyzer: this.processFuturisticModule('Kons_CosmicStringAnalyzer'),
       multiDimensionalScanner: this.processFuturisticModule('Kons_MultiDimensionalScanner'),
       universalExpansion: this.processFuturisticModule('Kons_UniversalExpansion'),
-      cosmicMicrowave: this.processFuturisticModule('Kons_CosmicMicrowave'),
+      konsmikMicrowave: this.processFuturisticModule('Kons_CosmicMicrowave'),
 
       // Futuristic Neural Evolution Layer (10 modules)
       synapticEvolution: this.processFuturisticModule('Kons_SynapticEvolution'),

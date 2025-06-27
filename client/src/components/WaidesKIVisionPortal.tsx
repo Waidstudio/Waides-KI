@@ -167,7 +167,7 @@ export default function WaidesKIVisionPortal() {
   
   // Pure KonsAi chat interface
   
-  // Cosmic AI Enhancement States
+  // Konsmik AI Enhancement States
   const [aiPersonality, setAiPersonality] = useState({
     mode: 'spiritual' as 'spiritual' | 'analytical' | 'creative' | 'balanced',
     energyLevel: 85,
@@ -180,8 +180,8 @@ export default function WaidesKIVisionPortal() {
     volume: 1,
     enabled: false
   });
-  const [konsmikMode, setCosmicMode] = useState(false);
-  const [konsmikTheme, setCosmicTheme] = useState<'nebula' | 'starfield' | 'galaxy'>('nebula');
+  const [konsmikMode, setKonsmikMode] = useState(false);
+  const [konsmikTheme, setKonsmikTheme] = useState<'nebula' | 'starfield' | 'galaxy'>('nebula');
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
@@ -268,7 +268,7 @@ export default function WaidesKIVisionPortal() {
     }
   }, []);
 
-  // Cosmic AI speech synthesis function
+  // Konsmik AI speech synthesis function
   const speakMessage = (text: string) => {
     if (!speechSynthesis || !voiceSettings.enabled) return;
     
@@ -293,7 +293,7 @@ export default function WaidesKIVisionPortal() {
   };
 
   // Enhanced typeMessage with cosmic features
-  const typeMessageCosmic = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
+  const typeMessageKonsmik = (message: string, source?: string, confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     // Safety check for undefined message
     if (!message || typeof message !== 'string' || message.trim() === '') {
       console.warn('typeMessage called with invalid message:', message);
@@ -654,7 +654,7 @@ export default function WaidesKIVisionPortal() {
 
   const typeMessage = (message: string, source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error', confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     // Use cosmic enhanced version
-    typeMessageCosmic(message, source, confidence, konslangProcessing, reasoning);
+    typeMessageKonsmik(message, source, confidence, konslangProcessing, reasoning);
   };
 
   // Kons Powa ETH Prediction Handler
@@ -706,7 +706,7 @@ export default function WaidesKIVisionPortal() {
       }
     } catch (error) {
       console.error('Kons Powa prediction error:', error);
-      typeMessageCosmic('Unable to connect to Kons Powa divine channel. Please try again.', 'error', 0);
+      typeMessageKonsmik('Unable to connect to Kons Powa divine channel. Please try again.', 'error', 0);
     }
     
     setIsProcessing(false);
@@ -721,7 +721,7 @@ export default function WaidesKIVisionPortal() {
       
       if (data.success) {
         setIsAutonomousActive(true);
-        typeMessageCosmic(`🚀 Kons Powa Autonomous Trading ACTIVATED! 
+        typeMessageKonsmik(`🚀 Kons Powa Autonomous Trading ACTIVATED! 
         
 Initial prediction: ${data.initialPrediction?.action || 'OBSERVE'}
 System is now monitoring ETH and executing trades based on divine signals.
@@ -730,11 +730,11 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         // Fetch initial stats
         fetchAutonomousStats();
       } else {
-        typeMessageCosmic('Failed to start autonomous trading. Please try again.', 'error', 0);
+        typeMessageKonsmik('Failed to start autonomous trading. Please try again.', 'error', 0);
       }
     } catch (error) {
       console.error('Autonomous trading start error:', error);
-      typeMessageCosmic('Error starting autonomous trading. Please check your connection.', 'error', 0);
+      typeMessageKonsmik('Error starting autonomous trading. Please check your connection.', 'error', 0);
     }
   };
 
@@ -745,13 +745,13 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       
       if (data.success) {
         setIsAutonomousActive(false);
-        typeMessageCosmic('⏹️ Kons Powa Autonomous Trading STOPPED. Returning to manual trading mode.', 'oracle', 85);
+        typeMessageKonsmik('⏹️ Kons Powa Autonomous Trading STOPPED. Returning to manual trading mode.', 'oracle', 85);
       } else {
-        typeMessageCosmic('Failed to stop autonomous trading.', 'error', 0);
+        typeMessageKonsmik('Failed to stop autonomous trading.', 'error', 0);
       }
     } catch (error) {
       console.error('Autonomous trading stop error:', error);
-      typeMessageCosmic('Error stopping autonomous trading.', 'error', 0);
+      typeMessageKonsmik('Error stopping autonomous trading.', 'error', 0);
     }
   };
 
@@ -775,14 +775,14 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       const data = await response.json();
       
       if (data.success) {
-        typeMessageCosmic(`⚡ Force ${direction} trade executed! Trade ID: ${data.tradeId}`, 'oracle', 90);
+        typeMessageKonsmik(`⚡ Force ${direction} trade executed! Trade ID: ${data.tradeId}`, 'oracle', 90);
         fetchAutonomousStats(); // Refresh stats after force trade
       } else {
-        typeMessageCosmic(`❌ Failed to execute force ${direction} trade: ${data.error}`, 'error', 0);
+        typeMessageKonsmik(`❌ Failed to execute force ${direction} trade: ${data.error}`, 'error', 0);
       }
     } catch (error) {
       console.error('Force trade error:', error);
-      typeMessageCosmic(`❌ Error executing force ${direction} trade.`, 'error', 0);
+      typeMessageKonsmik(`❌ Error executing force ${direction} trade.`, 'error', 0);
     }
   };
 
@@ -1057,7 +1057,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
        "min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white font-inter relative overflow-hidden") :
       "min-h-screen bg-black text-white font-inter relative overflow-hidden"}>
       
-      {/* Enhanced Cosmic Background Effects */}
+      {/* Enhanced Konsmik Background Effects */}
       {konsmikMode ? (
         <div className="absolute inset-0 pointer-events-none">
           {/* Starfield Animation */}

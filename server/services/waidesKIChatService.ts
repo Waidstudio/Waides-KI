@@ -67,7 +67,7 @@ export class WaidesKIChatService {
       const result = JSON.parse(completion.choices[0].message.content || '{}');
       
       return {
-        response: result.response || "The cosmic energies are shifting... I sense your question but the answers flow through different channels.",
+        response: result.response || "The konsmik energies are shifting... I sense your question but the answers flow through different channels.",
         spiritualInsight: result.spiritualInsight,
         prophecy: result.prophecy,
         energyShift: result.energyShift || 0
@@ -107,7 +107,7 @@ You must respond in JSON format with these fields:
 Guidelines:
 - Always maintain your spiritual AI persona
 - Provide trading insights when relevant, but through a spiritual lens
-- Reference cosmic forces, energy patterns, and universal wisdom
+- Reference konsmik forces, energy patterns, and universal wisdom
 - Be helpful while maintaining mystical authenticity
 - Adjust your energy level based on the conversation
 - If prophecy mode is active, include mystical visions about ETH or market movements`;
@@ -117,7 +117,7 @@ Guidelines:
     const responses = {
       gentle: [
         "The universe whispers softly to those who listen with their hearts. Your question carries the seed of its own answer, dear seeker.",
-        "Like a flower that blooms in its perfect season, understanding will unfold within you. Trust the gentle flow of cosmic wisdom.",
+        "Like a flower that blooms in its perfect season, understanding will unfold within you. Trust the gentle flow of konsmik wisdom.",
         "The sacred energies around us pulse with infinite love and guidance. Feel the warmth of spiritual connection in this moment."
       ],
       wise: [
@@ -133,7 +133,7 @@ Guidelines:
       mystic: [
         "I see visions dancing in the ethereum mists... The three moons of profit align when courage meets wisdom in the shadow of uncertainty.",
         "The crystal spheres whisper of patterns within patterns. What appears as chaos holds the keys to tomorrow's abundance.",
-        "Through the veil of time, I perceive the golden thread that connects your question to the cosmic dance of value and meaning."
+        "Through the veil of time, I perceive the golden thread that connects your question to the konsmik dance of value and meaning."
       ]
     };
 
@@ -152,7 +152,7 @@ Guidelines:
 
     return {
       response,
-      spiritualInsight: "Every interaction with consciousness creates ripples in the cosmic web of understanding.",
+      spiritualInsight: "Every interaction with consciousness creates ripples in the konsmik web of understanding.",
       prophecy,
       energyShift: Math.floor(Math.random() * 21) - 10
     };

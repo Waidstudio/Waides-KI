@@ -326,7 +326,7 @@ export function WaidesKICoreEnginePanel() {
             <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
             <TabsTrigger value="quantum" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Quantum AI</TabsTrigger>
             <TabsTrigger value="neural" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Neural Network</TabsTrigger>
-            <TabsTrigger value="cosmic" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
+            <TabsTrigger value="konsmik" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
             <TabsTrigger value="biometric" className="data-[state=active]:bg-orange-600 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
             <TabsTrigger value="temporal" className="data-[state=active]:bg-indigo-600 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
             <TabsTrigger value="humanity" className="data-[state=active]:bg-green-600 whitespace-nowrap px-4 py-2">Humanity Service</TabsTrigger>
@@ -888,7 +888,7 @@ export function WaidesKICoreEnginePanel() {
         </TabsContent>
 
         {/* Konsmik Link Tab - Universal Connection */}
-        <TabsContent value="cosmic" className="flex-1 overflow-y-auto space-y-6 p-1">
+        <TabsContent value="konsmik" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Konsmik Communication Array */}
             <Card className="bg-gradient-to-br from-pink-900/30 to-rose-900/30 border-pink-500/30">
@@ -1888,7 +1888,7 @@ export function WaidesKICoreEnginePanel() {
                         <SelectContent>
                           <SelectItem value="dark">Dark - Classic dark theme</SelectItem>
                           <SelectItem value="light">Light - Clean light interface</SelectItem>
-                          <SelectItem value="cosmic">Konsmik - Mystical space theme</SelectItem>
+                          <SelectItem value="konsmik">Konsmik - Mystical space theme</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
