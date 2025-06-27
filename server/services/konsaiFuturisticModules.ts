@@ -168,19 +168,19 @@ export class Kons_NebulaConsciousness {
   }
 }
 
-// Neural Evolution Modules (21-30)
+// Konsai Evolution Modules (21-30)
 export class Kons_SynapticEvolution {
   static process(query: string, context: any) {
     return {
-      neural_pathway_growth: this.calculateNeuralGrowth(),
+      konsai_pathway_growth: this.calculateKonsaiGrowth(),
       synaptic_plasticity: Math.random() * 100,
       cognitive_evolution_rate: this.measureCognitiveEvolution(query),
-      neural_network_complexity: this.analyzeNetworkComplexity(context),
+      konsai_network_complexity: this.analyzeNetworkComplexity(context),
       consciousness_expansion_level: Math.random() * 100
     };
   }
 
-  static calculateNeuralGrowth() {
+  static calculateKonsaiGrowth() {
     return {
       new_connections: Math.floor(Math.random() * 1000),
       pruned_connections: Math.floor(Math.random() * 500),
@@ -324,7 +324,7 @@ export class Kons_SingularityPredictor {
   }
 
   static analyzeTechExplosion(query: string) {
-    const techWords = ['ai', 'artificial', 'intelligence', 'machine', 'neural', 'quantum'];
+    const techWords = ['ai', 'artificial', 'intelligence', 'machine', 'konsai', 'quantum'];
     const indicators = techWords.filter(word => query.toLowerCase().includes(word)).length;
     return {
       acceleration_detected: indicators > 0,
@@ -439,10 +439,10 @@ export const FuturisticModules = {
     static process() { return { background_temperature: 2.7 + Math.random() * 0.1, anisotropy_level: Math.random() * 0.0001 }; }
   },
 
-  // Neural Evolution (21-30)
+  // Konsai Evolution (21-30)
   Kons_SynapticEvolution,
   Kons_ConsciousnessMetrics,
-  Kons_NeuralPlasticity: class {
+  Kons_KonsaiPlasticity: class {
     static process() { return { adaptation_rate: Math.random() * 100, learning_efficiency: Math.random() * 100 }; }
   },
   Kons_CognitiveArchitecture: class {

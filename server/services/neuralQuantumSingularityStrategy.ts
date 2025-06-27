@@ -37,7 +37,7 @@ interface TradingSignal {
   activation?: string;
 }
 
-// Simulated neural network components for TypeScript implementation
+// Simulated konsai network components for TypeScript implementation
 class TemporalConvolution {
   process(priceSeries: number[]): number[] {
     // Advanced temporal pattern recognition
@@ -86,7 +86,7 @@ class Kons PowaLSTM {
   }
 }
 
-export class NeuralKons PowaSingularityStrategy {
+export class KonsaiKons PowaSingularityStrategy {
   private temporal_conv: TemporalConvolution;
   private spatial_attention: SpatialAttention;
   private kons powa_lstm: Kons PowaLSTM;
@@ -101,7 +101,7 @@ export class NeuralKons PowaSingularityStrategy {
   private harmonic_balance: number = 1.0;
 
   constructor() {
-    // Initialize neural network components
+    // Initialize konsai network components
     this.temporal_conv = new TemporalConvolution();
     this.spatial_attention = new SpatialAttention();
     this.kons powa_lstm = new Kons PowaLSTM();
@@ -259,7 +259,7 @@ export class NeuralKons PowaSingularityStrategy {
     return Math.exp(-volatility) * (1 + kons powa_state);
   }
 
-  // Convert ETH data to neural kons powa format
+  // Convert ETH data to konsai kons powa format
   convertEthDataToMarketData(ethData: EthData, historicalData: EthData[]): MarketData {
     // Generate price series from historical data
     const price_series = historicalData.map(d => d.price);
@@ -305,4 +305,4 @@ export class NeuralKons PowaSingularityStrategy {
   }
 }
 
-export const neuralKons PowaSingularityStrategy = new NeuralKons PowaSingularityStrategy();
+export const konsaiKons PowaSingularityStrategy = new KonsaiKons PowaSingularityStrategy();

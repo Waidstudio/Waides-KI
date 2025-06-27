@@ -325,7 +325,7 @@ export function WaidesKICoreEnginePanel() {
             <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
             <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
             <TabsTrigger value="kons-powa" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Kons Powa AI</TabsTrigger>
-            <TabsTrigger value="neural" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Neural Network</TabsTrigger>
+            <TabsTrigger value="konsai" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Konsai Network</TabsTrigger>
             <TabsTrigger value="konsmik" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
             <TabsTrigger value="biometric" className="data-[state=active]:bg-orange-600 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
             <TabsTrigger value="temporal" className="data-[state=active]:bg-indigo-600 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
@@ -1687,7 +1687,7 @@ export function WaidesKICoreEnginePanel() {
                     tradingHours: { enabled: true, startHour: 6, endHour: 22, timezone: 'UTC' },
                     aiPersonality: 'balanced', spiritualMode: true, konsaiVoiceEnabled: true, divineGuidanceLevel: 75,
                     theme: 'dark', animationsEnabled: true, soundEffects: true, voiceAlerts: false, displayMode: 'detailed',
-                    quantumProcessing: true, temporalAnalysis: true, cosmicAlignment: true, biometricSync: false, humanityService: true,
+                    konsPowaPowered: true, temporalAnalysis: true, cosmicAlignment: true, biometricSync: false, humanityService: true,
                     alertChannels: { email: true, sms: false, push: true, voice: false },
                     alertThresholds: { profitAlert: 5, lossAlert: -3, volatilityAlert: 15 },
                     language: 'en-US', currency: 'USD', dateFormat: 'MM/DD/YYYY', timeFormat: '24h',
@@ -1949,8 +1949,8 @@ export function WaidesKICoreEnginePanel() {
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <Switch
-                        checked={settings.quantumProcessing}
-                        onCheckedChange={(checked) => handleSettingChange('quantumProcessing', checked)}
+                        checked={settings.konsPowaPowered}
+                        onCheckedChange={(checked) => handleSettingChange('konsPowaPowered', checked)}
                       />
                       <span className="text-sm">Kons Powa Processing Core (2,048 qubits)</span>
                     </div>
@@ -2185,7 +2185,7 @@ export function WaidesKICoreEnginePanel() {
                         <SelectContent>
                           <SelectItem value="standard">Standard - AES-256</SelectItem>
                           <SelectItem value="military">Military - AES-512</SelectItem>
-                          <SelectItem value="quantum">Kons Powa - Unbreakable</SelectItem>
+                          <SelectItem value="kons-powa">Kons Powa - Unbreakable</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
