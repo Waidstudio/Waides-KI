@@ -1027,42 +1027,40 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* Top Status Bar - Ultra Compact */}
-      <div className="relative z-10 flex justify-between items-center px-4 py-1 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
-        <span className="text-xs font-medium text-purple-300">{formatTime(currentTime)}</span>
+      {/* Top Status Bar - Minimal Scrollable */}
+      <div className="relative z-10 flex justify-center items-center py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
         <div className="flex items-center">
-          {/* Tab Navigation - Ultra Compact */}
-          <div className="flex bg-gray-800/60 rounded p-0.5">
+          {/* Tab Navigation - Minimal */}
+          <div className="flex bg-gray-800/40 rounded-sm p-0.5">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
                 activeTab === 'chat'
-                  ? 'bg-purple-600 text-white shadow-sm'
+                  ? 'bg-purple-600 text-white'
                   : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Brain className="w-3 h-3" />
+                <Brain className="w-2.5 h-2.5" />
                 <span>AI Chat</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab('core')}
-              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
                 activeTab === 'core'
-                  ? 'bg-purple-600 text-white shadow-sm'
+                  ? 'bg-purple-600 text-white'
                   : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3" />
+                <Heart className="w-2.5 h-2.5" />
                 <span>Heart of Waides Ki</span>
               </div>
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-400">{getMemoryStatus()}</span>
+        <div className="hidden">
           
           {/* Cosmic AI Controls */}
           <div className="flex items-center gap-2">
@@ -1287,9 +1285,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
 
       {/* Chat Window */}
       <div className={`relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 overflow-hidden max-w-6xl mx-auto ${
-        activeTab === 'chat' ? 'h-[calc(100vh-60px)]' : 'h-[calc(100vh-260px)]'
+        activeTab === 'chat' ? 'h-[calc(100vh-35px)]' : 'h-[calc(100vh-235px)]'
       }`}>
-        <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-gray-800">
+        <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
