@@ -155,7 +155,7 @@ export function WaidesKICoreEnginePanel() {
         </div>
 
         {/* AI Dashboard Tab - Core Status & Performance */}
-        <TabsContent value="dashboard" className="space-y-6">
+        <TabsContent value="dashboard" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Engine Status */}
             <Card className="bg-gray-800/50 border-purple-500/30">
@@ -287,7 +287,7 @@ export function WaidesKICoreEnginePanel() {
         </TabsContent>
 
         {/* Intelligence Matrix Tab */}
-        <TabsContent value="intelligence" className="space-y-6">
+        <TabsContent value="intelligence" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Quantum Core */}
             <Card className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 border-blue-500/30">
@@ -414,7 +414,7 @@ export function WaidesKICoreEnginePanel() {
         </TabsContent>
 
         {/* Trading Engine Tab */}
-        <TabsContent value="trading" className="space-y-6">
+        <TabsContent value="trading" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Current Position */}
             <Card className="bg-gray-800/50 border-purple-500/30">
@@ -493,7 +493,7 @@ export function WaidesKICoreEnginePanel() {
         </TabsContent>
 
         {/* Engine Settings Tab */}
-        <TabsContent value="settings" className="space-y-6">
+        <TabsContent value="settings" className="flex-1 overflow-y-auto space-y-6 p-1">
           <Card className="bg-gray-800/50 border-purple-500/30">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
