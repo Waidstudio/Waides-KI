@@ -542,11 +542,19 @@ export default function SmaiSikaWallet() {
                             
                             <h4 className="font-medium mt-4">East Africa</h4>
                             <div className="grid grid-cols-2 gap-2">
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'kes')}
+                              >
                                 <span className="text-sm font-bold">M-Pesa</span>
                                 <span className="text-xs text-gray-400">Kenya, Tanzania</span>
                               </Button>
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'ugx')}
+                              >
                                 <span className="text-sm font-bold">MTN Mobile</span>
                                 <span className="text-xs text-gray-400">Uganda, Ghana</span>
                               </Button>
@@ -554,11 +562,19 @@ export default function SmaiSikaWallet() {
                             
                             <h4 className="font-medium mt-4">Asia</h4>
                             <div className="grid grid-cols-2 gap-2">
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'php')}
+                              >
                                 <span className="text-sm font-bold">GCash</span>
                                 <span className="text-xs text-gray-400">Philippines</span>
                               </Button>
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'inr')}
+                              >
                                 <span className="text-sm font-bold">Paytm</span>
                                 <span className="text-xs text-gray-400">India</span>
                               </Button>
@@ -722,7 +738,11 @@ export default function SmaiSikaWallet() {
                               <ChevronRight className="w-5 h-5" />
                             </Button>
                             
-                            <Button variant="outline" className="w-full h-16 flex items-center justify-between">
+                            <Button 
+                              variant="outline" 
+                              className="w-full h-16 flex items-center justify-between"
+                              onClick={() => handleGlobalFunding('western_union', selectedCurrency)}
+                            >
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
                                   <Banknote className="w-5 h-5 text-white" />
@@ -735,7 +755,11 @@ export default function SmaiSikaWallet() {
                               <ChevronRight className="w-5 h-5" />
                             </Button>
                             
-                            <Button variant="outline" className="w-full h-16 flex items-center justify-between">
+                            <Button 
+                              variant="outline" 
+                              className="w-full h-16 flex items-center justify-between"
+                              onClick={() => handleGlobalFunding('local_bank', selectedCurrency)}
+                            >
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
                                   <Smartphone className="w-5 h-5 text-white" />
