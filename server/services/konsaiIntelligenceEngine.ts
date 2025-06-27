@@ -34,6 +34,11 @@ import { kons_SigilReader } from './kons/kons_SigilReader.js';
 import { kons_ShadowDetector } from './kons/kons_ShadowDetector.js';
 import { kons_Gatekeeper } from './kons/kons_Gatekeeper.js';
 
+// 8-Layer Kons Module System
+import { kons_FastCommand } from './kons/kons_FastCommand.js';
+import { kons_FeelShiftDetector } from './kons/kons_FeelShiftDetector.js';
+import { kons_DecisionWebBuilder } from './kons/kons_DecisionWebBuilder.js';
+
 // SmaiSika Sacred Knowledge System
 interface SmaiSikaKnowledge {
   entity: string;
@@ -1239,7 +1244,11 @@ class KonsModuleManager {
       academySync: null,
       sigilReader: null,
       shadowDetector: null,
-      gatekeeper: null
+      gatekeeper: null,
+      // 8-Layer Kons Module System
+      fastCommand: null,
+      feelShiftDetector: null,
+      decisionWebBuilder: null
     };
 
     try {
@@ -1309,6 +1318,19 @@ class KonsModuleManager {
       const historyState = this.moduleStates.get('tradeHistorySearch') || {};
       konsResults.tradeHistorySearch = kons_TradeHistorySearch(this.userMessage, this.marketData, historyState);
       this.moduleStates.set('tradeHistorySearch', konsResults.tradeHistorySearch);
+
+      // Process 8-Layer Kons Module System
+      const fastCommandState = this.moduleStates.get('fastCommand') || {};
+      konsResults.fastCommand = kons_FastCommand(this.userMessage, this.marketData, fastCommandState);
+      this.moduleStates.set('fastCommand', konsResults.fastCommand);
+
+      const feelShiftState = this.moduleStates.get('feelShiftDetector') || {};
+      konsResults.feelShiftDetector = kons_FeelShiftDetector(this.userMessage, this.marketData, feelShiftState);
+      this.moduleStates.set('feelShiftDetector', konsResults.feelShiftDetector);
+
+      const decisionWebState = this.moduleStates.get('decisionWebBuilder') || {};
+      konsResults.decisionWebBuilder = kons_DecisionWebBuilder(this.userMessage, this.marketData, decisionWebState);
+      this.moduleStates.set('decisionWebBuilder', konsResults.decisionWebBuilder);
 
       // Process additional modules (placeholder for future implementation)
       // konsResults.tradeSense = kons_TradeSense(this.userMessage, this.marketData, {});
@@ -1396,6 +1418,24 @@ class KonsModuleManager {
 
     if (konsResults.tradeHistorySearch?.analysis?.win_rate && konsResults.tradeHistorySearch.analysis.win_rate > 70) {
       enhancedResponse += `\n\n📊 History Insight: Strong ${konsResults.tradeHistorySearch.analysis.win_rate.toFixed(1)}% win rate detected`;
+    }
+
+    // Integrate 8-Layer Kons Module System insights
+    if (konsResults.fastCommand?.command_executed) {
+      enhancedResponse += `\n\n⚡ Fast Command: ${konsResults.fastCommand.detected_command} executed with ${konsResults.fastCommand.execution_result.success ? 'success' : 'partial completion'}`;
+    }
+
+    if (konsResults.feelShiftDetector?.shift_detection?.shift_detected) {
+      const shift = konsResults.feelShiftDetector.shift_detection;
+      enhancedResponse += `\n\n💫 Emotional Shift: ${shift.from_emotion} → ${shift.to_emotion} (${shift.shift_direction})`;
+      if (konsResults.feelShiftDetector.immediate_recommendations?.warning_level === 'RED') {
+        enhancedResponse += `\n⚠️ Emotional Warning: Not recommended to trade in current emotional state`;
+      }
+    }
+
+    if (konsResults.decisionWebBuilder?.decision_quality?.overall_quality === 'EXCELLENT') {
+      enhancedResponse += `\n\n🧠 Decision Analysis: ${konsResults.decisionWebBuilder.strategic_insights.primary_insight}`;
+      enhancedResponse += `\nRecommended path: ${konsResults.decisionWebBuilder.decision_tree.recommended_path.path_id}`;
     }
 
     return enhancedResponse;
