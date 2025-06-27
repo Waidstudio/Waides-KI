@@ -45,7 +45,22 @@ export function WaidesKICoreEnginePanel() {
   const [engineConfig, setEngineConfig] = useState({
     balance: 10000,
     activeBot: 'autonomous',
-    riskLevel: 'moderate'
+    riskLevel: 'moderate',
+    tradingMode: 'auto',
+    maxPositionSize: 25,
+    stopLossPercentage: 5,
+    takeProfitPercentage: 15,
+    maxDailyTrades: 20,
+    spiritualAlignment: 'balanced',
+    quantumSensitivity: 'medium',
+    neuralNetworkDepth: 'standard',
+    cosmicFrequency: 'earth',
+    memoryRetention: 'standard',
+    analysisTimeframe: '15m',
+    alertSensitivity: 'medium',
+    autoRebalance: true,
+    emergencyStop: false,
+    dreamMode: false
   });
 
   const queryClient = useQueryClient();
@@ -872,12 +887,14 @@ export function WaidesKICoreEnginePanel() {
         </TabsContent>
 
         {/* Controls Tab */}
-        <TabsContent value="controls" className="space-y-4">
+        <TabsContent value="controls" className="space-y-6">
+          
+          {/* Core Engine Configuration */}
           <Card className="bg-gray-800/50 border-purple-500/30">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Settings className="w-5 h-5 text-purple-400" />
-                Engine Configuration
+                Core Engine Configuration
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -934,6 +951,328 @@ export function WaidesKICoreEnginePanel() {
                 >
                   {stopEngineMutation.isPending ? 'Stopping...' : 'Stop Engine'}
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Trading Parameters */}
+          <Card className="bg-gray-800/50 border-blue-500/30">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-blue-400" />
+                Trading Parameters
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tradingMode">Trading Mode</Label>
+                  <Select value={engineConfig.tradingMode} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, tradingMode: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="auto">Fully Automatic</SelectItem>
+                      <SelectItem value="semi">Semi-Automatic</SelectItem>
+                      <SelectItem value="manual">Manual Approval</SelectItem>
+                      <SelectItem value="simulation">Simulation Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maxPositionSize">Max Position Size (%)</Label>
+                  <Input
+                    id="maxPositionSize"
+                    type="number"
+                    min="5"
+                    max="100"
+                    value={engineConfig.maxPositionSize}
+                    onChange={(e) => setEngineConfig(prev => ({ ...prev, maxPositionSize: Number(e.target.value) }))}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="stopLoss">Stop Loss (%)</Label>
+                  <Input
+                    id="stopLoss"
+                    type="number"
+                    min="1"
+                    max="20"
+                    value={engineConfig.stopLossPercentage}
+                    onChange={(e) => setEngineConfig(prev => ({ ...prev, stopLossPercentage: Number(e.target.value) }))}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="takeProfit">Take Profit (%)</Label>
+                  <Input
+                    id="takeProfit"
+                    type="number"
+                    min="5"
+                    max="100"
+                    value={engineConfig.takeProfitPercentage}
+                    onChange={(e) => setEngineConfig(prev => ({ ...prev, takeProfitPercentage: Number(e.target.value) }))}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="maxDailyTrades">Max Daily Trades</Label>
+                  <Input
+                    id="maxDailyTrades"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={engineConfig.maxDailyTrades}
+                    onChange={(e) => setEngineConfig(prev => ({ ...prev, maxDailyTrades: Number(e.target.value) }))}
+                    className="bg-gray-700 border-gray-600"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="analysisTimeframe">Analysis Timeframe</Label>
+                  <Select value={engineConfig.analysisTimeframe} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, analysisTimeframe: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1m">1 Minute</SelectItem>
+                      <SelectItem value="5m">5 Minutes</SelectItem>
+                      <SelectItem value="15m">15 Minutes</SelectItem>
+                      <SelectItem value="1h">1 Hour</SelectItem>
+                      <SelectItem value="4h">4 Hours</SelectItem>
+                      <SelectItem value="1d">1 Day</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Spiritual & Quantum Configuration */}
+          <Card className="bg-gray-800/50 border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Brain className="w-5 h-5 text-purple-400" />
+                Spiritual & Quantum Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="spiritualAlignment">Spiritual Alignment</Label>
+                  <Select value={engineConfig.spiritualAlignment} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, spiritualAlignment: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pure">Pure Light</SelectItem>
+                      <SelectItem value="balanced">Balanced Energy</SelectItem>
+                      <SelectItem value="shadow">Shadow Work</SelectItem>
+                      <SelectItem value="transcendent">Transcendent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="quantumSensitivity">Quantum Sensitivity</Label>
+                  <Select value={engineConfig.quantumSensitivity} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, quantumSensitivity: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="minimal">Minimal</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="maximum">Maximum</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cosmicFrequency">Cosmic Frequency</Label>
+                  <Select value={engineConfig.cosmicFrequency} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, cosmicFrequency: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="earth">Earth Frequency</SelectItem>
+                      <SelectItem value="lunar">Lunar Cycles</SelectItem>
+                      <SelectItem value="solar">Solar Winds</SelectItem>
+                      <SelectItem value="galactic">Galactic Center</SelectItem>
+                      <SelectItem value="universal">Universal Harmonics</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Neural Network & Memory Configuration */}
+          <Card className="bg-gray-800/50 border-emerald-500/30">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-emerald-400" />
+                Neural Network & Memory Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="neuralNetworkDepth">Neural Network Depth</Label>
+                  <Select value={engineConfig.neuralNetworkDepth} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, neuralNetworkDepth: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="shallow">Shallow (Fast)</SelectItem>
+                      <SelectItem value="standard">Standard</SelectItem>
+                      <SelectItem value="deep">Deep Learning</SelectItem>
+                      <SelectItem value="quantum">Quantum Enhanced</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="memoryRetention">Memory Retention</Label>
+                  <Select value={engineConfig.memoryRetention} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, memoryRetention: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="minimal">Minimal (1 week)</SelectItem>
+                      <SelectItem value="standard">Standard (1 month)</SelectItem>
+                      <SelectItem value="extended">Extended (3 months)</SelectItem>
+                      <SelectItem value="permanent">Permanent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="alertSensitivity">Alert Sensitivity</Label>
+                  <Select value={engineConfig.alertSensitivity} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, alertSensitivity: value }))}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low (Critical only)</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High (All alerts)</SelectItem>
+                      <SelectItem value="silent">Silent Mode</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Advanced Features & Safety */}
+          <Card className="bg-gray-800/50 border-amber-500/30">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Shield className="w-5 h-5 text-amber-400" />
+                Advanced Features & Safety
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="autoRebalance" className="text-sm font-medium">
+                      Auto Portfolio Rebalancing
+                    </Label>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={engineConfig.autoRebalance}
+                        onChange={(e) => setEngineConfig(prev => ({ ...prev, autoRebalance: e.target.checked }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                    </label>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="emergencyStop" className="text-sm font-medium">
+                      Emergency Stop Mode
+                    </Label>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={engineConfig.emergencyStop}
+                        onChange={(e) => setEngineConfig(prev => ({ ...prev, emergencyStop: e.target.checked }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                    </label>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="dreamMode" className="text-sm font-medium">
+                      Dream Vision Mode
+                    </Label>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={engineConfig.dreamMode}
+                        onChange={(e) => setEngineConfig(prev => ({ ...prev, dreamMode: e.target.checked }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Advanced Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-600">
+                <Button 
+                  onClick={() => dreamModeMutation.mutate()}
+                  disabled={dreamModeMutation.isPending}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                >
+                  <Waves className="w-4 h-4 mr-2" />
+                  {dreamModeMutation.isPending ? 'Activating...' : 'Activate Dream Vision'}
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="border-amber-500 text-amber-400 hover:bg-amber-500/10"
+                >
+                  <Infinity className="w-4 h-4 mr-2" />
+                  Reset to Defaults
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Configuration Summary */}
+          <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="w-5 h-5 text-purple-400" />
+                Configuration Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                <div className="space-y-1">
+                  <div className="text-gray-400">Trading Mode:</div>
+                  <Badge className="bg-blue-600">{engineConfig.tradingMode.toUpperCase()}</Badge>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-gray-400">Risk Level:</div>
+                  <Badge className="bg-orange-600">{engineConfig.riskLevel.toUpperCase()}</Badge>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-gray-400">Spiritual State:</div>
+                  <Badge className="bg-purple-600">{engineConfig.spiritualAlignment.toUpperCase()}</Badge>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-gray-400">Quantum Level:</div>
+                  <Badge className="bg-cyan-600">{engineConfig.quantumSensitivity.toUpperCase()}</Badge>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-600">
+                <div className="text-xs text-gray-400 text-center">
+                  Configuration auto-saves on each change. Changes take effect on next engine cycle.
+                </div>
               </div>
             </CardContent>
           </Card>
