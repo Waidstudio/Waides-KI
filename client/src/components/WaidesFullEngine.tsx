@@ -227,65 +227,65 @@ export default function WaidesFullEngine() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-3">
-            <Button
-              onClick={() => startEngine.mutate()}
-              disabled={engineStatus.is_running || startEngine.isPending}
-              className="flex items-center gap-2"
-            >
-              <Play className="h-4 w-4" />
-              Start Engine
-            </Button>
-            <Button
-              onClick={() => stopEngine.mutate()}
-              disabled={!engineStatus.is_running || stopEngine.isPending}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Square className="h-4 w-4" />
-              Stop Engine
-            </Button>
-            <Button
-              onClick={() => emergencyStop.mutate()}
-              disabled={emergencyStop.isPending}
-              variant="destructive"
-              className="flex items-center gap-2"
-            >
-              <AlertTriangle className="h-4 w-4" />
-              Emergency Stop
-            </Button>
-          </div>
-
-          {engineStatus.emergency_stop_active && (
-            <Alert>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                Emergency stop is active. All trading is halted and positions are closed.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <Separator />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="text-muted-foreground">Current Strategy:</span>
-              <p className="font-medium">{engineStatus.current_strategy}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                onClick={() => startEngine.mutate()}
+                disabled={engineStatus.is_running || startEngine.isPending}
+                className="flex items-center gap-2"
+              >
+                <Play className="h-4 w-4" />
+                Start Engine
+              </Button>
+              <Button
+                onClick={() => stopEngine.mutate()}
+                disabled={!engineStatus.is_running || stopEngine.isPending}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Square className="h-4 w-4" />
+                Stop Engine
+              </Button>
+              <Button
+                onClick={() => emergencyStop.mutate()}
+                disabled={emergencyStop.isPending}
+                variant="destructive"
+                className="flex items-center gap-2"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                Emergency Stop
+              </Button>
             </div>
-            <div>
-              <span className="text-muted-foreground">Last Tuning:</span>
-              <p className="font-medium">{new Date(engineStatus.last_tuning).toLocaleTimeString()}</p>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Next Evaluation:</span>
-              <p className="font-medium">{new Date(engineStatus.next_evaluation).toLocaleTimeString()}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Detailed Analytics */}
-      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+            {engineStatus.emergency_stop_active && (
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  Emergency stop is active. All trading is halted and positions are closed.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <Separator />
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Current Strategy:</span>
+                <p className="font-medium">{engineStatus.current_strategy}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Last Tuning:</span>
+                <p className="font-medium">{new Date(engineStatus.last_tuning).toLocaleTimeString()}</p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Next Evaluation:</span>
+                <p className="font-medium">{new Date(engineStatus.next_evaluation).toLocaleTimeString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Detailed Analytics */}
+        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <div className="bg-slate-800 border border-slate-700 rounded-lg p-1 mb-6">
           <div className="overflow-x-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             <TabsList className="flex w-max bg-transparent gap-1 p-0 h-auto min-w-fit">
