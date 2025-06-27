@@ -161,6 +161,7 @@ class ModuleConnector {
   private autoTradeBot: any = null;
   private smaiSikaWallet: any = null;
   private analysisEngine: any = null;
+  private smartNotify: any = null;
 
   async connectToKonsPowa(): Promise<any> {
     // Connect to Kons Powa for moral logic + deeper insights
@@ -195,6 +196,15 @@ class ModuleConnector {
       getCurrentAnalysis: () => this.getCurrentMarketAnalysis(),
       getTechnicalSignals: () => this.getTechnicalSignals(),
       getSentimentData: () => this.getSentimentData()
+    };
+  }
+
+  async connectToSmartNotify(): Promise<any> {
+    // Connect to SmartNotify for intelligent alert system
+    return {
+      checkAlerts: () => this.checkActiveAlerts(),
+      getNotificationHistory: () => this.getNotificationHistory(),
+      triggerAlert: (type: string, message: string, severity: string) => this.triggerSmartAlert(type, message, severity)
     };
   }
 
@@ -284,6 +294,39 @@ class ModuleConnector {
       retailSentiment: 'FOMO building but not extreme'
     };
   }
+
+  private checkActiveAlerts(): any[] {
+    // Simulate active alerts - in real implementation, would connect to SmartNotify
+    return [
+      {
+        id: 'alert_001',
+        type: 'trade_opportunity',
+        message: 'Strong buy signal detected with favorable market conditions',
+        severity: 'high',
+        timestamp: Date.now() - 300000, // 5 minutes ago
+        actionRequired: true
+      }
+    ];
+  }
+
+  private getNotificationHistory(): any[] {
+    // Simulate notification history
+    return [
+      {
+        id: 'notify_001',
+        type: 'market_shift',
+        message: 'Volatility spike detected - trade with caution',
+        timestamp: Date.now() - 1800000, // 30 minutes ago
+        resolved: true
+      }
+    ];
+  }
+
+  private triggerSmartAlert(type: string, message: string, severity: string): boolean {
+    // Simulate triggering a smart alert
+    console.log(`🔔 Smart Alert: ${type} - ${message} (${severity})`);
+    return true;
+  }
 }
 
 // Main KonsAi Intelligence Engine
@@ -324,6 +367,7 @@ class KonsaiIntelligenceEngine {
     await this.moduleConnector.connectToAutoTradeBot();
     await this.moduleConnector.connectToSmaiSikaWallet();
     await this.moduleConnector.connectToAnalysisEngine();
+    await this.moduleConnector.connectToSmartNotify();
   }
 
   private initializeAdvancedKnowledge(): void {

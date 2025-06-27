@@ -163,6 +163,8 @@ import { waidBotPro } from './services/waidBotPro.js';
 import { enhancedWaidBotController } from './services/enhancedWaidBotController.js';
 // WAIDES KI CORE ENGINE: Intelligence Heart System
 import { WaidesKiCoreEngine, type WalletState } from './services/waidesKiCoreEngine.js';
+// SMART NOTIFY: Intelligent Alert System
+import smartNotify from './services/smartNotify';
 
 
 
