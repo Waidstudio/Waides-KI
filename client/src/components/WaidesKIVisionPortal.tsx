@@ -1434,40 +1434,40 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       </div>
 
-          {/* Chat Input */}
-          <div className="relative z-10 p-2 w-full">
-            <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+          {/* Chat Input - Enhanced Responsive */}
+          <div className="relative z-10 p-2 md:p-4 w-full">
+            <div className="flex items-center gap-2 md:gap-3 bg-gray-900/70 backdrop-blur-sm rounded-xl md:rounded-2xl border border-purple-500/30 p-2 md:p-3">
               <Input
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
-                placeholder="Ask anything..."
-                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+                placeholder="Ask anything about trading, markets, or AI insights..."
+                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-sm md:text-base px-2"
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                 disabled={isProcessing}
               />
               
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`p-2 rounded-full transition-all ${
-                  voiceEnabled 
-                    ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                    : speechSupported
-                    ? 'hover:bg-purple-500/20 text-purple-400'
-                    : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
-                }`}
-                onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
-                disabled={isProcessing || !speechSupported}
-              >
-                {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </Button>
+              {speechSupported && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`p-2 rounded-full transition-all flex-shrink-0 ${
+                    voiceEnabled 
+                      ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                      : 'hover:bg-purple-500/20 text-purple-400'
+                  }`}
+                  onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+                  disabled={isProcessing}
+                >
+                  {voiceEnabled ? <MicOff className="w-4 h-4 md:w-5 md:h-5" /> : <Mic className="w-4 h-4 md:w-5 md:h-5" />}
+                </Button>
+              )}
               
               <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-2 rounded-full transition-all disabled:opacity-50 flex-shrink-0"
                 onClick={sendMessage}
                 disabled={!currentMessage.trim() || isProcessing}
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </div>
           </div>
@@ -1476,7 +1476,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
 
       {/* Heart of Waides Ki Core Engine */}
       {activeTab === 'core' && (
-        <div className="relative z-10 flex-1 mx-4 mb-4 h-[calc(100vh-200px)] overflow-hidden">
+        <div className="relative z-10 flex-1 mx-2 md:mx-4 mb-2 md:mb-4 h-[calc(100vh-180px)] md:h-[calc(100vh-160px)] overflow-hidden">
           <WaidesKICoreEnginePanel />
         </div>
       )}
@@ -1547,7 +1547,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
 
       {/* Konsai Tab Content */}
       {activeTab === 'konsai' && (
-        <div className="relative z-10 flex-1 overflow-hidden w-full h-full">
+        <div className="relative z-10 flex-1 mx-2 md:mx-4 mb-2 md:mb-4 h-[calc(100vh-180px)] md:h-[calc(100vh-160px)] overflow-hidden w-full">
           <KonsaiChat />
         </div>
       )}
