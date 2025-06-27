@@ -30,44 +30,65 @@ export default function KonsaiChat() {
             body: JSON.stringify({ type: 'ETH_BULLISH', timeframe: '4h' })
           });
           const strategyData = await strategyRes.json();
-          response = `# 🚀 Advanced ETH Trading Strategy Generated
+          response = `**🚀 Advanced ETH Trading Strategy Generated**
 
-## 1. Strategy Overview
+**1. Strategy Overview**
+
 **Type:** ${strategyData.strategy || 'Advanced Momentum Trading'}
+
 **Timeframe:** ${strategyData.timeframe || '4h'}
+
 **Confidence Level:** ${strategyData.confidence || 85}%
 
-## 2. Technical Analysis Framework
+**2. Technical Analysis Framework**
 
-### Entry Conditions
-- **Primary Signal:** ${strategyData.entry || 'RSI oversold + EMA crossover'}
-- **Confirmation:** Volume spike above 150% average
-- **Market Structure:** Higher lows formation on 1H chart
-- **Sentiment Filter:** Fear & Greed Index below 30 (extreme fear)
+**Entry Conditions**
 
-### Risk Management Protocol
-- **Stop Loss:** ${strategyData.risk || '2% below entry'}
-- **Position Size:** 2-3% of total capital
-- **Take Profit:** ${strategyData.target || '+15% profit target'}
-- **Risk-Reward Ratio:** Minimum 1:3
+**Primary Signal:** ${strategyData.entry || 'RSI oversold + EMA crossover'}
 
-## 3. Execution Plan
+**Confirmation:** Volume spike above **150% average**
 
-### Phase 1: Pre-Entry Analysis
-- Monitor RSI convergence with price action
-- Confirm EMA 20/50 golden cross
-- Validate support level strength
-- Check Bitcoin correlation strength
+**Market Structure:** Higher lows formation on 1H chart
 
-### Phase 2: Entry Execution
-- Scale into position with 3 equal entries
-- First entry: Initial signal confirmation
-- Second entry: Pullback to support
-- Third entry: Momentum continuation
+**Sentiment Filter:** Fear & Greed Index below **30** (extreme fear)
 
-### Phase 3: Trade Management
-- Move stop to breakeven at +5% profit
-- Scale out 1/3 position at +10%
+**Risk Management Protocol**
+
+**Stop Loss:** ${strategyData.risk || '2% below entry'}
+
+**Position Size:** **2-3% of total capital**
+
+**Take Profit:** ${strategyData.target || '+15% profit target'}
+
+**Risk-Reward Ratio:** Minimum **1:3**
+
+**3. Execution Plan**
+
+**Phase 1: Pre-Entry Analysis**
+
+Monitor RSI convergence with price action
+
+Confirm **EMA 20/50 golden cross**
+
+Validate **support level strength**
+
+Check Bitcoin correlation strength
+
+**Phase 2: Entry Execution**
+
+Scale into position with **3 equal entries**
+
+**First entry:** Initial signal confirmation
+
+**Second entry:** Pullback to support
+
+**Third entry:** Momentum continuation
+
+**Phase 3: Trade Management**
+
+Move stop to **breakeven at +5% profit**
+
+Scale out **1/3 position at +10%**
 - Trail remaining position with 8% stop
 - Monitor for trend exhaustion signals
 
@@ -170,101 +191,159 @@ export default function KonsaiChat() {
           break;
 
         case 'market-scan':
-          response = `# 🔍 AI Market Scanner - Real-Time Opportunity Analysis
+          response = `**🔍 AI Market Scanner - Real-Time Opportunity Analysis**
 
-## 1. Scan Overview
+**1. Scan Overview**
+
 **Scan Timestamp:** ${new Date().toLocaleString()}
+
 **Markets Analyzed:** 127 cryptocurrency pairs
+
 **Scanning Depth:** Multi-timeframe analysis (5m, 15m, 1h, 4h, 1d)
+
 **Processing Time:** 0.847 seconds
 
-## 2. High-Probability Trading Setups
+**2. High-Probability Trading Setups**
 
-### Tier 1: Immediate Opportunities (90%+ Confidence)
+**Tier 1: Immediate Opportunities (90%+ Confidence)**
 
-#### ETH/USDT - Bullish Divergence Formation
-- **Setup Type:** Bullish RSI Divergence + Volume Confirmation
-- **Entry Zone:** $2,445 - $2,460
-- **Target:** $2,520 (+3.2% - 4.1%)
-- **Stop Loss:** $2,420 (-1.8%)
-- **Risk-Reward:** 1:2.3
-- **Time Window:** Next 4-8 hours
-- **Pattern Strength:** 9.1/10
+**ETH/USDT - Bullish Divergence Formation**
 
-#### SOL/USDT - Consolidation Breakout
-- **Setup Type:** Bull Flag Breakout + Volume Surge
-- **Entry Zone:** $98.50 - $100.20
-- **Target:** $108.50 (+8.5% - 9.2%)
-- **Stop Loss:** $95.80 (-3.1%)
-- **Risk-Reward:** 1:2.8
-- **Time Window:** Next 2-6 hours
-- **Pattern Strength:** 8.7/10
+**Setup Type:** Bullish RSI Divergence + Volume Confirmation
 
-### Tier 2: Strong Setups (80%+ Confidence)
+**Entry Zone:** $2,445 - $2,460
 
-#### BTC/USDT - Resistance Test
-- **Setup Type:** Higher Low + Resistance Retest
-- **Current Price:** $44,280
-- **Key Level:** $45,500 resistance zone
-- **Entry Strategy:** Breakout confirmation above $45,600
-- **Target:** $47,200 (+3.7%)
-- **Stop Loss:** $44,000 (-1.8%)
-- **Pattern Strength:** 8.2/10
+**Target:** $2,520 (+3.2% - 4.1%)
 
-#### AVAX/USDT - Accumulation Phase
-- **Setup Type:** Wyckoff Accumulation + Smart Money Flow
-- **Entry Zone:** $34.20 - $35.80
-- **Target:** $41.50 (+16.0% - 21.3%)
-- **Stop Loss:** $32.90 (-5.4%)
-- **Risk-Reward:** 1:3.2
-- **Pattern Strength:** 7.9/10
+**Stop Loss:** $2,420 (-1.8%)
 
-## 3. Market Sentiment Analysis
+**Risk-Reward:** **1:2.3**
 
-### Overall Market Health
-- **Bullish Sentiment:** 78% (Strong)
-- **Bearish Sentiment:** 22% (Weak)
-- **Neutral/Uncertain:** 12% (Low uncertainty)
-- **Volatility Index:** Medium (Optimal for trading)
+**Time Window:** Next 4-8 hours
 
-### Sector Performance
-- **Layer 1 Protocols:** +2.4% (Leading)
-- **DeFi Tokens:** +1.8% (Strong)
-- **Gaming/Metaverse:** +0.9% (Moderate)
-- **Meme Coins:** -1.2% (Weak)
+**Pattern Strength:** **9.1/10**
 
-## 4. Technical Indicator Dashboard
+**SOL/USDT - Consolidation Breakout**
 
-### Cross-Market Signals
-- **Fear & Greed Index:** 31/100 (Fear zone - Contrarian bullish)
-- **Bitcoin Dominance:** 52.3% (Stable)
-- **Total Market Cap:** $2.41T (+1.7% 24h)
-- **DeFi TVL:** $47.2B (+3.1% weekly)
+**Setup Type:** Bull Flag Breakout + Volume Surge
 
-### Volume Analysis
-- **24h Volume:** $89.3B (+12.4% above average)
-- **Whale Activity:** High accumulation detected
-- **Retail Participation:** Moderate (healthy level)
-- **Exchange Inflows:** Decreasing (bullish signal)
+**Entry Zone:** $98.50 - $100.20
 
-## 5. Risk Assessment & Recommendations
+**Target:** $108.50 (+8.5% - 9.2%)
 
-### Market Risk Level: MODERATE
-- **Recommended Position Size:** 2-3% per trade
-- **Maximum Concurrent Trades:** 2-3 positions
-- **Preferred Timeframes:** 4H - 1D for swing trades
-- **Optimal Trade Duration:** 24-72 hours
+**Stop Loss:** $95.80 (-3.1%)
 
-### Priority Watchlist
-1. **ETH/USDT** - Immediate bullish setup (Highest priority)
-2. **SOL/USDT** - Breakout imminent (High priority)
-3. **BTC/USDT** - Key resistance test (Medium priority)
-4. **AVAX/USDT** - Accumulation phase (Medium priority)
+**Risk-Reward:** **1:2.8**
 
-### Market Conditions Forecast
-- **Next 4 Hours:** Continued bullish momentum expected
-- **Next 24 Hours:** Potential volatility spike during US session
-- **Next Week:** Sustained uptrend likely if current levels hold
+**Time Window:** Next 2-6 hours
+
+**Pattern Strength:** **8.7/10**
+
+**Tier 2: Strong Setups (80%+ Confidence)**
+
+**BTC/USDT - Resistance Test**
+
+**Setup Type:** Higher Low + Resistance Retest
+
+**Current Price:** $44,280
+
+**Key Level:** **$45,500 resistance zone**
+
+**Entry Strategy:** Breakout confirmation above $45,600
+
+**Target:** $47,200 (+3.7%)
+
+**Stop Loss:** $44,000 (-1.8%)
+
+**Pattern Strength:** **8.2/10**
+
+**AVAX/USDT - Accumulation Phase**
+
+**Setup Type:** Wyckoff Accumulation + Smart Money Flow
+
+**Entry Zone:** $34.20 - $35.80
+
+**Target:** $41.50 (+16.0% - 21.3%)
+
+**Stop Loss:** $32.90 (-5.4%)
+
+**Risk-Reward:** **1:3.2**
+
+**Pattern Strength:** **7.9/10**
+
+**3. Market Sentiment Analysis**
+
+**Overall Market Health**
+
+**Bullish Sentiment:** **78%** (Strong)
+
+**Bearish Sentiment:** 22% (Weak)
+
+**Neutral/Uncertain:** 12% (Low uncertainty)
+
+**Volatility Index:** Medium (**Optimal for trading**)
+
+**Sector Performance**
+
+**Layer 1 Protocols:** **+2.4%** (Leading)
+
+**DeFi Tokens:** +1.8% (Strong)
+
+**Gaming/Metaverse:** +0.9% (Moderate)
+
+**Meme Coins:** -1.2% (Weak)
+
+**4. Technical Indicator Dashboard**
+
+**Cross-Market Signals**
+
+**Fear & Greed Index:** **31/100** (Fear zone - **Contrarian bullish**)
+
+**Bitcoin Dominance:** 52.3% (Stable)
+
+**Total Market Cap:** $2.41T (+1.7% 24h)
+
+**DeFi TVL:** $47.2B (+3.1% weekly)
+
+**Volume Analysis**
+
+**24h Volume:** $89.3B (**+12.4% above average**)
+
+**Whale Activity:** **High accumulation detected**
+
+**Retail Participation:** Moderate (healthy level)
+
+**Exchange Inflows:** **Decreasing** (bullish signal)
+
+**5. Risk Assessment & Recommendations**
+
+**Market Risk Level: MODERATE**
+
+**Recommended Position Size:** **2-3% per trade**
+
+**Maximum Concurrent Trades:** 2-3 positions
+
+**Preferred Timeframes:** **4H - 1D** for swing trades
+
+**Optimal Trade Duration:** 24-72 hours
+
+**Priority Watchlist**
+
+**1. ETH/USDT** - Immediate bullish setup (**Highest priority**)
+
+**2. SOL/USDT** - Breakout imminent (**High priority**)
+
+**3. BTC/USDT** - Key resistance test (Medium priority)
+
+**4. AVAX/USDT** - Accumulation phase (Medium priority)
+
+**Market Conditions Forecast**
+
+**Next 4 Hours:** Continued bullish momentum expected
+
+**Next 24 Hours:** Potential volatility spike during US session
+
+**Next Week:** Sustained uptrend likely if current levels hold
 
 **Scanner Status: 🟢 All systems optimal - Multiple high-quality setups available**`;
           break;
@@ -353,50 +432,75 @@ export default function KonsaiChat() {
           const btcAmount = totalBalance * 0.10;
           const weeklyReturn = Math.random() * 15;
           const ethReturn = Math.random() * 20;
-          response = `# 💼 Smart Portfolio Management Dashboard
+          response = `**💼 Smart Portfolio Management Dashboard**
 
-## 1. Portfolio Overview
+**1. Portfolio Overview**
+
 **Last Updated:** ${new Date().toLocaleString()}
+
 **Total Portfolio Value:** $${totalBalance.toFixed(2)}
+
 **24H Change:** +$${(totalBalance * 0.024).toFixed(2)} (+2.4%)
+
 **7D Change:** +$${(totalBalance * weeklyReturn / 100).toFixed(2)} (+${weeklyReturn.toFixed(2)}%)
 
-## 2. Asset Allocation Analysis
+**2. Asset Allocation Analysis**
 
-### Current Holdings
-- **Ethereum (ETH):** 65% - $${ethAmount.toFixed(2)}
-  - Quantity: ${(ethAmount / 2456).toFixed(3)} ETH
-  - Avg. Buy Price: $2,254.33
-  - Current P&L: +$${(ethAmount * ethReturn / 100).toFixed(2)} (+${ethReturn.toFixed(2)}%)
-  - Performance Grade: A+
+**Current Holdings**
 
-- **USD Tether (USDT):** 25% - $${usdtAmount.toFixed(2)}
-  - Available for Trading: $${(usdtAmount * 0.8).toFixed(2)}
-  - Reserved for Opportunities: $${(usdtAmount * 0.2).toFixed(2)}
-  - Yield: 0% (Opportunity cost)
-  - Performance Grade: C
+**Ethereum (ETH):** **65%** - $${ethAmount.toFixed(2)}
 
-- **Bitcoin (BTC):** 10% - $${btcAmount.toFixed(2)}
-  - Quantity: ${(btcAmount / 44280).toFixed(6)} BTC
-  - Avg. Buy Price: $41,250.00
-  - Current P&L: +$${(btcAmount * 0.073).toFixed(2)} (+7.3%)
-  - Performance Grade: A
+Quantity: ${(ethAmount / 2456).toFixed(3)} ETH
 
-### Diversification Score: 7.8/10 (Good Diversification)
+Avg. Buy Price: $2,254.33
 
-## 3. Performance Analytics
+Current P&L: +$${(ethAmount * ethReturn / 100).toFixed(2)} (+${ethReturn.toFixed(2)}%)
 
-### 7-Day Performance Breakdown
-- **Best Performer:** ETH (+${ethReturn.toFixed(2)}% / +$${(ethAmount * ethReturn / 100).toFixed(2)})
-- **Strong Performer:** BTC (+7.3% / +$${(btcAmount * 0.073).toFixed(2)})
-- **Neutral:** USDT (0% / $0.00)
-- **Portfolio Beta:** 0.91 (Slightly lower volatility than market)
+Performance Grade: **A+**
 
-### Risk Metrics
-- **Value at Risk (VaR):** -$${(totalBalance * 0.05).toFixed(2)} (5% worst case)
-- **Maximum Drawdown:** -3.8% (Last 30 days)
-- **Sharpe Ratio:** 2.12 (Excellent risk-adjusted returns)
-- **Volatility:** 22.1% (Moderate-High risk)
+**USD Tether (USDT):** **25%** - $${usdtAmount.toFixed(2)}
+
+Available for Trading: $${(usdtAmount * 0.8).toFixed(2)}
+
+Reserved for Opportunities: $${(usdtAmount * 0.2).toFixed(2)}
+
+Yield: 0% (Opportunity cost)
+
+Performance Grade: **C**
+
+**Bitcoin (BTC):** **10%** - $${btcAmount.toFixed(2)}
+
+Quantity: ${(btcAmount / 44280).toFixed(6)} BTC
+
+Avg. Buy Price: $41,250.00
+
+Current P&L: +$${(btcAmount * 0.073).toFixed(2)} (+7.3%)
+
+Performance Grade: **A**
+
+**Diversification Score:** **7.8/10** (Good Diversification)
+
+**3. Performance Analytics**
+
+**7-Day Performance Breakdown**
+
+**Best Performer:** ETH (+${ethReturn.toFixed(2)}% / +$${(ethAmount * ethReturn / 100).toFixed(2)})
+
+**Strong Performer:** BTC (+7.3% / +$${(btcAmount * 0.073).toFixed(2)})
+
+**Neutral:** USDT (0% / $0.00)
+
+**Portfolio Beta:** 0.91 (Slightly lower volatility than market)
+
+**Risk Metrics**
+
+**Value at Risk (VaR):** -$${(totalBalance * 0.05).toFixed(2)} (**5% worst case**)
+
+**Maximum Drawdown:** -3.8% (Last 30 days)
+
+**Sharpe Ratio:** **2.12** (Excellent risk-adjusted returns)
+
+**Volatility:** 22.1% (Moderate-High risk)
 
 ## 4. Asset Performance Deep Dive
 
