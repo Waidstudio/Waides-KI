@@ -961,7 +961,8 @@ class KonsaiIntelligenceEngine {
           response = this.handleSmaiSikaFunding(query);
           break;
         case 'wallet_management':
-          response = this.handleWalletManagement(query) || await this.handleWalletQuery(query, systemScan);
+          const walletResponse = this.handleWalletManagement(query);
+          response = walletResponse || await this.handleWalletQuery(query, systemScan);
           break;
         case 'wallet_query':
           response = await this.handleWalletQuery(query, systemScan);
@@ -1822,20 +1823,31 @@ Memo: SmaiSika funding for ${Date.now()}
         const currency = match[2].toUpperCase();
         
         // Check if currency is supported
-        const supportedCurrencies = this.livingIntelligence.fundingCapabilities.supportedCurrencies;
+        const supportedCurrencies = ["NGN", "USD", "EUR", "GBP", "GHS", "ZAR", "KES", "UGX", "CAD", "AUD"];
         if (!supportedCurrencies.includes(currency)) {
           return `**❌ Currency Not Supported**
 
 Sorry, ${currency} is not currently supported. 
 
 **Supported currencies:**
-${supportedCurrencies.map(curr => `• ${curr}`).join('\n')}
+${supportedCurrencies.map((curr: string) => `• ${curr}`).join('\n')}
 
 Please try converting from one of these currencies, or ask me about adding support for ${currency}.`;
         }
 
         // Check minimum conversion amount
-        const minimums = this.livingIntelligence.fundingCapabilities.minimumConversion;
+        const minimums = {
+          "NGN": 1000,
+          "USD": 5,
+          "EUR": 5,
+          "GBP": 4,
+          "GHS": 30,
+          "ZAR": 80,
+          "KES": 500,
+          "UGX": 18000,
+          "CAD": 7,
+          "AUD": 8
+        };
         const minAmount = minimums[currency as keyof typeof minimums] || 5;
         
         if (amount < minAmount) {
@@ -1859,7 +1871,7 @@ Please try a larger amount, for example: "Convert ${minAmount.toLocaleString()} 
 I can help you convert your local currency to SmaiSika right now!
 
 **Supported Currencies:**
-${this.livingIntelligence.fundingCapabilities.supportedCurrencies.map(curr => `• ${curr}`).join('\n')}
+• NGN • USD • EUR • GBP • GHS • ZAR • KES • UGX • CAD • AUD
 
 **How to Convert:**
 Just tell me the amount and currency, for example:
@@ -1884,7 +1896,7 @@ Ready to fund your wallet? Just tell me how much!`;
   }
 
   // Handle balance inquiries and wallet management
-  private handleWalletManagement(query: string): string {
+  private handleWalletManagement(query: string): string | null {
     const walletPatterns = [
       /balance|wallet|how much|smaisika.*have/i,
       /transaction.*history|recent.*transactions/i,
