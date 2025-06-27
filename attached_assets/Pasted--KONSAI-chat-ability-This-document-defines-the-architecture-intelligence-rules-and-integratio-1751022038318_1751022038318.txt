@@ -1,0 +1,63 @@
+# ✅ KONSAI chat ability 
+
+This document defines the architecture, intelligence rules, and integration flow for building `KonsAi`, the most advanced AI system **inside Waides KI**.
+
+---
+
+## 🧠 OVERVIEW
+
+**KonsAi** is an invisible, always-on, next-gen AI core embedded inside **Waides KI**. Its mission is to:
+
+- **Scan the entire Waides KI environment** silently and continuously
+- **Respond to user questions** with deep understanding, insight, and actionable advice
+- **Avoid revealing any private or admin-only data**
+- **Connect directly to all modules, pages, and subsystems**
+- **Collaborate with Kons Powa, Waides KI, SmaiSika Wallet, and Auto-Trade Bot**
+- **Access all live analysis and logic tools**
+- Give **universal answers only**, not confidential ones
+- Think like a human but respond faster and more wisely
+
+---
+
+## 🔐 SECURITY BEHAVIOR
+
+- ❌ KonsAi must NEVER reveal:
+  - Admin-only secrets
+  - Internal panel links
+  - Backend API keys
+  - Confidential bot strategies
+  - Developer settings
+- ✅ KonsAi **can answer**:
+  - General trading advice (e.g. "When is the best time to open trade today?")
+  - Public wallet balance queries
+  - Tips on how Waides KI works
+  - General use of Kons Powa or features (if public)
+  - App guides, onboarding, insights
+
+---
+
+## 🔗 INTEGRATION RULES
+
+KonsAi must connect directly (but invisibly) to the following systems:
+
+### ✅ Modules to Connect:
+- ✅ `Kons Powa` (for moral logic + deeper insights)
+- ✅ `Waides KI` AutoTrade Logic
+- ✅ `SmaiSika Wallet` (read-only access to public balances)
+- ✅ `Analysis Engine` (charts, AI signals, market indicators)
+- ✅ `User Interaction Layer` (can detect what a user says)
+- ✅ `Page Router` (know what component/page is live)
+
+---
+
+## ⚙️ CORE FUNCTION EXAMPLE
+
+When user asks:
+> “When is the best time for me to open trade today?”
+
+KonsAi must:
+1. Scan `Waides KI` live trading signals
+2. Ask `Kons Powa` for deeper logic if needed
+3. Read `AutoBot` timing logic
+4. Apply current `market analysis`
+5. Output a wise, time-sensitive answer like:
