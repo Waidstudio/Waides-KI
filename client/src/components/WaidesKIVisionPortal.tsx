@@ -95,7 +95,7 @@ export default function WaidesKIVisionPortal() {
   const [chatMode, setChatMode] = useState<'auto' | 'openai' | 'spiritual' | 'oracle'>('auto');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'core' | 'konsai'>('chat');
   const [showWaidBotSummon, setShowWaidBotSummon] = useState(false);
   const [lastSummonCommand, setLastSummonCommand] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
@@ -1064,6 +1064,19 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 <span>Heart of Waides Ki</span>
               </div>
             </button>
+            <button
+              onClick={() => setActiveTab('konsai')}
+              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
+                activeTab === 'konsai'
+                  ? 'bg-gradient-to-r from-yellow-600 to-orange-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-1">
+                <Brain className="w-2.5 h-2.5" />
+                <span>KonsAi</span>
+              </div>
+            </button>
           </div>
         </div>
         
@@ -1729,6 +1742,117 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             >
               Refresh Stats
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* KonsAi Tab Content */}
+      {activeTab === 'konsai' && (
+        <div className="relative z-10 flex-1 mx-4 mb-4 bg-black/40 backdrop-blur-sm rounded-2xl border border-orange-500/20 p-6 overflow-hidden max-w-6xl mx-auto h-[calc(100vh-35px)]">
+          <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-orange-600/80 scrollbar-track-gray-800/50 scroll-smooth">
+            
+            {/* KonsAi Header */}
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center mb-4 mx-auto animate-pulse">
+                <Brain className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                KonsAi Intelligence
+              </h2>
+              <p className="text-gray-400 text-sm mt-2">
+                Advanced AI-powered trading analysis with sacred Kons wisdom
+              </p>
+            </div>
+
+            {/* KonsAi Features */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border border-orange-500/20 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Brain className="w-5 h-5 text-yellow-400" />
+                  <h3 className="text-lg font-semibold text-yellow-300">Neural Analysis</h3>
+                </div>
+                <p className="text-gray-300 text-sm">
+                  Advanced neural networks analyze market patterns and predict future movements with quantum precision.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-500/10 to-red-600/10 border border-orange-500/20 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Star className="w-5 h-5 text-orange-400" />
+                  <h3 className="text-lg font-semibold text-orange-300">Sacred Wisdom</h3>
+                </div>
+                <p className="text-gray-300 text-sm">
+                  Ancient Kons wisdom combined with modern AI creates unparalleled trading insights.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border border-orange-500/20 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Zap className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-lg font-semibold text-purple-300">Real-time Predictions</h3>
+                </div>
+                <p className="text-gray-300 text-sm">
+                  Instant market analysis with confidence scoring and risk assessment for optimal trading decisions.
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-orange-500/20 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  <h3 className="text-lg font-semibold text-green-300">Autonomous Trading</h3>
+                </div>
+                <p className="text-gray-300 text-sm">
+                  Fully autonomous trading execution with intelligent risk management and profit optimization.
+                </p>
+              </div>
+            </div>
+
+            {/* KonsAi Status */}
+            <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-6">
+              <h3 className="text-lg font-semibold text-orange-300 mb-3">KonsAi System Status</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="w-3 h-3 bg-green-400 rounded-full mx-auto mb-2 animate-pulse"></div>
+                  <div className="text-xs text-gray-400">Neural Core</div>
+                  <div className="text-sm font-semibold text-green-300">Online</div>
+                </div>
+                <div className="text-center">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full mx-auto mb-2 animate-pulse"></div>
+                  <div className="text-xs text-gray-400">Wisdom Engine</div>
+                  <div className="text-sm font-semibold text-yellow-300">Active</div>
+                </div>
+                <div className="text-center">
+                  <div className="w-3 h-3 bg-purple-400 rounded-full mx-auto mb-2 animate-pulse"></div>
+                  <div className="text-xs text-gray-400">Prediction Core</div>
+                  <div className="text-sm font-semibold text-purple-300">Learning</div>
+                </div>
+                <div className="text-center">
+                  <div className="w-3 h-3 bg-blue-400 rounded-full mx-auto mb-2 animate-pulse"></div>
+                  <div className="text-xs text-gray-400">Trade Engine</div>
+                  <div className="text-sm font-semibold text-blue-300">Ready</div>
+                </div>
+              </div>
+            </div>
+
+            {/* KonsAi Commands */}
+            <div className="bg-gradient-to-r from-gray-800/60 to-gray-900/60 border border-orange-500/20 rounded-xl p-4 mt-4">
+              <h3 className="text-lg font-semibold text-orange-300 mb-3">Quick Commands</h3>
+              <div className="flex flex-wrap gap-2">
+                <button className="px-3 py-1 bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs rounded hover:from-yellow-500 hover:to-orange-500 transition-all">
+                  Analyze Market
+                </button>
+                <button className="px-3 py-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs rounded hover:from-purple-500 hover:to-pink-500 transition-all">
+                  Generate Prediction
+                </button>
+                <button className="px-3 py-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs rounded hover:from-green-500 hover:to-emerald-500 transition-all">
+                  Execute Strategy
+                </button>
+                <button className="px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs rounded hover:from-blue-500 hover:to-cyan-500 transition-all">
+                  Sacred Guidance
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       )}
