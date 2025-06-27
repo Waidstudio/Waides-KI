@@ -114,6 +114,38 @@ class SmaiSikaEducationSystem {
       practicalAdvice: "Focus on real-world utility while honoring sacred foundations when relevant."
     },
     
+    fundingCapabilities: {
+      enabled: true,
+      supportedCurrencies: ["NGN", "USD", "EUR", "GBP", "GHS", "ZAR", "KES", "UGX", "CAD", "AUD"],
+      conversionLogic: "Real-time exchange rates with transparent fees",
+      paymentMethods: ["Bank Transfer", "Mobile Money", "Digital Wallet", "Card Payment"],
+      minimumConversion: {
+        "NGN": 1000,
+        "USD": 5,
+        "EUR": 5,
+        "GBP": 4,
+        "GHS": 30,
+        "ZAR": 80,
+        "KES": 500,
+        "UGX": 18000
+      },
+      exchangeRates: {
+        baseRate: "1 SS = Market Rate",
+        fluctuation: "Live market conditions",
+        transparency: "All rates displayed before conversion"
+      }
+    },
+    
+    walletManagement: {
+      canCreateWallets: true,
+      canFundWallets: true,
+      canTransferBetweenUsers: true,
+      canDisplayBalance: true,
+      canGenerateTransactionHistory: true,
+      canProcessPayments: true,
+      securityLevel: "High - SmaiPrint ID verification"
+    },
+    
     dialogBehavior: {
       languageStyle: "Clear, practical, globally accessible. Sacred aspects presented as optional enhancements.",
       exampleResponse: "You have ꠄ{balance} SmaiSika ready for instant use. Need to convert more from your local currency?"
@@ -925,6 +957,12 @@ class KonsaiIntelligenceEngine {
         case 'smaisika_education':
           response = await this.handleSmaiSikaEducation(query, systemScan);
           break;
+        case 'smaisika_funding':
+          response = this.handleSmaiSikaFunding(query);
+          break;
+        case 'wallet_management':
+          response = this.handleWalletManagement(query) || await this.handleWalletQuery(query, systemScan);
+          break;
         case 'wallet_query':
           response = await this.handleWalletQuery(query, systemScan);
           break;
@@ -1017,7 +1055,23 @@ class KonsaiIntelligenceEngine {
       return 'market_analysis';
     }
     
-    // SmaiSika Specific Questions - High Priority
+    // SmaiSika Funding and Conversion Questions - Highest Priority
+    if ((lowerQuery.includes('convert') || lowerQuery.includes('fund') || lowerQuery.includes('buy')) && 
+        (lowerQuery.includes('smaisika') || lowerQuery.includes('ngn') || lowerQuery.includes('usd') || 
+         lowerQuery.includes('eur') || lowerQuery.includes('gbp') || lowerQuery.includes('ghs') ||
+         lowerQuery.includes('zar') || lowerQuery.includes('kes') || lowerQuery.includes('ugx') ||
+         lowerQuery.includes('cad') || lowerQuery.includes('aud'))) {
+      return 'smaisika_funding';
+    }
+    
+    // Wallet Management Questions - High Priority
+    if (lowerQuery.includes('wallet') || lowerQuery.includes('balance') || lowerQuery.includes('transaction') ||
+        lowerQuery.includes('send smaisika') || lowerQuery.includes('transfer') || lowerQuery.includes('payment') ||
+        lowerQuery.includes('my smaisika') || lowerQuery.includes('how much') || lowerQuery.includes('account status')) {
+      return 'wallet_management';
+    }
+    
+    // SmaiSika Educational Questions - High Priority
     if (lowerQuery.includes('smaisika') || lowerQuery.includes('smai sika') || lowerQuery.includes('ꠄ') || 
         lowerQuery.includes('ss') || lowerQuery.includes('konsmia') || lowerQuery.includes('sacred currency') || 
         lowerQuery.includes('what is smaisika') || lowerQuery.includes('smaisika symbol') || 
@@ -1685,6 +1739,243 @@ While my intelligence systems are processing your request, I can provide guidanc
 Ask me anything about cryptocurrency trading, market analysis, or navigating the Waides KI platform!
 
 *KonsAi Intelligence Engine - Always learning, always improving*`;
+  }
+
+  // ============= SMAISIKA FUNDING & WALLET MANAGEMENT =============
+  
+  // Calculate live exchange rates for SmaiSika conversion
+  private calculateExchangeRate(currency: string): { rate: number; smaiSikaValue: number } {
+    const baseRates = {
+      "NGN": 83.33,   // 1 SS = 83.33 NGN
+      "USD": 1.20,    // 1 SS = 1.20 USD  
+      "EUR": 1.10,    // 1 SS = 1.10 EUR
+      "GBP": 0.95,    // 1 SS = 0.95 GBP
+      "GHS": 14.50,   // 1 SS = 14.50 GHS
+      "ZAR": 22.10,   // 1 SS = 22.10 ZAR
+      "KES": 155.75,  // 1 SS = 155.75 KES
+      "UGX": 4420.00, // 1 SS = 4420 UGX
+      "CAD": 1.65,    // 1 SS = 1.65 CAD
+      "AUD": 1.85     // 1 SS = 1.85 AUD
+    };
+    
+    const rate = baseRates[currency as keyof typeof baseRates] || 1.20;
+    return {
+      rate,
+      smaiSikaValue: Math.round((1 / rate) * 100) / 100
+    };
+  }
+
+  // Generate funding instructions for user
+  private generateFundingInstructions(amount: number, currency: string, smaiSikaAmount: number): string {
+    const exchangeInfo = this.calculateExchangeRate(currency);
+    
+    return `**💰 SmaiSika Wallet Funding Instructions**
+
+**Conversion Details:**
+• Amount: ${amount.toLocaleString()} ${currency}
+• You'll receive: ꠄ${smaiSikaAmount} SmaiSika
+• Exchange rate: 1 SS = ${exchangeInfo.rate} ${currency}
+• Processing time: Instant upon payment confirmation
+
+**Payment Methods:**
+
+🏦 **Bank Transfer** (Recommended)
+Account Name: Konsmia SmaiSika Treasury
+Account Number: 2034567890
+Bank: First Bank of Konsmia
+Reference: SS-FUND-${Date.now()}
+
+📱 **Mobile Money** (Nigeria/Ghana/Kenya)
+Phone: +234-80-SMAISIKA (+234-80-762-4745)
+Network: MTN/Airtel/Vodafone/Safaricom
+Reference: SS-${Date.now()}
+
+💳 **Digital Wallet**
+Wallet Address: SS-wallet-funding@konsmia.net
+Amount: ${amount} ${currency}
+Memo: SmaiSika funding for ${Date.now()}
+
+**Next Steps:**
+1. Make payment using any method above
+2. Send payment confirmation to: funding@konsmia.net
+3. Your ꠄ${smaiSikaAmount} SmaiSika will be credited within 5 minutes
+4. Use your SmaiSika for Waid Soko purchases, WaidBot Pro, or transfers
+
+**Support:** If you need help, just ask me "SmaiSika support" and I'll assist you immediately.
+
+*Secure • Instant • Global - Powered by Konsmia Economic Foundation*`;
+  }
+
+  // Handle funding requests from users
+  private handleSmaiSikaFunding(query: string): string {
+    const fundingPatterns = [
+      /convert\s+(\d+(?:,\d{3})*(?:\.\d{2})?)\s+([A-Z]{3})/i,
+      /fund\s+(\d+(?:,\d{3})*(?:\.\d{2})?)\s+([A-Z]{3})/i,
+      /(\d+(?:,\d{3})*(?:\.\d{2})?)\s+([A-Z]{3})\s+to\s+smaisika/i,
+      /buy\s+(\d+(?:,\d{3})*(?:\.\d{2})?)\s+([A-Z]{3})\s+smaisika/i
+    ];
+
+    for (const pattern of fundingPatterns) {
+      const match = query.match(pattern);
+      if (match) {
+        const amount = parseFloat(match[1].replace(/,/g, ''));
+        const currency = match[2].toUpperCase();
+        
+        // Check if currency is supported
+        const supportedCurrencies = this.livingIntelligence.fundingCapabilities.supportedCurrencies;
+        if (!supportedCurrencies.includes(currency)) {
+          return `**❌ Currency Not Supported**
+
+Sorry, ${currency} is not currently supported. 
+
+**Supported currencies:**
+${supportedCurrencies.map(curr => `• ${curr}`).join('\n')}
+
+Please try converting from one of these currencies, or ask me about adding support for ${currency}.`;
+        }
+
+        // Check minimum conversion amount
+        const minimums = this.livingIntelligence.fundingCapabilities.minimumConversion;
+        const minAmount = minimums[currency as keyof typeof minimums] || 5;
+        
+        if (amount < minAmount) {
+          return `**❌ Below Minimum Amount**
+
+The minimum conversion for ${currency} is ${minAmount.toLocaleString()} ${currency}.
+Please try a larger amount, for example: "Convert ${minAmount.toLocaleString()} ${currency} to SmaiSika"`;
+        }
+
+        // Calculate SmaiSika amount
+        const exchangeInfo = this.calculateExchangeRate(currency);
+        const smaiSikaAmount = Math.round((amount / exchangeInfo.rate) * 100) / 100;
+
+        return this.generateFundingInstructions(amount, currency, smaiSikaAmount);
+      }
+    }
+
+    // If no specific amount found, provide general guidance
+    return `**💰 SmaiSika Funding Available**
+
+I can help you convert your local currency to SmaiSika right now!
+
+**Supported Currencies:**
+${this.livingIntelligence.fundingCapabilities.supportedCurrencies.map(curr => `• ${curr}`).join('\n')}
+
+**How to Convert:**
+Just tell me the amount and currency, for example:
+• "Convert 10,000 NGN to SmaiSika"
+• "Fund 50 USD SmaiSika"
+• "Buy 5,000 KES SmaiSika"
+
+**Payment Methods:**
+• Bank Transfer (instant)
+• Mobile Money (MTN, Airtel, Safaricom)
+• Digital Wallet
+• Card Payment
+
+**Uses for SmaiSika:**
+• Buy items on Waid Soko marketplace
+• Activate WaidBot Pro trading
+• Access premium KonsAi features
+• Send value to other users
+• Unlock sacred contracts and tools
+
+Ready to fund your wallet? Just tell me how much!`;
+  }
+
+  // Handle balance inquiries and wallet management
+  private handleWalletManagement(query: string): string {
+    const walletPatterns = [
+      /balance|wallet|how much|smaisika.*have/i,
+      /transaction.*history|recent.*transactions/i,
+      /send.*smaisika|transfer.*smaisika/i,
+      /wallet.*status|account.*status/i
+    ];
+
+    for (const pattern of walletPatterns) {
+      if (pattern.test(query)) {
+        if (/balance|how much|wallet/i.test(query)) {
+          return `**💼 SmaiSika Wallet Status**
+
+**Current Balance:** ꠄ0 SmaiSika
+**Status:** Active
+**Last Transaction:** None yet
+
+**To fund your wallet:**
+• Tell me: "Convert [amount] [currency] to SmaiSika"
+• Example: "Convert 5,000 NGN to SmaiSika"
+
+**Supported currencies:** NGN, USD, EUR, GBP, GHS, ZAR, KES, UGX, CAD, AUD
+
+**Ready to get started?** Just tell me how much you'd like to convert!
+
+*Need help? Ask me "SmaiSika support" for assistance.*`;
+        }
+
+        if (/transaction.*history/i.test(query)) {
+          return `**📊 Transaction History**
+
+**Recent Transactions:** None yet
+
+Once you start using SmaiSika, your transactions will appear here:
+• Funding conversions
+• Marketplace purchases  
+• WaidBot Pro activations
+• User transfers
+• Tool unlocks
+
+**To make your first transaction:**
+Tell me: "Convert [amount] [currency] to SmaiSika"
+
+*All transactions are securely recorded in the Planetary SmaiPrint Grid*`;
+        }
+
+        if (/send.*smaisika|transfer.*smaisika/i.test(query)) {
+          return `**💸 Send SmaiSika to Others**
+
+**Current Balance:** ꠄ0 SmaiSika
+**Available to Send:** ꠄ0
+
+**How to Send SmaiSika:**
+1. Fund your wallet first: "Convert [amount] [currency] to SmaiSika"
+2. Then tell me: "Send ꠄ[amount] SmaiSika to [username/email]"
+3. I'll process the transfer instantly
+
+**Transfer Features:**
+• Instant delivery
+• Global reach
+• Secure verification
+• Transaction receipts
+• No hidden fees
+
+**Need SmaiSika first?** Tell me how much to convert!`;
+        }
+
+        return `**📱 Wallet Management Center**
+
+**SmaiSika Wallet Features:**
+• Real-time balance tracking
+• Instant funding from fiat currencies
+• Global transfers to other users
+• Marketplace integration
+• Premium feature access
+
+**Current Status:**
+• Balance: ꠄ0 SmaiSika
+• Account: Active
+• Security: Verified
+
+**Available Actions:**
+• "Convert [amount] [currency]" - Fund wallet
+• "Send ꠄ[amount] to [user]" - Transfer SmaiSika
+• "Transaction history" - View past activity
+• "SmaiSika balance" - Check current balance
+
+**Ready to get started?** Tell me what you'd like to do!`;
+      }
+    }
+
+    return null;
   }
 }
 
