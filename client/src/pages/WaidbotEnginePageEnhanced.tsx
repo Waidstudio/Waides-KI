@@ -761,7 +761,7 @@ export default function WaidbotEnginePageEnhanced() {
                 className="w-full border-purple-400/40 text-purple-400 hover:bg-purple-400/10"
                 onClick={() => window.location.href = '/full-engine'}
               >
-                Open Autonomous Interface
+                Full Engine Interface
               </Button>
             </CardContent>
           </Card>

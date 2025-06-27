@@ -663,7 +663,7 @@ export default function WaidbotEnginePageNew() {
                   onClick={() => window.location.href = '/full-engine'}
                 >
                   <Globe className="w-4 h-4 mr-2" />
-                  AI Interface
+                  Full Engine
                 </Button>
               </div>
             </CardContent>

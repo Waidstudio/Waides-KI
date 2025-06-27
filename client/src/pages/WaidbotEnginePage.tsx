@@ -548,7 +548,7 @@ export default function WaidbotEnginePage() {
                 onClick={() => window.location.href = '/full-engine'}
               >
                 <Globe className="w-4 h-4 mr-2" />
-                Open Autonomous
+                Full Engine
               </Button>
             </div>
           </CardContent>
