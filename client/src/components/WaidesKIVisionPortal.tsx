@@ -48,6 +48,34 @@ interface OracleStatus {
     incite: boolean;
     konslang: boolean;
   };
+}
+
+interface DivineSignal {
+  action: 'BUY LONG' | 'SELL SHORT' | 'NO TRADE' | 'OBSERVE';
+  timeframe: string;
+  reason: string;
+  moralPulse: 'CLEAN' | 'FEARFUL' | 'GREEDY' | 'DECEPTIVE';
+  strategy: 'SCALP' | 'MOMENTUM' | 'HOLD' | 'WAIT';
+  signalCode: string;
+  receivedAt: string;
+  konsTitle: string;
+  energeticPurity: number;
+  konsMirror: 'PURE WAVE' | 'SHADOW WAVE';
+  breathLock: boolean;
+  ethWhisperMode: boolean;
+  autoCancelEvil: boolean;
+  smaiPredict: {
+    nextHourDirection: 'UP' | 'DOWN' | 'SIDEWAYS';
+    confidence: number;
+    predictedPriceRange: { min: number; max: number };
+  };
+}
+
+interface DivineResponse {
+  divineSignal: DivineSignal;
+  hierarchyStatus: any;
+  ethPrice: number;
+  timestamp: string;
   dual_ai_ready: boolean;
   message: string;
 }
@@ -94,6 +122,7 @@ export default function WaidesKIVisionPortal() {
   const [cosmicTheme, setCosmicTheme] = useState<'nebula' | 'starfield' | 'galaxy'>('nebula');
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
+  const [showKonsPrediction, setShowKonsPrediction] = useState(false);
   const [botState, setBotState] = useState<{
     action?: 'wallet' | 'trade' | 'price' | 'open-page' | 'behavior-suggestion' | 'flow' | 'bot-setup';
     page?: string;
@@ -248,6 +277,12 @@ export default function WaidesKIVisionPortal() {
   const { data: divineReading, isLoading: isDivineLoading } = useQuery({
     queryKey: ['/api/divine-reading'],
     refetchInterval: 12000,
+  });
+
+  // Kons Powa ETH Prediction Query - fetched only when needed
+  const { data: konsPrediction, isLoading: isKonsPredictionLoading, refetch: refetchKonsPrediction } = useQuery<DivineResponse>({
+    queryKey: ['/api/divine-signal'],
+    enabled: false, // Only fetch when explicitly requested
   });
 
   // Chat mutation
