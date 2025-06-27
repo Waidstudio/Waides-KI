@@ -45,13 +45,14 @@ export default function SMSConfigPage() {
 
   // Configure SMS mutation
   const configureSMS = useMutation({
-    mutationFn: async (phoneNumber: string) => {
-      return apiRequest('/api/sms/configure', {
+    mutationFn: async (phoneNumber: string): Promise<SMSResponse> => {
+      const response = await apiRequest('/api/sms/configure', {
         method: 'POST',
         body: { phoneNumber }
       });
+      return response as SMSResponse;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: SMSResponse) => {
       toast({
         title: "SMS Configured",
         description: data.message || "SMS notifications have been configured successfully",
@@ -70,8 +71,9 @@ export default function SMSConfigPage() {
 
   // Test SMS mutation
   const testSMS = useMutation({
-    mutationFn: async () => {
-      return apiRequest('/api/sms/test', { method: 'POST' });
+    mutationFn: async (): Promise<SMSResponse> => {
+      const response = await apiRequest('/api/sms/test', { method: 'POST' });
+      return response as SMSResponse;
     },
     onSuccess: (data: SMSResponse) => {
       toast({
@@ -91,11 +93,12 @@ export default function SMSConfigPage() {
 
   // Send custom SMS mutation
   const sendCustomSMS = useMutation({
-    mutationFn: async ({ message, title }: { message: string; title?: string }) => {
-      return apiRequest('/api/sms/send', {
+    mutationFn: async ({ message, title }: { message: string; title?: string }): Promise<SMSResponse> => {
+      const response = await apiRequest('/api/sms/send', {
         method: 'POST',
         body: { message, title }
       });
+      return response as SMSResponse;
     },
     onSuccess: (data: SMSResponse) => {
       toast({
@@ -119,10 +122,11 @@ export default function SMSConfigPage() {
 
   // Disable SMS mutation
   const disableSMS = useMutation({
-    mutationFn: async () => {
-      return apiRequest('/api/sms/disable', { method: 'POST' });
+    mutationFn: async (): Promise<SMSResponse> => {
+      const response = await apiRequest('/api/sms/disable', { method: 'POST' });
+      return response as SMSResponse;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: SMSResponse) => {
       toast({
         title: "SMS Disabled",
         description: data.message || "SMS notifications have been disabled",
