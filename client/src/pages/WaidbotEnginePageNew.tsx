@@ -185,7 +185,7 @@ export default function WaidbotEnginePageNew() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950/30 to-purple-950/30 overflow-hidden">
-      {/* Animated Neural Network Background */}
+      {/* Animated Konsai Network Background */}
       <div className="fixed inset-0 opacity-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1)_0%,transparent_50%)] animate-pulse"></div>
         <div className="absolute inset-0 bg-[linear-gradient(rgba(8,145,178,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(8,145,178,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,black,transparent)]"></div>
@@ -266,7 +266,7 @@ export default function WaidbotEnginePageNew() {
             </CardContent>
           </Card>
 
-          {/* Active Neural Networks */}
+          {/* Active Konsai Networks */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-green-400/40 backdrop-blur shadow-xl shadow-green-500/20 hover:shadow-green-500/30 transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -306,7 +306,7 @@ export default function WaidbotEnginePageNew() {
             </CardContent>
           </Card>
 
-          {/* Neural Profit */}
+          {/* Konsai Profit */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-purple-400/40 backdrop-blur shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30 transition-all">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -351,7 +351,7 @@ export default function WaidbotEnginePageNew() {
 
         {/* Bot Control Panels */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* WaidBot Neural Core */}
+          {/* WaidBot Konsai Core */}
           <Card className="bg-gradient-to-br from-green-950/50 to-slate-900/90 border border-green-400/30 backdrop-blur shadow-2xl shadow-green-500/20">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -366,7 +366,7 @@ export default function WaidbotEnginePageNew() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-green-400">WAIDBOT α</h2>
-                    <p className="text-green-300/70 text-sm">Conservative ETH Neural Trader</p>
+                    <p className="text-green-300/70 text-sm">Conservative ETH Konsai Trader</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -386,11 +386,11 @@ export default function WaidbotEnginePageNew() {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {/* Live Neural Status */}
+              {/* Live Konsai Status */}
               <div className="bg-slate-800/60 rounded-lg p-4 border border-green-500/20">
                 <h3 className="font-semibold text-green-400 mb-3 flex items-center space-x-2">
                   <Signal className="w-4 h-4" />
-                  <span>Neural Activity</span>
+                  <span>Konsai Activity</span>
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="space-y-2">
@@ -403,7 +403,7 @@ export default function WaidbotEnginePageNew() {
                       <span className="text-green-400 font-medium">{waidBotStatus?.performance.winRate?.toFixed(1) || 0}%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-300">Neural Profit:</span>
+                      <span className="text-slate-300">Konsai Profit:</span>
                       <span className="text-green-400 font-medium">${waidBotStatus?.performance.profit?.toFixed(2) || '0.00'}</span>
                     </div>
                   </div>
@@ -424,7 +424,7 @@ export default function WaidbotEnginePageNew() {
                 </div>
               </div>
 
-              {/* Neural Controls */}
+              {/* Konsai Controls */}
               <div className="flex items-center justify-between">
                 {waidBotStatus?.isActive ? (
                   <Button
@@ -433,7 +433,7 @@ export default function WaidbotEnginePageNew() {
                     className="bg-red-600 hover:bg-red-700 text-white flex-1 mr-2"
                   >
                     <Pause className="w-4 h-4 mr-2" />
-                    Deactivate Neural Core
+                    Deactivate Konsai Core
                   </Button>
                 ) : (
                   <Button
@@ -442,7 +442,7 @@ export default function WaidbotEnginePageNew() {
                     className="bg-green-600 hover:bg-green-700 text-white flex-1 mr-2"
                   >
                     <Play className="w-4 h-4 mr-2" />
-                    Activate Neural Core
+                    Activate Konsai Core
                   </Button>
                 )}
                 <Button 
@@ -451,7 +451,7 @@ export default function WaidbotEnginePageNew() {
                   onClick={() => window.location.href = '/waidbot'}
                 >
                   <Eye className="w-4 h-4 mr-2" />
-                  Neural Interface
+                  Konsai Interface
                 </Button>
               </div>
             </CardContent>
@@ -684,7 +684,7 @@ export default function WaidbotEnginePageNew() {
               </div>
             </div>
             <div className="flex items-center space-x-4 text-sm text-slate-400">
-              <span>Neural Networks: {activeBots}/3</span>
+              <span>Konsai Networks: {activeBots}/3</span>
               <span>|</span>
               <span>Total Profit: ${totalProfit.toFixed(2)}</span>
               <span>|</span>

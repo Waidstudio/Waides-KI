@@ -186,12 +186,12 @@ export default function WaidbotEnginePageEnhanced() {
       currentPosition: "Long ETH"
     },
     waidbot_pro: {
-      strategy: "Bidirectional Neural",
+      strategy: "Bidirectional Konsai",
       tradingPairs: ["ETH/USDT", "ETH3L/USDT", "ETH3S/USDT"],
       riskLevel: "Aggressive",
       timeframe: "4 Hours",
       lastUpdate: "1 minute ago",
-      aiModel: "Neural Quantum Singularity",
+      aiModel: "Konsai Quantum Singularity",
       successRate: 92.3,
       currentPosition: "Short ETH3S"
     },
@@ -224,7 +224,7 @@ export default function WaidbotEnginePageEnhanced() {
         ></div>
       </div>
 
-      {/* Neural Network Animation */}
+      {/* Konsai Network Animation */}
       <div className="absolute inset-0 opacity-10">
         <div className="w-full h-full bg-gradient-to-br from-green-400/20 via-transparent to-cyan-400/20 animate-pulse"></div>
       </div>
@@ -233,7 +233,7 @@ export default function WaidbotEnginePageEnhanced() {
         {/* Header */}
         <div className="text-center space-y-4 mb-8">
           <h1 className="text-3xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-green-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            Waides KI Neural Command Center
+            Waides KI Konsai Command Center
           </h1>
           <p className="text-base lg:text-xl text-slate-300 max-w-4xl mx-auto">
             Advanced AI-powered trading intelligence with real-time neural network analysis and autonomous decision-making capabilities
@@ -270,13 +270,13 @@ export default function WaidbotEnginePageEnhanced() {
             </CardContent>
           </Card>
 
-          {/* Active Neural Networks */}
+          {/* Active Konsai Networks */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-blue-400/40 backdrop-blur shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transition-all">
             <CardContent className="p-4 lg:p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <Brain className="w-5 h-5 text-blue-400" />
-                  <span className="text-sm font-medium text-slate-300">Neural Networks</span>
+                  <span className="text-sm font-medium text-slate-300">Konsai Networks</span>
                 </div>
                 <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
               </div>
@@ -308,13 +308,13 @@ export default function WaidbotEnginePageEnhanced() {
             </CardContent>
           </Card>
 
-          {/* Neural Profit */}
+          {/* Konsai Profit */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-yellow-400/40 backdrop-blur shadow-xl shadow-yellow-500/20 hover:shadow-yellow-500/30 transition-all">
             <CardContent className="p-4 lg:p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-yellow-400" />
-                  <span className="text-sm font-medium text-slate-300">Neural Profit</span>
+                  <span className="text-sm font-medium text-slate-300">Konsai Profit</span>
                 </div>
                 <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
               </div>
@@ -489,7 +489,7 @@ export default function WaidbotEnginePageEnhanced() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold text-white">WaidBot Pro β</CardTitle>
-                    <p className="text-sm text-slate-400">Bidirectional Neural</p>
+                    <p className="text-sm text-slate-400">Bidirectional Konsai</p>
                   </div>
                 </div>
                 <Badge variant={waidbotProStatus?.isActive ? "default" : "secondary"} className="bg-blue-500/20 text-blue-400 border-blue-500/40">
@@ -569,7 +569,7 @@ export default function WaidbotEnginePageEnhanced() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Current Action:</span>
-                  <span className="text-sm text-white">{waidbotProStatus?.currentAction || "Neural Analysis"}</span>
+                  <span className="text-sm text-white">{waidbotProStatus?.currentAction || "Konsai Analysis"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-slate-400">Next Action:</span>

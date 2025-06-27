@@ -515,7 +515,7 @@ export function WaidesKICoreEnginePanel() {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Neural Depth</span>
+                    <span className="text-gray-300">Konsai Depth</span>
                     <span className="text-emerald-400 font-mono">2,048 layers</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -775,23 +775,23 @@ export function WaidesKICoreEnginePanel() {
           </div>
         </TabsContent>
 
-        {/* Neural Network Tab - Consciousness Evolution */}
-        <TabsContent value="neural" className="flex-1 overflow-y-auto space-y-6 p-1">
+        {/* Konsai Network Tab - Consciousness Evolution */}
+        <TabsContent value="konsai" className="flex-1 overflow-y-auto space-y-6 p-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Neural Architecture */}
+            {/* Konsai Architecture */}
             <Card className="bg-gradient-to-br from-emerald-900/30 to-teal-900/30 border-emerald-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <div className="p-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500">
                     <Brain className="w-5 h-5 text-white animate-pulse" />
                   </div>
-                  Neural Architecture
+                  Konsai Architecture
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Active Neurons</span>
+                    <span className="text-gray-300">Active Konsai Nodes</span>
                     <span className="text-emerald-400 font-mono">100 Billion</span>
                   </div>
                   <div className="flex items-center justify-between">
