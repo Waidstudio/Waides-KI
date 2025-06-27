@@ -1494,11 +1494,14 @@ class KonsModuleManager {
   }
 }
 
+import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine.js';
+
 class KonsaiIntelligenceEngine {
   private systemScanner: SystemScanner;
   private moduleConnector: ModuleConnector;
   private smaiSikaEducator: SmaiSikaEducationSystem;
   private konsModuleManager: KonsModuleManager;
+  private deepCoreEngine: KonsaiDeepCoreEngine;
   private knowledgeBase: Map<string, any> = new Map();
   private isInitialized: boolean = false;
 
@@ -1507,6 +1510,7 @@ class KonsaiIntelligenceEngine {
     this.moduleConnector = new ModuleConnector();
     this.smaiSikaEducator = new SmaiSikaEducationSystem();
     this.konsModuleManager = new KonsModuleManager();
+    this.deepCoreEngine = new KonsaiDeepCoreEngine();
     this.initializeEngine();
   }
 
@@ -1587,6 +1591,11 @@ class KonsaiIntelligenceEngine {
       this.konsModuleManager.updateUserMessage(query);
       this.konsModuleManager.updateMarketData(systemScan?.marketAnalysis || null);
       const konsResults = this.konsModuleManager.processAllKonsModules();
+      
+      // Process DeepCore 120+ module omniscient system
+      this.deepCoreEngine.updateUserMessage(query);
+      this.deepCoreEngine.updateMarketData(systemScan?.marketAnalysis || null);
+      const deepCoreResults = this.deepCoreEngine.processAllDeepCoreModules();
       
       // Analyze query type and generate intelligent response
       const queryType = this.classifyQuery(query);
