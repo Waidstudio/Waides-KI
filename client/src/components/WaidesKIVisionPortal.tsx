@@ -113,10 +113,7 @@ export default function WaidesKIVisionPortal() {
     setKonsaiInput('');
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setShowWelcomeMessage(false);
-    handleSendKonsaiMessage(suggestion);
-  };
+
 
   const handleSendKonsaiMessage = async (messageText: string) => {
     const userMessage: ChatMessage = {
@@ -965,14 +962,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     recognitionRef.current = recognition;
   };
 
-  const suggestions = [
-    "Who are you?",
-    "What can you do?", 
-    "Tell me about ETH trading",
-    "Your capabilities",
-    "Predict ETH now",
-    "Market analysis"
-  ];
+
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', { 
@@ -1142,24 +1132,10 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       {/* Tab Content */}
       {activeTab === 'chat' && (
         <>
-          {/* Chat Suggestions */}
-          <div className="relative z-10 flex flex-wrap gap-2 p-2 w-full">
-            {suggestions.map((suggestion, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                className="bg-gray-800/60 border-gray-600 text-gray-300 hover:bg-gray-700/60 hover:text-white text-xs rounded-lg backdrop-blur-sm"
-                onClick={() => handleSuggestionClick(suggestion)}
-              >
-                {suggestion}
-              </Button>
-            ))}
-          </div>
 
-      {/* Chat Window */}
+      {/* Chat Window - Expanded to take up full available space */}
       <div className={`relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden w-full ${
-        activeTab === 'chat' ? 'h-[calc(100vh-120px)]' : 'h-[calc(100vh-235px)]'
+        activeTab === 'chat' ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-235px)]'
       }`}>
         <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
           {messages.length === 0 && (
@@ -1504,7 +1480,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               {/* Quick Actions */}
               <button
                 className="h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white text-xs font-medium flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                onClick={() => handleSuggestionClick("Predict ETH price for next hour")}
+                onClick={() => setCurrentMessage("Predict ETH price for next hour")}
               >
                 <TrendingUp className="w-5 h-5 mb-1" />
                 <span>Predict ETH</span>
