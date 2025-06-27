@@ -54,6 +54,7 @@ function Router() {
 
   const navItems = [
     { path: "/", label: "Vision Portal" },
+    { path: "/wallet", label: "Wallet" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/waidbot-engine", label: "Waidbot Engine" },
     { path: "/market-storytelling", label: "Market Stories" },
@@ -186,6 +187,7 @@ function Router() {
       <main>
         <Switch>
           <Route path="/" component={WaidesKIVisionPortal} />
+          <Route path="/wallet" component={SmaiSikaWalletPage} />
           <Route path="/biometric-trading" component={BiometricTradingInterface} />
           <Route path="/profile" component={ProfilePage} />
           <Route path="/dashboard" component={Dashboard} />
