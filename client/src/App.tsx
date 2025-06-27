@@ -90,7 +90,11 @@ function Router() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-xl font-bold text-slate-100">Waides KI</h1>
+              <Link href="/">
+                <h1 className="text-xl font-bold text-slate-100 hover:text-blue-400 transition-colors cursor-pointer">
+                  Waides KI
+                </h1>
+              </Link>
               <div className="hidden lg:flex space-x-6">
                 {navItems.map((item) => (
                   <Link key={item.path} href={item.path}>
