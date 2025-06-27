@@ -15,7 +15,7 @@ import {
   Moon, Sun, Waves, Star, Circle, Triangle, Square, Shield, Database, Globe,
   Lock, Code, Fingerprint, Lightbulb, Target, Clock, Gamepad2, Layers,
   TreePine, RefreshCw, Skull, Crosshair, Users, Network, GitBranch,
-  FlaskConical, TestTube, Router, Command, FileText, Cog
+  FlaskConical, TestTube, Router, Command, FileText, Cog, Menu
 } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
@@ -1079,60 +1079,70 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* Top Status Bar - Minimal Scrollable */}
-      <div className="relative z-10 flex items-center justify-center px-4 py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
-          <span className="text-xs text-gray-400">•</span>
-          <button 
-            onClick={() => setLocation('/wallet')}
-            className="text-xs text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-1"
-          >
-            <Wallet className="w-3 h-3" />
-            ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}
-          </button>
-          <span className="text-xs text-gray-400">|</span>
+      {/* Enhanced Header with Better Navigation */}
+      <div className="relative z-10 bg-gradient-to-r from-gray-900/95 to-slate-800/95 backdrop-blur-md border-b border-purple-500/20 shadow-lg">
+        {/* Top Status Bar */}
+        <div className="flex items-center justify-between px-4 py-2">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium text-purple-300">{formatTime(currentTime)}</span>
+            <div className="h-4 w-px bg-gray-600"></div>
+            <button 
+              onClick={() => setLocation('/wallet')}
+              className="text-sm text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-2 px-3 py-1 rounded-lg hover:bg-blue-500/10"
+            >
+              <Wallet className="w-4 h-4" />
+              <span className="hidden sm:inline">SmaiSika</span>
+              <span>ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}</span>
+            </button>
+          </div>
           
-          {/* Tab Navigation - Minimal */}
-          <div className="flex bg-gray-800/40 rounded-sm p-0.5">
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden p-2 rounded-lg hover:bg-gray-700/50 text-gray-400"
+            onClick={() => setActiveTab(activeTab === 'chat' ? 'core' : activeTab === 'core' ? 'konsai' : 'chat')}
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Tab Navigation - Enhanced */}
+        <div className="px-4 pb-3">
+          <div className="flex bg-gray-800/60 rounded-xl p-1 backdrop-blur-sm border border-gray-700/50 max-w-full overflow-x-auto">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap min-w-0 ${
                 activeTab === 'chat'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:bg-gray-700/70'
               }`}
             >
-              <div className="flex items-center gap-1">
-                <Brain className="w-2.5 h-2.5" />
-                <span>AI Chat</span>
-              </div>
+              <Brain className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden sm:inline">AI Chat</span>
+              <span className="sm:hidden">Chat</span>
             </button>
             <button
               onClick={() => setActiveTab('core')}
-              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap min-w-0 ${
                 activeTab === 'core'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:bg-gray-700/70'
               }`}
             >
-              <div className="flex items-center gap-1">
-                <Heart className="w-2.5 h-2.5" />
-                <span>Heart of Waides Ki</span>
-              </div>
+              <Heart className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Heart of Waides Ki</span>
+              <span className="sm:hidden">Core</span>
             </button>
             <button
               onClick={() => setActiveTab('konsai')}
-              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 whitespace-nowrap min-w-0 ${
                 activeTab === 'konsai'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:bg-gray-700/70'
               }`}
             >
-              <div className="flex items-center gap-1">
-                <Eye className="w-2.5 h-2.5" />
-                <span>Konsai</span>
-              </div>
+              <Eye className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Konsai Intelligence</span>
+              <span className="sm:hidden">Konsai</span>
             </button>
           </div>
         </div>
@@ -1142,10 +1152,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       {activeTab === 'chat' && (
         <>
 
-      {/* Chat Window - Expanded to take up full available space */}
-      <div className={`relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden w-full ${
-        activeTab === 'chat' ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-235px)]'
-      }`}>
+      {/* Chat Window - Responsive with better height calculation */}
+      <div className="relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3 md:p-4 overflow-hidden w-full h-[calc(100vh-180px)] md:h-[calc(100vh-160px)]">
         <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center">
@@ -1157,22 +1165,24 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
               
-              {/* Quick Actions */}
-              <div className="flex flex-wrap gap-2 mb-4 justify-center">
+              {/* Quick Actions - Responsive Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-4 w-full max-w-2xl">
                 <Button
                   onClick={handleKonsPowaPrediction}
                   disabled={isProcessing || showKonsPrediction || isKonsPredictionLoading}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-3 py-2 text-sm flex items-center gap-2 disabled:opacity-50 w-full justify-center"
                 >
                   {showKonsPrediction || isKonsPredictionLoading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Connecting...
+                      <span className="hidden sm:inline">Connecting...</span>
+                      <span className="sm:hidden">Loading</span>
                     </>
                   ) : (
                     <>
                       <TrendingUp className="w-4 h-4" />
-                      Kons Powa ETH Prediction
+                      <span className="hidden sm:inline">Kons Powa ETH Prediction</span>
+                      <span className="sm:hidden">Prediction</span>
                     </>
                   )}
                 </Button>
@@ -1180,19 +1190,21 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 <Button
                   onClick={() => setCurrentMessage("What's the market outlook for ETH?")}
                   variant="outline"
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-3 py-2 text-sm flex items-center gap-2 w-full justify-center"
                 >
                   <BarChart3 className="w-4 h-4" />
-                  Market Analysis
+                  <span className="hidden sm:inline">Market Analysis</span>
+                  <span className="sm:hidden">Analysis</span>
                 </Button>
                 
                 <Button
                   onClick={() => setCurrentMessage("Show me ETH trading strategies")}
                   variant="outline"
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-3 py-2 text-sm flex items-center gap-2 w-full justify-center col-span-1 sm:col-span-2 lg:col-span-1"
                 >
                   <Brain className="w-4 h-4" />
-                  Trading Strategies
+                  <span className="hidden sm:inline">Trading Strategies</span>
+                  <span className="sm:hidden">Strategies</span>
                 </Button>
               </div>
 
