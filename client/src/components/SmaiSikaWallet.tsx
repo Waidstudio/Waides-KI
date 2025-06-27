@@ -56,6 +56,7 @@ export default function SmaiSikaWallet() {
   } = useSmaiWallet();
 
   const [fundAmount, setFundAmount] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState('ngn');
   const [convertAmount, setConvertAmount] = useState('');
   const [lockAmount, setLockAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('paystack');
@@ -359,7 +360,7 @@ export default function SmaiSikaWallet() {
                             
                             <div className="space-y-2">
                               <Label>Currency</Label>
-                              <Select defaultValue="ngn">
+                              <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
                                 <SelectTrigger className="bg-slate-700/50">
                                   <SelectValue />
                                 </SelectTrigger>
@@ -381,7 +382,7 @@ export default function SmaiSikaWallet() {
                           
                           <Button 
                             className="w-full bg-blue-600 hover:bg-blue-700"
-                            onClick={() => handleGlobalFunding('stripe', document.querySelector<HTMLSelectElement>('select')?.value || 'ngn')}
+                            onClick={() => handleGlobalFunding('stripe', selectedCurrency)}
                           >
                             <CreditCard className="w-4 h-4 mr-2" />
                             Pay with Stripe
@@ -428,19 +429,35 @@ export default function SmaiSikaWallet() {
                           
                           <div className="space-y-3">
                             <div className="grid grid-cols-2 gap-3">
-                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-12 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('bank_transfer', 'usd')}
+                              >
                                 <span className="text-xs">🇺🇸 US</span>
                                 <span className="text-xs">ACH Transfer</span>
                               </Button>
-                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-12 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('bank_transfer', 'eur')}
+                              >
                                 <span className="text-xs">🇪🇺 EU</span>
                                 <span className="text-xs">SEPA Transfer</span>
                               </Button>
-                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-12 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('bank_transfer', 'gbp')}
+                              >
                                 <span className="text-xs">🇬🇧 UK</span>
                                 <span className="text-xs">Faster Payments</span>
                               </Button>
-                              <Button variant="outline" className="h-12 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-12 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('bank_transfer', selectedCurrency)}
+                              >
                                 <span className="text-xs">🌍 Global</span>
                                 <span className="text-xs">SWIFT Wire</span>
                               </Button>
@@ -505,11 +522,19 @@ export default function SmaiSikaWallet() {
                           <div className="space-y-3">
                             <h4 className="font-medium">Nigeria</h4>
                             <div className="grid grid-cols-2 gap-2">
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'ngn')}
+                              >
                                 <span className="text-sm font-bold">Paystack</span>
                                 <span className="text-xs text-gray-400">All Nigerian banks</span>
                               </Button>
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('mobile_money', 'ngn')}
+                              >
                                 <span className="text-sm font-bold">Flutterwave</span>
                                 <span className="text-xs text-gray-400">Cards + USSD</span>
                               </Button>
@@ -574,22 +599,38 @@ export default function SmaiSikaWallet() {
                           
                           <div className="space-y-3">
                             <div className="grid grid-cols-2 gap-3">
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('crypto', 'btc')}
+                              >
                                 <Bitcoin className="w-6 h-6 text-orange-400" />
                                 <span className="text-sm">Bitcoin</span>
                                 <span className="text-xs text-gray-400">BTC</span>
                               </Button>
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('crypto', 'eth')}
+                              >
                                 <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
                                 <span className="text-sm">Ethereum</span>
                                 <span className="text-xs text-gray-400">ETH</span>
                               </Button>
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('crypto', 'usdt')}
+                              >
                                 <div className="w-6 h-6 bg-green-500 rounded-full"></div>
                                 <span className="text-sm">USDT</span>
                                 <span className="text-xs text-gray-400">Tether</span>
                               </Button>
-                              <Button variant="outline" className="h-16 flex flex-col gap-1">
+                              <Button 
+                                variant="outline" 
+                                className="h-16 flex flex-col gap-1"
+                                onClick={() => handleGlobalFunding('crypto', 'usdc')}
+                              >
                                 <div className="w-6 h-6 bg-blue-400 rounded-full"></div>
                                 <span className="text-sm">USDC</span>
                                 <span className="text-xs text-gray-400">USD Coin</span>
@@ -648,7 +689,10 @@ export default function SmaiSikaWallet() {
                           <p className="text-sm text-gray-400">International payment methods for all countries.</p>
                           
                           <div className="space-y-3">
-                            <Button className="w-full h-16 bg-blue-600 hover:bg-blue-700 flex items-center justify-between">
+                            <Button 
+                              className="w-full h-16 bg-blue-600 hover:bg-blue-700 flex items-center justify-between"
+                              onClick={() => handleGlobalFunding('paypal', selectedCurrency)}
+                            >
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-800 rounded-lg flex items-center justify-center">
                                   <span className="text-white font-bold text-xs">PP</span>
@@ -661,7 +705,11 @@ export default function SmaiSikaWallet() {
                               <ChevronRight className="w-5 h-5" />
                             </Button>
                             
-                            <Button variant="outline" className="w-full h-16 flex items-center justify-between">
+                            <Button 
+                              variant="outline" 
+                              className="w-full h-16 flex items-center justify-between"
+                              onClick={() => handleGlobalFunding('wise', selectedCurrency)}
+                            >
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
                                   <DollarSign className="w-5 h-5 text-white" />
