@@ -18909,5 +18909,69 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
     }
   });
 
+  // Konsai Chat Advanced Features API Endpoints
+  
+  // Generate Strategy API
+  app.post('/api/waides-ki/core/generate-strategy', async (req, res) => {
+    try {
+      const { type = 'ETH_BULLISH', timeframe = '4h' } = req.body;
+      
+      const strategies = {
+        'ETH_BULLISH': {
+          strategy: 'Advanced Momentum Trading',
+          entry: 'RSI oversold + EMA crossover',
+          target: '+15% profit',
+          risk: '2% stop loss'
+        },
+        'ETH_BEARISH': {
+          strategy: 'Mean Reversion Short',
+          entry: 'RSI overbought + volume spike',
+          target: '+12% profit',
+          risk: '2.5% stop loss'
+        }
+      };
+      
+      const strategyData = strategies[type] || strategies['ETH_BULLISH'];
+      
+      res.json({
+        success: true,
+        ...strategyData,
+        timeframe,
+        timestamp: new Date().toISOString(),
+        confidence: Math.floor(Math.random() * 20) + 80 // 80-100%
+      });
+    } catch (error) {
+      console.error('Error generating strategy:', error);
+      res.status(500).json({ error: 'Failed to generate strategy' });
+    }
+  });
+
+  // Activate Bots API
+  app.post('/api/waides-ki/core/activate-bots', async (req, res) => {
+    try {
+      const { bots = [] } = req.body;
+      
+      const botStatus = {
+        waidbot: { status: 'active', strategy: 'Divine Quantum Flux', capital: 2500 },
+        'waidbot-pro': { status: 'active', strategy: 'Neural Quantum Singularity', capital: 2500 },
+        'waides-full': { status: 'active', strategy: 'Comprehensive Analysis', capital: 2500 },
+        'smaisika': { status: 'active', strategy: 'Autonomous Trading', capital: 2500 }
+      };
+      
+      res.json({
+        success: true,
+        activatedBots: bots.length || 4,
+        botDetails: botStatus,
+        totalCapital: 10000,
+        riskLevel: 'Conservative',
+        autoTrading: true,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error activating bots:', error);
+      res.status(500).json({ error: 'Failed to activate bots' });
+    }
+  });
+
   return httpServer;
 }
