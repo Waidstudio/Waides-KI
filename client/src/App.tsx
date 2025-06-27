@@ -44,6 +44,7 @@ import AdminConfigPanel from "@/components/AdminConfigPanel";
 import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
 import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
+import SMSConfigPage from "@/pages/SMSConfigPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 
@@ -214,6 +215,7 @@ function Router() {
           <Route path="/meta-guardian" component={MetaGuardianNetwork} />
           <Route path="/full-engine" component={WaidesFullEngine} />
           <Route path="/gateway" component={GatewayPage} />
+          <Route path="/sms-config" component={SMSConfigPage} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />

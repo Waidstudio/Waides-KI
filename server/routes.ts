@@ -5936,6 +5936,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMS Configuration Endpoints
+  app.post("/api/sms/configure", (req, res) => {
+    try {
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber) {
+        return res.status(400).json({ error: 'Phone number is required' });
+      }
+
+      smartNotify.setSMSPhoneNumber(phoneNumber);
+      smartNotify.enableSMSNotifications();
+      
+      res.json({
+        success: true,
+        message: 'SMS notifications configured successfully',
+        phoneNumber: smartNotify.getSMSPhoneNumber()
+      });
+    } catch (error) {
+      console.error('Error configuring SMS:', error);
+      res.status(500).json({ error: 'Failed to configure SMS notifications' });
+    }
+  });
+
+  app.get("/api/sms/status", (req, res) => {
+    try {
+      const phoneNumber = smartNotify.getSMSPhoneNumber();
+      const config = smartNotify.getConfig();
+      
+      res.json({
+        success: true,
+        sms: {
+          configured: !!phoneNumber,
+          phoneNumber: phoneNumber,
+          enabled: config.channels.includes('sms')
+        }
+      });
+    } catch (error) {
+      console.error('Error getting SMS status:', error);
+      res.status(500).json({ error: 'Failed to get SMS status' });
+    }
+  });
+
+  app.post("/api/sms/test", async (req, res) => {
+    try {
+      const result = await smartNotify.testSMSConfiguration();
+      
+      res.json({
+        success: result.success,
+        message: result.success ? 'Test SMS sent successfully' : 'Test SMS failed',
+        details: result
+      });
+    } catch (error) {
+      console.error('Error testing SMS:', error);
+      res.status(500).json({ error: 'Failed to test SMS configuration' });
+    }
+  });
+
+  app.post("/api/sms/send", async (req, res) => {
+    try {
+      const { message, title } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const phoneNumber = smartNotify.getSMSPhoneNumber();
+      if (!phoneNumber) {
+        return res.status(400).json({ error: 'SMS not configured. Please set phone number first.' });
+      }
+
+      const { smsService } = await import('./services/smsService.js');
+      const result = await smsService.sendSMS({
+        to: phoneNumber,
+        title: title || 'Waides KI Message',
+        message: message
+      });
+
+      res.json({
+        success: result.success,
+        message: result.success ? 'SMS sent successfully' : 'SMS sending failed',
+        details: result
+      });
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+      res.status(500).json({ error: 'Failed to send SMS' });
+    }
+  });
+
+  app.post("/api/sms/disable", (req, res) => {
+    try {
+      smartNotify.disableSMSNotifications();
+      
+      res.json({
+        success: true,
+        message: 'SMS notifications disabled successfully'
+      });
+    } catch (error) {
+      console.error('Error disabling SMS:', error);
+      res.status(500).json({ error: 'Failed to disable SMS notifications' });
+    }
+  });
+
   app.get("/api/waides-ki/situational/windows", (req, res) => {
     try {
       const windows = waidesKISituationalIntelligence.getMarketWindows();

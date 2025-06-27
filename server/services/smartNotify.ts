@@ -383,6 +383,40 @@ class SmartNotify {
     // This will be implemented with audio system integration
   }
 
+  private async sendSMSNotification(alert: TradingAlert): Promise<void> {
+    try {
+      const { smsService } = await import('./smsService.js');
+      
+      if (!this.config.smsPhoneNumber) {
+        console.warn('SMS notification requested but no phone number configured');
+        return;
+      }
+
+      // Format alert message for SMS
+      const smsTitle = `🔔 Waides KI Alert [${alert.severity.toUpperCase()}]`;
+      let smsMessage = alert.message;
+
+      // Add action required indicator for SMS
+      if (alert.actionRequired) {
+        smsMessage += '\n\n⚠️ Action may be required. Check your dashboard for details.';
+      }
+
+      const result = await smsService.sendSMS({
+        to: this.config.smsPhoneNumber,
+        title: smsTitle,
+        message: smsMessage
+      });
+
+      if (result.success) {
+        console.log(`📱 SMS alert sent for ${alert.type}: ${result.messageId}`);
+      } else {
+        console.error(`❌ SMS alert failed for ${alert.type}: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('SMS notification error:', error);
+    }
+  }
+
   // Data fetching methods (integrate with existing services)
   private async getMarketConditions(): Promise<MarketConditions> {
     // In real implementation, this would fetch from actual market data services
@@ -467,6 +501,41 @@ class SmartNotify {
       isMonitoring: this.isMonitoring,
       lastScanTime: Date.now()
     };
+  }
+
+  // SMS Configuration Methods
+  setSMSPhoneNumber(phoneNumber: string): void {
+    this.config.smsPhoneNumber = phoneNumber;
+    console.log(`📱 SMS notifications configured for: ${phoneNumber}`);
+  }
+
+  getSMSPhoneNumber(): string | undefined {
+    return this.config.smsPhoneNumber;
+  }
+
+  enableSMSNotifications(): void {
+    if (!this.config.channels.includes('sms')) {
+      this.config.channels.push('sms');
+    }
+    console.log('📱 SMS notifications enabled');
+  }
+
+  disableSMSNotifications(): void {
+    this.config.channels = this.config.channels.filter(channel => channel !== 'sms');
+    console.log('📱 SMS notifications disabled');
+  }
+
+  async testSMSConfiguration(): Promise<any> {
+    if (!this.config.smsPhoneNumber) {
+      return { success: false, error: 'No SMS phone number configured' };
+    }
+
+    try {
+      const { smsService } = await import('./smsService.js');
+      return await smsService.testConfiguration(this.config.smsPhoneNumber);
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   }
 }
 
