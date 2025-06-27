@@ -212,7 +212,7 @@ export default function TradingBrainPanel() {
         </Card>
 
         {/* Waides KI Status (Minimal Info) */}
-        {waidesKIStatus && (
+        {waidesKIStatus && waidesKIStatus.performance && (
           <Card className="bg-slate-900/50 border-slate-800">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-sm">
@@ -223,32 +223,32 @@ export default function TradingBrainPanel() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Status</span>
-                <span className="text-xs text-green-400">{waidesKIStatus.performance.status}</span>
+                <span className="text-xs text-green-400">{waidesKIStatus.performance?.status || 'Unknown'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Performance</span>
-                <span className="text-xs text-slate-300">{waidesKIStatus.performance.winRate}%</span>
+                <span className="text-xs text-slate-300">{waidesKIStatus.performance?.winRate || 0}%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Evolution</span>
-                <span className="text-xs text-blue-400">{waidesKIStatus.performance.evolutionStage}</span>
+                <span className="text-xs text-blue-400">{waidesKIStatus.performance?.evolutionStage || 'Learning'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Learning</span>
-                <span className="text-xs text-green-400">{waidesKIStatus.performance.learningConfidence}%</span>
+                <span className="text-xs text-green-400">{waidesKIStatus.performance?.learningConfidence || 0}%</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Trading Mode</span>
-                <span className="text-xs text-purple-400">{waidesKIStatus.performance.tradingMode}</span>
+                <span className="text-xs text-purple-400">{waidesKIStatus.performance?.tradingMode || 'Observing'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Active Trades</span>
-                <span className="text-xs text-orange-400">{waidesKIStatus.performance.activeTrades || 0}</span>
+                <span className="text-xs text-orange-400">{waidesKIStatus.performance?.activeTrades || 0}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">Last Scan</span>
                 <span className="text-xs text-slate-300">
-                  {new Date(waidesKIStatus.lastScan).toLocaleTimeString()}
+                  {waidesKIStatus.lastScan ? new Date(waidesKIStatus.lastScan).toLocaleTimeString() : 'Never'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
