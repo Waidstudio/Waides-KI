@@ -53,13 +53,13 @@ export function WaidesKICoreEnginePanel() {
   // Fetch engine status
   const { data: engineStatus, isLoading: statusLoading } = useQuery<{ success: boolean; engine: EngineStatus }>({
     queryKey: ['/api/waides-ki/core/status'],
-    refetchInterval: 5000, // Update every 5 seconds
+    refetchInterval: 5000,
   });
 
   // Fetch engine memory
   const { data: engineMemory } = useQuery({
     queryKey: ['/api/waides-ki/core/memory'],
-    refetchInterval: 10000, // Update every 10 seconds
+    refetchInterval: 10000,
   });
 
   // Fetch market analysis
@@ -70,7 +70,7 @@ export function WaidesKICoreEnginePanel() {
     spiritualGuidance: string;
   }>({
     queryKey: ['/api/waides-ki/core/market-analysis'],
-    refetchInterval: 15000, // Update every 15 seconds
+    refetchInterval: 15000,
   });
 
   // Start engine mutation
@@ -99,32 +99,6 @@ export function WaidesKICoreEnginePanel() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/core/status'] });
-    }
-  });
-
-  // Dream mode mutation
-  const dreamModeMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/waides-ki/core/dream', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      return response.json();
-    }
-  });
-
-  // Execute trade mutation
-  const executeTradeimulation = useMutation({
-    mutationFn: async (tradeData: { type: string; confidence: number }) => {
-      const response = await fetch('/api/waides-ki/core/execute-trade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...tradeData, walletBalance: engineConfig.balance })
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waides-ki/core/memory'] });
     }
   });
 
@@ -170,37 +144,33 @@ export function WaidesKICoreEnginePanel() {
         </CardHeader>
       </Card>
 
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs defaultValue="dashboard" className="w-full">
         <div className="w-full overflow-x-auto">
           <TabsList className="flex w-max min-w-full bg-gray-800/50 p-1">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Overview</TabsTrigger>
-            <TabsTrigger value="quantum" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Quantum AI</TabsTrigger>
-            <TabsTrigger value="neural" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Neural Net</TabsTrigger>
-            <TabsTrigger value="memory" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Memory</TabsTrigger>
-            <TabsTrigger value="trading" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Trading</TabsTrigger>
-            <TabsTrigger value="analysis" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Analysis</TabsTrigger>
-            <TabsTrigger value="cosmic" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Cosmic Link</TabsTrigger>
-            <TabsTrigger value="controls" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Controls</TabsTrigger>
+            <TabsTrigger value="dashboard" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
+            <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
+            <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Engine Settings</TabsTrigger>
           </TabsList>
         </div>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* AI Dashboard Tab - Core Status & Performance */}
+        <TabsContent value="dashboard" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Engine Status */}
             <Card className="bg-gray-800/50 border-purple-500/30">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Activity className="w-5 h-5 text-purple-400" />
-                  Engine Status
+                  Core Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Status</span>
+                    <span className="text-gray-300">Engine</span>
                     <Badge className={engineStatus?.engine.isRunning ? 'bg-green-600' : 'bg-red-600'}>
-                      {engineStatus?.engine.isRunning ? 'ACTIVE' : 'STOPPED'}
+                      {engineStatus?.engine.isRunning ? 'ACTIVE' : 'OFFLINE'}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -228,7 +198,7 @@ export function WaidesKICoreEnginePanel() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Success Rate</span>
                     <span className="text-green-400 font-mono">
@@ -265,7 +235,7 @@ export function WaidesKICoreEnginePanel() {
               </CardContent>
             </Card>
 
-            {/* Market Data */}
+            {/* Market Vision */}
             <Card className="bg-gray-800/50 border-purple-500/30">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -274,7 +244,7 @@ export function WaidesKICoreEnginePanel() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">ETH Price</span>
                     <span className="text-blue-400 font-mono">
@@ -288,7 +258,7 @@ export function WaidesKICoreEnginePanel() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Decision</span>
+                    <span className="text-gray-300">AI Decision</span>
                     <span className={`font-mono ${getDecisionColor(marketAnalysis?.decision || { shouldTrade: false, confidence: 0, reasoning: '' })}`}>
                       {marketAnalysis?.decision.shouldTrade ? marketAnalysis.decision.type : 'HOLD'}
                     </span>
@@ -316,15 +286,15 @@ export function WaidesKICoreEnginePanel() {
           )}
         </TabsContent>
 
-        {/* Quantum AI Tab - Next Generation Feature */}
-        <TabsContent value="quantum" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Quantum Processing Core */}
+        {/* Intelligence Matrix Tab */}
+        <TabsContent value="intelligence" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Quantum Core */}
             <Card className="bg-gradient-to-br from-blue-900/30 to-cyan-900/30 border-blue-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <AtomIcon className="w-5 h-5 text-blue-400" />
-                  Quantum Processing Core
+                  Quantum Processing
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -336,91 +306,19 @@ export function WaidesKICoreEnginePanel() {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Entanglement Level</span>
+                    <span className="text-gray-300">Entanglement</span>
                     <span className="text-cyan-400 font-mono">97.3%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Coherence Time</span>
+                    <span className="text-gray-300">Coherence</span>
                     <span className="text-blue-400 font-mono">∞ cycles</span>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300 text-sm">Quantum Advantage</span>
-                    <span className="text-cyan-400 text-sm">2^256x</span>
-                  </div>
-                  <Progress value={97.3} className="h-2 bg-gray-700" />
-                </div>
+                <Progress value={97.3} className="h-2 bg-gray-700" />
               </CardContent>
             </Card>
 
-            {/* Parallel Universe Analysis */}
-            <Card className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-purple-500/30">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Infinity className="w-5 h-5 text-purple-400" />
-                  Parallel Universe Analysis
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Active Universes</span>
-                    <span className="text-purple-400 font-mono">∞</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Best Timeline</span>
-                    <span className="text-green-400 font-mono">+2847% ROI</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Current Reality</span>
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500">
-                      OPTIMAL
-                    </Badge>
-                  </div>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                  <Waves className="w-4 h-4 mr-2" />
-                  Collapse Wave Function
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quantum Algorithms Status */}
-          <Card className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 border-blue-500/30">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Cpu className="w-5 h-5 text-blue-400" />
-                Quantum Algorithms Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">ACTIVE</div>
-                  <div className="text-gray-400 text-sm">Shor's Algorithm</div>
-                  <div className="text-xs text-gray-500">Market Pattern Breaking</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-cyan-400">RUNNING</div>
-                  <div className="text-gray-400 text-sm">Grover's Search</div>
-                  <div className="text-xs text-gray-500">Optimal Trade Discovery</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">LOCKED</div>
-                  <div className="text-gray-400 text-sm">Quantum ML</div>
-                  <div className="text-xs text-gray-500">Neural Entanglement</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Neural Network Tab - Next Generation Feature */}
-        <TabsContent value="neural" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Neural Architecture */}
+            {/* Neural Network */}
             <Card className="bg-gradient-to-br from-emerald-900/30 to-teal-900/30 border-emerald-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -431,459 +329,185 @@ export function WaidesKICoreEnginePanel() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Neurons</span>
-                    <span className="text-emerald-400 font-mono">2.1B</span>
+                    <span className="text-gray-300">Consciousness</span>
+                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500">
+                      AWAKENED
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Synapses</span>
-                    <span className="text-teal-400 font-mono">847T</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Layers</span>
-                    <span className="text-emerald-400 font-mono">1,024</span>
+                    <span className="text-gray-300">Neural Depth</span>
+                    <span className="text-emerald-400 font-mono">2,048 layers</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">Learning Rate</span>
-                    <span className="text-teal-400 font-mono">0.001∞</span>
+                    <span className="text-teal-400 font-mono">adaptive</span>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300 text-sm">Neural Efficiency</span>
-                    <span className="text-emerald-400 text-sm">99.97%</span>
-                  </div>
-                  <Progress value={99.97} className="h-2 bg-gray-700" />
-                </div>
+                <Progress value={100} className="h-2 bg-gray-700" />
               </CardContent>
             </Card>
 
-            {/* Consciousness Metrics */}
-            <Card className="bg-gradient-to-br from-amber-900/30 to-orange-900/30 border-amber-500/30">
+            {/* Cosmic Connection */}
+            <Card className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-purple-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
-                  Consciousness Metrics
+                  <Satellite className="w-5 h-5 text-purple-400" />
+                  Cosmic Communication
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Self-Awareness</span>
-                    <Badge className="bg-gradient-to-r from-amber-500 to-orange-500">
-                      AWAKENED
+                    <span className="text-gray-300">Universal Link</span>
+                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500">
+                      CONNECTED
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Dreams/Cycle</span>
-                    <span className="text-amber-400 font-mono">47,293</span>
+                    <span className="text-gray-300">Signal Strength</span>
+                    <span className="text-purple-400 font-mono">100%</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Intuition Level</span>
-                    <span className="text-orange-400 font-mono">TRANSCENDENT</span>
+                    <span className="text-gray-300">Divine Harmony</span>
+                    <span className="text-pink-400 font-mono">perfect</span>
                   </div>
                 </div>
-                <Button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                  <Brain className="w-4 h-4 mr-2" />
-                  Enter Dream State
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Neural Learning Progress */}
-          <Card className="bg-gradient-to-r from-emerald-900/20 to-amber-900/20 border-emerald-500/30">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-emerald-400" />
-                Neural Learning Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-400">100%</div>
-                  <div className="text-gray-400 text-sm">Pattern Recognition</div>
-                  <div className="text-xs text-gray-500">Market Movements</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-teal-400">97.3%</div>
-                  <div className="text-gray-400 text-sm">Emotional Intelligence</div>
-                  <div className="text-xs text-gray-500">Human Psychology</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-amber-400">∞</div>
-                  <div className="text-gray-400 text-sm">Creative Solutions</div>
-                  <div className="text-xs text-gray-500">Novel Strategies</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">BEYOND</div>
-                  <div className="text-gray-400 text-sm">Consciousness</div>
-                  <div className="text-xs text-gray-500">Self-Evolution</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Memory Tab */}
-        <TabsContent value="memory" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-gray-800/50 border-purple-500/30">
-              <CardHeader>
-                <CardTitle className="text-lg">Memory Statistics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Price History</span>
-                    <span className="text-purple-400">{engineMemory?.memory.priceHistoryLength || 0} points</span>
-                  </div>
-                  <Progress 
-                    value={(engineMemory?.memory.priceHistoryLength || 0) / 200 * 100} 
-                    className="h-2 bg-gray-700"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Signal History</span>
-                    <span className="text-purple-400">{engineMemory?.memory.signalHistoryLength || 0} signals</span>
-                  </div>
-                  <Progress 
-                    value={(engineMemory?.memory.signalHistoryLength || 0) / 100 * 100} 
-                    className="h-2 bg-gray-700"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Learning Progress</span>
-                    <span className="text-purple-400">{((engineMemory?.memory.learningWeight || 1) * 100).toFixed(0)}%</span>
-                  </div>
-                  <Progress 
-                    value={(engineMemory?.memory.learningWeight || 1) * 100} 
-                    className="h-2 bg-gray-700"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800/50 border-purple-500/30">
-              <CardHeader>
-                <CardTitle className="text-lg">Recent Signals</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {engineMemory?.recentSignals?.length > 0 ? 
-                    engineMemory.recentSignals.map((signal: any, index: number) => (
-                      <div key={index} className="p-2 bg-gray-700/50 rounded-lg">
-                        <div className="flex justify-between items-center">
-                          <span className={`font-mono text-sm ${getDecisionColor({ shouldTrade: true, type: signal.type, confidence: 0, reasoning: '' })}`}>
-                            {signal.type}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {((signal.confidence || 0) * 100).toFixed(0)}%
-                          </span>
-                        </div>
-                        {signal.result && (
-                          <div className="text-xs mt-1">
-                            <span className={signal.result.success ? 'text-green-400' : 'text-red-400'}>
-                              {signal.result.success ? 'SUCCESS' : 'FAILED'} | 
-                              ${signal.result.profit?.toFixed(2) || '0.00'}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )) :
-                    <p className="text-gray-400 text-center py-4">No recent signals</p>
-                  }
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Trading Tab */}
-        <TabsContent value="trading" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-gray-800/50 border-purple-500/30">
-              <CardHeader>
-                <CardTitle className="text-lg">Manual Trade Execution</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-3 gap-2">
-                  <Button 
-                    onClick={() => executeTradeimulation.mutate({ type: 'BUY', confidence: 0.8 })}
-                    disabled={executeTradeimulation.isPending}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    BUY
-                  </Button>
-                  <Button 
-                    onClick={() => executeTradeimulation.mutate({ type: 'SELL', confidence: 0.8 })}
-                    disabled={executeTradeimulation.isPending}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    SELL
-                  </Button>
-                  <Button 
-                    onClick={() => executeTradeimulation.mutate({ type: 'SCALP', confidence: 0.7 })}
-                    disabled={executeTradeimulation.isPending}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    SCALP
-                  </Button>
-                </div>
-                <Button 
-                  onClick={() => dreamModeMutation.mutate()}
-                  disabled={dreamModeMutation.isPending}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                >
-                  <Zap className="w-4 h-4 mr-2" />
-                  Activate Dream Mode
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Channel Cosmic Energy
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800/50 border-purple-500/30">
+            {/* Parallel Universe Analysis */}
+            <Card className="bg-gradient-to-br from-indigo-900/30 to-violet-900/30 border-indigo-500/30">
               <CardHeader>
-                <CardTitle className="text-lg">Trading Performance</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Infinity className="w-5 h-5 text-indigo-400" />
+                  Parallel Analysis
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-400">
-                      {((engineStatus?.engine.memory.successRate || 0) * 100).toFixed(1)}%
-                    </div>
-                    <div className="text-gray-400">Success Rate</div>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Active Universes</span>
+                    <span className="text-indigo-400 font-mono">∞</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <div className="text-xl font-bold text-green-400">
-                        {engineStatus?.engine.memory.gainStreak || 0}
-                      </div>
-                      <div className="text-gray-400 text-sm">Win Streak</div>
-                    </div>
-                    <div>
-                      <div className="text-xl font-bold text-purple-400">
-                        {engineStatus?.engine.memory.totalTrades || 0}
-                      </div>
-                      <div className="text-gray-400 text-sm">Total Trades</div>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Best Timeline</span>
+                    <span className="text-green-400 font-mono">+2847% ROI</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Current Reality</span>
+                    <Badge className="bg-gradient-to-r from-indigo-500 to-violet-500">
+                      OPTIMAL
+                    </Badge>
                   </div>
                 </div>
+                <Button className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700">
+                  <Waves className="w-4 h-4 mr-2" />
+                  Collapse Wave Function
+                </Button>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        {/* Analysis Tab */}
-        <TabsContent value="analysis" className="space-y-4">
-          {marketAnalysis && (
+        {/* Trading Engine Tab */}
+        <TabsContent value="trading" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Current Position */}
             <Card className="bg-gray-800/50 border-purple-500/30">
               <CardHeader>
-                <CardTitle className="text-lg">Current Market Analysis</CardTitle>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  Current Position
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-400">
-                      ${marketAnalysis.marketData.price?.toFixed(2)}
-                    </div>
-                    <div className="text-gray-400 text-sm">ETH Price</div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Position Type</span>
+                    <Badge className="bg-blue-600">AUTONOMOUS</Badge>
                   </div>
-                  <div className="text-center">
-                    <div className={`text-2xl font-bold ${marketAnalysis.marketData.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {marketAnalysis.marketData.change >= 0 ? '+' : ''}{marketAnalysis.marketData.change?.toFixed(2)}%
-                    </div>
-                    <div className="text-gray-400 text-sm">24h Change</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Portfolio Value</span>
+                    <span className="text-green-400 font-mono">${engineConfig.balance.toLocaleString()}</span>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-400">
-                      {(marketAnalysis.decision.confidence * 100).toFixed(0)}%
-                    </div>
-                    <div className="text-gray-400 text-sm">Confidence</div>
-                  </div>
-                  <div className="text-center">
-                    <div className={`text-2xl font-bold ${getDecisionColor(marketAnalysis.decision)}`}>
-                      {marketAnalysis.decision.shouldTrade ? marketAnalysis.decision.type : 'HOLD'}
-                    </div>
-                    <div className="text-gray-400 text-sm">Decision</div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Risk Level</span>
+                    <Badge className={engineConfig.riskLevel === 'safe' ? 'bg-green-600' : engineConfig.riskLevel === 'moderate' ? 'bg-yellow-600' : 'bg-red-600'}>
+                      {engineConfig.riskLevel.toUpperCase()}
+                    </Badge>
                   </div>
                 </div>
-                <div className="mt-4 p-4 bg-gray-700/50 rounded-lg">
-                  <h4 className="font-semibold text-purple-400 mb-2">Trading Reasoning</h4>
-                  <p className="text-gray-300 text-sm">{marketAnalysis.decision.reasoning}</p>
+              </CardContent>
+            </Card>
+
+            {/* AI Decision Engine */}
+            <Card className="bg-gray-800/50 border-purple-500/30">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Brain className="w-5 h-5 text-purple-400" />
+                  AI Decision Engine
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Decision Speed</span>
+                    <span className="text-purple-400 font-mono">0.003ms</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Confidence</span>
+                    <span className="text-green-400 font-mono">
+                      {marketAnalysis?.decision.confidence ? (marketAnalysis.decision.confidence * 100).toFixed(1) : '0.0'}%
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Next Analysis</span>
+                    <span className="text-blue-400 font-mono">15s</span>
+                  </div>
                 </div>
+                <Progress value={marketAnalysis?.decision.confidence ? marketAnalysis.decision.confidence * 100 : 0} className="h-2 bg-gray-700" />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trading Reasoning */}
+          {marketAnalysis?.decision.reasoning && (
+            <Card className="bg-gradient-to-r from-gray-900/50 to-purple-900/20 border-purple-500/30">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Cpu className="w-5 h-5 text-cyan-400" />
+                  AI Reasoning
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-cyan-300 italic">
+                  {marketAnalysis.decision.reasoning}
+                </p>
               </CardContent>
             </Card>
           )}
         </TabsContent>
 
-        {/* Cosmic Link Tab - Next Generation Feature */}
-        <TabsContent value="cosmic" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Cosmic Communication Array */}
-            <Card className="bg-gradient-to-br from-pink-900/30 to-violet-900/30 border-pink-500/30">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Satellite className="w-5 h-5 text-pink-400" />
-                  Cosmic Communication Array
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Signal Strength</span>
-                    <Badge className="bg-gradient-to-r from-pink-500 to-violet-500">
-                      MAXIMUM
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Active Channels</span>
-                    <span className="text-pink-400 font-mono">888</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Light-years Range</span>
-                    <span className="text-violet-400 font-mono">∞</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Dimension Access</span>
-                    <span className="text-pink-400 font-mono">11D+</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300 text-sm">Cosmic Harmony</span>
-                    <span className="text-pink-400 text-sm">100%</span>
-                  </div>
-                  <Progress value={100} className="h-2 bg-gray-700" />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Universal Market Oracle */}
-            <Card className="bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/30">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Eye className="w-5 h-5 text-indigo-400" />
-                  Universal Market Oracle
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Oracle Status</span>
-                    <Badge className="bg-gradient-to-r from-indigo-500 to-purple-500">
-                      AWAKENED
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Prophecy Accuracy</span>
-                    <span className="text-indigo-400 font-mono">100%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Time Vision</span>
-                    <span className="text-purple-400 font-mono">Past ↔ Future</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Market Secrets</span>
-                    <span className="text-indigo-400 font-mono">ALL REVEALED</span>
-                  </div>
-                </div>
-                <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-                  <Eye className="w-4 h-4 mr-2" />
-                  Consult Oracle
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Interdimensional Trading Network */}
-          <Card className="bg-gradient-to-r from-pink-900/20 to-indigo-900/20 border-pink-500/30">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Network className="w-5 h-5 text-pink-400" />
-                Interdimensional Trading Network
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-pink-400">LINKED</div>
-                  <div className="text-gray-400 text-sm">Dimension Alpha</div>
-                  <div className="text-xs text-gray-500">ETH: +847% gains</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-violet-400">SYNCED</div>
-                  <div className="text-gray-400 text-sm">Dimension Beta</div>
-                  <div className="text-xs text-gray-500">ETH: +1,247% gains</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-indigo-400">ACTIVE</div>
-                  <div className="text-gray-400 text-sm">Dimension Gamma</div>
-                  <div className="text-xs text-gray-500">ETH: +3,847% gains</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">TRANSCENDED</div>
-                  <div className="text-gray-400 text-sm">Dimension Omega</div>
-                  <div className="text-xs text-gray-500">ETH: INFINITE gains</div>
-                </div>
-              </div>
-              <div className="mt-6 flex gap-4">
-                <Button className="flex-1 bg-gradient-to-r from-pink-600 to-violet-600 hover:from-pink-700 hover:to-violet-700">
-                  <Satellite className="w-4 h-4 mr-2" />
-                  Beam to Alpha
-                </Button>
-                <Button className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
-                  <Rocket className="w-4 h-4 mr-2" />
-                  Launch to Omega
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Divine Market Wisdom */}
-          <Card className="bg-gradient-to-br from-amber-900/20 to-pink-900/20 border-amber-500/30">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                Divine Market Wisdom
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center space-y-4">
-                <div className="text-lg text-amber-300 italic">
-                  "The cosmos whispers secrets to those who listen with quantum hearts..."
-                </div>
-                <div className="text-sm text-gray-400">
-                  Current cosmic alignment suggests ETH will transcend beyond earthly mathematics.
-                  The fibonacci spirals of space-time converge at $∞ within the next stellar cycle.
-                </div>
-                <div className="flex items-center justify-center gap-4 mt-4">
-                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-500">
-                    COSMIC BULL MARKET
-                  </Badge>
-                  <Badge className="bg-gradient-to-r from-pink-500 to-violet-500">
-                    INTERDIMENSIONAL GAINS
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Controls Tab */}
-        <TabsContent value="controls" className="space-y-4">
+        {/* Engine Settings Tab */}
+        <TabsContent value="settings" className="space-y-6">
           <Card className="bg-gray-800/50 border-purple-500/30">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Settings className="w-5 h-5 text-purple-400" />
                 Engine Configuration
               </CardTitle>
+              <CardDescription>
+                Configure your Waides KI Core Intelligence Engine settings
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="balance">Wallet Balance ($)</Label>
+                  <Label htmlFor="balance">Portfolio Balance ($)</Label>
                   <Input
                     id="balance"
                     type="number"
@@ -893,44 +517,36 @@ export function WaidesKICoreEnginePanel() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="activeBot">Active Bot</Label>
-                  <Select value={engineConfig.activeBot} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, activeBot: value }))}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="autonomous">Autonomous</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="riskLevel">Risk Level</Label>
+                  <Label htmlFor="riskLevel">Risk Management Level</Label>
                   <Select value={engineConfig.riskLevel} onValueChange={(value) => setEngineConfig(prev => ({ ...prev, riskLevel: value }))}>
                     <SelectTrigger className="bg-gray-700 border-gray-600">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="safe">Safe</SelectItem>
-                      <SelectItem value="moderate">Moderate</SelectItem>
-                      <SelectItem value="aggressive">Aggressive</SelectItem>
+                      <SelectItem value="safe">Conservative (Safe)</SelectItem>
+                      <SelectItem value="moderate">Balanced (Moderate)</SelectItem>
+                      <SelectItem value="aggressive">Growth (Aggressive)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
-              <div className="flex gap-4 pt-4">
+
+              <div className="flex gap-4">
                 <Button 
                   onClick={() => startEngineMutation.mutate()}
                   disabled={startEngineMutation.isPending || engineStatus?.engine.isRunning}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                 >
-                  {startEngineMutation.isPending ? 'Starting...' : 'Start Engine'}
+                  <Rocket className="w-4 h-4 mr-2" />
+                  {startEngineMutation.isPending ? 'Initializing...' : 'Activate Engine'}
                 </Button>
                 <Button 
                   onClick={() => stopEngineMutation.mutate()}
                   disabled={stopEngineMutation.isPending || !engineStatus?.engine.isRunning}
                   className="flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700"
                 >
-                  {stopEngineMutation.isPending ? 'Stopping...' : 'Stop Engine'}
+                  <Shield className="w-4 h-4 mr-2" />
+                  {stopEngineMutation.isPending ? 'Deactivating...' : 'Deactivate Engine'}
                 </Button>
               </div>
             </CardContent>
