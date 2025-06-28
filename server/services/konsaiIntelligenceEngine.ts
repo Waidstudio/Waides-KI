@@ -1507,7 +1507,7 @@ class KonsaiIntelligenceEngine {
       this.isInitialized = true;
       console.log('🧠 KonsAi Intelligence Engine: Fully operational and scanning');
       
-      // Start active monitoring using all 200+ modules
+      // Start active monitoring using advanced modules
       this.startActiveMonitoring();
       
     } catch (error) {
@@ -1521,7 +1521,7 @@ class KonsaiIntelligenceEngine {
       // Connect to Deep Core Engine via service registry
       const { serviceRegistry } = await import('../serviceRegistry.js');
       this.deepCoreEngine = await serviceRegistry.get('deepCoreEngine');
-      console.log('🔮 Connected to Deep Core Engine with 120+ omniscient modules');
+      console.log('🔮 Connected to Deep Core Engine with omniscient modules');
       
       // Connect to Futuristic Modules via service registry  
       this.futuristicModules = await serviceRegistry.get('futuristicModules');
@@ -1614,7 +1614,7 @@ class KonsaiIntelligenceEngine {
       
       // Analyze query type and generate intelligent response
       const queryType = this.classifyQuery(query);
-      console.log(`🔍 Query classified as: ${queryType}, Kons modules processed: ${Object.keys(konsResults).length}`);
+      console.log(`🔍 Query classified as: ${queryType}, Kons module processing complete`);
       
       let response: string;
       
@@ -2915,13 +2915,13 @@ Ask me specific questions about trading, markets, or strategies and I'll provide
 *Powered by KonsAi Web∞ Consciousness*`;
   }
 
-  // ===== ACTIVE MONITORING SYSTEM USING ALL 200+ MODULES =====
+  // ===== ACTIVE MONITORING SYSTEM USING ADVANCED MODULES =====
   
   startActiveMonitoring(): void {
     if (this.activeMonitoring) return;
     
     this.activeMonitoring = true;
-    console.log('🔍 KonsAi: Starting active system monitoring using 200+ modules');
+    console.log('🔍 KonsAi: Starting active system monitoring using advanced modules');
     
     // Run comprehensive health checks every 45 seconds
     this.monitoringInterval = setInterval(async () => {
@@ -2944,7 +2944,7 @@ Ask me specific questions about trading, markets, or strategies and I'll provide
   async performActiveHealthCheck(): Promise<void> {
     if (!this.isInitialized) return;
     
-    console.log('🔍 KonsAi: Health check using 200+ modules (AutoFixCore + Deep Core + Futuristic)');
+    console.log('🔍 KonsAi: Health check using advanced modules (AutoFixCore + Deep Core + Futuristic)');
     
     try {
       // Use AutoFixCore module to scan for system issues
