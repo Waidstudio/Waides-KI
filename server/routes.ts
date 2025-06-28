@@ -925,24 +925,18 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Get FX rates endpoint with real payment gateway rates
   app.get("/api/wallet/fx-rates", async (req, res) => {
     try {
-      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
-      
-      const fxRates = realPaymentGateways.getFXRates();
-      const currencies = Object.keys(fxRates);
-      
-      const rates = currencies.map(currency => ({
-        currency,
-        rate: fxRates[currency],
-        symbol: currency === 'USD' ? '$' : 
-                currency === 'EUR' ? '€' : 
-                currency === 'GBP' ? '£' : 
-                currency === 'NGN' ? '₦' :
-                currency === 'GHS' ? 'GH₵' :
-                currency === 'KES' ? 'KSh' :
-                currency === 'ZAR' ? 'R' :
-                currency,
-        lastUpdated: new Date().toISOString()
-      }));
+      // Fixed rate: 1 SS = 1 USD for all currencies
+      const rates = [
+        { currency: 'USD', rate: 1.0, symbol: '$', lastUpdated: new Date().toISOString() },
+        { currency: 'EUR', rate: 1.0, symbol: '€', lastUpdated: new Date().toISOString() },
+        { currency: 'GBP', rate: 1.0, symbol: '£', lastUpdated: new Date().toISOString() },
+        { currency: 'NGN', rate: 1.0, symbol: '₦', lastUpdated: new Date().toISOString() },
+        { currency: 'GHS', rate: 1.0, symbol: 'GH₵', lastUpdated: new Date().toISOString() },
+        { currency: 'KES', rate: 1.0, symbol: 'KSh', lastUpdated: new Date().toISOString() },
+        { currency: 'ZAR', rate: 1.0, symbol: 'R', lastUpdated: new Date().toISOString() },
+        { currency: 'CAD', rate: 1.0, symbol: 'C$', lastUpdated: new Date().toISOString() },
+        { currency: 'AUD', rate: 1.0, symbol: 'A$', lastUpdated: new Date().toISOString() }
+      ];
 
       res.json({
         baseCurrency: 'SS',
@@ -1005,6 +999,100 @@ export function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Conversion error:', error);
       res.status(500).json({ error: 'Failed to process conversion' });
+    }
+  });
+
+  // Virtual Account Management Endpoints
+  
+  // Get all virtual account providers
+  app.get("/api/virtual-accounts/providers", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const { country, type } = req.query;
+      
+      let providers;
+      if (country) {
+        providers = virtualAccountService.getProvidersByCountry(country as string);
+      } else if (type) {
+        providers = virtualAccountService.getProvidersByType(type as 'bank' | 'crypto');
+      } else {
+        providers = virtualAccountService.getAllProviders();
+      }
+      
+      res.json(providers);
+    } catch (error) {
+      console.error('Virtual account providers error:', error);
+      res.status(500).json({ error: 'Failed to fetch providers' });
+    }
+  });
+
+  // Update virtual account provider configuration
+  app.put("/api/virtual-accounts/providers/:providerId", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const { providerId } = req.params;
+      const config = req.body;
+      
+      const success = virtualAccountService.updateProvider(providerId, config);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Provider not found' });
+      }
+      
+      res.json({ success: true, message: 'Provider updated successfully' });
+    } catch (error) {
+      console.error('Provider update error:', error);
+      res.status(500).json({ error: 'Failed to update provider' });
+    }
+  });
+
+  // Generate virtual bank account
+  app.post("/api/virtual-accounts/generate/bank", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const { userId, country, currency, preferredProvider } = req.body;
+      
+      if (!userId || !country || !currency) {
+        return res.status(400).json({ error: 'Missing required fields: userId, country, currency' });
+      }
+      
+      const virtualAccount = await virtualAccountService.generateVirtualBankAccount(
+        userId, country, currency, preferredProvider
+      );
+      
+      res.json({
+        success: true,
+        virtualAccount,
+        instructions: `Transfer funds to the provided bank account details. Your deposit will be credited to your SmaiSika wallet automatically.`
+      });
+    } catch (error) {
+      console.error('Virtual bank account generation error:', error);
+      res.status(500).json({ error: error.message || 'Failed to generate virtual bank account' });
+    }
+  });
+
+  // Generate virtual crypto wallet
+  app.post("/api/virtual-accounts/generate/crypto", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const { userId, currency, preferredProvider } = req.body;
+      
+      if (!userId || !currency) {
+        return res.status(400).json({ error: 'Missing required fields: userId, currency' });
+      }
+      
+      const virtualWallet = await virtualAccountService.generateVirtualCryptoWallet(
+        userId, currency, preferredProvider
+      );
+      
+      res.json({
+        success: true,
+        virtualWallet,
+        instructions: `Send ${currency} to the provided wallet address. Your deposit will be credited to your SmaiSika wallet automatically.`
+      });
+    } catch (error) {
+      console.error('Virtual crypto wallet generation error:', error);
+      res.status(500).json({ error: error.message || 'Failed to generate virtual crypto wallet' });
     }
   });
 
