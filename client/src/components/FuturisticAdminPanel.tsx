@@ -559,7 +559,7 @@ export function FuturisticAdminPanel() {
                           Filter
                         </Button>
                         <Button variant="outline" size="sm" className="border-white/20 text-white">
-                          <Sort className="w-4 h-4 mr-2" />
+                          <ArrowUpDown className="w-4 h-4 mr-2" />
                           Sort
                         </Button>
                       </div>
@@ -581,7 +581,7 @@ export function FuturisticAdminPanel() {
                         </div>
                       </div>
                       <div className="max-h-96 overflow-y-auto">
-                        {users && Array.isArray(users) && users.map((user: any, index: number) => (
+                        {users && Array.isArray(users) && users.length > 0 ? users.map((user: any, index: number) => (
                           <div key={user.id || index} className="px-6 py-4 border-b border-white/5 hover:bg-white/5">
                             <div className="grid grid-cols-6 gap-4 text-sm">
                               <div className="flex items-center space-x-3">
@@ -602,7 +602,11 @@ export function FuturisticAdminPanel() {
                               </Badge>
                             </div>
                           </div>
-                        ))}
+                        )) : (
+                          <div className="px-6 py-8 text-center">
+                            <div className="text-white/60">No users found</div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
