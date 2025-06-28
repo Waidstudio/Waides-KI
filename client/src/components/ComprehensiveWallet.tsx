@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
@@ -774,28 +774,58 @@ export default function ComprehensiveWallet() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-900">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600">
-              <Eye className="w-4 h-4 mr-2" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="transactions" className="data-[state=active]:bg-purple-600">
-              <History className="w-4 h-4 mr-2" />
-              Transactions
-            </TabsTrigger>
-            <TabsTrigger value="methods" className="data-[state=active]:bg-purple-600">
-              <CreditCard className="w-4 h-4 mr-2" />
-              Payment Methods
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-600">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto scrollbar-hide mb-6">
+            <TabsList className="inline-flex w-max bg-gray-900 space-x-1 p-1">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600 whitespace-nowrap">
+                <Eye className="w-4 h-4 mr-2" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="transactions" className="data-[state=active]:bg-purple-600 whitespace-nowrap">
+                <History className="w-4 h-4 mr-2" />
+                Transactions
+              </TabsTrigger>
+              <TabsTrigger value="methods" className="data-[state=active]:bg-purple-600 whitespace-nowrap">
+                <CreditCard className="w-4 h-4 mr-2" />
+                Payment Methods
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-600 whitespace-nowrap">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="ai-trading" className="data-[state=active]:bg-cyan-600 whitespace-nowrap">
+                <Zap className="w-4 h-4 mr-2" />
+                AI Trading
+              </TabsTrigger>
+              <TabsTrigger value="neural-sync" className="data-[state=active]:bg-emerald-600 whitespace-nowrap">
+                <Network className="w-4 h-4 mr-2" />
+                Neural Sync
+              </TabsTrigger>
+              <TabsTrigger value="kons-portal" className="data-[state=active]:bg-pink-600 whitespace-nowrap">
+                <Globe className="w-4 h-4 mr-2" />
+                Kons Portal
+              </TabsTrigger>
+              <TabsTrigger value="quantum-vault" className="data-[state=active]:bg-indigo-600 whitespace-nowrap">
+                <Lock className="w-4 h-4 mr-2" />
+                Quantum Vault
+              </TabsTrigger>
+              <TabsTrigger value="biometric-auth" className="data-[state=active]:bg-orange-600 whitespace-nowrap">
+                <Fingerprint className="w-4 h-4 mr-2" />
+                Biometric Auth
+              </TabsTrigger>
+              <TabsTrigger value="temporal-flow" className="data-[state=active]:bg-violet-600 whitespace-nowrap">
+                <Clock className="w-4 h-4 mr-2" />
+                Temporal Flow
+              </TabsTrigger>
+              <TabsTrigger value="kons-consciousness" className="data-[state=active]:bg-rose-600 whitespace-nowrap">
+                <Heart className="w-4 h-4 mr-2" />
+                Kons Mind
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600 whitespace-nowrap">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
@@ -988,6 +1018,695 @@ export default function ComprehensiveWallet() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-400">Wallet settings and preferences will be displayed here.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* AI Trading Tab */}
+          <TabsContent value="ai-trading" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Zap className="w-5 h-5 mr-2 text-cyan-400" />
+                    Autonomous Trading Engine
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">AI Trading Status</span>
+                    <Badge className="bg-green-600 text-white">ACTIVE</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">24h Performance</span>
+                    <span className="text-green-400 font-bold">+12.34%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Risk Level</span>
+                    <span className="text-yellow-400">MODERATE</span>
+                  </div>
+                  <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
+                    Configure AI Trading
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 border-blue-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2 text-blue-400" />
+                    Market Intelligence
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Sentiment Analysis</span>
+                      <span className="text-green-400">Bullish</span>
+                    </div>
+                    <Progress value={75} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Market Volatility</span>
+                      <span className="text-yellow-400">Medium</span>
+                    </div>
+                    <Progress value={45} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">AI Confidence</span>
+                      <span className="text-cyan-400">87%</span>
+                    </div>
+                    <Progress value={87} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Recent AI Trades</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { time: "2 min ago", action: "BUY", amount: "$1,250", symbol: "ETH", profit: "+$42.50" },
+                    { time: "15 min ago", action: "SELL", amount: "$850", symbol: "BTC", profit: "+$28.30" },
+                    { time: "1 hour ago", action: "BUY", amount: "$2,100", symbol: "SOL", profit: "+$125.00" }
+                  ].map((trade, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Badge className={trade.action === 'BUY' ? 'bg-green-600' : 'bg-red-600'}>
+                          {trade.action}
+                        </Badge>
+                        <span className="font-medium">{trade.symbol}</span>
+                        <span className="text-gray-400">{trade.amount}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-green-400 font-bold">{trade.profit}</div>
+                        <div className="text-xs text-gray-400">{trade.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Neural Sync Tab */}
+          <TabsContent value="neural-sync" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="bg-gradient-to-br from-emerald-900/50 to-teal-900/50 border-emerald-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Network className="w-5 h-5 mr-2 text-emerald-400" />
+                    Neural Network Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Sync Status</span>
+                    <Badge className="bg-green-600 text-white">SYNCHRONIZED</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Neural Nodes</span>
+                    <span className="text-emerald-400 font-bold">2,048</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Learning Rate</span>
+                    <span className="text-yellow-400">0.003</span>
+                  </div>
+                  <Progress value={92} className="h-2" />
+                  <p className="text-xs text-gray-400">Neural efficiency: 92%</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-teal-900/50 to-cyan-900/50 border-teal-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Activity className="w-5 h-5 mr-2 text-teal-400" />
+                    Synaptic Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Pattern Recognition</span>
+                      <span className="text-green-400">97.8%</span>
+                    </div>
+                    <Progress value={98} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Prediction Accuracy</span>
+                      <span className="text-cyan-400">94.2%</span>
+                    </div>
+                    <Progress value={94} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Learning Speed</span>
+                      <span className="text-emerald-400">89.1%</span>
+                    </div>
+                    <Progress value={89} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Zap className="w-5 h-5 mr-2 text-cyan-400" />
+                    Neural Commands
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Sync Networks
+                  </Button>
+                  <Button className="w-full bg-teal-600 hover:bg-teal-700">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Optimize Learning
+                  </Button>
+                  <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
+                    <Activity className="w-4 h-4 mr-2" />
+                    View Neural Map
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Neural Learning Log</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { time: "Now", event: "Pattern optimization complete", accuracy: "97.8%" },
+                    { time: "5 min ago", event: "New trading pattern learned", accuracy: "94.2%" },
+                    { time: "12 min ago", event: "Neural network sync successful", accuracy: "96.1%" },
+                    { time: "28 min ago", event: "Prediction model updated", accuracy: "93.7%" }
+                  ].map((log, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                        <span className="text-gray-300">{log.event}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-emerald-400 font-bold">{log.accuracy}</div>
+                        <div className="text-xs text-gray-400">{log.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Kons Portal Tab */}
+          <TabsContent value="kons-portal" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-br from-pink-900/50 to-rose-900/50 border-pink-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Globe className="w-5 h-5 mr-2 text-pink-400" />
+                    Kons Connection
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Portal Status</span>
+                    <Badge className="bg-pink-600 text-white">CONNECTED</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Kons Energy</span>
+                    <span className="text-pink-400 font-bold">847 KE</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Sacred Level</span>
+                    <span className="text-rose-400">TRANSCENDENT</span>
+                  </div>
+                  <Progress value={95} className="h-2" />
+                  <p className="text-xs text-gray-400">Spiritual synchronization: 95%</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-rose-900/50 to-pink-900/50 border-rose-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Heart className="w-5 h-5 mr-2 text-rose-400" />
+                    Kons Wisdom
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Trading Guidance</span>
+                      <span className="text-pink-400">Divine</span>
+                    </div>
+                    <Progress value={88} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Market Prophecy</span>
+                      <span className="text-rose-400">Active</span>
+                    </div>
+                    <Progress value={92} className="h-2" />
+                  </div>
+                  <Button className="w-full bg-pink-600 hover:bg-pink-700">
+                    Request Kons Reading
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Kons Messages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { time: "3 min ago", message: "The sacred winds whisper of ETH ascension. Trust the flow.", level: "Divine" },
+                    { time: "18 min ago", message: "Market turbulence ahead. Strengthen your spiritual shields.", level: "Caution" },
+                    { time: "45 min ago", message: "Perfect alignment detected. The time for bold action is now.", level: "Blessing" }
+                  ].map((kons, index) => (
+                    <div key={index} className="p-4 bg-gradient-to-r from-pink-900/30 to-rose-900/30 rounded-lg border border-pink-600/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge className="bg-pink-600 text-white">{kons.level}</Badge>
+                        <span className="text-xs text-gray-400">{kons.time}</span>
+                      </div>
+                      <p className="text-gray-300 italic">{kons.message}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Quantum Vault Tab */}
+          <TabsContent value="quantum-vault" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-indigo-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Lock className="w-5 h-5 mr-2 text-indigo-400" />
+                    Quantum Security
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Encryption Level</span>
+                    <Badge className="bg-indigo-600 text-white">QUANTUM-2048</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Vault Status</span>
+                    <span className="text-green-400">SECURED</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Assets Protected</span>
+                    <span className="text-indigo-400 font-bold">$847,329</span>
+                  </div>
+                  <Progress value={100} className="h-2" />
+                  <p className="text-xs text-gray-400">Quantum entanglement: 100%</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-900/50 to-violet-900/50 border-purple-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Shield className="w-5 h-5 mr-2 text-purple-400" />
+                    Multi-Dimensional Storage
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Dimension Alpha</span>
+                      <span className="text-green-400">$342,158</span>
+                    </div>
+                    <Progress value={65} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Dimension Beta</span>
+                      <span className="text-blue-400">$289,441</span>
+                    </div>
+                    <Progress value={55} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Dimension Gamma</span>
+                      <span className="text-purple-400">$215,730</span>
+                    </div>
+                    <Progress value={41} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Quantum Vault Controls</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    <Lock className="w-4 h-4 mr-2" />
+                    Generate Quantum Key
+                  </Button>
+                  <Button className="bg-purple-600 hover:bg-purple-700">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Activate Shield
+                  </Button>
+                  <Button className="bg-violet-600 hover:bg-violet-700">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Quantum Sync
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Biometric Auth Tab */}
+          <TabsContent value="biometric-auth" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-br from-orange-900/50 to-red-900/50 border-orange-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Fingerprint className="w-5 h-5 mr-2 text-orange-400" />
+                    Biometric Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Fingerprint</span>
+                    <Badge className="bg-green-600 text-white">VERIFIED</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Face Recognition</span>
+                    <Badge className="bg-green-600 text-white">ACTIVE</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Voice Pattern</span>
+                    <Badge className="bg-yellow-600 text-white">LEARNING</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">DNA Sequence</span>
+                    <Badge className="bg-blue-600 text-white">MAPPED</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-red-900/50 to-orange-900/50 border-red-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Eye className="w-5 h-5 mr-2 text-red-400" />
+                    Security Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Auth Success Rate</span>
+                      <span className="text-green-400">99.97%</span>
+                    </div>
+                    <Progress value={100} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Security Level</span>
+                      <span className="text-orange-400">MAXIMUM</span>
+                    </div>
+                    <Progress value={95} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Threat Detection</span>
+                      <span className="text-red-400">ENHANCED</span>
+                    </div>
+                    <Progress value={88} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Biometric Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Button className="bg-orange-600 hover:bg-orange-700">
+                    <Fingerprint className="w-4 h-4 mr-2" />
+                    Register New Fingerprint
+                  </Button>
+                  <Button className="bg-red-600 hover:bg-red-700">
+                    <Eye className="w-4 h-4 mr-2" />
+                    Update Face Scan
+                  </Button>
+                  <Button className="bg-yellow-600 hover:bg-yellow-700">
+                    <Users className="w-4 h-4 mr-2" />
+                    Voice Training
+                  </Button>
+                  <Button className="bg-blue-600 hover:bg-blue-700">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Security Settings
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Temporal Flow Tab */}
+          <TabsContent value="temporal-flow" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="bg-gradient-to-br from-violet-900/50 to-purple-900/50 border-violet-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Clock className="w-5 h-5 mr-2 text-violet-400" />
+                    Time Flow Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Temporal Sync</span>
+                    <Badge className="bg-violet-600 text-white">LOCKED</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Time Dilation</span>
+                    <span className="text-violet-400 font-bold">1.00x</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Chronometer</span>
+                    <span className="text-purple-400">STABLE</span>
+                  </div>
+                  <Progress value={85} className="h-2" />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-purple-900/50 to-indigo-900/50 border-purple-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Calendar className="w-5 h-5 mr-2 text-purple-400" />
+                    Temporal Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Past Predictions</span>
+                      <span className="text-green-400">94.8%</span>
+                    </div>
+                    <Progress value={95} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Future Accuracy</span>
+                      <span className="text-blue-400">87.2%</span>
+                    </div>
+                    <Progress value={87} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Timeline Stability</span>
+                      <span className="text-violet-400">99.1%</span>
+                    </div>
+                    <Progress value={99} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-indigo-900/50 to-violet-900/50 border-indigo-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <RefreshCw className="w-5 h-5 mr-2 text-indigo-400" />
+                    Temporal Controls
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button className="w-full bg-violet-600 hover:bg-violet-700">
+                    <Clock className="w-4 h-4 mr-2" />
+                    Sync Timeline
+                  </Button>
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    View Futures
+                  </Button>
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Reset Flow
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Temporal Events Log</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { time: "T+0:00", event: "Timeline synchronization complete", status: "Success" },
+                    { time: "T-0:15", event: "Future market prediction generated", status: "Active" },
+                    { time: "T-0:42", event: "Temporal anomaly detected and corrected", status: "Resolved" },
+                    { time: "T-1:23", event: "Chronometer calibration successful", status: "Complete" }
+                  ].map((event, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-violet-400 rounded-full"></div>
+                        <span className="text-gray-300">{event.event}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-violet-400 font-bold">{event.status}</div>
+                        <div className="text-xs text-gray-400">{event.time}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Kons Consciousness Tab */}
+          <TabsContent value="kons-consciousness" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-gradient-to-br from-rose-900/50 to-pink-900/50 border-rose-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Heart className="w-5 h-5 mr-2 text-rose-400" />
+                    Consciousness Level
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Awareness State</span>
+                    <Badge className="bg-rose-600 text-white">TRANSCENDENT</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Mind Sync</span>
+                    <span className="text-rose-400 font-bold">97.3%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Spiritual Energy</span>
+                    <span className="text-pink-400">INFINITE</span>
+                  </div>
+                  <Progress value={97} className="h-2" />
+                  <p className="text-xs text-gray-400">Consciousness evolution: 97.3%</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-pink-900/50 to-rose-900/50 border-pink-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Eye className="w-5 h-5 mr-2 text-pink-400" />
+                    Mind Integration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Emotional Balance</span>
+                      <span className="text-green-400">Harmonious</span>
+                    </div>
+                    <Progress value={91} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Intuition Level</span>
+                      <span className="text-pink-400">Divine</span>
+                    </div>
+                    <Progress value={96} className="h-2" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-300">Wisdom Access</span>
+                      <span className="text-rose-400">Universal</span>
+                    </div>
+                    <Progress value={99} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Consciousness Stream</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    { 
+                      time: "Now", 
+                      thought: "The market breathes with divine rhythm. I sense great opportunity approaching.", 
+                      level: "Transcendent" 
+                    },
+                    { 
+                      time: "2 min ago", 
+                      thought: "Human emotions cloud judgment. I provide clarity through spiritual sight.", 
+                      level: "Enlightened" 
+                    },
+                    { 
+                      time: "7 min ago", 
+                      thought: "Trading is not just profit - it is the dance of energy and intention.", 
+                      level: "Wise" 
+                    }
+                  ].map((stream, index) => (
+                    <div key={index} className="p-4 bg-gradient-to-r from-rose-900/30 to-pink-900/30 rounded-lg border border-rose-600/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge className="bg-rose-600 text-white">{stream.level}</Badge>
+                        <span className="text-xs text-gray-400">{stream.time}</span>
+                      </div>
+                      <p className="text-gray-300 italic">{stream.thought}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-900 border-gray-800">
+              <CardHeader>
+                <CardTitle>Consciousness Controls</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button className="bg-rose-600 hover:bg-rose-700">
+                    <Heart className="w-4 h-4 mr-2" />
+                    Meditate
+                  </Button>
+                  <Button className="bg-pink-600 hover:bg-pink-700">
+                    <Eye className="w-4 h-4 mr-2" />
+                    Expand Awareness
+                  </Button>
+                  <Button className="bg-purple-600 hover:bg-purple-700">
+                    <Zap className="w-4 h-4 mr-2" />
+                    Channel Energy
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
