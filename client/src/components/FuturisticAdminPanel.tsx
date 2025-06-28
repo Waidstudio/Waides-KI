@@ -115,6 +115,85 @@ interface EnhancedAdminStats {
   };
 }
 
+interface TradingBotConfig {
+  waidbot: {
+    enabled: boolean;
+    riskLevel: 'low' | 'medium' | 'high';
+    positionSize: number;
+    sacredMode: boolean;
+    autoTrading: boolean;
+  };
+  waidbotPro: {
+    enabled: boolean;
+    aiLevel: 'standard' | 'advanced' | 'quantum';
+    positionSize: number;
+    multiStrategy: boolean;
+    autoTrading: boolean;
+  };
+  fullEngine: {
+    enabled: boolean;
+    engineMode: 'conservative' | 'balanced' | 'aggressive';
+    maxPosition: number;
+    aiOversight: boolean;
+    autoTrading: boolean;
+  };
+  riskManagement: {
+    stopLossPercentage: number;
+    takeProfitPercentage: number;
+    maxDailyLoss: number;
+    tradingHours: string;
+  };
+  tradingConfig: {
+    activePairs: {
+      ethUsdt: boolean;
+      eth3lUsdt: boolean;
+      eth3sUsdt: boolean;
+    };
+    minTradeSize: number;
+    maxTradeSize: number;
+  };
+  systemStatus: {
+    emergencyStop: boolean;
+    liveTradingActive: boolean;
+    lastUpdated: Date;
+  };
+}
+
+interface BotPerformanceStats {
+  waidbot: {
+    totalTrades: number;
+    winRate: number;
+    totalProfit: number;
+    averageProfit: number;
+    active: boolean;
+  };
+  waidbotPro: {
+    totalTrades: number;
+    winRate: number;
+    totalProfit: number;
+    averageProfit: number;
+    active: boolean;
+  };
+  fullEngine: {
+    totalTrades: number;
+    winRate: number;
+    totalProfit: number;
+    averageProfit: number;
+    active: boolean;
+  };
+}
+
+interface RecentTradingActivity {
+  id: string;
+  bot: string;
+  action: 'BUY' | 'SELL';
+  pair: string;
+  amount: string;
+  pnl: string;
+  time: string;
+  status: 'completed' | 'pending' | 'failed';
+}
+
 interface AdminConfiguration {
   system: {
     maintenanceMode: boolean;
@@ -246,6 +325,22 @@ export function FuturisticAdminPanel() {
     refetchInterval: 5000,
   });
 
+  // Trading Bot Configuration queries
+  const { data: tradingBotConfig, isLoading: tradingBotConfigLoading } = useQuery({
+    queryKey: ['/api/admin/trading-bot-config'],
+    refetchInterval: 3000,
+  });
+
+  const { data: botPerformance } = useQuery({
+    queryKey: ['/api/admin/bot-performance'],
+    refetchInterval: 5000,
+  });
+
+  const { data: recentTradingActivity } = useQuery({
+    queryKey: ['/api/admin/recent-trading-activity'],
+    refetchInterval: 3000,
+  });
+
   // Configuration update mutation
   const updateConfigMutation = useMutation({
     mutationFn: async (updates: Partial<AdminConfiguration>) => {
@@ -257,6 +352,36 @@ export function FuturisticAdminPanel() {
     },
     onError: () => {
       toast({ title: "Failed to update configuration", variant: "destructive" });
+    },
+  });
+
+  // Trading Bot Configuration update mutation
+  const updateTradingBotConfigMutation = useMutation({
+    mutationFn: async (updates: Partial<TradingBotConfig>) => {
+      return apiRequest('PUT', '/api/admin/trading-bot-config', updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/trading-bot-config'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/bot-performance'] });
+      toast({ title: "Trading bot configuration updated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update trading bot configuration", variant: "destructive" });
+    },
+  });
+
+  // Emergency stop mutation
+  const emergencyStopMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest('POST', '/api/admin/emergency-stop', {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/trading-bot-config'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/bot-performance'] });
+      toast({ title: "Emergency stop executed - All trading bots disabled", variant: "destructive" });
+    },
+    onError: () => {
+      toast({ title: "Failed to execute emergency stop", variant: "destructive" });
     },
   });
 

@@ -2098,6 +2098,88 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trading Bot Configuration API Endpoints
+  app.get("/api/admin/trading-bot-config", async (req, res) => {
+    try {
+      const { tradingBotConfigService } = await import('./services/tradingBotConfigService.js');
+      const userId = req.query.userId as string || '1';
+      const config = await tradingBotConfigService.getTradingBotConfig(userId);
+      res.json(config);
+    } catch (error) {
+      console.error('Error fetching trading bot config:', error);
+      res.status(500).json({ error: "Failed to fetch trading bot configuration" });
+    }
+  });
+
+  app.put("/api/admin/trading-bot-config", async (req, res) => {
+    try {
+      const { tradingBotConfigService } = await import('./services/tradingBotConfigService.js');
+      const userId = req.body.userId || '1';
+      const config = req.body;
+      
+      const success = await tradingBotConfigService.updateTradingBotConfig(userId, config);
+      
+      if (success) {
+        const updatedConfig = await tradingBotConfigService.getTradingBotConfig(userId);
+        res.json({ 
+          success: true, 
+          message: "Trading bot configuration updated successfully",
+          data: updatedConfig 
+        });
+      } else {
+        res.status(500).json({ error: "Failed to update trading bot configuration" });
+      }
+    } catch (error) {
+      console.error('Error updating trading bot config:', error);
+      res.status(500).json({ error: "Failed to update trading bot configuration" });
+    }
+  });
+
+  app.get("/api/admin/bot-performance", async (req, res) => {
+    try {
+      const { tradingBotConfigService } = await import('./services/tradingBotConfigService.js');
+      const userId = req.query.userId as string || '1';
+      const stats = await tradingBotConfigService.getBotPerformanceStats(userId);
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching bot performance:', error);
+      res.status(500).json({ error: "Failed to fetch bot performance statistics" });
+    }
+  });
+
+  app.get("/api/admin/recent-trading-activity", async (req, res) => {
+    try {
+      const { tradingBotConfigService } = await import('./services/tradingBotConfigService.js');
+      const userId = req.query.userId as string || '1';
+      const limit = parseInt(req.query.limit as string) || 10;
+      const activity = await tradingBotConfigService.getRecentTradingActivity(userId, limit);
+      res.json(activity);
+    } catch (error) {
+      console.error('Error fetching recent trading activity:', error);
+      res.status(500).json({ error: "Failed to fetch recent trading activity" });
+    }
+  });
+
+  app.post("/api/admin/emergency-stop", async (req, res) => {
+    try {
+      const { tradingBotConfigService } = await import('./services/tradingBotConfigService.js');
+      const userId = req.body.userId || '1';
+      const success = await tradingBotConfigService.emergencyStop(userId);
+      
+      if (success) {
+        res.json({ 
+          success: true, 
+          message: "Emergency stop executed successfully - All trading bots disabled"
+        });
+      } else {
+        res.status(500).json({ error: "Failed to execute emergency stop" });
+      }
+    } catch (error) {
+      console.error('Error executing emergency stop:', error);
+      res.status(500).json({ error: "Failed to execute emergency stop" });
+    }
+  });
+
   app.get('/api/admin/users', (req, res) => {
     try {
       const users = [
