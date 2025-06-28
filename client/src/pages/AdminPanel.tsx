@@ -481,15 +481,7 @@ export default function AdminPanel() {
   }
 
   if (isFullscreen) {
-    return (
-      <AdminConsole
-        onExit={() => setIsFullscreen(false)}
-        status={status}
-        config={config}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
-    );
+    return <AdminConsole />;
   }
 
   return (
