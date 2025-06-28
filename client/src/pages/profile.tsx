@@ -133,7 +133,7 @@ interface UserSettings {
   animationsEnabled: boolean;
   soundEnabled: boolean;
   voiceAssistantEnabled: boolean;
-  // AI & Automation Settings
+  // KI & Automation Settings
   aiPersonality: string;
   konsaiMode: string;
   predictionConfidenceThreshold: number;
@@ -270,14 +270,14 @@ export default function ProfilePage() {
     { value: 'dark', label: 'Dark Mode', icon: Moon },
     { value: 'light', label: 'Light Mode', icon: Sun },
     { value: 'cosmic', label: 'Cosmic Purple', icon: Sparkles },
-    { value: 'neural', label: 'Neural Blue', icon: Cpu }
+    { value: 'konsai', label: 'Konsai Blue', icon: Cpu }
   ];
 
   const tradingStyles = [
     { value: 'aggressive', label: 'Aggressive', icon: TrendingUp, color: 'text-red-400' },
     { value: 'conservative', label: 'Conservative', icon: Shield, color: 'text-blue-400' },
     { value: 'balanced', label: 'Balanced', icon: Target, color: 'text-green-400' },
-    { value: 'ai_driven', label: 'AI Driven', icon: Brain, color: 'text-purple-400' }
+    { value: 'ai_driven', label: 'KI Driven', icon: Brain, color: 'text-purple-400' }
   ];
 
   const experienceLevels = [
@@ -417,7 +417,7 @@ export default function ProfilePage() {
             </TabsTrigger>
             <TabsTrigger value="ai" className="data-[state=active]:bg-purple-600/20">
               <Brain className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">AI</span>
+              <span className="hidden sm:inline">KI</span>
             </TabsTrigger>
             <TabsTrigger value="ui" className="data-[state=active]:bg-purple-600/20">
               <Palette className="h-4 w-4 mr-1" />
@@ -803,15 +803,15 @@ export default function ProfilePage() {
             </div>
           </TabsContent>
 
-          {/* AI & Automation Tab */}
+          {/* KI & Automation Tab */}
           <TabsContent value="ai">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* AI Personality */}
+              {/* KI Personality */}
               <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
                     <Brain className="h-5 w-5 mr-2 text-purple-400" />
-                    AI Personality
+                    KI Personality
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1342,7 +1342,7 @@ export default function ProfilePage() {
                         <SelectItem value="basic">Basic Analysis</SelectItem>
                         <SelectItem value="standard">Standard Analysis</SelectItem>
                         <SelectItem value="deep">Deep Analysis</SelectItem>
-                        <SelectItem value="quantum">Quantum Analysis</SelectItem>
+                        <SelectItem value="konspowa">Kons Powa Analysis</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1381,25 +1381,25 @@ export default function ProfilePage() {
                   </div>
 
                   <div>
-                    <Label className="text-purple-200">Neural Network Layers</Label>
+                    <Label className="text-purple-200">Konsai Network Layers</Label>
                     <Slider
-                      value={[settings?.neuralLayers || 12]}
-                      onValueChange={(value) => handleSettingsUpdate('neuralLayers', value[0])}
+                      value={[settings?.konsaiLayers || 12]}
+                      onValueChange={(value) => handleSettingsUpdate('konsaiLayers', value[0])}
                       max={64}
                       min={4}
                       step={4}
                       className="py-4"
                     />
                     <p className="text-xs text-purple-300">
-                      {settings?.neuralLayers || 12} Neural Layers
+                      {settings?.konsaiLayers || 12} Konsai Layers
                     </p>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Label className="text-purple-200">Quantum Computing</Label>
+                    <Label className="text-purple-200">Kons Powa Computing</Label>
                     <Switch
-                      checked={settings?.quantumComputing || false}
-                      onCheckedChange={(checked) => handleSettingsUpdate('quantumComputing', checked)}
+                      checked={settings?.konsPowaComputing || false}
+                      onCheckedChange={(checked) => handleSettingsUpdate('konsPowaComputing', checked)}
                     />
                   </div>
 
@@ -1648,12 +1648,12 @@ export default function ProfilePage() {
                 </CardContent>
               </Card>
 
-              {/* AI & Analytics */}
+              {/* KI & Analytics */}
               <Card className="bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
                     <Brain className="h-5 w-5 mr-2 text-purple-400" />
-                    AI & Analytics
+                    KI & Analytics
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1665,7 +1665,7 @@ export default function ProfilePage() {
                         </div>
                         <div>
                           <p className="text-white font-medium">OpenAI GPT-4</p>
-                          <p className="text-purple-300 text-sm">Advanced AI Analysis</p>
+                          <p className="text-purple-300 text-sm">Advanced KI Analysis</p>
                         </div>
                       </div>
                       <Switch

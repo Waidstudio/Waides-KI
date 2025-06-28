@@ -127,7 +127,7 @@ interface TradingBotConfig {
   };
   waidbotPro: {
     enabled: boolean;
-    aiLevel: 'standard' | 'advanced' | 'quantum';
+    aiLevel: 'standard' | 'advanced' | 'kons powa';
     positionSize: number;
     multiStrategy: boolean;
     autoTrading: boolean;
@@ -454,7 +454,7 @@ export function FuturisticAdminPanel() {
     { id: 'trading', label: 'Trading', icon: TrendingUp, color: 'bg-orange-500' },
     { id: 'financial', label: 'Financial', icon: DollarSign, color: 'bg-emerald-500' },
     { id: 'security', label: 'Security', icon: Shield, color: 'bg-red-500' },
-    { id: 'ai-systems', label: 'AI Systems', icon: Brain, color: 'bg-indigo-500' },
+    { id: 'ai-systems', label: 'KI Systems', icon: Brain, color: 'bg-indigo-500' },
     { id: 'performance', label: 'Performance', icon: Zap, color: 'bg-yellow-500' },
     { id: 'infrastructure', label: 'Infrastructure', icon: Server, color: 'bg-gray-500' },
     { id: 'transactions', label: 'Transactions', icon: Database, color: 'bg-cyan-500' },
@@ -464,8 +464,8 @@ export function FuturisticAdminPanel() {
     { id: 'system-control', label: 'System Control', icon: Cpu, color: 'bg-amber-500' },
     { id: 'network-ops', label: 'Network Ops', icon: Network, color: 'bg-teal-500' },
     { id: 'data-management', label: 'Data Mgmt', icon: HardDrive, color: 'bg-stone-500' },
-    { id: 'quantum-ops', label: 'Quantum Ops', icon: Sparkles, color: 'bg-gradient-to-r from-purple-400 to-pink-400' },
-    { id: 'neural-core', label: 'Neural Core', icon: Cpu, color: 'bg-gradient-to-r from-blue-400 to-cyan-400' },
+    { id: 'kons powa-ops', label: 'Kons Powa Ops', icon: Sparkles, color: 'bg-gradient-to-r from-purple-400 to-pink-400' },
+    { id: 'konsai-core', label: 'Konsai Core', icon: Cpu, color: 'bg-gradient-to-r from-blue-400 to-cyan-400' },
     { id: 'biometric-sync', label: 'Biometric Sync', icon: Lock, color: 'bg-gradient-to-r from-orange-400 to-red-400' },
     { id: 'temporal-control', label: 'Temporal Control', icon: Clock, color: 'bg-gradient-to-r from-indigo-400 to-purple-400' }
   ];
@@ -825,13 +825,13 @@ export function FuturisticAdminPanel() {
             </Card>
           </TabsContent>
 
-          {/* Quantum Operations Tab */}
-          <TabsContent value="quantum-ops" className="space-y-6">
+          {/* Kons Powa Operations Tab */}
+          <TabsContent value="kons powa-ops" className="space-y-6">
             <Card className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-500/30 backdrop-blur-lg">
               <CardHeader>
                 <CardTitle className="text-white flex items-center space-x-2">
                   <Sparkles className="w-5 h-5" />
-                  <span>Quantum Operations Center</span>
+                  <span>Kons Powa Operations Center</span>
                   <Badge variant="secondary" className="bg-purple-500/20 text-purple-300">EXPERIMENTAL</Badge>
                 </CardTitle>
               </CardHeader>
@@ -841,7 +841,7 @@ export function FuturisticAdminPanel() {
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-3 mb-4">
                         <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
-                        <span className="text-white font-medium">Quantum Processor</span>
+                        <span className="text-white font-medium">Kons Powa Processor</span>
                       </div>
                       <div className="space-y-2">
                         <div className="text-2xl font-mono text-purple-400">2,048</div>
@@ -885,7 +885,7 @@ export function FuturisticAdminPanel() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card className="bg-black/30 border-indigo-400/30">
                     <CardHeader>
-                      <CardTitle className="text-indigo-300 text-sm">Quantum Algorithms</CardTitle>
+                      <CardTitle className="text-indigo-300 text-sm">Kons Powa Algorithms</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex justify-between items-center">
@@ -922,7 +922,7 @@ export function FuturisticAdminPanel() {
                           <span className="text-blue-400">Flowing</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-white/70 text-sm">Dimension 5-7 (Quantum)</span>
+                          <span className="text-white/70 text-sm">Dimension 5-7 (Kons Powa)</span>
                           <span className="text-purple-400">Entangled</span>
                         </div>
                         <div className="flex justify-between">
@@ -937,14 +937,14 @@ export function FuturisticAdminPanel() {
             </Card>
           </TabsContent>
 
-          {/* Neural Core Tab */}
-          <TabsContent value="neural-core" className="space-y-6">
+          {/* Konsai Core Tab */}
+          <TabsContent value="konsai-core" className="space-y-6">
             <Card className="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 border-cyan-500/30 backdrop-blur-lg">
               <CardHeader>
                 <CardTitle className="text-white flex items-center space-x-2">
                   <Cpu className="w-5 h-5" />
-                  <span>Neural Core Operations</span>
-                  <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-300">ADVANCED AI</Badge>
+                  <span>Konsai Core Operations</span>
+                  <Badge variant="secondary" className="bg-cyan-500/20 text-cyan-300">ADVANCED KI</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -986,7 +986,7 @@ export function FuturisticAdminPanel() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card className="bg-black/30 border-blue-400/30">
                     <CardHeader>
-                      <CardTitle className="text-blue-300 text-sm">Neural Networks</CardTitle>
+                      <CardTitle className="text-blue-300 text-sm">Konsai Networks</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
@@ -1055,18 +1055,18 @@ export function FuturisticAdminPanel() {
           {/* Advanced Configuration Tab */}
           <TabsContent value="advanced-config" className="space-y-6">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
-              {/* AI & Machine Learning */}
+              {/* KI & Machine Learning */}
               <Card className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-500/20">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
                     <Brain className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
-                    <span>AI & Machine Learning</span>
+                    <span>KI & Machine Learning</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-white space-y-3 md:space-y-4">
                   <div className="space-y-2 md:space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white/70 text-xs md:text-sm">Neural Network Depth</Label>
+                      <Label className="text-white/70 text-xs md:text-sm">Konsai Network Depth</Label>
                       <span className="text-purple-400 font-mono text-xs md:text-sm">128 layers</span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -1104,7 +1104,7 @@ export function FuturisticAdminPanel() {
                 <CardContent className="text-white space-y-3 md:space-y-4">
                   <div className="space-y-2 md:space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white/70 text-xs md:text-sm">Quantum Encryption</Label>
+                      <Label className="text-white/70 text-xs md:text-sm">Kons Powa Encryption</Label>
                       <Switch defaultChecked />
                     </div>
                     <div className="flex items-center justify-between">
@@ -1527,12 +1527,12 @@ export function FuturisticAdminPanel() {
                 </CardContent>
               </Card>
 
-              {/* Human-AI Sync */}
+              {/* Human-KI Sync */}
               <Card className="bg-gradient-to-br from-pink-900/50 to-rose-900/50 border-pink-500/20">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
                     <Brain className="w-4 h-4 md:w-5 md:h-5 text-pink-400" />
-                    <span>Human-AI Sync</span>
+                    <span>Human-KI Sync</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="text-white space-y-3 md:space-y-4">
@@ -1542,7 +1542,7 @@ export function FuturisticAdminPanel() {
                       <span className="text-pink-400 font-mono text-xs md:text-sm">98.7%</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/70 text-xs md:text-sm">Neural Harmony</span>
+                      <span className="text-white/70 text-xs md:text-sm">Konsai Harmony</span>
                       <span className="text-rose-400 font-mono text-xs md:text-sm">847 Hz</span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -1771,7 +1771,7 @@ export function FuturisticAdminPanel() {
                 </Card>
               </div>
 
-              {/* AI Analytics */}
+              {/* KI Analytics */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="bg-black/20 border-cyan-500/30 backdrop-blur-lg">
                   <CardHeader>
@@ -1783,7 +1783,7 @@ export function FuturisticAdminPanel() {
                       <span className="text-cyan-400 font-mono text-sm">{aiStats?.konsaiModules || 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/70 text-sm">AI Accuracy</span>
+                      <span className="text-white/70 text-sm">KI Accuracy</span>
                       <span className="text-green-400 font-mono text-sm">{aiStats?.accuracy || 0}%</span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -2215,7 +2215,7 @@ export function FuturisticAdminPanel() {
                         {tradingBotConfig?.waidbot?.enabled ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
-                    <p className="text-white/60 text-sm">Divine Quantum Flux Strategy</p>
+                    <p className="text-white/60 text-sm">Divine Kons Powa Flux Strategy</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -2296,7 +2296,7 @@ export function FuturisticAdminPanel() {
                         Active
                       </Badge>
                     </div>
-                    <p className="text-white/60 text-sm">Neural Quantum Singularity</p>
+                    <p className="text-white/60 text-sm">Konsai Kons Powa Singularity</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
@@ -2312,19 +2312,19 @@ export function FuturisticAdminPanel() {
                         />
                       </div>
                       <div className="flex justify-between items-center">
-                        <Label className="text-white/70 text-sm">AI Level</Label>
+                        <Label className="text-white/70 text-sm">KI Level</Label>
                         <select 
                           className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1"
                           value={tradingBotConfig?.waidbotPro?.aiLevel || 'advanced'}
                           onChange={(e) => {
                             updateTradingBotConfigMutation.mutate({
-                              waidbotPro: { ...tradingBotConfig?.waidbotPro, aiLevel: e.target.value as 'standard' | 'advanced' | 'quantum' }
+                              waidbotPro: { ...tradingBotConfig?.waidbotPro, aiLevel: e.target.value as 'standard' | 'advanced' | 'kons powa' }
                             });
                           }}
                         >
                           <option value="standard">Standard</option>
                           <option value="advanced">Advanced</option>
-                          <option value="quantum">Quantum</option>
+                          <option value="kons powa">Kons Powa</option>
                         </select>
                       </div>
                       <div className="flex justify-between items-center">
@@ -2413,7 +2413,7 @@ export function FuturisticAdminPanel() {
                         <span className="text-orange-400 text-sm font-mono">${tradingBotConfig?.fullEngine?.maxPosition || 2500}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <Label className="text-white/70 text-sm">AI Oversight</Label>
+                        <Label className="text-white/70 text-sm">KI Oversight</Label>
                         <Switch 
                           checked={tradingBotConfig?.fullEngine?.aiOversight || false}
                           onCheckedChange={(checked) => {
@@ -2683,10 +2683,10 @@ export function FuturisticAdminPanel() {
             </div>
           </TabsContent>
 
-          {/* AI Systems Tab */}
+          {/* KI Systems Tab */}
           <TabsContent value="ai-systems" className="space-y-6">
             <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-white mb-4">AI Systems Management</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">KI Systems Management</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <Card className="bg-black/20 border-cyan-500/30 backdrop-blur-lg">
                   <CardContent className="p-6">

@@ -983,19 +983,19 @@ export default function ComprehensiveWallet() {
               </TabsTrigger>
               <TabsTrigger value="ai-trading" className="data-[state=active]:bg-cyan-600 whitespace-nowrap">
                 <Zap className="w-4 h-4 mr-2" />
-                AI Trading
+                KI Trading
               </TabsTrigger>
-              <TabsTrigger value="neural-sync" className="data-[state=active]:bg-emerald-600 whitespace-nowrap">
+              <TabsTrigger value="konsai-sync" className="data-[state=active]:bg-emerald-600 whitespace-nowrap">
                 <Network className="w-4 h-4 mr-2" />
-                Neural Sync
+                Konsai Sync
               </TabsTrigger>
               <TabsTrigger value="kons-portal" className="data-[state=active]:bg-pink-600 whitespace-nowrap">
                 <Globe className="w-4 h-4 mr-2" />
                 Kons Portal
               </TabsTrigger>
-              <TabsTrigger value="quantum-vault" className="data-[state=active]:bg-indigo-600 whitespace-nowrap">
+              <TabsTrigger value="kons powa-vault" className="data-[state=active]:bg-indigo-600 whitespace-nowrap">
                 <Lock className="w-4 h-4 mr-2" />
-                Quantum Vault
+                Kons Powa Vault
               </TabsTrigger>
               <TabsTrigger value="biometric-auth" className="data-[state=active]:bg-orange-600 whitespace-nowrap">
                 <Fingerprint className="w-4 h-4 mr-2" />
@@ -1211,7 +1211,7 @@ export default function ComprehensiveWallet() {
             </Card>
           </TabsContent>
 
-          {/* AI Trading Tab */}
+          {/* KI Trading Tab */}
           <TabsContent value="ai-trading" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-gradient-to-br from-cyan-900/50 to-blue-900/50 border-cyan-600">
@@ -1223,7 +1223,7 @@ export default function ComprehensiveWallet() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">AI Trading Status</span>
+                    <span className="text-gray-300">KI Trading Status</span>
                     <Badge className="bg-green-600 text-white">ACTIVE</Badge>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1235,7 +1235,7 @@ export default function ComprehensiveWallet() {
                     <span className="text-yellow-400">MODERATE</span>
                   </div>
                   <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
-                    Configure AI Trading
+                    Configure KI Trading
                   </Button>
                 </CardContent>
               </Card>
@@ -1264,7 +1264,7 @@ export default function ComprehensiveWallet() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-300">AI Confidence</span>
+                      <span className="text-gray-300">KI Confidence</span>
                       <span className="text-cyan-400">87%</span>
                     </div>
                     <Progress value={87} className="h-2" />
@@ -1275,7 +1275,7 @@ export default function ComprehensiveWallet() {
 
             <Card className="bg-gray-900 border-gray-800">
               <CardHeader>
-                <CardTitle>Recent AI Trades</CardTitle>
+                <CardTitle>Recent KI Trades</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -1303,14 +1303,14 @@ export default function ComprehensiveWallet() {
             </Card>
           </TabsContent>
 
-          {/* Neural Sync Tab */}
-          <TabsContent value="neural-sync" className="space-y-6">
+          {/* Konsai Sync Tab */}
+          <TabsContent value="konsai-sync" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="bg-gradient-to-br from-emerald-900/50 to-teal-900/50 border-emerald-600">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Network className="w-5 h-5 mr-2 text-emerald-400" />
-                    Neural Network Status
+                    Konsai Network Status
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1319,7 +1319,7 @@ export default function ComprehensiveWallet() {
                     <Badge className="bg-green-600 text-white">SYNCHRONIZED</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Neural Nodes</span>
+                    <span className="text-gray-300">Konsai Nodes</span>
                     <span className="text-emerald-400 font-bold">2,048</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1327,7 +1327,7 @@ export default function ComprehensiveWallet() {
                     <span className="text-yellow-400">0.003</span>
                   </div>
                   <Progress value={92} className="h-2" />
-                  <p className="text-xs text-gray-400">Neural efficiency: 92%</p>
+                  <p className="text-xs text-gray-400">Konsai efficiency: 92%</p>
                 </CardContent>
               </Card>
 
@@ -1367,7 +1367,7 @@ export default function ComprehensiveWallet() {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Zap className="w-5 h-5 mr-2 text-cyan-400" />
-                    Neural Commands
+                    Konsai Commands
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -1381,7 +1381,7 @@ export default function ComprehensiveWallet() {
                   </Button>
                   <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
                     <Activity className="w-4 h-4 mr-2" />
-                    View Neural Map
+                    View Konsai Map
                   </Button>
                 </CardContent>
               </Card>
@@ -1389,14 +1389,14 @@ export default function ComprehensiveWallet() {
 
             <Card className="bg-gray-900 border-gray-800">
               <CardHeader>
-                <CardTitle>Neural Learning Log</CardTitle>
+                <CardTitle>Konsai Learning Log</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {[
                     { time: "Now", event: "Pattern optimization complete", accuracy: "97.8%" },
                     { time: "5 min ago", event: "New trading pattern learned", accuracy: "94.2%" },
-                    { time: "12 min ago", event: "Neural network sync successful", accuracy: "96.1%" },
+                    { time: "12 min ago", event: "Konsai network sync successful", accuracy: "96.1%" },
                     { time: "28 min ago", event: "Prediction model updated", accuracy: "93.7%" }
                   ].map((log, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
@@ -1496,14 +1496,14 @@ export default function ComprehensiveWallet() {
             </Card>
           </TabsContent>
 
-          {/* Quantum Vault Tab */}
-          <TabsContent value="quantum-vault" className="space-y-6">
+          {/* Kons Powa Vault Tab */}
+          <TabsContent value="kons powa-vault" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-indigo-600">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Lock className="w-5 h-5 mr-2 text-indigo-400" />
-                    Quantum Security
+                    Kons Powa Security
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -1520,7 +1520,7 @@ export default function ComprehensiveWallet() {
                     <span className="text-indigo-400 font-bold">$847,329</span>
                   </div>
                   <Progress value={100} className="h-2" />
-                  <p className="text-xs text-gray-400">Quantum entanglement: 100%</p>
+                  <p className="text-xs text-gray-400">Kons Powa entanglement: 100%</p>
                 </CardContent>
               </Card>
 
@@ -1559,13 +1559,13 @@ export default function ComprehensiveWallet() {
 
             <Card className="bg-gray-900 border-gray-800">
               <CardHeader>
-                <CardTitle>Quantum Vault Controls</CardTitle>
+                <CardTitle>Kons Powa Vault Controls</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button className="bg-indigo-600 hover:bg-indigo-700">
                     <Lock className="w-4 h-4 mr-2" />
-                    Generate Quantum Key
+                    Generate Kons Powa Key
                   </Button>
                   <Button className="bg-purple-600 hover:bg-purple-700">
                     <Shield className="w-4 h-4 mr-2" />
@@ -1573,7 +1573,7 @@ export default function ComprehensiveWallet() {
                   </Button>
                   <Button className="bg-violet-600 hover:bg-violet-700">
                     <RefreshCw className="w-4 h-4 mr-2" />
-                    Quantum Sync
+                    Kons Powa Sync
                   </Button>
                 </div>
               </CardContent>
