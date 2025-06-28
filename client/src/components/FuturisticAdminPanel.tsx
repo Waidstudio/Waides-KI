@@ -2351,23 +2351,45 @@ export function FuturisticAdminPanel() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Auto Trading</Label>
-                        <Switch checked={false} />
+                        <Switch 
+                          checked={tradingBotConfig?.fullEngine?.autoTrading || false}
+                          onCheckedChange={(checked) => {
+                            updateTradingBotConfigMutation.mutate({
+                              fullEngine: { ...tradingBotConfig?.fullEngine, autoTrading: checked }
+                            });
+                          }}
+                        />
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Engine Mode</Label>
-                        <select className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1">
+                        <select 
+                          className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1"
+                          value={tradingBotConfig?.fullEngine?.engineMode || 'balanced'}
+                          onChange={(e) => {
+                            updateTradingBotConfigMutation.mutate({
+                              fullEngine: { ...tradingBotConfig?.fullEngine, engineMode: e.target.value as 'conservative' | 'balanced' | 'aggressive' }
+                            });
+                          }}
+                        >
                           <option value="conservative">Conservative</option>
-                          <option value="balanced" selected>Balanced</option>
+                          <option value="balanced">Balanced</option>
                           <option value="aggressive">Aggressive</option>
                         </select>
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Max Position</Label>
-                        <span className="text-orange-400 text-sm font-mono">$2,500</span>
+                        <span className="text-orange-400 text-sm font-mono">${tradingBotConfig?.fullEngine?.maxPosition || 2500}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">AI Oversight</Label>
-                        <Switch checked={true} />
+                        <Switch 
+                          checked={tradingBotConfig?.fullEngine?.aiOversight || false}
+                          onCheckedChange={(checked) => {
+                            updateTradingBotConfigMutation.mutate({
+                              fullEngine: { ...tradingBotConfig?.fullEngine, aiOversight: checked }
+                            });
+                          }}
+                        />
                       </div>
                     </div>
                     <div className="pt-4 space-y-2">
