@@ -945,20 +945,21 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get FX rates endpoint - FIXED: 1 SS = 1 USD, local currencies show proper conversion rates
+  // Get FX rates endpoint - FIXED: 1 SS = 1 USD, real-world local currency rates
   app.get("/api/wallet/fx-rates", async (req, res) => {
     try {
-      // Fixed rate: 1 SS = 1 USD for major currencies, local rates for African currencies
+      // Fixed rate: 1 SS = 1 USD for major currencies, real-world rates for African currencies
       const rates = [
         { currency: 'USD', rate: 1.0, symbol: '$', lastUpdated: new Date().toISOString() },
-        { currency: 'EUR', rate: 1.0, symbol: '€', lastUpdated: new Date().toISOString() },
-        { currency: 'GBP', rate: 1.0, symbol: '£', lastUpdated: new Date().toISOString() },
-        { currency: 'NGN', rate: 1000, symbol: '₦', lastUpdated: new Date().toISOString() },
-        { currency: 'GHS', rate: 80, symbol: 'GH₵', lastUpdated: new Date().toISOString() },
-        { currency: 'KES', rate: 150, symbol: 'KSh', lastUpdated: new Date().toISOString() },
+        { currency: 'EUR', rate: 0.95, symbol: '€', lastUpdated: new Date().toISOString() },
+        { currency: 'GBP', rate: 0.80, symbol: '£', lastUpdated: new Date().toISOString() },
+        { currency: 'NGN', rate: 1500, symbol: '₦', lastUpdated: new Date().toISOString() },
+        { currency: 'GHS', rate: 12, symbol: 'GH₵', lastUpdated: new Date().toISOString() },
+        { currency: 'KES', rate: 130, symbol: 'KSh', lastUpdated: new Date().toISOString() },
         { currency: 'ZAR', rate: 18, symbol: 'R', lastUpdated: new Date().toISOString() },
-        { currency: 'CAD', rate: 1.0, symbol: 'C$', lastUpdated: new Date().toISOString() },
-        { currency: 'AUD', rate: 1.0, symbol: 'A$', lastUpdated: new Date().toISOString() }
+        { currency: 'ETB', rate: 60, symbol: 'Br', lastUpdated: new Date().toISOString() },
+        { currency: 'CAD', rate: 1.35, symbol: 'C$', lastUpdated: new Date().toISOString() },
+        { currency: 'AUD', rate: 1.50, symbol: 'A$', lastUpdated: new Date().toISOString() }
       ];
 
       res.json({

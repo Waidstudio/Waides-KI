@@ -367,17 +367,19 @@ export class RealPaymentGateways {
   }
 
   // Get FX rates for currency conversion - FIXED: 1 SS = 1 USD forever
+  // Real-world exchange rates as of 2025 (approximate market rates)
   getFXRates(): { [currency: string]: number } {
     return {
-      NGN: 1000,   // 1000 NGN = 1 SS
-      GHS: 80,     // 80 GHS = 1 SS
-      KES: 150,    // 150 KES = 1 SS
-      ZAR: 18,     // 18 ZAR = 1 SS
+      NGN: 1500,   // 1500 NGN = 1 SS (Real NGN/USD rate ~1500:1)
+      GHS: 12,     // 12 GHS = 1 SS (Real GHS/USD rate ~12:1)
+      KES: 130,    // 130 KES = 1 SS (Real KES/USD rate ~130:1)
+      ZAR: 18,     // 18 ZAR = 1 SS (Real ZAR/USD rate ~18:1)
+      ETB: 60,     // 60 ETB = 1 SS (Real ETB/USD rate ~60:1)
       USD: 1.0,    // 1 USD = 1 SS (FIXED RATE - NEVER CHANGE)
       USDT: 1.0,   // 1 USDT = 1 SS (FIXED RATE)
       USDC: 1.0,   // 1 USDC = 1 SS (FIXED RATE)
-      EUR: 1.0,    // 1 EUR = 1 SS (FIXED RATE)
-      GBP: 1.0,    // 1 GBP = 1 SS (FIXED RATE)
+      EUR: 0.95,   // 0.95 EUR = 1 SS (EUR stronger than USD)
+      GBP: 0.80,   // 0.80 GBP = 1 SS (GBP stronger than USD)
       BTC: 0.000015, // 0.000015 BTC = 1 SS
       ETH: 0.0002    // 0.0002 ETH = 1 SS
     };
