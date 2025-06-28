@@ -89,6 +89,12 @@ class AppConfigurationService {
     favicon: '/images/favicon.ico',
     theme: 'dark',
     maintenanceMode: false,
+    features: {
+      trading: true,
+      wallet: true,
+      admin: true,
+      api: true
+    },
     seo: {
       title: 'Waides KI - AI Trading Platform',
       description: 'Advanced AI-powered cryptocurrency trading platform with spiritual intelligence and autonomous wealth management.',
