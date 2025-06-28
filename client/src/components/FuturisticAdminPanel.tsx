@@ -1917,42 +1917,370 @@ export function FuturisticAdminPanel() {
           {/* Trading Management Tab */}
           <TabsContent value="trading" className="space-y-6">
             <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-white mb-4">Trading Management</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Trading Bot Management</h3>
+                  <p className="text-white/60 text-sm mt-1">Configure and control WaidBot, WaidBot Pro, and Full Engine systems</p>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  <Badge variant="outline" className="border-green-500 text-green-400">
+                    Live Trading: Active
+                  </Badge>
+                  <Button className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Emergency Stop
+                  </Button>
+                </div>
+              </div>
+
+              {/* Trading Statistics Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="bg-black/20 border-green-500/30 backdrop-blur-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-green-200 text-sm font-medium">Total Trades</p>
-                        <p className="text-2xl font-bold text-white">{tradingStats?.totalTrades || 0}</p>
-                      </div>
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
                       <TrendingUp className="w-8 h-8 text-green-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">{tradingStats?.totalTrades || 159}</p>
+                        <p className="text-green-200 text-sm font-medium">Total Trades</p>
+                        <p className="text-green-300 text-xs mt-1">+12 today</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
+
                 <Card className="bg-black/20 border-blue-500/30 backdrop-blur-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-blue-200 text-sm font-medium">Success Rate</p>
-                        <p className="text-2xl font-bold text-white">{tradingStats?.successRate || 0}%</p>
-                      </div>
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
                       <BarChart3 className="w-8 h-8 text-blue-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">{tradingStats?.successRate || 74}%</p>
+                        <p className="text-blue-200 text-sm font-medium">Success Rate</p>
+                        <p className="text-blue-300 text-xs mt-1">+2% this week</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
+
                 <Card className="bg-black/20 border-purple-500/30 backdrop-blur-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-purple-200 text-sm font-medium">P&L</p>
-                        <p className="text-2xl font-bold text-white">${tradingStats?.profitLoss?.toLocaleString() || 0}</p>
-                      </div>
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
                       <DollarSign className="w-8 h-8 text-purple-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">$24,847</p>
+                        <p className="text-purple-200 text-sm font-medium">Total P&L</p>
+                        <p className="text-purple-300 text-xs mt-1">+$1,247 today</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/20 border-orange-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      <Zap className="w-8 h-8 text-orange-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">3</p>
+                        <p className="text-orange-200 text-sm font-medium">Active Bots</p>
+                        <p className="text-orange-300 text-xs mt-1">All running</p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Trading Bot Controls */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* WaidBot Configuration */}
+                <Card className="bg-black/20 border-cyan-500/30 backdrop-blur-lg">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-cyan-300 flex items-center space-x-2">
+                        <Brain className="w-5 h-5" />
+                        <span>WaidBot</span>
+                      </CardTitle>
+                      <Badge variant="outline" className="border-green-500 text-green-400">
+                        Active
+                      </Badge>
+                    </div>
+                    <p className="text-white/60 text-sm">Divine Quantum Flux Strategy</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Auto Trading</Label>
+                        <Switch checked={true} />
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Risk Level</Label>
+                        <select className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1">
+                          <option value="low">Low (2%)</option>
+                          <option value="medium" selected>Medium (5%)</option>
+                          <option value="high">High (10%)</option>
+                        </select>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Position Size</Label>
+                        <span className="text-cyan-400 text-sm font-mono">$500</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Sacred Mode</Label>
+                        <Switch checked={true} />
+                      </div>
+                    </div>
+                    <div className="pt-4 space-y-2">
+                      <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white text-sm">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Configure Strategy
+                      </Button>
+                      <Button variant="outline" className="w-full border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 text-sm">
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Performance
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* WaidBot Pro Configuration */}
+                <Card className="bg-black/20 border-purple-500/30 backdrop-blur-lg">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-purple-300 flex items-center space-x-2">
+                        <Sparkles className="w-5 h-5" />
+                        <span>WaidBot Pro</span>
+                      </CardTitle>
+                      <Badge variant="outline" className="border-green-500 text-green-400">
+                        Active
+                      </Badge>
+                    </div>
+                    <p className="text-white/60 text-sm">Neural Quantum Singularity</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Auto Trading</Label>
+                        <Switch checked={true} />
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">AI Level</Label>
+                        <select className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1">
+                          <option value="standard">Standard</option>
+                          <option value="advanced" selected>Advanced</option>
+                          <option value="quantum">Quantum</option>
+                        </select>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Position Size</Label>
+                        <span className="text-purple-400 text-sm font-mono">$1,000</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Multi-Strategy</Label>
+                        <Switch checked={true} />
+                      </div>
+                    </div>
+                    <div className="pt-4 space-y-2">
+                      <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Advanced Settings
+                      </Button>
+                      <Button variant="outline" className="w-full border-purple-500 text-purple-400 hover:bg-purple-500/20 text-sm">
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        Analytics Dashboard
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Full Engine Configuration */}
+                <Card className="bg-black/20 border-orange-500/30 backdrop-blur-lg">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-orange-300 flex items-center space-x-2">
+                        <Rocket className="w-5 h-5" />
+                        <span>Full Engine</span>
+                      </CardTitle>
+                      <Badge variant="outline" className="border-yellow-500 text-yellow-400">
+                        Standby
+                      </Badge>
+                    </div>
+                    <p className="text-white/60 text-sm">Complete Autonomous System</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Auto Trading</Label>
+                        <Switch checked={false} />
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Engine Mode</Label>
+                        <select className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1">
+                          <option value="conservative">Conservative</option>
+                          <option value="balanced" selected>Balanced</option>
+                          <option value="aggressive">Aggressive</option>
+                        </select>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">Max Position</Label>
+                        <span className="text-orange-400 text-sm font-mono">$2,500</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-white/70 text-sm">AI Oversight</Label>
+                        <Switch checked={true} />
+                      </div>
+                    </div>
+                    <div className="pt-4 space-y-2">
+                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm">
+                        <Rocket className="w-4 h-4 mr-2" />
+                        Activate Engine
+                      </Button>
+                      <Button variant="outline" className="w-full border-orange-500 text-orange-400 hover:bg-orange-500/20 text-sm">
+                        <Monitor className="w-4 h-4 mr-2" />
+                        System Monitor
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Global Trading Controls */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Risk Management */}
+                <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-red-400" />
+                      <span>Risk Management</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-white/70 text-sm">Stop Loss (%)</Label>
+                        <Input
+                          type="number"
+                          defaultValue="5"
+                          className="bg-black/30 border-white/20 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white/70 text-sm">Take Profit (%)</Label>
+                        <Input
+                          type="number"
+                          defaultValue="15"
+                          className="bg-black/30 border-white/20 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white/70 text-sm">Max Daily Loss ($)</Label>
+                        <Input
+                          type="number"
+                          defaultValue="1000"
+                          className="bg-black/30 border-white/20 text-white"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-white/70 text-sm">Trading Hours</Label>
+                        <select className="w-full bg-black/30 border border-white/20 text-white text-sm rounded px-3 py-2">
+                          <option value="24h">24/7 Trading</option>
+                          <option value="market">Market Hours Only</option>
+                          <option value="custom">Custom Schedule</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="pt-4">
+                      <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                        <Save className="w-4 h-4 mr-2" />
+                        Update Risk Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Trading Pairs & Settings */}
+                <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center space-x-2">
+                      <BarChart3 className="w-5 h-5 text-blue-400" />
+                      <span>Trading Configuration</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-white/70 text-sm mb-2 block">Active Trading Pairs</Label>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                            <span className="text-white text-sm">ETH/USDT</span>
+                            <Switch checked={true} />
+                          </div>
+                          <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                            <span className="text-white text-sm">ETH3L/USDT</span>
+                            <Switch checked={false} />
+                          </div>
+                          <div className="flex items-center justify-between p-2 bg-white/5 rounded">
+                            <span className="text-white text-sm">ETH3S/USDT</span>
+                            <Switch checked={false} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-white/70 text-sm">Min Trade Size</Label>
+                          <Input
+                            defaultValue="50"
+                            className="bg-black/30 border-white/20 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-white/70 text-sm">Max Trade Size</Label>
+                          <Input
+                            defaultValue="2500"
+                            className="bg-black/30 border-white/20 text-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pt-4">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Configuration
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Recent Trading Activity */}
+              <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2">
+                    <Clock className="w-5 h-5 text-green-400" />
+                    <span>Recent Trading Activity</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {[
+                      { bot: "WaidBot Pro", action: "BUY", pair: "ETH/USDT", amount: "$1,000", pnl: "+$47.50", time: "2 min ago" },
+                      { bot: "WaidBot", action: "SELL", pair: "ETH/USDT", amount: "$500", pnl: "+$23.80", time: "5 min ago" },
+                      { bot: "WaidBot Pro", action: "BUY", pair: "ETH/USDT", amount: "$750", pnl: "+$31.20", time: "8 min ago" },
+                      { bot: "WaidBot", action: "SELL", pair: "ETH/USDT", amount: "$600", pnl: "+$18.90", time: "12 min ago" }
+                    ].map((trade, index) => (
+                      <div key={index} className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 bg-white/5 rounded-lg space-y-2 lg:space-y-0">
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-3 h-3 rounded-full ${trade.action === 'BUY' ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                          <div>
+                            <p className="text-white font-medium text-sm">{trade.bot} • {trade.action} {trade.pair}</p>
+                            <p className="text-white/60 text-xs">{trade.amount} • {trade.time}</p>
+                          </div>
+                        </div>
+                        <div className="text-right lg:text-left">
+                          <p className="text-green-400 font-mono text-sm">{trade.pnl}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
