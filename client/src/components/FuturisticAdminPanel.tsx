@@ -47,7 +47,9 @@ import {
   Upload,
   Filter,
   ArrowUpDown,
-  Maximize2
+  Maximize2,
+  PlayCircle,
+  StopCircle
 } from 'lucide-react';
 
 interface EnhancedAdminStats {
@@ -2098,9 +2100,39 @@ export function FuturisticAdminPanel() {
                       (tradingBotConfig?.fullEngine?.enabled && tradingBotConfig?.fullEngine?.autoTrading)
                     );
                     return (
-                      <Badge variant="outline" className={isAnyBotActive ? "border-green-500 text-green-400" : "border-red-500 text-red-400"}>
-                        Live Trading: {isAnyBotActive ? 'Active' : 'Stopped'}
-                      </Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={`${isAnyBotActive ? "border-green-500 text-green-400 hover:bg-green-500/20" : "border-red-500 text-red-400 hover:bg-red-500/20"} font-normal`}
+                        onClick={() => {
+                          if (isAnyBotActive) {
+                            // Stop all bots
+                            updateTradingBotConfigMutation.mutate({
+                              waidbot: { ...tradingBotConfig?.waidbot, autoTrading: false },
+                              waidbotPro: { ...tradingBotConfig?.waidbotPro, autoTrading: false },
+                              fullEngine: { ...tradingBotConfig?.fullEngine, autoTrading: false }
+                            });
+                          } else {
+                            // Enable WaidBot by default when starting live trading
+                            updateTradingBotConfigMutation.mutate({
+                              waidbot: { ...tradingBotConfig?.waidbot, enabled: true, autoTrading: true }
+                            });
+                          }
+                        }}
+                        disabled={updateTradingBotConfigMutation.isPending}
+                      >
+                        {isAnyBotActive ? (
+                          <>
+                            <PlayCircle className="w-3 h-3 mr-2 fill-green-400" />
+                            Live Trading: Active
+                          </>
+                        ) : (
+                          <>
+                            <StopCircle className="w-3 h-3 mr-2 fill-red-400" />
+                            Live Trading: Stopped
+                          </>
+                        )}
+                      </Button>
                     );
                   })()}
                   <Button 
