@@ -603,6 +603,40 @@ export default function SmaiSikaWalletPage() {
           </TabsContent>
         </Tabs>
 
+        {/* Admin Access */}
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Shield className="h-5 w-5 text-purple-400" />
+              Administrator Panel
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div>
+                <p className="text-gray-300 mb-2">
+                  Configure payment gateway API keys and manage global deposit infrastructure
+                </p>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <CreditCard className="h-4 w-4" />
+                  <span>8 Payment Gateways</span>
+                  <Smartphone className="h-4 w-4 ml-4" />
+                  <span>Mobile Money</span>
+                  <Bitcoin className="h-4 w-4 ml-4" />
+                  <span>Cryptocurrency</span>
+                </div>
+              </div>
+              <Link 
+                href="/payment-admin"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Gateway Admin
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* KonsAi Assistant Alert */}
         <Alert className="bg-blue-900/50 border-blue-600">
           <AlertTriangle className="h-4 w-4" />

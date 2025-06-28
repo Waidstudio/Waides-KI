@@ -221,6 +221,7 @@ function Router() {
           <Route path="/full-engine" component={WaidesFullEngine} />
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/sms-config" component={SMSConfigPage} />
+          <Route path="/payment-admin" component={PaymentGatewayAdminPage} />
           <Route path="/admin" component={AdminPage} />
           <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />

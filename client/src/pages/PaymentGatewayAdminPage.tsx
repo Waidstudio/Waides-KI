@@ -197,10 +197,12 @@ export default function PaymentGatewayAdminPage() {
         gatewayId
       });
 
+      const result = await response.json();
+
       const updatedConfigs = configs.map(c => 
         c.id === gatewayId ? { 
           ...c, 
-          status: response.success ? 'connected' : 'error',
+          status: result.success ? 'connected' as const : 'error' as const,
           lastTested: new Date().toISOString()
         } : c
       );
@@ -208,9 +210,9 @@ export default function PaymentGatewayAdminPage() {
       localStorage.setItem('paymentGatewayConfigs', JSON.stringify(updatedConfigs));
 
       toast({
-        title: response.success ? "Test Successful" : "Test Failed",
-        description: response.message || (response.success ? "Gateway connection verified" : "Failed to connect to gateway"),
-        variant: response.success ? "default" : "destructive"
+        title: result.success ? "Test Successful" : "Test Failed",
+        description: result.message || (result.success ? "Gateway connection verified" : "Failed to connect to gateway"),
+        variant: result.success ? "default" : "destructive"
       });
     } catch (error) {
       toast({
