@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import AdminConsole from '@/components/AdminConsoleFixed';
+import ComprehensiveAdminPanel from '@/components/ComprehensiveAdminPanel';
 import {
   Settings,
   Database,
@@ -597,6 +598,13 @@ export default function AdminPanel() {
                 <TabsTrigger value="email-sms" className="flex items-center space-x-2 whitespace-nowrap">
                   <Mail className="w-4 h-4" />
                   <span>Email & SMS</span>
+                </TabsTrigger>
+                <TabsTrigger value="comprehensive-config" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Settings className="w-4 h-4" />
+                  <span className="flex items-center gap-1">
+                    Manual Config
+                    <Badge variant="secondary" className="text-xs">500+</Badge>
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger value="backup-restore" className="flex items-center space-x-2 whitespace-nowrap">
                   <Archive className="w-4 h-4" />

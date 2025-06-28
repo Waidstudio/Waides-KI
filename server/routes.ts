@@ -1304,6 +1304,197 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===============================
+  // COMPREHENSIVE ADMIN CONFIG API
+  // ===============================
+  
+  // Get comprehensive configuration (500+ settings)
+  app.get("/api/admin/comprehensive-config", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const config = comprehensiveAdminConfig.getConfig();
+      const settingCount = comprehensiveAdminConfig.getSettingCount();
+      
+      res.json({
+        ...config,
+        _metadata: {
+          settingCount,
+          lastUpdated: new Date().toISOString(),
+          version: "2.0"
+        }
+      });
+    } catch (error) {
+      console.error('Get comprehensive config error:', error);
+      res.status(500).json({ error: error.message || 'Failed to get configuration' });
+    }
+  });
+
+  // Update specific section configuration
+  app.put("/api/admin/comprehensive-config/:section", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const { section } = req.params;
+      const updates = req.body;
+      
+      const updatedConfig = comprehensiveAdminConfig.updateConfig(section as any, updates);
+      
+      res.json({
+        success: true,
+        section,
+        updatedConfig: updatedConfig[section as keyof typeof updatedConfig],
+        settingCount: comprehensiveAdminConfig.getSettingCount()
+      });
+    } catch (error) {
+      console.error('Update section config error:', error);
+      res.status(500).json({ error: error.message || 'Failed to update section configuration' });
+    }
+  });
+
+  // Update individual setting
+  app.put("/api/admin/comprehensive-config/:section/:key", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const { section, key } = req.params;
+      const { value } = req.body;
+      
+      const updatedConfig = comprehensiveAdminConfig.updateSetting(section as any, key, value);
+      
+      res.json({
+        success: true,
+        section,
+        key,
+        value,
+        updatedConfig: updatedConfig[section as keyof typeof updatedConfig]
+      });
+    } catch (error) {
+      console.error('Update setting error:', error);
+      res.status(500).json({ error: error.message || 'Failed to update setting' });
+    }
+  });
+
+  // Reset section to defaults
+  app.post("/api/admin/comprehensive-config/:section/reset", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const { section } = req.params;
+      
+      const updatedConfig = comprehensiveAdminConfig.resetSection(section as any);
+      
+      res.json({
+        success: true,
+        section,
+        resetConfig: updatedConfig[section as keyof typeof updatedConfig],
+        message: `Section ${section} has been reset to default values`
+      });
+    } catch (error) {
+      console.error('Reset section error:', error);
+      res.status(500).json({ error: error.message || 'Failed to reset section' });
+    }
+  });
+
+  // Search settings
+  app.get("/api/admin/comprehensive-config/search", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const { q: query } = req.query;
+      
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({ error: 'Search query is required' });
+      }
+      
+      const results = comprehensiveAdminConfig.searchSettings(query);
+      
+      res.json({
+        query,
+        results,
+        count: results.length
+      });
+    } catch (error) {
+      console.error('Search settings error:', error);
+      res.status(500).json({ error: error.message || 'Failed to search settings' });
+    }
+  });
+
+  // Export configuration
+  app.get("/api/admin/comprehensive-config/export", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const configJson = comprehensiveAdminConfig.exportConfig();
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="waides-ki-config.json"');
+      res.send(configJson);
+    } catch (error) {
+      console.error('Export config error:', error);
+      res.status(500).json({ error: error.message || 'Failed to export configuration' });
+    }
+  });
+
+  // Import configuration
+  app.post("/api/admin/comprehensive-config/import", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const { configJson } = req.body;
+      
+      if (!configJson) {
+        return res.status(400).json({ error: 'Configuration JSON is required' });
+      }
+      
+      const updatedConfig = comprehensiveAdminConfig.importConfig(configJson);
+      
+      res.json({
+        success: true,
+        message: 'Configuration imported successfully',
+        settingCount: comprehensiveAdminConfig.getSettingCount()
+      });
+    } catch (error) {
+      console.error('Import config error:', error);
+      res.status(500).json({ error: error.message || 'Failed to import configuration' });
+    }
+  });
+
+  // Validate configuration
+  app.get("/api/admin/comprehensive-config/validate", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const validation = comprehensiveAdminConfig.validateConfig();
+      
+      res.json({
+        ...validation,
+        settingCount: comprehensiveAdminConfig.getSettingCount()
+      });
+    } catch (error) {
+      console.error('Validate config error:', error);
+      res.status(500).json({ error: error.message || 'Failed to validate configuration' });
+    }
+  });
+
+  // Get configuration statistics
+  app.get("/api/admin/comprehensive-config/stats", async (req, res) => {
+    try {
+      const { comprehensiveAdminConfig } = await import("./services/comprehensiveAdminConfig.js");
+      const config = comprehensiveAdminConfig.getConfig();
+      
+      const stats = {
+        totalSettings: comprehensiveAdminConfig.getSettingCount(),
+        sectionBreakdown: {},
+        lastUpdated: new Date().toISOString()
+      };
+      
+      // Count settings per section
+      Object.entries(config).forEach(([sectionName, section]) => {
+        if (typeof section === 'object' && section !== null) {
+          (stats.sectionBreakdown as any)[sectionName] = Object.keys(section).length;
+        }
+      });
+      
+      res.json(stats);
+    } catch (error) {
+      console.error('Get config stats error:', error);
+      res.status(500).json({ error: error.message || 'Failed to get configuration statistics' });
+    }
+  });
+
   // Get all African countries supported for testing
   app.get("/api/wallet/test/african-countries", async (req, res) => {
     try {
