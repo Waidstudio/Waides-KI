@@ -48,6 +48,7 @@ import SMSConfigPage from "@/pages/SMSConfigPage";
 import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
+import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -82,6 +83,7 @@ function Router() {
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/admin-panel", label: "Admin Panel" },
+    { path: "/expanded-config", label: "Expanded Config" },
     { path: "/config", label: "Configuration" },
     { path: "/api-docs", label: "API Docs" },
   ];

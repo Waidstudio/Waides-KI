@@ -2092,23 +2092,23 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Comprehensive admin configuration endpoints
-  app.get('/api/admin/comprehensive-config', async (req, res) => {
+  // Expanded admin configuration endpoints - 1000+ settings
+  app.get('/api/admin/expanded-config', async (req, res) => {
     try {
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      const config = comprehensiveAdminConfigService.getConfiguration();
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      const config = expandedAdminConfigService.getConfiguration();
       res.json(config);
     } catch (error: any) {
-      console.error('Error getting comprehensive config:', error);
-      res.status(500).json({ error: 'Failed to get comprehensive configuration' });
+      console.error('Error getting expanded config:', error);
+      res.status(500).json({ error: 'Failed to get expanded configuration' });
     }
   });
 
-  app.get('/api/admin/comprehensive-config/stats', async (req, res) => {
+  app.get('/api/admin/expanded-config/stats', async (req, res) => {
     try {
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      const config = comprehensiveAdminConfigService.getConfiguration();
-      const stats = comprehensiveAdminConfigService.getConfigurationStatistics(config);
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      const config = expandedAdminConfigService.getConfiguration();
+      const stats = expandedAdminConfigService.getConfigurationStatistics(config);
       res.json(stats);
     } catch (error: any) {
       console.error('Error getting config stats:', error);
@@ -2116,16 +2116,16 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/comprehensive-config/search', async (req, res) => {
+  app.get('/api/admin/expanded-config/search', async (req, res) => {
     try {
       const query = req.query.q as string;
       if (!query || query.length < 2) {
         return res.json({ results: [], count: 0 });
       }
       
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      const config = comprehensiveAdminConfigService.getConfiguration();
-      const results = comprehensiveAdminConfigService.searchSettings(config, query);
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      const config = expandedAdminConfigService.getConfiguration();
+      const results = expandedAdminConfigService.searchSettings(config, query);
       res.json(results);
     } catch (error: any) {
       console.error('Error searching config:', error);
@@ -2133,13 +2133,28 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/comprehensive-config/:section', async (req, res) => {
+  app.get('/api/admin/expanded-config/:section', async (req, res) => {
+    try {
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      const section = expandedAdminConfigService.getSection(req.params.section);
+      if (section) {
+        res.json(section);
+      } else {
+        res.status(404).json({ error: 'Configuration section not found' });
+      }
+    } catch (error: any) {
+      console.error('Error getting section:', error);
+      res.status(500).json({ error: 'Failed to get configuration section' });
+    }
+  });
+
+  app.put('/api/admin/expanded-config/:section', async (req, res) => {
     try {
       const section = req.params.section;
       const updates = req.body;
       
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      comprehensiveAdminConfigService.updateSection(section, updates);
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      expandedAdminConfigService.updateSection(section, updates);
       res.json({ success: true, message: `${section} configuration updated` });
     } catch (error: any) {
       console.error('Error updating section:', error);
@@ -2147,13 +2162,13 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/comprehensive-config/:section/:key', async (req, res) => {
+  app.put('/api/admin/expanded-config/:section/:key', async (req, res) => {
     try {
       const { section, key } = req.params;
       const { value } = req.body;
       
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      comprehensiveAdminConfigService.updateSetting(section, key, value);
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      expandedAdminConfigService.updateSetting(section, key, value);
       res.json({ success: true, message: `${section}.${key} updated` });
     } catch (error: any) {
       console.error('Error updating setting:', error);
@@ -2161,11 +2176,11 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/comprehensive-config/:section/reset', async (req, res) => {
+  app.post('/api/admin/expanded-config/:section/reset', async (req, res) => {
     try {
       const section = req.params.section;
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      comprehensiveAdminConfigService.resetSection(section);
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      expandedAdminConfigService.resetSection(section);
       res.json({ success: true, message: `${section} configuration reset to defaults` });
     } catch (error: any) {
       console.error('Error resetting section:', error);
@@ -2173,22 +2188,62 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/comprehensive-config/export', async (req, res) => {
+  app.post('/api/admin/expanded-config/reset-all', async (req, res) => {
     try {
-      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
-      const config = comprehensiveAdminConfigService.getConfiguration();
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      expandedAdminConfigService.resetAll();
+      res.json({ success: true, message: 'All configuration reset to defaults' });
+    } catch (error: any) {
+      console.error('Error resetting all config:', error);
+      res.status(500).json({ error: 'Failed to reset all configuration' });
+    }
+  });
+
+  app.get('/api/admin/expanded-config/export', async (req, res) => {
+    try {
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      const config = expandedAdminConfigService.getConfiguration();
       const exportData = {
         ...config,
         exportedAt: new Date().toISOString(),
-        version: '1.0.0'
+        version: '2.0.0',
+        totalSettings: Object.values(config).reduce((total, section) => total + Object.keys(section).length, 0)
       };
       
       res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', 'attachment; filename="waides-ki-config.json"');
+      res.setHeader('Content-Disposition', 'attachment; filename="waides-ki-expanded-config.json"');
       res.json(exportData);
     } catch (error: any) {
       console.error('Error exporting config:', error);
       res.status(500).json({ error: 'Failed to export configuration' });
+    }
+  });
+
+  app.post('/api/admin/expanded-config/import', async (req, res) => {
+    try {
+      const { configData } = req.body;
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      
+      const success = expandedAdminConfigService.importConfiguration(JSON.stringify(configData));
+      if (success) {
+        res.json({ success: true, message: 'Configuration imported successfully' });
+      } else {
+        res.status(400).json({ error: 'Invalid configuration format' });
+      }
+    } catch (error: any) {
+      console.error('Error importing config:', error);
+      res.status(500).json({ error: 'Failed to import configuration' });
+    }
+  });
+
+  app.get('/api/admin/expanded-config/validate', async (req, res) => {
+    try {
+      const { expandedAdminConfigService } = await import('./services/expandedAdminConfig.js');
+      const validation = expandedAdminConfigService.validateConfiguration();
+      res.json(validation);
+    } catch (error: any) {
+      console.error('Error validating config:', error);
+      res.status(500).json({ error: 'Failed to validate configuration' });
     }
   });
 
