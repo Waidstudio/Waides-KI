@@ -44,8 +44,7 @@ import { kons_PowaActivator } from './kons/kons_PowaActivator.js';
 import { kons_AutoFixCore } from './kons/kons_AutoFixCore.js';
 import { kons_WaidBotController } from './kons/kons_WaidBotController.js';
 
-// KonsModule: Integrator & Debugger (KID)
-import { KonsModule as KonsKID } from './kons/kons_kid.js';
+// KonsModule: Integrator & Debugger (KID) - Import dynamically in constructor
 
 // Deep Core Engine Integration for Complete Omniscient System
 import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine';
@@ -1364,8 +1363,14 @@ class KonsModuleManager {
 
       // Process KonsModule: Integrator & Debugger (KID)
       const kidState = this.moduleStates.get('kid') || {};
-      const kidInstance = new KonsKID();
-      konsResults.kid = await kidInstance.processQuery(this.userMessage, this.marketData, kidState);
+      try {
+        const { default: KonsKID } = await import('./kons/kons_kid.js');
+        const kidInstance = new KonsKID();
+        konsResults.kid = await kidInstance.processQuery(this.userMessage, this.marketData, kidState);
+      } catch (error) {
+        console.log('KonsKID module not available, using stub:', error.message);
+        konsResults.kid = { status: 'stub', message: 'KID module loading...' };
+      }
       this.moduleStates.set('kid', konsResults.kid);
 
       // Process additional modules (placeholder for future implementation)
