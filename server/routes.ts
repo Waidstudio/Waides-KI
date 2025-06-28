@@ -3,7 +3,9 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
 import { serviceRegistry } from "./serviceRegistry.js";
 import { appConfigurationService } from "./services/appConfigurationService.js";
-import { megaAdminConfigService } from "./services/megaAdminConfigService.js";
+// import { megaAdminConfigService } from "./services/megaAdminConfigService.js"; // Temporarily disabled due to syntax errors
+import ExpandedMegaAdminService from "./services/expandedMegaAdminService.js";
+import { workingMegaAdminService } from "./services/workingMegaAdminService.js";
 
 // WebSocket setup for real-time features
 let wss: any = null;
@@ -1701,11 +1703,11 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Mega Admin Configuration API endpoints (1000+ settings)
+  // Working Mega Admin Configuration API endpoints (500+ settings)
   app.get('/api/mega-admin-config', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      res.json(megaAdminConfigService.getConfiguration());
+      // Using workingMegaAdminService
+      res.json(workingMegaAdminService.getConfig());
     } catch (error) {
       console.error('Error fetching mega admin configuration:', error);
       res.status(500).json({ error: 'Failed to fetch mega admin configuration' });
@@ -1714,8 +1716,8 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/mega-admin-config/stats', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      res.json(megaAdminConfigService.getStats());
+      // Using workingMegaAdminService
+      res.json(workingMegaAdminService.getStats());
     } catch (error) {
       console.error('Error fetching mega admin stats:', error);
       res.status(500).json({ error: 'Failed to fetch mega admin stats' });
@@ -1724,8 +1726,9 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/mega-admin-config/:section', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      const section = megaAdminConfigService.getSection(req.params.section);
+      // Using workingMegaAdminService
+      const config = workingMegaAdminService.getConfig();
+      const section = config[req.params.section as keyof typeof config];
       if (!section) {
         return res.status(404).json({ error: 'Section not found' });
       }
@@ -1738,8 +1741,8 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/mega-admin-config/:section', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      megaAdminConfigService.updateSection(req.params.section, req.body);
+      // Using workingMegaAdminService
+      workingMegaAdminService.updateSection(req.params.section, req.body);
       res.json({ success: true, message: 'Section updated successfully' });
     } catch (error) {
       console.error('Error updating mega admin section:', error);
@@ -1749,9 +1752,15 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/mega-admin-config/:section/:key', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
+      // Using workingMegaAdminService
       const { value } = req.body;
-      megaAdminConfigService.updateSetting(req.params.section, req.params.key, value);
+      // Update specific setting in section
+      const config = workingMegaAdminService.getConfig();
+      const sectionData = config[req.params.section as keyof typeof config];
+      if (sectionData && typeof sectionData === 'object') {
+        (sectionData as any)[req.params.key] = value;
+        workingMegaAdminService.updateSection(req.params.section, sectionData);
+      }
       res.json({ success: true, message: 'Setting updated successfully' });
     } catch (error) {
       console.error('Error updating mega admin setting:', error);
@@ -1761,8 +1770,8 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/mega-admin-config/search/:query', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      const results = megaAdminConfigService.searchSettings(req.params.query);
+      // Using workingMegaAdminService
+      const results = workingMegaAdminService.searchSettings(req.params.query);
       res.json(results);
     } catch (error) {
       console.error('Error searching mega admin settings:', error);
@@ -1772,8 +1781,8 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/export', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      const configJson = megaAdminConfigService.exportConfiguration();
+      // Using workingMegaAdminService
+      const configJson = workingMegaAdminService.exportConfig();
       res.json({ success: true, configuration: configJson });
     } catch (error) {
       console.error('Error exporting mega admin configuration:', error);
@@ -1783,14 +1792,10 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/import', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
+      // Using workingMegaAdminService
       const { configJson } = req.body;
-      const result = megaAdminConfigService.importConfiguration(configJson);
-      if (result.success) {
-        res.json({ success: true, message: 'Mega configuration imported successfully' });
-      } else {
-        res.status(400).json({ error: result.error });
-      }
+      workingMegaAdminService.importConfig(configJson);
+      res.json({ success: true, message: 'Mega configuration imported successfully' });
     } catch (error) {
       console.error('Error importing mega admin configuration:', error);
       res.status(500).json({ error: 'Failed to import mega admin configuration' });
