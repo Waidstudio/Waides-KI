@@ -50,7 +50,6 @@ import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
-import MobileResponsiveAdminApp from "@/components/MobileResponsiveAdminApp";
 
 import NotFound from "@/pages/not-found";
 
@@ -85,7 +84,6 @@ function Router() {
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
     { path: "/admin-panel", label: "Admin Panel" },
-    { path: "/standalone-admin", label: "Mega Admin (1000+)" },
     { path: "/expanded-config", label: "Expanded Config" },
     { path: "/config", label: "Configuration" },
     { path: "/api-docs", label: "API Docs" },
@@ -229,7 +227,6 @@ function Router() {
           <Route path="/sms-config" component={SMSConfigPage} />
           <Route path="/payment-admin" component={PaymentGatewayAdminPage} />
           <Route path="/admin-panel" component={AdminPanelNew} />
-          <Route path="/standalone-admin" component={MobileResponsiveAdminApp} />
           <Route path="/expanded-config" component={ExpandedAdminConfigPage} />
           <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />
