@@ -366,18 +366,18 @@ export class RealPaymentGateways {
     return gateways[country] || ['crypto'];
   }
 
-  // Get FX rates for currency conversion
+  // Get FX rates for currency conversion - FIXED: 1 SS = 1 USD forever
   getFXRates(): { [currency: string]: number } {
     return {
       NGN: 1000,   // 1000 NGN = 1 SS
       GHS: 80,     // 80 GHS = 1 SS
       KES: 150,    // 150 KES = 1 SS
       ZAR: 18,     // 18 ZAR = 1 SS
-      USD: 0.6,    // 0.6 USD = 1 SS
-      USDT: 0.6,   // 0.6 USDT = 1 SS
-      USDC: 0.6,   // 0.6 USDC = 1 SS
-      EUR: 0.55,   // 0.55 EUR = 1 SS
-      GBP: 0.48,   // 0.48 GBP = 1 SS
+      USD: 1.0,    // 1 USD = 1 SS (FIXED RATE - NEVER CHANGE)
+      USDT: 1.0,   // 1 USDT = 1 SS (FIXED RATE)
+      USDC: 1.0,   // 1 USDC = 1 SS (FIXED RATE)
+      EUR: 1.0,    // 1 EUR = 1 SS (FIXED RATE)
+      GBP: 1.0,    // 1 GBP = 1 SS (FIXED RATE)
       BTC: 0.000015, // 0.000015 BTC = 1 SS
       ETH: 0.0002    // 0.0002 ETH = 1 SS
     };

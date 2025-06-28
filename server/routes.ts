@@ -901,7 +901,30 @@ export function registerRoutes(app: Express): Promise<Server> {
 
       const conversionResponse = await realPaymentGateways.processConversion(conversionRequest);
 
-      console.log(`🔄 SmaiSika conversion: ${amount} ${currency} → ${conversionResponse.toAmount} SS`);
+      // CRITICAL: Actually update user balances in storage
+      if (conversionResponse.success) {
+        const userId = conversionRequest.userId;
+        
+        // Debit the source currency from user balance
+        await storage.deductFromUserBalance(userId, conversionResponse.fromAmount, conversionResponse.fromCurrency);
+        
+        // Credit SmaiSika to user balance
+        await storage.addToSmaiSikaBalance(userId, conversionResponse.toAmount);
+        
+        // Record conversion transaction
+        await storage.createConversion({
+          id: conversionResponse.conversionId,
+          userId,
+          fromAmount: conversionResponse.fromAmount,
+          fromCurrency: conversionResponse.fromCurrency,
+          toAmount: conversionResponse.toAmount,
+          toCurrency: 'SS',
+          rate: conversionResponse.rate,
+          status: 'completed'
+        });
+      }
+
+      console.log(`🔄 SmaiSika conversion: ${amount} ${currency} → ${conversionResponse.toAmount} SS (Balances Updated)`);
 
       res.json({
         success: conversionResponse.success,
@@ -922,18 +945,18 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get FX rates endpoint with real payment gateway rates
+  // Get FX rates endpoint - FIXED: 1 SS = 1 USD, local currencies show proper conversion rates
   app.get("/api/wallet/fx-rates", async (req, res) => {
     try {
-      // Fixed rate: 1 SS = 1 USD for all currencies
+      // Fixed rate: 1 SS = 1 USD for major currencies, local rates for African currencies
       const rates = [
         { currency: 'USD', rate: 1.0, symbol: '$', lastUpdated: new Date().toISOString() },
         { currency: 'EUR', rate: 1.0, symbol: '€', lastUpdated: new Date().toISOString() },
         { currency: 'GBP', rate: 1.0, symbol: '£', lastUpdated: new Date().toISOString() },
-        { currency: 'NGN', rate: 1.0, symbol: '₦', lastUpdated: new Date().toISOString() },
-        { currency: 'GHS', rate: 1.0, symbol: 'GH₵', lastUpdated: new Date().toISOString() },
-        { currency: 'KES', rate: 1.0, symbol: 'KSh', lastUpdated: new Date().toISOString() },
-        { currency: 'ZAR', rate: 1.0, symbol: 'R', lastUpdated: new Date().toISOString() },
+        { currency: 'NGN', rate: 1000, symbol: '₦', lastUpdated: new Date().toISOString() },
+        { currency: 'GHS', rate: 80, symbol: 'GH₵', lastUpdated: new Date().toISOString() },
+        { currency: 'KES', rate: 150, symbol: 'KSh', lastUpdated: new Date().toISOString() },
+        { currency: 'ZAR', rate: 18, symbol: 'R', lastUpdated: new Date().toISOString() },
         { currency: 'CAD', rate: 1.0, symbol: 'C$', lastUpdated: new Date().toISOString() },
         { currency: 'AUD', rate: 1.0, symbol: 'A$', lastUpdated: new Date().toISOString() }
       ];

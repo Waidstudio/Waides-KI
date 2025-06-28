@@ -302,24 +302,24 @@ export class GlobalPaymentGateways {
     }
   ];
 
-  // FX Rates: How many units = 1 SmaiSika (SS)
+  // FX Rates: FIXED RATE - 1 SS = 1 USD forever (user requirement)
   private fxRates: Record<string, number> = {
     NGN: 1000,    // 1 SS = 1000 NGN
     GHS: 80,      // 1 SS = 80 GHS
     KES: 150,     // 1 SS = 150 KES
     ZAR: 18,      // 1 SS = 18 ZAR
-    USD: 0.65,    // 1 SS = 0.65 USD
-    GBP: 0.52,    // 1 SS = 0.52 GBP
-    EUR: 0.60,    // 1 SS = 0.60 EUR
+    USD: 1.0,     // 1 SS = 1 USD (FIXED RATE - NEVER CHANGE)
+    GBP: 1.0,     // 1 SS = 1 GBP (FIXED RATE)
+    EUR: 1.0,     // 1 SS = 1 EUR (FIXED RATE)
     INR: 54,      // 1 SS = 54 INR
     PHP: 37,      // 1 SS = 37 PHP
     IDR: 10000,   // 1 SS = 10,000 IDR
-    CAD: 0.88,    // 1 SS = 0.88 CAD
+    CAD: 1.0,     // 1 SS = 1 CAD (FIXED RATE)
     BRL: 3.9,     // 1 SS = 3.9 BRL
     ARS: 650,     // 1 SS = 650 ARS
     UGX: 2400,    // 1 SS = 2400 UGX
-    USDT: 0.65,   // 1 SS = 0.65 USDT
-    USDC: 0.65,   // 1 SS = 0.65 USDC
+    USDT: 1.0,    // 1 SS = 1 USDT (FIXED RATE)
+    USDC: 1.0,    // 1 SS = 1 USDC (FIXED RATE)
     BTC: 0.000015, // 1 SS = 0.000015 BTC
     ETH: 0.00020   // 1 SS = 0.00020 ETH
   };
