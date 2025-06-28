@@ -276,6 +276,36 @@ export default function ComprehensiveWallet() {
     processDepositMutation.mutate(depositData);
   };
 
+  // Handle currency conversion
+  const handleConversion = async () => {
+    if (!convertAmount || !fromCurrency || !toCurrency) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all conversion fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (parseFloat(convertAmount) <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid amount greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const conversionData = {
+      fromAmount: parseFloat(convertAmount),
+      fromCurrency,
+      toCurrency,
+      conversionType: `${fromCurrency}_to_${toCurrency}`
+    };
+
+    processConversionMutation.mutate(conversionData);
+  };
+
   // Handle withdrawal
   const handleWithdrawal = async () => {
     if (!withdrawAmount || !selectedPaymentMethod) {
@@ -523,6 +553,104 @@ export default function ComprehensiveWallet() {
                   </Alert>
                 </TabsContent>
               </Tabs>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isConvertOpen} onOpenChange={setIsConvertOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Convert Currency
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-900 border-gray-800 text-white">
+              <DialogHeader>
+                <DialogTitle>Convert Currency</DialogTitle>
+                <DialogDescription>
+                  Exchange between different currencies in your wallet
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>From Currency</Label>
+                    <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NGN">NGN (Nigerian Naira)</SelectItem>
+                        <SelectItem value="USD">USD (US Dollar)</SelectItem>
+                        <SelectItem value="EUR">EUR (Euro)</SelectItem>
+                        <SelectItem value="GBP">GBP (British Pound)</SelectItem>
+                        <SelectItem value="USDT">USDT (Tether)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>To Currency</Label>
+                    <Select value={toCurrency} onValueChange={setToCurrency}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="SS">SS (SmaiSika)</SelectItem>
+                        <SelectItem value="USDT">USDT (Tether)</SelectItem>
+                        <SelectItem value="NGN">NGN (Nigerian Naira)</SelectItem>
+                        <SelectItem value="USD">USD (US Dollar)</SelectItem>
+                        <SelectItem value="EUR">EUR (Euro)</SelectItem>
+                        <SelectItem value="GBP">GBP (British Pound)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Amount to Convert</Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={convertAmount}
+                    onChange={(e) => setConvertAmount(e.target.value)}
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+
+                {fromCurrency && toCurrency && convertAmount && (
+                  <div className="p-4 bg-gray-800 rounded-lg">
+                    <h4 className="font-semibold mb-2">Conversion Preview</h4>
+                    <div className="space-y-1 text-sm text-gray-400">
+                      <div className="flex justify-between">
+                        <span>Converting:</span>
+                        <span>{fromCurrency} {convertAmount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>To:</span>
+                        <span>{toCurrency} (estimated)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Exchange Rate:</span>
+                        <span>Market rate + 0.5% fee</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <Button 
+                  onClick={handleConversion}
+                  disabled={!convertAmount || !fromCurrency || !toCurrency || processConversionMutation.isPending}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  {processConversionMutation.isPending ? (
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                  )}
+                  Convert Currency
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
 
