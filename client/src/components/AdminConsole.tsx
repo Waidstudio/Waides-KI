@@ -420,6 +420,7 @@ export default function AdminConsole({ onExit, status, config, activeTab, setAct
             {[
               { id: 'dashboard', icon: BarChart3, label: 'Dashboard', color: 'text-green-400' },
               { id: 'system', icon: Settings, label: 'System Config', color: 'text-blue-400' },
+              { id: 'advanced-config', icon: Cpu, label: 'Advanced Config', color: 'text-orange-400', badge: '500+' },
               { id: 'trading', icon: TrendingUp, label: 'Trading Engine', color: 'text-purple-400' },
               { id: 'wallet', icon: DollarSign, label: 'Wallet System', color: 'text-yellow-400' },
               { id: 'users', icon: Users, label: 'User Management', color: 'text-cyan-400' }
@@ -430,14 +431,21 @@ export default function AdminConsole({ onExit, status, config, activeTab, setAct
                   setActiveTab(item.id);
                   setSidebarOpen(false);
                 }}
-                className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                   activeTab === item.id
                     ? 'bg-gray-700 text-white'
                     : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
                 }`}
               >
-                <item.icon className={`w-4 h-4 ${item.color}`} />
-                <span className="text-sm font-medium">{item.label}</span>
+                <div className="flex items-center space-x-3">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </div>
+                {(item as any).badge && (
+                  <Badge variant="outline" className="text-xs">
+                    {(item as any).badge}
+                  </Badge>
+                )}
               </button>
             ))}
           </nav>
