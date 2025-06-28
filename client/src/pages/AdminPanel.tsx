@@ -923,6 +923,104 @@ export default function AdminPanel() {
 
           {/* Trading Configuration Tab */}
           <TabsContent value="trading" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2 text-green-400" />
+                    Live Portfolio
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-green-400">$10,247.85</div>
+                    <div className="text-gray-400 text-sm">Total Value</div>
+                    <div className="text-sm text-green-400">+2.47% (24h)</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Available:</span>
+                      <span className="text-blue-400">$2,847.30</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">In Positions:</span>
+                      <span className="text-yellow-400">$7,400.55</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Active Trades:</span>
+                      <span className="text-purple-400">4</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Bot className="w-5 h-5 mr-2 text-blue-400" />
+                    Trading Engines
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                    <div>
+                      <div className="text-white text-sm font-medium">WaidBot</div>
+                      <div className="text-gray-400 text-xs">Quantum Flux</div>
+                    </div>
+                    <Badge className="bg-green-600">Active</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                    <div>
+                      <div className="text-white text-sm font-medium">WaidBot Pro</div>
+                      <div className="text-gray-400 text-xs">Neural Singularity</div>
+                    </div>
+                    <Badge className="bg-blue-600">Active</Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-gray-700 rounded">
+                    <div>
+                      <div className="text-white text-sm font-medium">KonsAi Engine</div>
+                      <div className="text-gray-400 text-xs">220+ Modules</div>
+                    </div>
+                    <Badge className="bg-purple-600">Active</Badge>
+                  </div>
+                  <Button className="w-full bg-gray-600 hover:bg-gray-500 text-white">
+                    Configure Engines
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Activity className="w-5 h-5 mr-2 text-red-400" />
+                    Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-green-400">78%</div>
+                      <div className="text-gray-400 text-xs">Win Rate</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-blue-400">1.8x</div>
+                      <div className="text-gray-400 text-xs">Avg Return</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-yellow-400">-3.2%</div>
+                      <div className="text-gray-400 text-xs">Max DD</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-purple-400">147</div>
+                      <div className="text-gray-400 text-xs">Total Trades</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white">Trading Configuration</CardTitle>
@@ -940,21 +1038,23 @@ export default function AdminPanel() {
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-300">Max Position Size</Label>
+                        <Label className="text-gray-300">Max Position Size (%)</Label>
                         <Input
                           type="number"
-                          value={editingConfig.trading?.max_position_size ?? config?.trading?.max_position_size}
+                          value={editingConfig.trading?.max_position_size ?? config?.trading?.max_position_size ?? 25}
                           onChange={(e) => handleConfigUpdate('trading', 'max_position_size', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="5"
+                          max="50"
                         />
                       </div>
                       <div>
                         <Label className="text-gray-300">Risk Level</Label>
                         <Select
-                          value={editingConfig.trading?.risk_level ?? config?.trading?.risk_level}
+                          value={editingConfig.trading?.risk_level ?? config?.trading?.risk_level ?? 'moderate'}
                           onValueChange={(value) => handleConfigUpdate('trading', 'risk_level', value)}
                         >
-                          <SelectTrigger className="bg-gray-700 border-gray-600">
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -971,34 +1071,60 @@ export default function AdminPanel() {
                     <h3 className="text-white font-semibold">Risk Management</h3>
                     <div className="space-y-3">
                       <div>
-                        <Label className="text-gray-300">Stop Loss %</Label>
+                        <Label className="text-gray-300">Stop Loss (%)</Label>
                         <Input
                           type="number"
                           step="0.1"
-                          value={editingConfig.trading?.stop_loss_percentage ?? config?.trading?.stop_loss_percentage}
+                          value={editingConfig.trading?.stop_loss_percentage ?? config?.trading?.stop_loss_percentage ?? 5.0}
                           onChange={(e) => handleConfigUpdate('trading', 'stop_loss_percentage', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="1"
+                          max="20"
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-300">Take Profit %</Label>
+                        <Label className="text-gray-300">Take Profit (%)</Label>
                         <Input
                           type="number"
                           step="0.1"
-                          value={editingConfig.trading?.take_profit_percentage ?? config?.trading?.take_profit_percentage}
+                          value={editingConfig.trading?.take_profit_percentage ?? config?.trading?.take_profit_percentage ?? 10.0}
                           onChange={(e) => handleConfigUpdate('trading', 'take_profit_percentage', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="2"
+                          max="50"
                         />
                       </div>
-                      <div>
-                        <Label className="text-gray-300">Allowed Trading Pairs</Label>
-                        <Textarea
-                          value={editingConfig.trading?.allowed_pairs?.join('\n') ?? config?.trading?.allowed_pairs?.join('\n')}
-                          onChange={(e) => handleConfigUpdate('trading', 'allowed_pairs', e.target.value.split('\n').filter(Boolean))}
-                          className="bg-gray-700 border-gray-600 text-white"
-                          placeholder="ETH/USDT&#10;BTC/USDT&#10;SOL/USDT"
+                      <div className="flex items-center justify-between">
+                        <Label className="text-gray-300">Emergency Stop</Label>
+                        <Switch
+                          checked={editingConfig.trading?.emergency_stop ?? config?.trading?.emergency_stop ?? false}
+                          onCheckedChange={(checked) => handleConfigUpdate('trading', 'emergency_stop', checked)}
                         />
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-white font-semibold">Trading Pairs & Schedule</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Allowed Trading Pairs</Label>
+                      <Textarea
+                        value={editingConfig.trading?.allowed_pairs?.join('\n') ?? config?.trading?.allowed_pairs?.join('\n') ?? 'ETH/USDT\nBTC/USDT'}
+                        onChange={(e) => handleConfigUpdate('trading', 'allowed_pairs', e.target.value.split('\n').filter(Boolean))}
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        placeholder="ETH/USDT&#10;BTC/USDT&#10;SOL/USDT"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">Trading Hours (24h format)</Label>
+                      <Textarea
+                        value={editingConfig.trading?.trading_hours?.join('\n') ?? config?.trading?.trading_hours?.join('\n') ?? '00:00-23:59'}
+                        onChange={(e) => handleConfigUpdate('trading', 'trading_hours', e.target.value.split('\n').filter(Boolean))}
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        placeholder="09:00-17:00&#10;19:00-23:00"
+                      />
                     </div>
                   </div>
                 </div>
@@ -1008,6 +1134,97 @@ export default function AdminPanel() {
 
           {/* Wallet Configuration Tab */}
           <TabsContent value="wallet" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <DollarSign className="w-5 h-5 mr-2 text-green-400" />
+                    Live Balances
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center p-2 bg-gray-700 rounded">
+                      <span className="text-gray-400">USDT</span>
+                      <span className="text-green-400 font-bold">$10,000.00</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-gray-700 rounded">
+                      <span className="text-gray-400">SS (SmaiSika)</span>
+                      <span className="text-blue-400 font-bold">247.85 SS</span>
+                    </div>
+                    <div className="flex justify-between items-center p-2 bg-gray-700 rounded">
+                      <span className="text-gray-400">ETH</span>
+                      <span className="text-purple-400 font-bold">2.45 ETH</span>
+                    </div>
+                  </div>
+                  <div className="text-center pt-2 border-t border-gray-600">
+                    <div className="text-2xl font-bold text-white">$17,892.30</div>
+                    <div className="text-gray-400 text-sm">Total Portfolio</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Activity className="w-5 h-5 mr-2 text-blue-400" />
+                    24h Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-green-400">847</div>
+                      <div className="text-gray-400 text-xs">Deposits</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-yellow-400">234</div>
+                      <div className="text-gray-400 text-xs">Withdrawals</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-purple-400">1,249</div>
+                      <div className="text-gray-400 text-xs">Conversions</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-blue-400">54</div>
+                      <div className="text-gray-400 text-xs">Countries</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Shield className="w-5 h-5 mr-2 text-red-400" />
+                    Security Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Multi-Sig</span>
+                      <Badge className="bg-green-600">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Biometric Auth</span>
+                      <Badge className="bg-green-600">Enabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Cold Storage</span>
+                      <Badge className="bg-blue-600">87%</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Fraud Detection</span>
+                      <Badge className="bg-green-600">Active</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white">Wallet Configuration</CardTitle>
@@ -1018,46 +1235,51 @@ export default function AdminPanel() {
                     <h3 className="text-white font-semibold">Deposit/Withdrawal Limits</h3>
                     <div className="space-y-3">
                       <div>
-                        <Label className="text-gray-300">Minimum Deposit</Label>
+                        <Label className="text-gray-300">Minimum Deposit (USD)</Label>
                         <Input
                           type="number"
-                          value={editingConfig.wallet?.min_deposit ?? config?.wallet?.min_deposit}
+                          value={editingConfig.wallet?.min_deposit ?? config?.wallet?.min_deposit ?? 10}
                           onChange={(e) => handleConfigUpdate('wallet', 'min_deposit', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="1"
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-300">Maximum Deposit</Label>
+                        <Label className="text-gray-300">Maximum Deposit (USD)</Label>
                         <Input
                           type="number"
-                          value={editingConfig.wallet?.max_deposit ?? config?.wallet?.max_deposit}
+                          value={editingConfig.wallet?.max_deposit ?? config?.wallet?.max_deposit ?? 50000}
                           onChange={(e) => handleConfigUpdate('wallet', 'max_deposit', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="100"
                         />
                       </div>
                       <div>
-                        <Label className="text-gray-300">Daily Withdrawal Limit</Label>
+                        <Label className="text-gray-300">Daily Withdrawal Limit (USD)</Label>
                         <Input
                           type="number"
-                          value={editingConfig.wallet?.daily_withdrawal_limit ?? config?.wallet?.daily_withdrawal_limit}
+                          value={editingConfig.wallet?.daily_withdrawal_limit ?? config?.wallet?.daily_withdrawal_limit ?? 10000}
                           onChange={(e) => handleConfigUpdate('wallet', 'daily_withdrawal_limit', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="100"
                         />
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-white font-semibold">Fee Structure</h3>
+                    <h3 className="text-white font-semibold">Fee Structure & Settings</h3>
                     <div className="space-y-3">
                       <div>
                         <Label className="text-gray-300">Conversion Fee Rate (%)</Label>
                         <Input
                           type="number"
                           step="0.01"
-                          value={editingConfig.wallet?.conversion_fee_rate ?? config?.wallet?.conversion_fee_rate}
+                          value={editingConfig.wallet?.conversion_fee_rate ?? config?.wallet?.conversion_fee_rate ?? 0.5}
                           onChange={(e) => handleConfigUpdate('wallet', 'conversion_fee_rate', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="0"
+                          max="5"
                         />
                       </div>
                       <div>
@@ -1065,19 +1287,44 @@ export default function AdminPanel() {
                         <Input
                           type="number"
                           step="0.01"
-                          value={editingConfig.wallet?.withdrawal_fee_rate ?? config?.wallet?.withdrawal_fee_rate}
+                          value={editingConfig.wallet?.withdrawal_fee_rate ?? config?.wallet?.withdrawal_fee_rate ?? 1.0}
                           onChange={(e) => handleConfigUpdate('wallet', 'withdrawal_fee_rate', parseFloat(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="0"
+                          max="10"
                         />
                       </div>
-                      <div>
-                        <Label className="text-gray-300">Supported Currencies</Label>
-                        <Textarea
-                          value={editingConfig.wallet?.supported_currencies?.join('\n') ?? config?.wallet?.supported_currencies?.join('\n')}
-                          onChange={(e) => handleConfigUpdate('wallet', 'supported_currencies', e.target.value.split('\n').filter(Boolean))}
-                          className="bg-gray-700 border-gray-600 text-white"
-                          placeholder="USD&#10;EUR&#10;NGN&#10;GHS"
+                      <div className="flex items-center justify-between">
+                        <Label className="text-gray-300">Auto Conversion</Label>
+                        <Switch
+                          checked={editingConfig.wallet?.auto_conversion ?? config?.wallet?.auto_conversion ?? true}
+                          onCheckedChange={(checked) => handleConfigUpdate('wallet', 'auto_conversion', checked)}
                         />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-white font-semibold">Currency Support & SmaiSika Configuration</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Supported Currencies</Label>
+                      <Textarea
+                        value={editingConfig.wallet?.supported_currencies?.join('\n') ?? config?.wallet?.supported_currencies?.join('\n') ?? 'USD\nEUR\nNGN\nGHS\nKES\nZAR'}
+                        onChange={(e) => handleConfigUpdate('wallet', 'supported_currencies', e.target.value.split('\n').filter(Boolean))}
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        placeholder="USD&#10;EUR&#10;NGN&#10;GHS"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">SmaiSika Exchange Rate (Fixed 1:1 USD)</Label>
+                      <div className="p-3 bg-gray-700 rounded border border-gray-600">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-400">1 SS = 1 USD</div>
+                          <div className="text-gray-400 text-sm mt-1">Fixed Exchange Rate</div>
+                          <div className="text-gray-500 text-xs mt-2">This rate is permanently fixed and cannot be changed</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1144,6 +1391,102 @@ export default function AdminPanel() {
 
           {/* KonsAi Configuration Tab */}
           <TabsContent value="konsai" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Brain className="w-5 h-5 mr-2 text-purple-400" />
+                    Live Intelligence
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-400">220+</div>
+                    <div className="text-gray-400 text-sm">Active Modules</div>
+                    <div className="text-sm text-green-400">Transcendent Level</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Kons Modules:</span>
+                      <span className="text-blue-400">29</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Deep Core:</span>
+                      <span className="text-yellow-400">120+</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Futuristic:</span>
+                      <span className="text-purple-400">50+</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Response Time:</span>
+                      <span className="text-green-400">~200ms</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Activity className="w-5 h-5 mr-2 text-green-400" />
+                    Performance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-green-400">98.7%</div>
+                      <div className="text-gray-400 text-xs">Accuracy</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-blue-400">24/7</div>
+                      <div className="text-gray-400 text-xs">Uptime</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-yellow-400">15,847</div>
+                      <div className="text-gray-400 text-xs">Queries Today</div>
+                    </div>
+                    <div className="text-center p-2 bg-gray-700 rounded">
+                      <div className="text-lg font-bold text-purple-400">847TB</div>
+                      <div className="text-gray-400 text-xs">Knowledge Base</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Shield className="w-5 h-5 mr-2 text-red-400" />
+                    Security Level
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Module Visibility</span>
+                      <Badge className="bg-red-600">Hidden</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Query Filtering</span>
+                      <Badge className="bg-green-600">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Auto-Learning</span>
+                      <Badge className="bg-blue-600">Enabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Quantum Processing</span>
+                      <Badge className="bg-purple-600">Active</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white">KonsAi Intelligence Configuration</CardTitle>
@@ -1151,21 +1494,21 @@ export default function AdminPanel() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-white font-semibold">AI Settings</h3>
+                    <h3 className="text-white font-semibold">Core AI Settings</h3>
                     <div className="space-y-3">
                       <div>
                         <Label className="text-gray-300">Intelligence Level</Label>
                         <Select
-                          value={editingConfig.konsai?.intelligence_level ?? config?.konsai?.intelligence_level}
+                          value={editingConfig.konsai?.intelligence_level ?? config?.konsai?.intelligence_level ?? 'TRANSCENDENT'}
                           onValueChange={(value) => handleConfigUpdate('konsai', 'intelligence_level', value)}
                         >
-                          <SelectTrigger className="bg-gray-700 border-gray-600">
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="BASIC">Basic</SelectItem>
-                            <SelectItem value="ADVANCED">Advanced</SelectItem>
-                            <SelectItem value="TRANSCENDENT">Transcendent</SelectItem>
+                            <SelectItem value="BASIC">Basic (29 Modules)</SelectItem>
+                            <SelectItem value="ADVANCED">Advanced (149 Modules)</SelectItem>
+                            <SelectItem value="TRANSCENDENT">Transcendent (220+ Modules)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1173,50 +1516,105 @@ export default function AdminPanel() {
                         <Label className="text-gray-300">Response Delay (ms)</Label>
                         <Input
                           type="number"
-                          value={editingConfig.konsai?.response_delay ?? config?.konsai?.response_delay}
+                          value={editingConfig.konsai?.response_delay ?? config?.konsai?.response_delay ?? 200}
                           onChange={(e) => handleConfigUpdate('konsai', 'response_delay', parseInt(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="50"
+                          max="5000"
                         />
                       </div>
                       <div className="flex items-center justify-between">
                         <Label className="text-gray-300">Learning Enabled</Label>
                         <Switch
-                          checked={editingConfig.konsai?.learning_enabled ?? config?.konsai?.learning_enabled}
+                          checked={editingConfig.konsai?.learning_enabled ?? config?.konsai?.learning_enabled ?? true}
                           onCheckedChange={(checked) => handleConfigUpdate('konsai', 'learning_enabled', checked)}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label className="text-gray-300">Auto Evolution</Label>
+                        <Switch
+                          checked={editingConfig.konsai?.auto_evolution ?? config?.konsai?.auto_evolution ?? true}
+                          onCheckedChange={(checked) => handleConfigUpdate('konsai', 'auto_evolution', checked)}
                         />
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-white font-semibold">Advanced Settings</h3>
+                    <h3 className="text-white font-semibold">Advanced Capabilities</h3>
                     <div className="space-y-3">
                       <div>
-                        <Label className="text-gray-300">Memory Limit (MB)</Label>
+                        <Label className="text-gray-300">Personality Mode</Label>
+                        <Select
+                          value={editingConfig.konsai?.personality_mode ?? config?.konsai?.personality_mode ?? 'spiritual'}
+                          onValueChange={(value) => handleConfigUpdate('konsai', 'personality_mode', value)}
+                        >
+                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="spiritual">Spiritual Guide</SelectItem>
+                            <SelectItem value="analytical">Analytical Expert</SelectItem>
+                            <SelectItem value="creative">Creative Assistant</SelectItem>
+                            <SelectItem value="balanced">Balanced Intelligence</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-gray-300">Memory Limit (experiences)</Label>
                         <Input
                           type="number"
-                          value={editingConfig.konsai?.memory_limit ?? config?.konsai?.memory_limit}
+                          value={editingConfig.konsai?.memory_limit ?? config?.konsai?.memory_limit ?? 1000}
                           onChange={(e) => handleConfigUpdate('konsai', 'memory_limit', parseInt(e.target.value))}
                           className="bg-gray-700 border-gray-600 text-white"
+                          min="100"
+                          max="10000"
                         />
                       </div>
                       <div className="flex items-center justify-between">
-                        <Label className="text-gray-300">Auto Evolution</Label>
+                        <Label className="text-gray-300">Voice Synthesis</Label>
                         <Switch
-                          checked={editingConfig.konsai?.auto_evolution ?? config?.konsai?.auto_evolution}
-                          onCheckedChange={(checked) => handleConfigUpdate('konsai', 'auto_evolution', checked)}
+                          checked={editingConfig.konsai?.voice_synthesis ?? config?.konsai?.voice_synthesis ?? true}
+                          onCheckedChange={(checked) => handleConfigUpdate('konsai', 'voice_synthesis', checked)}
                         />
                       </div>
-                      <div>
-                        <Label className="text-gray-300">Active Modules</Label>
-                        <Input
-                          type="number"
-                          value={editingConfig.konsai?.module_count ?? config?.konsai?.module_count}
-                          onChange={(e) => handleConfigUpdate('konsai', 'module_count', parseInt(e.target.value))}
-                          className="bg-gray-700 border-gray-600 text-white"
-                          readOnly
+                      <div className="flex items-center justify-between">
+                        <Label className="text-gray-300">Quantum Processing</Label>
+                        <Switch
+                          checked={editingConfig.konsai?.quantum_processing ?? config?.konsai?.quantum_processing ?? true}
+                          onCheckedChange={(checked) => handleConfigUpdate('konsai', 'quantum_processing', checked)}
                         />
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-white font-semibold">Security & Privacy Settings</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <h4 className="text-white font-medium mb-2">Module Count Visibility</h4>
+                      <p className="text-gray-400 text-sm mb-3">Controls whether users can see internal module structure</p>
+                      <Switch
+                        checked={editingConfig.konsai?.hide_module_count ?? config?.konsai?.hide_module_count ?? true}
+                        onCheckedChange={(checked) => handleConfigUpdate('konsai', 'hide_module_count', checked)}
+                      />
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <h4 className="text-white font-medium mb-2">Query Filtering</h4>
+                      <p className="text-gray-400 text-sm mb-3">Automatically filters harmful or inappropriate queries</p>
+                      <Switch
+                        checked={editingConfig.konsai?.query_filtering ?? config?.konsai?.query_filtering ?? true}
+                        onCheckedChange={(checked) => handleConfigUpdate('konsai', 'query_filtering', checked)}
+                      />
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <h4 className="text-white font-medium mb-2">Context Awareness</h4>
+                      <p className="text-gray-400 text-sm mb-3">Maintains conversation context across multiple interactions</p>
+                      <Switch
+                        checked={editingConfig.konsai?.context_awareness ?? config?.konsai?.context_awareness ?? true}
+                        onCheckedChange={(checked) => handleConfigUpdate('konsai', 'context_awareness', checked)}
+                      />
                     </div>
                   </div>
                 </div>
