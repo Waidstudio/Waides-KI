@@ -385,6 +385,49 @@ export function FuturisticAdminPanel() {
     },
   });
 
+  // Configure Strategy mutation
+  const configureStrategyMutation = useMutation({
+    mutationFn: async ({ botType, strategy }: { botType: string; strategy?: string }) => {
+      return apiRequest('POST', '/api/admin/configure-strategy', { botType, strategy: strategy || 'default' });
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/trading-bot-config'] });
+      toast({ title: `${variables.botType} strategy configured successfully` });
+    },
+    onError: (error, variables) => {
+      toast({ title: `Failed to configure ${variables.botType} strategy`, variant: "destructive" });
+    },
+  });
+
+  // Advanced Settings mutation  
+  const advancedSettingsMutation = useMutation({
+    mutationFn: async ({ botType, settings }: { botType: string; settings?: any }) => {
+      return apiRequest('POST', '/api/admin/advanced-settings', { botType, settings: settings || {} });
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/trading-bot-config'] });
+      toast({ title: `${variables.botType} advanced settings updated` });
+    },
+    onError: (error, variables) => {
+      toast({ title: `Failed to update ${variables.botType} advanced settings`, variant: "destructive" });
+    },
+  });
+
+  // Activate Engine mutation
+  const activateEngineMutation = useMutation({
+    mutationFn: async ({ botType }: { botType: string }) => {
+      return apiRequest('POST', '/api/admin/activate-engine', { botType });
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/trading-bot-config'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/bot-performance'] });
+      toast({ title: `${variables.botType} engine activated successfully` });
+    },
+    onError: (error, variables) => {
+      toast({ title: `Failed to activate ${variables.botType} engine`, variant: "destructive" });
+    },
+  });
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -2188,13 +2231,22 @@ export function FuturisticAdminPanel() {
                       </div>
                     </div>
                     <div className="pt-4 space-y-2">
-                      <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white text-sm">
+                      <Button 
+                        className="w-full bg-cyan-600 hover:bg-cyan-700 text-white text-sm"
+                        onClick={() => configureStrategyMutation.mutate({ botType: 'WaidBot' })}
+                        disabled={configureStrategyMutation.isPending}
+                      >
                         <Settings className="w-4 h-4 mr-2" />
                         Configure Strategy
                       </Button>
-                      <Button variant="outline" className="w-full border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 text-sm">
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 text-sm"
+                        onClick={() => activateEngineMutation.mutate({ botType: 'WaidBot' })}
+                        disabled={activateEngineMutation.isPending}
+                      >
                         <Eye className="w-4 h-4 mr-2" />
-                        Performance: {botPerformance?.waidbot?.winRate || 0}% win rate
+                        Activate Engine: {botPerformance?.waidbot?.winRate || 0}% win rate
                       </Button>
                     </div>
                   </CardContent>
@@ -2218,31 +2270,62 @@ export function FuturisticAdminPanel() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Auto Trading</Label>
-                        <Switch checked={true} />
+                        <Switch 
+                          checked={tradingBotConfig?.waidbotPro?.autoTrading || false}
+                          onCheckedChange={(checked) => {
+                            updateTradingBotConfigMutation.mutate({
+                              waidbotPro: { ...tradingBotConfig?.waidbotPro, autoTrading: checked }
+                            });
+                          }}
+                        />
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">AI Level</Label>
-                        <select className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1">
+                        <select 
+                          className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1"
+                          value={tradingBotConfig?.waidbotPro?.aiLevel || 'advanced'}
+                          onChange={(e) => {
+                            updateTradingBotConfigMutation.mutate({
+                              waidbotPro: { ...tradingBotConfig?.waidbotPro, aiLevel: e.target.value as 'standard' | 'advanced' | 'quantum' }
+                            });
+                          }}
+                        >
                           <option value="standard">Standard</option>
-                          <option value="advanced" selected>Advanced</option>
+                          <option value="advanced">Advanced</option>
                           <option value="quantum">Quantum</option>
                         </select>
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Position Size</Label>
-                        <span className="text-purple-400 text-sm font-mono">$1,000</span>
+                        <span className="text-purple-400 text-sm font-mono">${tradingBotConfig?.waidbotPro?.positionSize || 1000}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Multi-Strategy</Label>
-                        <Switch checked={true} />
+                        <Switch 
+                          checked={tradingBotConfig?.waidbotPro?.multiStrategy || false}
+                          onCheckedChange={(checked) => {
+                            updateTradingBotConfigMutation.mutate({
+                              waidbotPro: { ...tradingBotConfig?.waidbotPro, multiStrategy: checked }
+                            });
+                          }}
+                        />
                       </div>
                     </div>
                     <div className="pt-4 space-y-2">
-                      <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm">
+                      <Button 
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                        onClick={() => advancedSettingsMutation.mutate({ botType: 'WaidBot Pro' })}
+                        disabled={advancedSettingsMutation.isPending}
+                      >
                         <Settings className="w-4 h-4 mr-2" />
                         Advanced Settings
                       </Button>
-                      <Button variant="outline" className="w-full border-purple-500 text-purple-400 hover:bg-purple-500/20 text-sm">
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-purple-500 text-purple-400 hover:bg-purple-500/20 text-sm"
+                        onClick={() => configureStrategyMutation.mutate({ botType: 'WaidBot Pro', strategy: 'analytics' })}
+                        disabled={configureStrategyMutation.isPending}
+                      >
                         <BarChart3 className="w-4 h-4 mr-2" />
                         Analytics Dashboard
                       </Button>
@@ -2288,11 +2371,20 @@ export function FuturisticAdminPanel() {
                       </div>
                     </div>
                     <div className="pt-4 space-y-2">
-                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm">
+                      <Button 
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm"
+                        onClick={() => activateEngineMutation.mutate({ botType: 'Full Engine' })}
+                        disabled={activateEngineMutation.isPending}
+                      >
                         <Rocket className="w-4 h-4 mr-2" />
                         Activate Engine
                       </Button>
-                      <Button variant="outline" className="w-full border-orange-500 text-orange-400 hover:bg-orange-500/20 text-sm">
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-orange-500 text-orange-400 hover:bg-orange-500/20 text-sm"
+                        onClick={() => configureStrategyMutation.mutate({ botType: 'Full Engine', strategy: 'monitor' })}
+                        disabled={configureStrategyMutation.isPending}
+                      >
                         <Monitor className="w-4 h-4 mr-2" />
                         System Monitor
                       </Button>
