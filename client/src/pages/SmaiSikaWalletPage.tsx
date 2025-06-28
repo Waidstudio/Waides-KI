@@ -18,13 +18,6 @@ import {
   ArrowUpDown, 
   Globe, 
   CreditCard,
-  TestTube,
-  CheckCircle,
-  BarChart3,
-  Settings,
-  Trash2,
-  Copy,
-  FileText, 
   Smartphone, 
   Building, 
   Bitcoin,
@@ -347,12 +340,13 @@ export default function SmaiSikaWalletPage() {
   const generateBankAccount = async (currency: string, country: string) => {
     setAccountGenerating(`${currency}_bank`);
     try {
-      const response = await apiRequest('POST', '/api/virtual-accounts/generate-bank', {
+      const response = await apiRequest('POST', '/api/virtual-accounts/generate/bank', {
         currency,
         country,
         userId: 'user_123'
       });
-      const account = await response.json();
+      const data = await response.json();
+      const account = data.virtualAccount || data;
       
       setGeneratedAccounts(prev => [...prev, { ...account, type: 'bank' }]);
       
@@ -374,7 +368,7 @@ export default function SmaiSikaWalletPage() {
   const generateCryptoWallet = async (currency: string) => {
     setAccountGenerating(`${currency}_crypto`);
     try {
-      const response = await apiRequest('POST', '/api/virtual-accounts/generate-crypto', {
+      const response = await apiRequest('POST', '/api/virtual-accounts/generate/crypto', {
         currency,
         network: currency === 'USDT' ? 'TRC20' : currency === 'BTC' ? 'BITCOIN' : 'ETHEREUM',
         userId: 'user_123'
@@ -804,17 +798,45 @@ export default function SmaiSikaWalletPage() {
                     </div>
                     <div className="p-4 bg-gray-700/30 rounded-lg">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-gray-300">United Kingdom (GBP)</span>
+                        <span className="text-gray-300">🇰🇪 Kenya (KES)</span>
                         <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
                       </div>
                       <Button 
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                        onClick={() => generateBankAccount('GBP', 'United Kingdom')}
-                        disabled={accountGenerating === 'GBP_bank'}
+                        onClick={() => generateBankAccount('KES', 'Kenya')}
+                        disabled={accountGenerating === 'KES_bank'}
                       >
-                        {accountGenerating === 'GBP_bank' ? 'Generating...' : 'Generate GBP Bank Account'}
+                        {accountGenerating === 'KES_bank' ? 'Generating...' : 'Generate KES Bank Account'}
                       </Button>
-                      <p className="text-xs text-gray-400 mt-2">Get personal UK bank details for local transfers</p>
+                      <p className="text-xs text-gray-400 mt-2">M-Pesa and major Kenyan banks supported</p>
+                    </div>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">🇿🇦 South Africa (ZAR)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => generateBankAccount('ZAR', 'South Africa')}
+                        disabled={accountGenerating === 'ZAR_bank'}
+                      >
+                        {accountGenerating === 'ZAR_bank' ? 'Generating...' : 'Generate ZAR Bank Account'}
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Standard Bank, FNB, ABSA supported</p>
+                    </div>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">🇬🇭 Ghana (GHS)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => generateBankAccount('GHS', 'Ghana')}
+                        disabled={accountGenerating === 'GHS_bank'}
+                      >
+                        {accountGenerating === 'GHS_bank' ? 'Generating...' : 'Generate GHS Bank Account'}
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">GCB Bank, Ecobank, MTN Mobile Money</p>
                     </div>
                   </div>
 
@@ -868,6 +890,97 @@ export default function SmaiSikaWalletPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Generated Accounts Display */}
+                {generatedAccounts.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-white font-medium mb-4 flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <span>Your Generated Accounts</span>
+                    </h3>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                      {generatedAccounts.map((account, index) => (
+                        <div key={index} className="p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-white font-medium">
+                              {account.type === 'bank' ? '🏦' : '₿'} {account.currency} {account.type === 'bank' ? 'Bank Account' : 'Wallet'}
+                            </span>
+                            <Badge className={account.type === 'bank' ? 'bg-blue-600' : 'bg-orange-600'}>
+                              {account.type === 'bank' ? 'BANK' : 'CRYPTO'}
+                            </Badge>
+                          </div>
+                          
+                          {account.type === 'bank' ? (
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Bank:</span>
+                                <span className="text-white">{account.bankName}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Account:</span>
+                                <span className="text-white font-mono">{account.accountNumber}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Name:</span>
+                                <span className="text-white">{account.accountName}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Country:</span>
+                                <span className="text-white">{account.country}</span>
+                              </div>
+                              {account.routingCode && (
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Routing:</span>
+                                  <span className="text-white font-mono">{account.routingCode}</span>
+                                </div>
+                              )}
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="mt-2 w-full text-xs"
+                                onClick={() => {
+                                  const accountDetails = `Bank: ${account.bankName}\nAccount: ${account.accountNumber}\nName: ${account.accountName}\nCountry: ${account.country}${account.routingCode ? `\nRouting: ${account.routingCode}` : ''}`;
+                                  navigator.clipboard.writeText(accountDetails);
+                                  toast({ title: "Copied!", description: "Account details copied to clipboard" });
+                                }}
+                              >
+                                <Copy className="w-3 h-3 mr-1" />
+                                Copy Details
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 text-sm">
+                              <div>
+                                <span className="text-gray-400">Address:</span>
+                                <p className="text-white font-mono text-xs break-all mt-1">{account.address}</p>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Network:</span>
+                                <span className="text-white">{account.network}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Type:</span>
+                                <span className="text-white">{account.addressType}</span>
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="mt-2 w-full text-xs"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(account.address);
+                                  toast({ title: "Copied!", description: "Wallet address copied to clipboard" });
+                                }}
+                              >
+                                <Copy className="w-3 h-3 mr-1" />
+                                Copy Address
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Information Alert */}
                 <Alert className="mt-6 bg-blue-900/30 border-blue-600">
