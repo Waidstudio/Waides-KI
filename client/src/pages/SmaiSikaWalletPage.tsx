@@ -342,24 +342,47 @@ export default function SmaiSikaWalletPage() {
   const generateBankAccount = async (currency: string, country: string) => {
     setAccountGenerating(`${currency}_bank`);
     try {
+      // Show immediate feedback
+      toast({
+        title: "Generating Account...",
+        description: `Creating your ${currency} bank account for ${country}`,
+      });
+
       const response = await apiRequest('POST', '/api/virtual-accounts/generate/bank', {
         currency,
-        country,
+        country: country === 'Nigeria' ? 'NG' : country === 'Kenya' ? 'KE' : country === 'South Africa' ? 'ZA' : country === 'Ghana' ? 'GH' : 'US',
         userId: 'user_123'
       });
       const data = await response.json();
-      const account = data.virtualAccount || data;
       
-      setGeneratedAccounts(prev => [...prev, { ...account, type: 'bank' }]);
-      
-      toast({
-        title: "Bank Account Generated",
-        description: `Your ${currency} bank account has been created successfully`,
-      });
-    } catch (error) {
+      if (data.success) {
+        const account = data.virtualAccount;
+        setGeneratedAccounts(prev => [...prev, { 
+          ...account, 
+          type: 'bank',
+          generatedAt: new Date().toISOString(),
+          status: 'active'
+        }]);
+        
+        toast({
+          title: "🎉 Bank Account Generated Successfully!",
+          description: `${account.bankName} account ready for deposits`,
+        });
+
+        // Scroll to show the new account
+        setTimeout(() => {
+          const accountsSection = document.querySelector('.generated-accounts');
+          if (accountsSection) {
+            accountsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 500);
+      } else {
+        throw new Error(data.message || 'Failed to generate account');
+      }
+    } catch (error: any) {
       toast({
         title: "Generation Failed",
-        description: "Failed to generate bank account. Please try again.",
+        description: error.message || "Failed to generate bank account. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -370,24 +393,47 @@ export default function SmaiSikaWalletPage() {
   const generateCryptoWallet = async (currency: string) => {
     setAccountGenerating(`${currency}_crypto`);
     try {
+      // Show immediate feedback
+      toast({
+        title: "Generating Wallet...",
+        description: `Creating your ${currency} crypto wallet`,
+      });
+
       const response = await apiRequest('POST', '/api/virtual-accounts/generate/crypto', {
         currency,
         network: currency === 'USDT' ? 'TRC20' : currency === 'BTC' ? 'BITCOIN' : 'ETHEREUM',
         userId: 'user_123'
       });
       const data = await response.json();
-      const wallet = data.virtualWallet || data;
       
-      setGeneratedAccounts(prev => [...prev, { ...wallet, type: 'crypto' }]);
-      
-      toast({
-        title: "Crypto Wallet Generated",
-        description: `Your ${currency} wallet has been created successfully`,
-      });
-    } catch (error) {
+      if (data.success) {
+        const wallet = data.virtualWallet;
+        setGeneratedAccounts(prev => [...prev, { 
+          ...wallet, 
+          type: 'crypto',
+          generatedAt: new Date().toISOString(),
+          status: 'active'
+        }]);
+        
+        toast({
+          title: "🚀 Crypto Wallet Generated Successfully!",
+          description: `${currency} wallet ready for deposits`,
+        });
+
+        // Scroll to show the new wallet
+        setTimeout(() => {
+          const accountsSection = document.querySelector('.generated-accounts');
+          if (accountsSection) {
+            accountsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 500);
+      } else {
+        throw new Error(data.message || 'Failed to generate wallet');
+      }
+    } catch (error: any) {
       toast({
         title: "Generation Failed",
-        description: "Failed to generate crypto wallet. Please try again.",
+        description: error.message || "Failed to generate crypto wallet. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -912,12 +958,15 @@ export default function SmaiSikaWalletPage() {
 
                 {/* Generated Accounts Display */}
                 {generatedAccounts.length > 0 && (
-                  <div className="mt-6">
+                  <div className="mt-6 generated-accounts">
                     <h3 className="text-white font-medium mb-4 flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <CheckCircle className="w-4 h-4 text-green-400 animate-pulse" />
                       <span>Your Generated Accounts</span>
+                      <Badge className="bg-green-600 text-white">
+                        {generatedAccounts.length} Active
+                      </Badge>
                     </h3>
-                    <div className="space-y-4 max-h-[400px] overflow-y-auto">
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-gray-800">
                       {generatedAccounts.map((account, index) => (
                         <div key={index} className="p-4 bg-gray-700/50 rounded-lg border border-gray-600">
                           <div className="flex items-center justify-between mb-3">

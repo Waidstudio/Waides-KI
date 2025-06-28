@@ -257,10 +257,19 @@ class VirtualAccountService {
     currency: string, 
     preferredProvider?: string
   ): Promise<VirtualBankAccount> {
-    const availableProviders = this.getProvidersByCountry(country)
+    const allProviders = this.getProvidersByCountry(country);
+    const availableProviders = allProviders
       .filter(p => p.type === 'bank' && p.currencies.includes(currency) && p.isActive);
 
     if (availableProviders.length === 0) {
+      // Try to create account with the first bank provider for the country, regardless of currency
+      const fallbackProviders = allProviders.filter(p => p.type === 'bank' && p.isActive);
+      
+      if (fallbackProviders.length > 0) {
+        console.log(`⚠️ No exact currency match, using fallback provider: ${fallbackProviders[0].name}`);
+        return this.simulateVirtualBankAccount(userId, country, currency, fallbackProviders[0]);
+      }
+      
       throw new Error(`No active bank providers available for ${country}/${currency}`);
     }
 
@@ -268,6 +277,8 @@ class VirtualAccountService {
       ? availableProviders.find(p => p.id === preferredProvider) || availableProviders[0]
       : availableProviders[0];
 
+    console.log(`🎯 Using provider: ${provider.name} for ${country}/${currency}`);
+    
     // Simulate account generation (replace with real API calls)
     return this.simulateVirtualBankAccount(userId, country, currency, provider);
   }
