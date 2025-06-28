@@ -2048,12 +2048,16 @@ export function FuturisticAdminPanel() {
                   <p className="text-white/60 text-sm mt-1">Configure and control WaidBot, WaidBot Pro, and Full Engine systems</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                  <Badge variant="outline" className="border-green-500 text-green-400">
-                    Live Trading: Active
+                  <Badge variant="outline" className={tradingBotConfig?.systemStatus?.liveTradingActive ? "border-green-500 text-green-400" : "border-red-500 text-red-400"}>
+                    Live Trading: {tradingBotConfig?.systemStatus?.liveTradingActive ? 'Active' : 'Stopped'}
                   </Badge>
-                  <Button className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto">
+                  <Button 
+                    className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
+                    onClick={() => emergencyStopMutation.mutate()}
+                    disabled={emergencyStopMutation.isPending || tradingBotConfig?.systemStatus?.emergencyStop}
+                  >
                     <Shield className="w-4 h-4 mr-2" />
-                    Emergency Stop
+                    {emergencyStopMutation.isPending ? 'Stopping...' : 'Emergency Stop'}
                   </Button>
                 </div>
               </div>
@@ -2123,8 +2127,8 @@ export function FuturisticAdminPanel() {
                         <Brain className="w-5 h-5" />
                         <span>WaidBot</span>
                       </CardTitle>
-                      <Badge variant="outline" className="border-green-500 text-green-400">
-                        Active
+                      <Badge variant="outline" className={tradingBotConfig?.waidbot?.enabled ? "border-green-500 text-green-400" : "border-gray-500 text-gray-400"}>
+                        {tradingBotConfig?.waidbot?.enabled ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
                     <p className="text-white/60 text-sm">Divine Quantum Flux Strategy</p>
@@ -2133,23 +2137,45 @@ export function FuturisticAdminPanel() {
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Auto Trading</Label>
-                        <Switch checked={true} />
+                        <Switch 
+                          checked={tradingBotConfig?.waidbot?.autoTrading || false}
+                          onCheckedChange={(checked) => {
+                            updateTradingBotConfigMutation.mutate({
+                              waidbot: { ...tradingBotConfig?.waidbot, autoTrading: checked }
+                            });
+                          }}
+                        />
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Risk Level</Label>
-                        <select className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1">
+                        <select 
+                          className="bg-black/30 border border-white/20 text-white text-xs rounded px-2 py-1"
+                          value={tradingBotConfig?.waidbot?.riskLevel || 'medium'}
+                          onChange={(e) => {
+                            updateTradingBotConfigMutation.mutate({
+                              waidbot: { ...tradingBotConfig?.waidbot, riskLevel: e.target.value as 'low' | 'medium' | 'high' }
+                            });
+                          }}
+                        >
                           <option value="low">Low (2%)</option>
-                          <option value="medium" selected>Medium (5%)</option>
+                          <option value="medium">Medium (5%)</option>
                           <option value="high">High (10%)</option>
                         </select>
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Position Size</Label>
-                        <span className="text-cyan-400 text-sm font-mono">$500</span>
+                        <span className="text-cyan-400 text-sm font-mono">${tradingBotConfig?.waidbot?.positionSize || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <Label className="text-white/70 text-sm">Sacred Mode</Label>
-                        <Switch checked={true} />
+                        <Switch 
+                          checked={tradingBotConfig?.waidbot?.sacredMode || false}
+                          onCheckedChange={(checked) => {
+                            updateTradingBotConfigMutation.mutate({
+                              waidbot: { ...tradingBotConfig?.waidbot, sacredMode: checked }
+                            });
+                          }}
+                        />
                       </div>
                     </div>
                     <div className="pt-4 space-y-2">
@@ -2159,7 +2185,7 @@ export function FuturisticAdminPanel() {
                       </Button>
                       <Button variant="outline" className="w-full border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 text-sm">
                         <Eye className="w-4 h-4 mr-2" />
-                        View Performance
+                        Performance: {botPerformance?.waidbot?.winRate || 0}% win rate
                       </Button>
                     </div>
                   </CardContent>
@@ -2384,25 +2410,34 @@ export function FuturisticAdminPanel() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {[
-                      { bot: "WaidBot Pro", action: "BUY", pair: "ETH/USDT", amount: "$1,000", pnl: "+$47.50", time: "2 min ago" },
-                      { bot: "WaidBot", action: "SELL", pair: "ETH/USDT", amount: "$500", pnl: "+$23.80", time: "5 min ago" },
-                      { bot: "WaidBot Pro", action: "BUY", pair: "ETH/USDT", amount: "$750", pnl: "+$31.20", time: "8 min ago" },
-                      { bot: "WaidBot", action: "SELL", pair: "ETH/USDT", amount: "$600", pnl: "+$18.90", time: "12 min ago" }
-                    ].map((trade, index) => (
-                      <div key={index} className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 bg-white/5 rounded-lg space-y-2 lg:space-y-0">
-                        <div className="flex items-center space-x-4">
-                          <div className={`w-3 h-3 rounded-full ${trade.action === 'BUY' ? 'bg-green-400' : 'bg-red-400'}`}></div>
-                          <div>
-                            <p className="text-white font-medium text-sm">{trade.bot} • {trade.action} {trade.pair}</p>
-                            <p className="text-white/60 text-xs">{trade.amount} • {trade.time}</p>
+                    {recentTradingActivity && recentTradingActivity.length > 0 ? (
+                      recentTradingActivity.map((trade: RecentTradingActivity) => (
+                        <div key={trade.id} className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-3 bg-white/5 rounded-lg space-y-2 lg:space-y-0">
+                          <div className="flex items-center space-x-4">
+                            <div className={`w-3 h-3 rounded-full ${trade.action === 'BUY' ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                            <div>
+                              <p className="text-white font-medium text-sm">{trade.bot} • {trade.action} {trade.pair}</p>
+                              <p className="text-white/60 text-xs">{trade.amount} • {trade.time}</p>
+                            </div>
+                          </div>
+                          <div className="text-right lg:text-left">
+                            <p className={`font-mono text-sm ${trade.pnl.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>{trade.pnl}</p>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              trade.status === 'completed' ? 'bg-green-500/20 text-green-400' :
+                              trade.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                              'bg-red-500/20 text-red-400'
+                            }`}>
+                              {trade.status}
+                            </span>
                           </div>
                         </div>
-                        <div className="text-right lg:text-left">
-                          <p className="text-green-400 font-mono text-sm">{trade.pnl}</p>
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-white/60">No recent trading activity</p>
+                        <p className="text-white/40 text-sm mt-1">Trading activity will appear here once bots are active</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
