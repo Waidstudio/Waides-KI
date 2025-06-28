@@ -610,7 +610,118 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SmaiSika conversion endpoint
+  // Real Payment Gateway Routes - Nigeria: Paystack
+  app.post("/api/deposit/nigeria/paystack", async (req, res) => {
+    try {
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const result = await realPaymentGateways.initializePaystackPayment(req.body);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Paystack deposit error:', error);
+      res.status(500).json({ error: 'Failed to initialize Paystack payment' });
+    }
+  });
+
+  // Real Payment Gateway Routes - Ghana: Flutterwave
+  app.post("/api/deposit/ghana/flutterwave", async (req, res) => {
+    try {
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const result = await realPaymentGateways.initializeFlutterwavePayment(req.body);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Flutterwave deposit error:', error);
+      res.status(500).json({ error: 'Failed to initialize Flutterwave payment' });
+    }
+  });
+
+  // Real Payment Gateway Routes - Kenya: M-PESA
+  app.post("/api/deposit/kenya/mpesa", async (req, res) => {
+    try {
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const result = await realPaymentGateways.initializeMpesaPayment(req.body);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('M-PESA deposit error:', error);
+      res.status(500).json({ error: 'Failed to initialize M-PESA payment' });
+    }
+  });
+
+  // Real Payment Gateway Routes - South Africa: PayFast
+  app.post("/api/deposit/southafrica/payfast", async (req, res) => {
+    try {
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const result = await realPaymentGateways.initializePayfastPayment(req.body);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('PayFast deposit error:', error);
+      res.status(500).json({ error: 'Failed to initialize PayFast payment' });
+    }
+  });
+
+  // Real Payment Gateway Routes - Crypto: USDT/USDC
+  app.post("/api/deposit/crypto", async (req, res) => {
+    try {
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const result = await realPaymentGateways.initializeCryptoDeposit(req.body);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Crypto deposit error:', error);
+      res.status(500).json({ error: 'Failed to initialize crypto deposit' });
+    }
+  });
+
+  // Payment Verification Routes
+  app.get("/api/deposit/verify/paystack", async (req, res) => {
+    try {
+      const { reference } = req.query;
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const verification = await realPaymentGateways.verifyPaystackPayment(reference as string);
+      
+      if (verification.success) {
+        // Add to user balance
+        await storage.addToUserBalance(verification.userId!, verification.amount!, verification.currency!);
+        res.redirect(`/wallet?success=true&amount=${verification.amount}&currency=${verification.currency}`);
+      } else {
+        res.redirect(`/wallet?success=false&error=payment_failed`);
+      }
+    } catch (error) {
+      console.error('Paystack verification error:', error);
+      res.redirect(`/wallet?success=false&error=verification_failed`);
+    }
+  });
+
+  app.get("/api/deposit/verify/flutterwave", async (req, res) => {
+    try {
+      const { tx_ref } = req.query;
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      const verification = await realPaymentGateways.verifyFlutterwavePayment(tx_ref as string);
+      
+      if (verification.success) {
+        // Add to user balance
+        await storage.addToUserBalance(verification.userId!, verification.amount!, verification.currency!);
+        res.redirect(`/wallet?success=true&amount=${verification.amount}&currency=${verification.currency}`);
+      } else {
+        res.redirect(`/wallet?success=false&error=payment_failed`);
+      }
+    } catch (error) {
+      console.error('Flutterwave verification error:', error);
+      res.redirect(`/wallet?success=false&error=verification_failed`);
+    }
+  });
+
+  // SmaiSika conversion endpoint with real gateway integration
   app.post("/api/wallet/convert-to-smaisika", async (req, res) => {
     try {
       const { amount, currency, userId } = req.body;
@@ -619,17 +730,17 @@ export function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid amount or currency' });
       }
 
-      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
       
-      // Process conversion to SmaiSika
+      // Process conversion to SmaiSika using real FX rates
       const conversionRequest = {
         amount: parseFloat(amount),
         fromCurrency: currency,
-        toCurrency: 'SS',
+        toCurrency: 'SS' as const,
         userId: userId || 'user_123'
       };
 
-      const conversionResponse = await globalPaymentGateways.processConversion(conversionRequest);
+      const conversionResponse = await realPaymentGateways.processConversion(conversionRequest);
 
       console.log(`🔄 SmaiSika conversion: ${amount} ${currency} → ${conversionResponse.toAmount} SS`);
 
@@ -652,16 +763,25 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get FX rates endpoint
+  // Get FX rates endpoint with real payment gateway rates
   app.get("/api/wallet/fx-rates", async (req, res) => {
     try {
-      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
       
-      const currencies = ['NGN', 'GHS', 'KES', 'ZAR', 'USD', 'GBP', 'EUR', 'INR', 'PHP', 'IDR', 'CAD', 'BRL', 'ARS', 'USDT', 'USDC', 'BTC', 'ETH'];
+      const fxRates = realPaymentGateways.getFXRates();
+      const currencies = Object.keys(fxRates);
+      
       const rates = currencies.map(currency => ({
         currency,
-        rate: globalPaymentGateways.getFXRate(currency),
-        symbol: currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency,
+        rate: fxRates[currency],
+        symbol: currency === 'USD' ? '$' : 
+                currency === 'EUR' ? '€' : 
+                currency === 'GBP' ? '£' : 
+                currency === 'NGN' ? '₦' :
+                currency === 'GHS' ? 'GH₵' :
+                currency === 'KES' ? 'KSh' :
+                currency === 'ZAR' ? 'R' :
+                currency,
         lastUpdated: new Date().toISOString()
       }));
 

@@ -26,6 +26,17 @@ export interface IStorage {
   createCandlestick(candlestick: InsertCandlestick): Promise<Candlestick>;
   getCandlestickHistory(symbol: string, interval: string, limit?: number): Promise<Candlestick[]>;
   getLatestCandlestick(symbol: string, interval: string): Promise<Candlestick | undefined>;
+
+  // Wallet methods
+  createDeposit(deposit: any): Promise<any>;
+  updateDepositStatus(id: string, status: string): Promise<void>;
+  addToUserBalance(userId: string, amount: number, currency: string): Promise<void>;
+  deductFromUserBalance(userId: string, amount: number, currency: string): Promise<void>;
+  getUserBalance(userId: string, currency: string): Promise<number>;
+  addToSmaiSikaBalance(userId: string, amount: number): Promise<void>;
+  getSmaiSikaBalance(userId: string): Promise<number>;
+  createConversion(conversion: any): Promise<any>;
+  getUserTransactions(userId: string): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
