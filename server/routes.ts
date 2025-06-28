@@ -1784,5 +1784,25 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // File upload endpoint for branding assets
+  app.post('/api/admin/upload-branding', (req, res) => {
+    try {
+      // In a real implementation, you would handle multipart form data with multer
+      // For now, we'll simulate successful upload
+      const { type } = req.body;
+      
+      // Generate a mock URL (in real implementation, save file and return actual URL)
+      const mockUrl = `/uploads/${type}-${Date.now()}.png`;
+      
+      res.json({
+        success: true,
+        url: mockUrl,
+        message: `${type} uploaded successfully`
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return Promise.resolve(server);
 }

@@ -384,6 +384,67 @@ export default function AdminPanel() {
     }
   };
 
+  // File upload handlers
+  const handleFileUpload = async (file: File, type: 'logo' | 'favicon') => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please select a file smaller than 2MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setUploadingFiles(prev => ({ ...prev, [type]: true }));
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', type);
+
+      const response = await apiRequest('POST', '/api/admin/upload-branding', formData);
+      const result = await response.json();
+
+      if (response.ok) {
+        setUploadedFiles(prev => ({ ...prev, [type]: result.url }));
+        handleConfigUpdate('branding', type === 'logo' ? 'logo_url' : 'favicon_url', result.url);
+        
+        toast({
+          title: "Upload Successful",
+          description: `${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully`,
+        });
+      } else {
+        throw new Error(result.message || 'Upload failed');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload file",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingFiles(prev => ({ ...prev, [type]: false }));
+    }
+  };
+
+  const removeUploadedFile = (type: 'logo' | 'favicon') => {
+    setUploadedFiles(prev => ({ ...prev, [type]: undefined }));
+    handleConfigUpdate('branding', type === 'logo' ? 'logo_url' : 'favicon_url', '');
+  };
+
   const getStatusColor = (value: number, type: 'usage' | 'rate' | 'count') => {
     if (type === 'usage') {
       if (value > 80) return 'text-red-400';
@@ -1258,7 +1319,7 @@ export default function AdminPanel() {
                 <CardTitle className="text-white">Brand Identity</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <Label className="text-gray-300">Application Name</Label>
                     <Input
@@ -1268,14 +1329,89 @@ export default function AdminPanel() {
                       placeholder="Waides KI"
                     />
                   </div>
+                  
                   <div>
-                    <Label className="text-gray-300">Logo URL</Label>
-                    <Input
-                      value={editingConfig.branding?.logo_url ?? config?.branding?.logo_url}
-                      onChange={(e) => handleConfigUpdate('branding', 'logo_url', e.target.value)}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="https://example.com/logo.png"
-                    />
+                    <Label className="text-gray-300">Logo Upload</Label>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'logo')}
+                          className="hidden"
+                          id="logo-upload"
+                        />
+                        <label
+                          htmlFor="logo-upload"
+                          className="flex items-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md cursor-pointer text-sm"
+                        >
+                          {uploadingFiles.logo ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          <span>{uploadingFiles.logo ? 'Uploading...' : 'Upload Logo'}</span>
+                        </label>
+                        {uploadedFiles.logo && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeUploadedFile('logo')}
+                            className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                      {uploadedFiles.logo && (
+                        <div className="flex items-center space-x-2 text-sm text-green-400">
+                          <Image className="w-4 h-4" />
+                          <span>Logo uploaded successfully</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-gray-300">Favicon Upload</Label>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0], 'favicon')}
+                          className="hidden"
+                          id="favicon-upload"
+                        />
+                        <label
+                          htmlFor="favicon-upload"
+                          className="flex items-center space-x-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md cursor-pointer text-sm"
+                        >
+                          {uploadingFiles.favicon ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Upload className="w-4 h-4" />
+                          )}
+                          <span>{uploadingFiles.favicon ? 'Uploading...' : 'Upload Favicon'}</span>
+                        </label>
+                        {uploadedFiles.favicon && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeUploadedFile('favicon')}
+                            className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                      {uploadedFiles.favicon && (
+                        <div className="flex items-center space-x-2 text-sm text-green-400">
+                          <Image className="w-4 h-4" />
+                          <span>Favicon uploaded successfully</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
