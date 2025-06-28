@@ -341,6 +341,82 @@ export default function SmaiSikaWalletPage() {
     });
   };
 
+  const handleSmaiSikaConversion = () => {
+    if (!ssConversionAmount || !targetCurrency) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter amount and select target currency",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const amount = parseFloat(ssConversionAmount);
+    if (amount <= 0 || amount > smaiSikaBalance.balance) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid amount within your balance",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    convertSmaiSikaMutation.mutate({ ssAmount: amount, targetCurrency });
+  };
+
+  // Helper functions for conversion preview
+  const getPreviewRate = (currency: string) => {
+    const rates: Record<string, number> = {
+      'NGN': 1750,  // 1 SS = 1750 NGN (based on 1 SS = 1 USD = 1750 NGN)
+      'USD': 1,     // 1 SS = 1 USD
+      'EUR': 0.92,  // 1 SS = 0.92 EUR
+      'GBP': 0.79,  // 1 SS = 0.79 GBP
+      'GHS': 15.50, // 1 SS = 15.50 GHS
+      'ZAR': 18.20, // 1 SS = 18.20 ZAR
+      'KES': 140,   // 1 SS = 140 KES
+      'UGX': 3700   // 1 SS = 3700 UGX
+    };
+    const rate = rates[currency] || 1;
+    return `1 SS = ${currency} ${rate.toLocaleString()}`;
+  };
+
+  const calculateConversionFee = (amount: number, currency: string) => {
+    const rates: Record<string, number> = {
+      'NGN': 1750, 'USD': 1, 'EUR': 0.92, 'GBP': 0.79,
+      'GHS': 15.50, 'ZAR': 18.20, 'KES': 140, 'UGX': 3700
+    };
+    const rate = rates[currency] || 1;
+    const converted = amount * rate;
+    const fee = converted * 0.025; // 2.5% fee
+    return `${currency} ${fee.toFixed(2)}`;
+  };
+
+  const calculateFinalAmount = (amount: number, currency: string) => {
+    const rates: Record<string, number> = {
+      'NGN': 1750, 'USD': 1, 'EUR': 0.92, 'GBP': 0.79,
+      'GHS': 15.50, 'ZAR': 18.20, 'KES': 140, 'UGX': 3700
+    };
+    const rate = rates[currency] || 1;
+    const converted = amount * rate;
+    const fee = converted * 0.025;
+    const final = converted - fee;
+    return `${currency} ${final.toFixed(2)}`;
+  };
+
+  const getWithdrawalInstructions = (currency: string) => {
+    const instructions: Record<string, string> = {
+      'NGN': 'Funds will be transferred to your Nigerian bank account within 1-2 business days. Ensure your account details are verified.',
+      'USD': 'USD funds can be withdrawn via wire transfer or converted to local currency. Processing time: 2-3 business days.',
+      'EUR': 'EUR transfers to SEPA accounts typically complete within 1 business day. Non-SEPA transfers may take 3-5 days.',
+      'GBP': 'GBP transfers to UK bank accounts usually complete within 2 hours during business hours.',
+      'GHS': 'GHS transfers to Ghanaian banks complete within 24 hours. Mobile money options available.',
+      'ZAR': 'ZAR transfers to South African banks complete within 4-6 hours during business days.',
+      'KES': 'KES can be sent to your Kenyan bank account or M-Pesa wallet within 1-2 hours.',
+      'UGX': 'UGX transfers to Ugandan banks or mobile money wallets complete within 2-4 hours.'
+    };
+    return instructions[currency] || 'Standard international transfer processing times apply.';
+  };
+
   const getGatewayIcon = (type: string) => {
     switch (type) {
       case 'mobile_money': return <Smartphone className="w-4 h-4" />;
