@@ -271,19 +271,16 @@ export function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
-  // Wallet countries endpoint
-  app.get("/api/wallet/countries", (req, res) => {
-    res.json([
-      { code: 'NG', name: 'Nigeria', currency: 'NGN', providers: 8 },
-      { code: 'GH', name: 'Ghana', currency: 'GHS', providers: 5 },
-      { code: 'KE', name: 'Kenya', currency: 'KES', providers: 6 },
-      { code: 'UG', name: 'Uganda', currency: 'UGX', providers: 4 },
-      { code: 'ZA', name: 'South Africa', currency: 'ZAR', providers: 7 },
-      { code: 'US', name: 'United States', currency: 'USD', providers: 12 },
-      { code: 'GB', name: 'United Kingdom', currency: 'GBP', providers: 9 },
-      { code: 'CA', name: 'Canada', currency: 'CAD', providers: 8 },
-      { code: 'AU', name: 'Australia', currency: 'AUD', providers: 6 }
-    ]);
+  // Enhanced wallet countries endpoint with global coverage
+  app.get("/api/wallet/countries", async (req, res) => {
+    try {
+      const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
+      const countries = globalPaymentGateway.getSupportedCountries();
+      res.json(countries);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      res.status(500).json({ error: 'Failed to fetch supported countries' });
+    }
   });
 
   // Wallet payment methods endpoint
@@ -380,24 +377,51 @@ export function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
-  // Add payment method endpoint
-  app.post("/api/wallet/payment-methods", (req, res) => {
+  // Get payment providers for a country
+  app.get("/api/wallet/providers/:countryCode", async (req, res) => {
     try {
-      const { methodType, provider, country, currency, accountIdentifier, displayName } = req.body;
+      const { countryCode } = req.params;
+      const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
+      const providers = globalPaymentGateway.getProvidersByCountry(countryCode);
+      res.json(providers);
+    } catch (error) {
+      console.error('Error fetching providers:', error);
+      res.status(500).json({ error: 'Failed to fetch payment providers' });
+    }
+  });
+
+  // Add payment method endpoint with real provider validation
+  app.post("/api/wallet/payment-methods", async (req, res) => {
+    try {
+      const { providerId, country, accountIdentifier, displayName } = req.body;
       
-      if (!methodType || !provider || !country || !currency || !accountIdentifier || !displayName) {
+      if (!providerId || !country || !accountIdentifier || !displayName) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
-      // Simulate adding payment method
+      const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
+      const provider = globalPaymentGateway.getProvider(providerId);
+      
+      if (!provider) {
+        return res.status(400).json({ error: 'Invalid payment provider' });
+      }
+
+      if (!provider.countries.includes(country)) {
+        return res.status(400).json({ error: 'Provider not available in this country' });
+      }
+
       const newPaymentMethod = {
         id: Date.now(),
-        methodType,
-        provider,
+        providerId,
+        providerName: provider.name,
+        methodType: provider.type,
         country,
-        currency,
+        currency: provider.currencies[0], // Use first supported currency
         accountIdentifier,
         displayName,
+        fees: provider.fees,
+        processingTime: provider.processingTime,
+        logo: provider.logo,
         isActive: true,
         isVerified: false
       };
@@ -413,12 +437,12 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Deposit funds endpoint
-  app.post("/api/wallet/deposit", (req, res) => {
+  // Real-time deposit endpoint with global payment processing
+  app.post("/api/wallet/deposit", async (req, res) => {
     try {
-      const { amount, currency, paymentMethodId, country } = req.body;
+      const { amount, currency, providerId, country, accountDetails } = req.body;
       
-      if (!amount || !currency || !paymentMethodId) {
+      if (!amount || !currency || !providerId || !country || !accountDetails) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
@@ -426,26 +450,100 @@ export function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Amount must be greater than 0' });
       }
 
-      // Simulate deposit processing
-      const transaction = {
-        id: `dep_${Date.now()}`,
-        type: 'deposit',
-        amount: `${currency} ${amount.toLocaleString()}`,
-        date: new Date().toISOString().split('T')[0],
-        status: 'processing',
-        description: `Deposit via mobile money - ${country}`,
-        estimatedCompletion: '2-5 minutes'
+      const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
+      
+      // Validate provider
+      const provider = globalPaymentGateway.getProvider(providerId);
+      if (!provider) {
+        return res.status(400).json({ error: 'Invalid payment provider' });
+      }
+
+      if (!provider.countries.includes(country)) {
+        return res.status(400).json({ error: 'Provider not available in this country' });
+      }
+
+      if (!provider.currencies.includes(currency)) {
+        return res.status(400).json({ error: 'Currency not supported by this provider' });
+      }
+
+      // Process payment with real-time response
+      const paymentRequest = {
+        amount: parseFloat(amount),
+        currency,
+        providerId,
+        userId: 'user_123', // In real app, get from session
+        country,
+        accountDetails,
+        metadata: {
+          source: 'wallet_deposit',
+          timestamp: new Date().toISOString()
+        }
       };
 
+      const paymentResponse = await globalPaymentGateway.processPayment(paymentRequest);
+
+      // Create transaction record
+      const transaction = {
+        id: paymentResponse.transactionId,
+        type: 'deposit',
+        amount: `${currency} ${paymentResponse.amount.toLocaleString()}`,
+        currency: paymentResponse.currency,
+        status: paymentResponse.status,
+        providerId,
+        providerName: provider.name,
+        country,
+        reference: paymentResponse.reference,
+        estimatedTime: paymentResponse.estimatedTime || provider.processingTime,
+        fees: paymentResponse.fees,
+        netAmount: paymentResponse.amount - paymentResponse.fees,
+        paymentUrl: paymentResponse.paymentUrl,
+        instructions: paymentResponse.instructions,
+        date: new Date().toISOString().split('T')[0],
+        description: `Deposit via ${provider.name} - ${country}`,
+        timestamp: new Date().toISOString()
+      };
+
+      console.log(`💰 Deposit initiated: ${transaction.id} - ${provider.name} - ${currency} ${amount}`);
+
       res.json({
-        success: true,
-        message: 'Deposit initiated successfully',
+        success: paymentResponse.success,
+        message: paymentResponse.success ? 'Deposit initiated successfully' : 'Deposit failed',
         transaction,
-        estimatedCompletion: '2-5 minutes'
+        paymentResponse
       });
     } catch (error) {
       console.error('Deposit error:', error);
       res.status(500).json({ error: 'Failed to process deposit' });
+    }
+  });
+
+  // Payment status tracking endpoint
+  app.get("/api/wallet/payment-status/:transactionId", async (req, res) => {
+    try {
+      const { transactionId } = req.params;
+      const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
+      
+      const status = await globalPaymentGateway.getPaymentStatus(transactionId);
+      res.json(status);
+    } catch (error) {
+      console.error('Payment status error:', error);
+      res.status(500).json({ error: 'Failed to get payment status' });
+    }
+  });
+
+  // Real-time payment update webhook simulation
+  app.post("/api/wallet/payment-webhook", async (req, res) => {
+    try {
+      const { transactionId, status, timestamp } = req.body;
+      const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
+      
+      await globalPaymentGateway.simulateWebhookUpdate(transactionId, status);
+      
+      console.log(`🔄 Payment Webhook: ${transactionId} -> ${status} at ${timestamp}`);
+      res.json({ success: true, message: 'Webhook processed' });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ error: 'Failed to process webhook' });
     }
   });
 
