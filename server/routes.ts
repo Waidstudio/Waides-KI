@@ -1703,79 +1703,78 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Working Mega Admin Configuration API endpoints (500+ settings)
-  app.get('/api/mega-admin-config', (req, res) => {
+  // Ultra Mega Admin Configuration API endpoints (6000+ settings per category)
+  app.get('/api/mega-admin-config', async (req, res) => {
     try {
-      // Using workingMegaAdminService
-      res.json(workingMegaAdminService.getConfig());
+      // Import ultra mega admin service with 6000+ settings per category
+      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
+      res.json(ultraMegaAdminService.getConfig());
     } catch (error) {
-      console.error('Error fetching mega admin configuration:', error);
-      res.status(500).json({ error: 'Failed to fetch mega admin configuration' });
+      console.error('Error fetching ultra mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to fetch ultra mega admin configuration' });
     }
   });
 
-  app.get('/api/mega-admin-config/stats', (req, res) => {
+  app.get('/api/mega-admin-config/stats', async (req, res) => {
     try {
-      // Using workingMegaAdminService
-      res.json(workingMegaAdminService.getStats());
+      // Import ultra mega admin service with 6000+ settings per category
+      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
+      res.json(ultraMegaAdminService.getStatistics());
     } catch (error) {
-      console.error('Error fetching mega admin stats:', error);
-      res.status(500).json({ error: 'Failed to fetch mega admin stats' });
+      console.error('Error fetching ultra mega admin stats:', error);
+      res.status(500).json({ error: 'Failed to fetch ultra mega admin stats' });
     }
   });
 
-  app.get('/api/mega-admin-config/:section', (req, res) => {
+  app.get('/api/mega-admin-config/:section', async (req, res) => {
     try {
-      // Using workingMegaAdminService
-      const config = workingMegaAdminService.getConfig();
-      const section = config[req.params.section as keyof typeof config];
+      // Import ultra mega admin service with 6000+ settings per category
+      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
+      const section = ultraMegaAdminService.getSection(req.params.section);
       if (!section) {
         return res.status(404).json({ error: 'Section not found' });
       }
       res.json(section);
     } catch (error) {
-      console.error('Error fetching mega admin section:', error);
-      res.status(500).json({ error: 'Failed to fetch mega admin section' });
+      console.error('Error fetching ultra mega admin section:', error);
+      res.status(500).json({ error: 'Failed to fetch ultra mega admin section' });
     }
   });
 
-  app.put('/api/mega-admin-config/:section', (req, res) => {
+  app.put('/api/mega-admin-config/:section', async (req, res) => {
     try {
-      // Using workingMegaAdminService
-      workingMegaAdminService.updateSection(req.params.section, req.body);
-      res.json({ success: true, message: 'Section updated successfully' });
+      // Import ultra mega admin service with 6000+ settings per category
+      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
+      ultraMegaAdminService.updateSection(req.params.section, req.body);
+      res.json({ success: true, message: 'Ultra mega section updated successfully' });
     } catch (error) {
-      console.error('Error updating mega admin section:', error);
-      res.status(500).json({ error: 'Failed to update mega admin section' });
+      console.error('Error updating ultra mega admin section:', error);
+      res.status(500).json({ error: 'Failed to update ultra mega admin section' });
     }
   });
 
-  app.put('/api/mega-admin-config/:section/:key', (req, res) => {
+  app.put('/api/mega-admin-config/:section/:key', async (req, res) => {
     try {
-      // Using workingMegaAdminService
+      // Import ultra mega admin service with 6000+ settings per category
+      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
       const { value } = req.body;
-      // Update specific setting in section
-      const config = workingMegaAdminService.getConfig();
-      const sectionData = config[req.params.section as keyof typeof config];
-      if (sectionData && typeof sectionData === 'object') {
-        (sectionData as any)[req.params.key] = value;
-        workingMegaAdminService.updateSection(req.params.section, sectionData);
-      }
-      res.json({ success: true, message: 'Setting updated successfully' });
+      ultraMegaAdminService.updateSetting(req.params.section, req.params.key, value);
+      res.json({ success: true, message: 'Ultra mega setting updated successfully' });
     } catch (error) {
-      console.error('Error updating mega admin setting:', error);
-      res.status(500).json({ error: 'Failed to update mega admin setting' });
+      console.error('Error updating ultra mega admin setting:', error);
+      res.status(500).json({ error: 'Failed to update ultra mega admin setting' });
     }
   });
 
-  app.get('/api/mega-admin-config/search/:query', (req, res) => {
+  app.get('/api/mega-admin-config/search/:query', async (req, res) => {
     try {
-      // Using workingMegaAdminService
-      const results = workingMegaAdminService.searchSettings(req.params.query);
+      // Import ultra mega admin service with 6000+ settings per category
+      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
+      const results = ultraMegaAdminService.searchSettings(req.params.query);
       res.json(results);
     } catch (error) {
-      console.error('Error searching mega admin settings:', error);
-      res.status(500).json({ error: 'Failed to search mega admin settings' });
+      console.error('Error searching ultra mega admin settings:', error);
+      res.status(500).json({ error: 'Failed to search ultra mega admin settings' });
     }
   });
 
