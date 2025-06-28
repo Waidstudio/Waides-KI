@@ -2048,9 +2048,18 @@ export function FuturisticAdminPanel() {
                   <p className="text-white/60 text-sm mt-1">Configure and control WaidBot, WaidBot Pro, and Full Engine systems</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                  <Badge variant="outline" className={tradingBotConfig?.systemStatus?.liveTradingActive ? "border-green-500 text-green-400" : "border-red-500 text-red-400"}>
-                    Live Trading: {tradingBotConfig?.systemStatus?.liveTradingActive ? 'Active' : 'Stopped'}
-                  </Badge>
+                  {(() => {
+                    const isAnyBotActive = (
+                      (tradingBotConfig?.waidbot?.enabled && tradingBotConfig?.waidbot?.autoTrading) ||
+                      (tradingBotConfig?.waidbotPro?.enabled && tradingBotConfig?.waidbotPro?.autoTrading) ||
+                      (tradingBotConfig?.fullEngine?.enabled && tradingBotConfig?.fullEngine?.autoTrading)
+                    );
+                    return (
+                      <Badge variant="outline" className={isAnyBotActive ? "border-green-500 text-green-400" : "border-red-500 text-red-400"}>
+                        Live Trading: {isAnyBotActive ? 'Active' : 'Stopped'}
+                      </Badge>
+                    );
+                  })()}
                   <Button 
                     className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
                     onClick={() => emergencyStopMutation.mutate()}
