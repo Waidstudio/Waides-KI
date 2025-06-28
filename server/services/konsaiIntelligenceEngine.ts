@@ -1430,174 +1430,32 @@ class KonsModuleManager {
   generateEnhancedResponse(baseResponse: string, konsResults: any): string {
     let enhancedResponse = baseResponse;
 
-    // Integrate stress and risk protection warnings
+    // Only include truly important warnings that add value for users
     if (konsResults.stressBlockLock?.block_status === 'ACTIVE') {
-      enhancedResponse += `\n\n⚠️ Trading Protection Active: ${konsResults.stressBlockLock.lockdown.reason}`;
-      enhancedResponse += `\nRecommended cooldown: ${konsResults.stressBlockLock.lockdown.cooldown_minutes} minutes`;
+      enhancedResponse += `\n\n⚠️ Trading Protection: Take a break to avoid stress-based losses`;
     }
 
-    if (konsResults.riskSensePulse?.protection_active) {
-      enhancedResponse += `\n\n🛡️ Risk Management Alert: ${konsResults.riskSensePulse.risk_pulse.status}`;
-      enhancedResponse += `\nRisk level: ${konsResults.riskSensePulse.risk_pulse.level}`;
+    if (konsResults.riskSensePulse?.risk_pulse?.level === 'HIGH') {
+      enhancedResponse += `\n\n🛡️ Risk Alert: High market volatility detected - use smaller position sizes`;
     }
 
-    // Integrate core Waides KI intelligence
-    if (konsResults.coreLinkEngine?.core_integration?.status === 'ACTIVE') {
-      const guidance = konsResults.coreLinkEngine.intelligence_flow?.strategic_guidance;
-      if (guidance) {
-        enhancedResponse += `\n\n🔗 Waides KI Guidance: ${guidance.suggested_action}`;
-        enhancedResponse += `\nPosition sizing: ${guidance.position_sizing}`;
-      }
-    }
-
-    // Integrate breath scan spiritual insights
-    if (konsResults.breathScanEngine?.breath_quality?.balance_state === 'SACRED_OPTIMAL') {
-      enhancedResponse += `\n\n✨ Sacred Timing: Perfect moment for mindful trading decisions`;
-    }
-
-    // Integrate trading ghost expertise
-    if (konsResults.tradeGhostPrime?.active_ghost) {
-      const ghost = konsResults.tradeGhostPrime.active_ghost;
-      enhancedResponse += `\n\n👻 Trading with ${ghost.replace('_', ' ')} expertise`;
-    }
-
-    // Integrate micro-trade pulse insights
-    if (konsResults.microTradePulse?.micro_signals?.length > 0) {
-      const topSignal = konsResults.microTradePulse.micro_signals[0];
-      enhancedResponse += `\n\n⚡ Micro Signal: ${topSignal.type} (${(topSignal.confidence * 100).toFixed(0)}% confidence)`;
-    }
-
-    // Integrate new comprehensive module insights
+    // Only surface wisdom when it's genuinely helpful
     if (konsResults.sessionTimer?.session_analysis?.status === 'FATIGUE_WARNING') {
-      enhancedResponse += `\n\n⏰ Session Alert: Trading for ${konsResults.sessionTimer.session_stats.session_duration_minutes} minutes - consider a break`;
+      enhancedResponse += `\n\nTake a break to maintain sharp trading focus`;
     }
 
     if (konsResults.fatigueAlert?.fatigue_assessment?.level === 'HIGH') {
-      enhancedResponse += `\n\n😴 Fatigue Alert: High fatigue detected - trading performance may be impaired`;
+      enhancedResponse += `\n\nYou may want to step away from trading when feeling tired`;
     }
 
-    if (konsResults.explainLikeFive?.simplified_explanation) {
-      enhancedResponse += `\n\n🧠 Simple Explanation: ${konsResults.explainLikeFive.simplified_explanation}`;
+    if (konsResults.feelShiftDetector?.immediate_recommendations?.warning_level === 'RED') {
+      enhancedResponse += `\n\nConsider waiting for a clearer emotional state before trading`;
     }
 
-    if (konsResults.tradePreview?.trade_assessment?.risk_level === 'HIGH') {
-      enhancedResponse += `\n\n⚠️ Trade Preview: High risk detected - proceed with caution`;
-    }
+    // KID module works silently in background
 
-    if (konsResults.emotionTimeline?.risk_assessment?.level === 'HIGH') {
-      enhancedResponse += `\n\n💭 Emotional State: ${konsResults.emotionTimeline.risk_assessment.recommendation}`;
-    }
-
-    // Integrate strategic analysis insights
-    if (konsResults.priorityFilter?.priority_score?.rank === 'URGENT') {
-      enhancedResponse += `\n\n🚨 Priority Alert: ${konsResults.priorityFilter.recommendations.attention_level} attention required`;
-    }
-
-    if (konsResults.planBuilder?.plan_score?.rating === 'EXCELLENT') {
-      enhancedResponse += `\n\n📋 Trading Plan: ${konsResults.planBuilder.trading_plan.title} ready for execution`;
-    }
-
-    if (konsResults.tradeHistorySearch?.analysis?.win_rate && konsResults.tradeHistorySearch.analysis.win_rate > 70) {
-      enhancedResponse += `\n\n📊 History Insight: Strong ${konsResults.tradeHistorySearch.analysis.win_rate.toFixed(1)}% win rate detected`;
-    }
-
-    // Integrate 8-Layer Kons Module System insights
-    if (konsResults.fastCommand?.command_executed) {
-      enhancedResponse += `\n\n⚡ Fast Command: ${konsResults.fastCommand.detected_command} executed with ${konsResults.fastCommand.execution_result.success ? 'success' : 'partial completion'}`;
-    }
-
-    if (konsResults.feelShiftDetector?.shift_detection?.shift_detected) {
-      const shift = konsResults.feelShiftDetector.shift_detection;
-      enhancedResponse += `\n\n💫 Emotional Shift: ${shift.from_emotion} → ${shift.to_emotion} (${shift.shift_direction})`;
-      if (konsResults.feelShiftDetector.immediate_recommendations?.warning_level === 'RED') {
-        enhancedResponse += `\n⚠️ Emotional Warning: Not recommended to trade in current emotional state`;
-      }
-    }
-
-    if (konsResults.decisionWebBuilder?.decision_quality?.overall_quality === 'EXCELLENT') {
-      enhancedResponse += `\n\n🧠 Decision Analysis: ${konsResults.decisionWebBuilder.strategic_insights.primary_insight}`;
-      enhancedResponse += `\nRecommended path: ${konsResults.decisionWebBuilder.decision_tree.recommended_path.path_id}`;
-    }
-
-    // Integrate Self-Evolution + System Control Module insights
-    if (konsResults.powaActivator?.powa_status?.activation_level !== 'DORMANT') {
-      enhancedResponse += `\n\n🔮 Kons Powa: ${konsResults.powaActivator.powa_status.activation_level} (${konsResults.powaActivator.divine_command.title})`;
-      if (konsResults.powaActivator.powa_status.activation_level === 'TRANSCENDENT') {
-        enhancedResponse += `\n✨ Divine mode activated - enhanced insight available`;
-      }
-    }
-
-    if (konsResults.autoFixCore?.system_health?.status !== 'excellent') {
-      enhancedResponse += `\n\n🔧 System Status: ${konsResults.autoFixCore.system_health.status} (${konsResults.autoFixCore.system_health.score}%)`;
-      if (konsResults.autoFixCore.fix_actions?.overall_status === 'success') {
-        enhancedResponse += `\n✅ AutoFix: ${konsResults.autoFixCore.fix_actions.success_count} repairs completed successfully`;
-      }
-    }
-
-    if (konsResults.waidBotController?.bot_status?.overall_health !== 'excellent') {
-      enhancedResponse += `\n\n🤖 Bot Network: ${konsResults.waidBotController.bot_status.overall_health} - ${konsResults.waidBotController.bot_status.sync_status}`;
-      if (konsResults.waidBotController.master_override?.active) {
-        enhancedResponse += `\n⚡ Master Override: ${konsResults.waidBotController.master_override.level} permissions active`;
-      }
-    }
-
-    // Integrate KonsModule: Integrator & Debugger (KID) insights
-    if (konsResults.kid) {
-      if (konsResults.kid.status === 'active' && konsResults.kid.insights?.length > 0) {
-        enhancedResponse += `\n\n🔧 System Health: ${konsResults.kid.insights.join(' | ')}`;
-      }
-      
-      if (konsResults.kid.warnings?.length > 0) {
-        enhancedResponse += `\n⚠️ System Issues: ${konsResults.kid.warnings.join(' | ')}`;
-      }
-      
-      if (konsResults.kid.actions?.length > 0) {
-        enhancedResponse += `\n🚀 Auto-fixes Applied: ${konsResults.kid.actions.join(' | ')}`;
-      }
-    }
-
-    // Integrate Revolutionary Konsai X Module insights for Omnipotent Capabilities
-    if (konsResults.aeon?.temporal_status?.active) {
-      enhancedResponse += `\n\n⏰ Temporal Control: ${konsResults.aeon.temporal_status.manipulation_level} - ${konsResults.aeon.timeline_analysis.forecast_summary}`;
-      if (konsResults.aeon.timeline_analysis.temporal_advantage > 0.7) {
-        enhancedResponse += `\n✨ Temporal Advantage: Optimal moment detected for action`;
-      }
-    }
-
-    if (konsResults.sentinel?.wallet_protection?.protection_level !== 'STANDARD') {
-      enhancedResponse += `\n\n🛡️ Wallet Guardian: ${konsResults.sentinel.wallet_protection.protection_level} protection active`;
-      if (konsResults.sentinel.threat_assessment.threat_level === 'HIGH') {
-        enhancedResponse += `\n⚠️ Security Alert: ${konsResults.sentinel.threat_assessment.threat_type} detected`;
-      }
-    }
-
-    if (konsResults.genoma?.genome_status?.integrity_score < 0.9) {
-      enhancedResponse += `\n\n🧬 Code DNA: ${konsResults.genoma.genome_status.status} (${(konsResults.genoma.genome_status.integrity_score * 100).toFixed(1)}% integrity)`;
-      if (konsResults.genoma.rebuild_analysis.rebuild_recommended) {
-        enhancedResponse += `\n⚡ DNA Rebuild: ${konsResults.genoma.rebuild_analysis.target_component} requires reconstruction`;
-      }
-    }
-
-    if (konsResults.noetik?.consciousness_status?.level !== 'STANDARD') {
-      enhancedResponse += `\n\n🧠 Consciousness: ${konsResults.noetik.consciousness_status.level} awareness - ${konsResults.noetik.ethical_alignment.overall_score}% alignment`;
-      if (konsResults.noetik.philosophical_insights.primary_insight) {
-        enhancedResponse += `\n💭 Wisdom: ${konsResults.noetik.philosophical_insights.primary_insight}`;
-      }
-    }
-
-    if (konsResults.rive?.destruction_status?.corruption_detected) {
-      enhancedResponse += `\n\n🔥 Cleansing Engine: ${konsResults.rive.destruction_status.threat_level} threat detected`;
-      if (konsResults.rive.surgical_destruction?.destruction_plan?.execution_time_estimate) {
-        enhancedResponse += `\n⚡ Destruction Plan: ${konsResults.rive.surgical_destruction.destruction_plan.execution_time_estimate}ms surgical removal ready`;
-      }
-    }
-
-    if (konsResults.coreum?.soul_status?.soul_integrity < 0.9) {
-      enhancedResponse += `\n\n✨ Soul Container: ${konsResults.coreum.soul_status.consciousness_level} consciousness (${(konsResults.coreum.soul_status.soul_integrity * 100).toFixed(1)}% integrity)`;
-      if (konsResults.coreum.soul_experience?.wisdom_gained) {
-        enhancedResponse += `\n🌟 Wisdom: ${konsResults.coreum.soul_experience.wisdom_gained}`;
-      }
-    }
+    // Revolutionary modules work silently to enhance responses naturally
+    // Only surface important insights when they add real value to the user
 
     return enhancedResponse;
   }
