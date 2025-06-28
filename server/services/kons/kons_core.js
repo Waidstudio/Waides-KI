@@ -81,6 +81,7 @@ class KonsCore extends EventEmitter {
 
   async initializeDataFlow() {
     // Setup data flow channels between modules
+    if (!this.dataFlow) this.dataFlow = new Map();
     this.dataFlow.set('sensor_data', {
       sources: ['kons_sense', 'kons_ais', 'kons_reach'],
       destinations: ['kons_mind', 'kons_plan', 'kons_react'],
