@@ -99,6 +99,29 @@ interface AppConfiguration {
   };
 }
 
+const formatSettingTitle = (key: string): string => {
+  const titleMap: Record<string, string> = {
+    'app_name': 'Application Name',
+    'app_version': 'Version',
+    'debug_mode': 'Debug Mode',
+    'maintenance_mode': 'Maintenance Mode',
+    'auto_trading_enabled': 'Automatic Trading',
+    'manual_trading_enabled': 'Manual Trading',
+    'encryption_enabled': 'Data Encryption',
+    'authentication_enabled': 'User Authentication',
+    'dark_theme': 'Dark Theme',
+    'light_theme': 'Light Theme',
+    'wallet_enabled': 'Wallet Features',
+    'konsai_enabled': 'KonsAi Intelligence',
+    'email_notifications': 'Email Notifications',
+    'sms_notifications': 'SMS Notifications',
+    'performance_monitoring': 'Performance Monitoring',
+    'error_tracking': 'Error Tracking'
+  };
+  
+  return titleMap[key] || key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 const SECTION_ICONS = {
   system: Database,
   trading: DollarSign,
@@ -316,7 +339,7 @@ export default function MobileResponsiveAdminApp() {
       </SheetTrigger>
       <SheetContent side="left" className="w-80 bg-gray-900 border-gray-800">
         <SheetHeader>
-          <SheetTitle className="text-white">Admin Navigation</SheetTitle>
+          <SheetTitle className="text-white">Navigation Menu</SheetTitle>
         </SheetHeader>
         <div className="mt-6 space-y-4">
           <div className="grid grid-cols-1 gap-2">
@@ -348,8 +371,8 @@ export default function MobileResponsiveAdminApp() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <h2 className="text-xl font-bold text-white">Welcome to Your Control Center</h2>
-          <p className="text-gray-400">Setting up your personalized dashboard...</p>
+          <h2 className="text-xl font-bold text-white">Welcome to Your Settings Dashboard</h2>
+          <p className="text-gray-400">Preparing your customization tools...</p>
         </div>
       </div>
     );
@@ -382,7 +405,7 @@ export default function MobileResponsiveAdminApp() {
         {/* Desktop sidebar - hidden on mobile */}
         <div className="hidden lg:block w-80 bg-gray-900 border-r border-gray-800 h-screen overflow-y-auto">
           <div className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Settings Categories</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Customize Your Platform</h3>
             <div className="space-y-2">
               {Object.keys(SECTION_ICONS).map((section) => {
                 const Icon = SECTION_ICONS[section as keyof typeof SECTION_ICONS];
@@ -425,19 +448,19 @@ export default function MobileResponsiveAdminApp() {
               <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-2xl bg-gray-800">
                 <TabsTrigger value="overview" className="text-xs sm:text-sm">
                   <Monitor className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Overview</span>
+                  <span className="hidden sm:inline">Dashboard</span>
                 </TabsTrigger>
                 <TabsTrigger value="config" className="text-xs sm:text-sm">
                   <Settings className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Config</span>
+                  <span className="hidden sm:inline">Settings</span>
                 </TabsTrigger>
                 <TabsTrigger value="control" className="text-xs sm:text-sm">
                   <Cpu className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Control</span>
+                  <span className="hidden sm:inline">Features</span>
                 </TabsTrigger>
                 <TabsTrigger value="branding" className="text-xs sm:text-sm">
                   <Palette className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Brand</span>
+                  <span className="hidden sm:inline">Appearance</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -470,7 +493,8 @@ export default function MobileResponsiveAdminApp() {
 
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="text-lg sm:text-xl text-white">System Status</CardTitle>
+                    <CardTitle className="text-lg sm:text-xl text-white">Platform Overview</CardTitle>
+                    <CardDescription>Your Waides KI platform is running smoothly</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -478,19 +502,19 @@ export default function MobileResponsiveAdminApp() {
                         <div className="text-xl sm:text-2xl font-bold text-green-400">
                           {megaConfig ? Object.values(megaConfig).reduce((total, section) => total + Object.keys(section).length, 0) : 0}
                         </div>
-                        <div className="text-xs sm:text-sm text-gray-400">Total Settings</div>
+                        <div className="text-xs sm:text-sm text-gray-400">Settings Available</div>
                       </div>
                       <div className="text-center">
                         <div className="text-xl sm:text-2xl font-bold text-blue-400">9</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Config Sections</div>
+                        <div className="text-xs sm:text-sm text-gray-400">Categories</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xl sm:text-2xl font-bold text-purple-400">100%</div>
-                        <div className="text-xs sm:text-sm text-gray-400">System Health</div>
+                        <div className="text-xl sm:text-2xl font-bold text-purple-400">Excellent</div>
+                        <div className="text-xs sm:text-sm text-gray-400">Performance</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xl sm:text-2xl font-bold text-cyan-400">Active</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Status</div>
+                        <div className="text-xl sm:text-2xl font-bold text-cyan-400">Online</div>
+                        <div className="text-xs sm:text-sm text-gray-400">Platform Status</div>
                       </div>
                     </div>
                   </CardContent>
