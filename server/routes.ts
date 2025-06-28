@@ -1026,6 +1026,113 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced Currency Conversion Endpoints
+  
+  // Get available currencies for conversion
+  app.get("/api/currency/available", async (req, res) => {
+    try {
+      const { currencyConversionService } = await import("./services/currencyConversionService.js");
+      const currencies = currencyConversionService.getAvailableCurrencies();
+      res.json({
+        success: true,
+        currencies,
+        totalCurrencies: currencies.length
+      });
+    } catch (error) {
+      console.error('Available currencies error:', error);
+      res.status(500).json({ error: 'Failed to get available currencies' });
+    }
+  });
+
+  // Get current exchange rates
+  app.get("/api/currency/rates", async (req, res) => {
+    try {
+      const { currencyConversionService } = await import("./services/currencyConversionService.js");
+      const rates = currencyConversionService.getExchangeRates();
+      res.json({
+        success: true,
+        rates,
+        baseCurrency: "USD",
+        timestamp: new Date().toISOString(),
+        note: "SmaiSika (SS) maintains fixed 1:1 rate with USD"
+      });
+    } catch (error) {
+      console.error('Exchange rates error:', error);
+      res.status(500).json({ error: 'Failed to get exchange rates' });
+    }
+  });
+
+  // Convert currency
+  app.post("/api/currency/convert", async (req, res) => {
+    try {
+      const { currencyConversionService } = await import("./services/currencyConversionService.js");
+      const { fromCurrency, toCurrency, amount, userId } = req.body;
+      
+      if (!fromCurrency || !toCurrency || !amount) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: fromCurrency, toCurrency, amount' 
+        });
+      }
+
+      if (amount <= 0) {
+        return res.status(400).json({ 
+          error: 'Amount must be greater than 0' 
+        });
+      }
+
+      const result = await currencyConversionService.convertCurrency({
+        fromCurrency,
+        toCurrency,
+        amount,
+        userId
+      });
+
+      if (!result.success) {
+        return res.status(400).json({ 
+          error: result.message || 'Conversion failed' 
+        });
+      }
+
+      res.json(result);
+    } catch (error) {
+      console.error('Currency conversion error:', error);
+      res.status(500).json({ error: 'Failed to process currency conversion' });
+    }
+  });
+
+  // Convert SmaiSika to local currency
+  app.post("/api/currency/convert-smaisika", async (req, res) => {
+    try {
+      const { currencyConversionService } = await import("./services/currencyConversionService.js");
+      const { ssAmount, targetCurrency, userId } = req.body;
+      
+      if (!ssAmount || !targetCurrency) {
+        return res.status(400).json({ 
+          error: 'Missing required fields: ssAmount, targetCurrency' 
+        });
+      }
+
+      if (ssAmount <= 0) {
+        return res.status(400).json({ 
+          error: 'SmaiSika amount must be greater than 0' 
+        });
+      }
+
+      const result = await currencyConversionService.convertSmaiSikaToLocal(
+        ssAmount, 
+        targetCurrency, 
+        userId
+      );
+
+      res.json(result);
+    } catch (error) {
+      console.error('SmaiSika conversion error:', error);
+      res.status(500).json({ 
+        error: error.message || 'Failed to convert SmaiSika to local currency' 
+      });
+    }
+  });
+
   // Virtual Account Management Endpoints
   
   // Get all virtual account providers

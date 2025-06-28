@@ -262,6 +262,16 @@ export class DatabaseStorage implements IStorage {
     return smaiBalances[userId] || 0;
   }
 
+  async addWalletTransaction(transaction: any): Promise<void> {
+    const transactions = this.walletData.get('transactions') || [];
+    transactions.push({
+      ...transaction,
+      timestamp: transaction.timestamp || new Date().toISOString()
+    });
+    this.walletData.set('transactions', transactions);
+    console.log(`📝 Transaction recorded: ${transaction.id} - ${transaction.description}`);
+  }
+
   async createConversion(conversion: any): Promise<any> {
     const conversions = this.walletData.get('conversions') || [];
     conversions.push({
