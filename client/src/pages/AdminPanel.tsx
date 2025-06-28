@@ -65,7 +65,10 @@ import {
   Languages,
   Share2,
   GitBranch,
-  PieChart
+  PieChart,
+  Upload,
+  ImageIcon,
+  X
 } from 'lucide-react';
 
 interface AdminConfig {
@@ -274,6 +277,8 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [editingConfig, setEditingConfig] = useState<Partial<AdminConfig>>({});
   const [showPasswords, setShowPasswords] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState<{ logo: boolean; favicon: boolean }>({ logo: false, favicon: false });
+  const [uploadedFiles, setUploadedFiles] = useState<{ logo?: string; favicon?: string }>({});
 
   // Fetch admin configuration
   const { data: config, isLoading: configLoading } = useQuery({
