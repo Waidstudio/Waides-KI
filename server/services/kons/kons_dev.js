@@ -6,8 +6,8 @@
  * auto-spec creation, performance monitoring, and predictive thinking.
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 class KonsDev {
   constructor() {
@@ -607,4 +607,4 @@ class KonsDev {
   }
 }
 
-module.exports = { KonsDev };
+export { KonsDev };
