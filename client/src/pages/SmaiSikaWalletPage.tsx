@@ -109,7 +109,10 @@ export default function SmaiSikaWalletPage() {
 
   // Fetch gateways for selected country
   const { data: gateways = [] } = useQuery<Gateway[]>({
-    queryKey: ['/api/wallet/gateways', selectedCountry],
+    queryKey: ['/api/wallet/gateways'],
+    queryFn: () => selectedCountry 
+      ? apiRequest('GET', `/api/wallet/gateways?country=${selectedCountry}`)
+      : apiRequest('GET', '/api/wallet/gateways'),
     enabled: !!selectedCountry,
     staleTime: 1000 * 60 * 5
   });
@@ -166,7 +169,6 @@ export default function SmaiSikaWalletPage() {
     setDepositProgress(0);
     setSelectedProvider('');
     setDepositAmount('');
-    setAccountDetails('');
     setRealTimeInstructions('');
   };
 
@@ -493,20 +495,9 @@ export default function SmaiSikaWalletPage() {
                         />
                       </div>
 
-                      <div className="space-y-2">
-                        <Label>Account Details</Label>
-                        <Input
-                          type="text"
-                          placeholder="Phone number, account number, or wallet address"
-                          value={accountDetails}
-                          onChange={(e) => setAccountDetails(e.target.value)}
-                          className="bg-gray-700 border-gray-600"
-                        />
-                      </div>
-
                       <Button 
                         onClick={handleDeposit}
-                        disabled={!depositAmount || !selectedGateway || !accountDetails || processDepositMutation.isPending}
+                        disabled={!depositAmount || !selectedGateway || processDepositMutation.isPending || depositStep >= 5}
                         className="w-full bg-green-600 hover:bg-green-700"
                       >
                         {processDepositMutation.isPending ? (

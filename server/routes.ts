@@ -377,6 +377,165 @@ export function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
+  // Get all payment gateways (used by frontend without country code)
+  app.get("/api/wallet/gateways", async (req, res) => {
+    try {
+      const { country } = req.query;
+      
+      // Enhanced payment gateways including comprehensive debit/credit card options
+      const allGateways = [
+        // Debit/Credit Card Options (Global)
+        {
+          id: 'visa_global',
+          name: 'Visa Card',
+          type: 'card',
+          countries: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'NG', 'ZA', 'KE', 'GH'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD', 'EUR', 'NGN', 'ZAR', 'KES', 'GHS'],
+          fees: { fixed: 0.30, percentage: 2.9 },
+          processingTime: '2-5 minutes',
+          isActive: true
+        },
+        {
+          id: 'mastercard_global',
+          name: 'Mastercard',
+          type: 'card',
+          countries: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'NG', 'ZA', 'KE', 'GH'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD', 'EUR', 'NGN', 'ZAR', 'KES', 'GHS'],
+          fees: { fixed: 0.30, percentage: 2.9 },
+          processingTime: '2-5 minutes',
+          isActive: true
+        },
+        {
+          id: 'amex_global',
+          name: 'American Express',
+          type: 'card',
+          countries: ['US', 'GB', 'CA', 'AU', 'DE', 'FR'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD', 'EUR'],
+          fees: { fixed: 0.30, percentage: 3.5 },
+          processingTime: '2-5 minutes',
+          isActive: true
+        },
+        {
+          id: 'discover_us',
+          name: 'Discover Card',
+          type: 'card',
+          countries: ['US'],
+          currencies: ['USD'],
+          fees: { fixed: 0.30, percentage: 2.9 },
+          processingTime: '2-5 minutes',
+          isActive: true
+        },
+        // Mobile Money
+        {
+          id: 'mtn_momo',
+          name: 'MTN Mobile Money',
+          type: 'mobile_money',
+          countries: ['NG', 'GH', 'UG', 'RW'],
+          currencies: ['NGN', 'GHS', 'UGX', 'RWF'],
+          fees: { fixed: 0, percentage: 1.5 },
+          processingTime: '2-5 minutes',
+          isActive: true
+        },
+        {
+          id: 'airtel_money',
+          name: 'Airtel Money',
+          type: 'mobile_money',
+          countries: ['NG', 'KE', 'UG', 'TZ'],
+          currencies: ['NGN', 'KES', 'UGX', 'TZS'],
+          fees: { fixed: 0, percentage: 1.8 },
+          processingTime: '2-5 minutes',
+          isActive: true
+        },
+        {
+          id: 'mpesa',
+          name: 'M-Pesa',
+          type: 'mobile_money',
+          countries: ['KE', 'TZ', 'UG'],
+          currencies: ['KES', 'TZS', 'UGX'],
+          fees: { fixed: 0, percentage: 1.2 },
+          processingTime: '1-3 minutes',
+          isActive: true
+        },
+        // Bank Transfer
+        {
+          id: 'bank_transfer',
+          name: 'Bank Transfer',
+          type: 'bank_transfer',
+          countries: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'NG', 'ZA', 'KE', 'GH'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD', 'EUR', 'NGN', 'ZAR', 'KES', 'GHS'],
+          fees: { fixed: 5.00, percentage: 0.5 },
+          processingTime: '1-3 business days',
+          isActive: true
+        },
+        // Digital Wallets
+        {
+          id: 'paypal',
+          name: 'PayPal',
+          type: 'digital_wallet',
+          countries: ['US', 'GB', 'CA', 'AU', 'DE', 'FR'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD', 'EUR'],
+          fees: { fixed: 0.30, percentage: 3.4 },
+          processingTime: '3-7 minutes',
+          isActive: true
+        },
+        {
+          id: 'apple_pay',
+          name: 'Apple Pay',
+          type: 'digital_wallet',
+          countries: ['US', 'GB', 'CA', 'AU'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD'],
+          fees: { fixed: 0.30, percentage: 2.9 },
+          processingTime: '1-2 minutes',
+          isActive: true
+        },
+        {
+          id: 'google_pay',
+          name: 'Google Pay',
+          type: 'digital_wallet',
+          countries: ['US', 'GB', 'CA', 'AU', 'IN'],
+          currencies: ['USD', 'GBP', 'CAD', 'AUD', 'INR'],
+          fees: { fixed: 0.30, percentage: 2.9 },
+          processingTime: '1-2 minutes',
+          isActive: true
+        },
+        // Crypto
+        {
+          id: 'crypto_usdt',
+          name: 'USDT (Tether)',
+          type: 'crypto',
+          countries: ['GLOBAL'],
+          currencies: ['USDT'],
+          fees: { fixed: 1.00, percentage: 0.1 },
+          processingTime: '5-15 minutes',
+          isActive: true
+        },
+        {
+          id: 'crypto_usdc',
+          name: 'USDC (USD Coin)',
+          type: 'crypto',
+          countries: ['GLOBAL'],
+          currencies: ['USDC'],
+          fees: { fixed: 1.00, percentage: 0.1 },
+          processingTime: '5-15 minutes',
+          isActive: true
+        }
+      ];
+
+      // Filter by country if specified
+      if (country) {
+        const filteredGateways = allGateways.filter(gateway => 
+          gateway.countries.includes(country) || gateway.countries.includes('GLOBAL')
+        );
+        res.json(filteredGateways);
+      } else {
+        res.json(allGateways);
+      }
+    } catch (error) {
+      console.error('Error fetching gateways:', error);
+      res.status(500).json({ error: 'Failed to fetch payment gateways' });
+    }
+  });
+
   // Get global payment gateways by country
   app.get("/api/wallet/gateways/:countryCode", async (req, res) => {
     try {
