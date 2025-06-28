@@ -1474,6 +1474,224 @@ export function FuturisticAdminPanel() {
             </div>
           </TabsContent>
 
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Advanced Analytics Dashboard</h3>
+              
+              {/* Key Metrics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="bg-black/20 border-purple-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-200 text-sm font-medium">Total Users</p>
+                        <p className="text-2xl font-bold text-white">{stats?.system?.totalUsers || 0}</p>
+                        <p className="text-purple-300 text-xs mt-1">+12% this month</p>
+                      </div>
+                      <Users className="w-8 h-8 text-purple-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-black/20 border-blue-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-200 text-sm font-medium">API Requests</p>
+                        <p className="text-2xl font-bold text-white">{stats?.api?.totalRequests || 0}</p>
+                        <p className="text-blue-300 text-xs mt-1">+8% this week</p>
+                      </div>
+                      <BarChart3 className="w-8 h-8 text-blue-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-black/20 border-green-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-200 text-sm font-medium">Revenue</p>
+                        <p className="text-2xl font-bold text-white">${financialStats?.totalRevenue?.toLocaleString() || 0}</p>
+                        <p className="text-green-300 text-xs mt-1">+24% this month</p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-green-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-black/20 border-orange-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-200 text-sm font-medium">Active Trades</p>
+                        <p className="text-2xl font-bold text-white">{tradingStats?.totalTrades || 0}</p>
+                        <p className="text-orange-300 text-xs mt-1">+5% today</p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-orange-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Detailed Analytics Cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Trading Performance */}
+                <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center space-x-2">
+                      <TrendingUp className="w-5 h-5 text-green-400" />
+                      <span>Trading Performance</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Success Rate</span>
+                        <span className="text-green-400 font-mono">{tradingStats?.successRate || 0}%</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Total Volume</span>
+                        <span className="text-blue-400 font-mono">${tradingStats?.totalVolume?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Average Trade Size</span>
+                        <span className="text-purple-400 font-mono">${tradingStats?.averageTradeSize?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Risk Score</span>
+                        <span className="text-yellow-400 font-mono">{tradingStats?.riskScore || 0}/100</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* System Health */}
+                <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center space-x-2">
+                      <Monitor className="w-5 h-5 text-blue-400" />
+                      <span>System Health</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">CPU Usage</span>
+                        <span className={`font-mono ${performanceStats?.cpuUsage > 80 ? 'text-red-400' : 'text-green-400'}`}>
+                          {performanceStats?.cpuUsage || 0}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Memory Usage</span>
+                        <span className={`font-mono ${performanceStats?.memoryUsage > 80 ? 'text-red-400' : 'text-green-400'}`}>
+                          {performanceStats?.memoryUsage || 0}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Response Time</span>
+                        <span className="text-cyan-400 font-mono">{performanceStats?.responseTime || 0}ms</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/70">Uptime</span>
+                        <span className="text-green-400 font-mono">{Math.floor((performanceStats?.systemUptime || 0) / 60)}m</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* AI Analytics */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-cyan-500/30 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-cyan-300 text-sm">KonsAI Intelligence</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Active Modules</span>
+                      <span className="text-cyan-400 font-mono text-sm">{aiStats?.konsaiModules || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">AI Accuracy</span>
+                      <span className="text-green-400 font-mono text-sm">{aiStats?.accuracy || 0}%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Learning Rate</span>
+                      <span className="text-purple-400 font-mono text-sm">{aiStats?.learningRate || 0}%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/20 border-red-500/30 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-red-300 text-sm">Security Analytics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Active Users</span>
+                      <span className="text-green-400 font-mono text-sm">{securityStats?.activeUsers || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Threats Blocked</span>
+                      <span className="text-red-400 font-mono text-sm">{securityStats?.securityThreats || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Firewall Status</span>
+                      <span className="text-green-400 font-mono text-sm">{securityStats?.firewallStatus || 'Active'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/20 border-indigo-500/30 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-indigo-300 text-sm">Infrastructure</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Server Load</span>
+                      <span className="text-yellow-400 font-mono text-sm">{infrastructureStats?.serverLoad || 0}%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">DB Connections</span>
+                      <span className="text-blue-400 font-mono text-sm">{infrastructureStats?.databaseConnections || 0}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-sm">Backup Status</span>
+                      <span className="text-green-400 font-mono text-sm">{infrastructureStats?.backupStatus || 'OK'}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Recent Activity */}
+              <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2">
+                    <Eye className="w-5 h-5 text-purple-400" />
+                    <span>Recent Activity</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {logs?.slice(0, 10)?.map((log: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-2 h-2 rounded-full ${
+                            log.level === 'error' ? 'bg-red-400' :
+                            log.level === 'warning' ? 'bg-yellow-400' : 'bg-green-400'
+                          }`}></div>
+                          <span className="text-white/80 text-sm">{log.message?.substring(0, 50)}...</span>
+                        </div>
+                        <span className="text-white/50 text-xs">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Trading Management Tab */}
           <TabsContent value="trading" className="space-y-6">
             <div className="space-y-6">
