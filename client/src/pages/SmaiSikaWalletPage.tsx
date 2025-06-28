@@ -136,13 +136,15 @@ export default function SmaiSikaWalletPage() {
   // Fetch wallet balance
   const { data: walletBalance } = useQuery({
     queryKey: ['/api/wallet/balance'],
-    staleTime: 1000 * 30 // 30 seconds
+    staleTime: 1000 * 60 * 2, // 2 minutes
+    refetchInterval: false
   });
 
   // Fetch transaction history
   const { data: transactions = [] } = useQuery<Transaction[]>({
     queryKey: ['/api/wallet/transactions'],
-    staleTime: 1000 * 30
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchInterval: false
   });
 
   // Real-time instruction generator
@@ -650,12 +652,28 @@ export default function SmaiSikaWalletPage() {
 
         {/* Tabs Section */}
         <Tabs defaultValue="history" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
-            <TabsTrigger value="history" className="text-white">Transaction History</TabsTrigger>
-            <TabsTrigger value="rates" className="text-white">FX Rates</TabsTrigger>
-            <TabsTrigger value="gateways" className="text-white">Payment Gateways</TabsTrigger>
-            <TabsTrigger value="virtual-accounts" className="text-white">Virtual Accounts</TabsTrigger>
-          </TabsList>
+          <div className="relative">
+            <TabsList className="flex overflow-x-auto gap-2 p-2 h-auto bg-gradient-to-r from-gray-900/80 to-purple-900/50 border border-purple-500/30 rounded-lg scrollbar-hide">
+              <TabsTrigger value="history" className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-0 data-[state=active]:from-cyan-400 data-[state=active]:to-blue-400 whitespace-nowrap px-4 py-2 rounded-md">📊 Transaction History</TabsTrigger>
+              <TabsTrigger value="rates" className="flex-shrink-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 data-[state=active]:from-emerald-400 data-[state=active]:to-green-400 whitespace-nowrap px-4 py-2 rounded-md">💱 FX Rates</TabsTrigger>
+              <TabsTrigger value="gateways" className="flex-shrink-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 data-[state=active]:from-pink-400 data-[state=active]:to-purple-400 whitespace-nowrap px-4 py-2 rounded-md">🏦 Payment Gateways</TabsTrigger>
+              <TabsTrigger value="virtual-accounts" className="flex-shrink-0 bg-gradient-to-r from-orange-600 to-red-600 text-white border-0 data-[state=active]:from-red-400 data-[state=active]:to-orange-400 whitespace-nowrap px-4 py-2 rounded-md">🔐 Virtual Accounts</TabsTrigger>
+              <TabsTrigger value="ai-analytics" className="flex-shrink-0 bg-gradient-to-r from-indigo-600 to-violet-600 text-white border-0 data-[state=active]:from-violet-400 data-[state=active]:to-indigo-400 whitespace-nowrap px-4 py-2 rounded-md">🤖 AI Analytics</TabsTrigger>
+              <TabsTrigger value="quantum-insights" className="flex-shrink-0 bg-gradient-to-r from-teal-600 to-cyan-600 text-white border-0 data-[state=active]:from-cyan-400 data-[state=active]:to-teal-400 whitespace-nowrap px-4 py-2 rounded-md">🔮 Quantum Insights</TabsTrigger>
+              <TabsTrigger value="neural-predictions" className="flex-shrink-0 bg-gradient-to-r from-rose-600 to-pink-600 text-white border-0 data-[state=active]:from-pink-400 data-[state=active]:to-rose-400 whitespace-nowrap px-4 py-2 rounded-md">🧠 Neural Predictions</TabsTrigger>
+              <TabsTrigger value="blockchain-monitor" className="flex-shrink-0 bg-gradient-to-r from-yellow-600 to-orange-600 text-white border-0 data-[state=active]:from-orange-400 data-[state=active]:to-yellow-400 whitespace-nowrap px-4 py-2 rounded-md">⛓️ Blockchain Monitor</TabsTrigger>
+              <TabsTrigger value="konsai-nexus" className="flex-shrink-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 data-[state=active]:from-teal-400 data-[state=active]:to-emerald-400 whitespace-nowrap px-4 py-2 rounded-md">🌟 KonsAi Nexus</TabsTrigger>
+            </TabsList>
+            <style>{`
+              .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+              }
+              .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+              }
+            `}</style>
+          </div>
 
           <TabsContent value="history">
             <Card className="bg-gray-800/50 border-gray-700">
