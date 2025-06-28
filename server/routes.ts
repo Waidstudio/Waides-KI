@@ -1591,6 +1591,244 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // App Configuration API endpoints (for admin panel to control main app)
+  app.get('/api/app-config', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      res.json(appConfigurationService.getConfiguration());
+    } catch (error) {
+      console.error('Error fetching app configuration:', error);
+      res.status(500).json({ error: 'Failed to fetch app configuration' });
+    }
+  });
+
+  app.get('/api/app-config/:section', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      const section = appConfigurationService.getSection(req.params.section);
+      if (!section) {
+        return res.status(404).json({ error: 'Section not found' });
+      }
+      res.json(section);
+    } catch (error) {
+      console.error('Error fetching app configuration section:', error);
+      res.status(500).json({ error: 'Failed to fetch app configuration section' });
+    }
+  });
+
+  app.put('/api/app-config/:section', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      appConfigurationService.updateSection(req.params.section, req.body);
+      res.json({ success: true, message: 'Section updated successfully' });
+    } catch (error) {
+      console.error('Error updating app configuration section:', error);
+      res.status(500).json({ error: 'Failed to update app configuration section' });
+    }
+  });
+
+  app.put('/api/app-config/:section/:key', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      const { value } = req.body;
+      appConfigurationService.updateSetting(req.params.section, req.params.key, value);
+      res.json({ success: true, message: 'Setting updated successfully' });
+    } catch (error) {
+      console.error('Error updating app configuration setting:', error);
+      res.status(500).json({ error: 'Failed to update app configuration setting' });
+    }
+  });
+
+  app.post('/api/app-config/upload/logo', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      const { logoData } = req.body;
+      const logoUrl = appConfigurationService.uploadLogo(logoData);
+      res.json({ success: true, logoUrl, message: 'Logo uploaded successfully' });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      res.status(500).json({ error: 'Failed to upload logo' });
+    }
+  });
+
+  app.post('/api/app-config/upload/favicon', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      const { faviconData } = req.body;
+      const faviconUrl = appConfigurationService.uploadFavicon(faviconData);
+      res.json({ success: true, faviconUrl, message: 'Favicon uploaded successfully' });
+    } catch (error) {
+      console.error('Error uploading favicon:', error);
+      res.status(500).json({ error: 'Failed to upload favicon' });
+    }
+  });
+
+  app.get('/api/app-config/stats', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      res.json(appConfigurationService.getStats());
+    } catch (error) {
+      console.error('Error fetching app configuration stats:', error);
+      res.status(500).json({ error: 'Failed to fetch app configuration stats' });
+    }
+  });
+
+  app.post('/api/app-config/export', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      const configJson = appConfigurationService.exportConfiguration();
+      res.json({ success: true, configuration: configJson });
+    } catch (error) {
+      console.error('Error exporting app configuration:', error);
+      res.status(500).json({ error: 'Failed to export app configuration' });
+    }
+  });
+
+  app.post('/api/app-config/import', (req, res) => {
+    try {
+      const { appConfigurationService } = require('./services/appConfigurationService');
+      const { configJson } = req.body;
+      const result = appConfigurationService.importConfiguration(configJson);
+      if (result.success) {
+        res.json({ success: true, message: 'Configuration imported successfully' });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error importing app configuration:', error);
+      res.status(500).json({ error: 'Failed to import app configuration' });
+    }
+  });
+
+  // Mega Admin Configuration API endpoints (1000+ settings)
+  app.get('/api/mega-admin-config', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      res.json(megaAdminConfigService.getConfiguration());
+    } catch (error) {
+      console.error('Error fetching mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to fetch mega admin configuration' });
+    }
+  });
+
+  app.get('/api/mega-admin-config/stats', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      res.json(megaAdminConfigService.getStats());
+    } catch (error) {
+      console.error('Error fetching mega admin stats:', error);
+      res.status(500).json({ error: 'Failed to fetch mega admin stats' });
+    }
+  });
+
+  app.get('/api/mega-admin-config/:section', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      const section = megaAdminConfigService.getSection(req.params.section);
+      if (!section) {
+        return res.status(404).json({ error: 'Section not found' });
+      }
+      res.json(section);
+    } catch (error) {
+      console.error('Error fetching mega admin section:', error);
+      res.status(500).json({ error: 'Failed to fetch mega admin section' });
+    }
+  });
+
+  app.put('/api/mega-admin-config/:section', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      megaAdminConfigService.updateSection(req.params.section, req.body);
+      res.json({ success: true, message: 'Section updated successfully' });
+    } catch (error) {
+      console.error('Error updating mega admin section:', error);
+      res.status(500).json({ error: 'Failed to update mega admin section' });
+    }
+  });
+
+  app.put('/api/mega-admin-config/:section/:key', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      const { value } = req.body;
+      megaAdminConfigService.updateSetting(req.params.section, req.params.key, value);
+      res.json({ success: true, message: 'Setting updated successfully' });
+    } catch (error) {
+      console.error('Error updating mega admin setting:', error);
+      res.status(500).json({ error: 'Failed to update mega admin setting' });
+    }
+  });
+
+  app.get('/api/mega-admin-config/search/:query', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      const results = megaAdminConfigService.searchSettings(req.params.query);
+      res.json(results);
+    } catch (error) {
+      console.error('Error searching mega admin settings:', error);
+      res.status(500).json({ error: 'Failed to search mega admin settings' });
+    }
+  });
+
+  app.post('/api/mega-admin-config/export', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      const configJson = megaAdminConfigService.exportConfiguration();
+      res.json({ success: true, configuration: configJson });
+    } catch (error) {
+      console.error('Error exporting mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to export mega admin configuration' });
+    }
+  });
+
+  app.post('/api/mega-admin-config/import', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      const { configJson } = req.body;
+      const result = megaAdminConfigService.importConfiguration(configJson);
+      if (result.success) {
+        res.json({ success: true, message: 'Mega configuration imported successfully' });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      console.error('Error importing mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to import mega admin configuration' });
+    }
+  });
+
+  app.post('/api/mega-admin-config/validate', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      const validation = megaAdminConfigService.validateConfiguration();
+      res.json(validation);
+    } catch (error) {
+      console.error('Error validating mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to validate mega admin configuration' });
+    }
+  });
+
+  app.post('/api/mega-admin-config/reset/:section', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      megaAdminConfigService.resetSection(req.params.section);
+      res.json({ success: true, message: 'Section reset successfully' });
+    } catch (error) {
+      console.error('Error resetting mega admin section:', error);
+      res.status(500).json({ error: 'Failed to reset mega admin section' });
+    }
+  });
+
+  app.post('/api/mega-admin-config/reset-all', (req, res) => {
+    try {
+      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      megaAdminConfigService.resetAll();
+      res.json({ success: true, message: 'All configuration reset successfully' });
+    } catch (error) {
+      console.error('Error resetting all mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to reset all mega admin configuration' });
+    }
+  });
+
   // Delete payment method endpoint
   app.delete("/api/wallet/payment-methods/:id", (req, res) => {
     try {
