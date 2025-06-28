@@ -1539,6 +1539,9 @@ class KonsaiIntelligenceEngine {
   private futuristicModules: any = null;
   private knowledgeBase: Map<string, any> = new Map();
   private isInitialized: boolean = false;
+  private activeMonitoring: boolean = false;
+  private monitoringInterval: NodeJS.Timeout | null = null;
+  private detectedIssues: Map<string, any> = new Map();
 
   constructor() {
     this.systemScanner = new SystemScanner();

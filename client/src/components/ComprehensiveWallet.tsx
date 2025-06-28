@@ -91,25 +91,37 @@ export default function ComprehensiveWallet() {
   // Fetch African payment providers
   const { data: africanProviders = [], isLoading: providersLoading } = useQuery({
     queryKey: ['/api/wallet/african-providers'],
-    queryFn: () => apiRequest('GET', '/api/wallet/african-providers'),
+    queryFn: async () => {
+      const result = await apiRequest('GET', '/api/wallet/african-providers');
+      return Array.isArray(result) ? result : [];
+    },
   });
 
   // Fetch user payment methods
   const { data: paymentMethods = [], isLoading: methodsLoading } = useQuery({
     queryKey: ['/api/wallet/payment-methods'],
-    queryFn: () => apiRequest('GET', '/api/wallet/payment-methods'),
+    queryFn: async () => {
+      const result = await apiRequest('GET', '/api/wallet/payment-methods');
+      return Array.isArray(result) ? result : [];
+    },
   });
 
   // Fetch wallet transactions
   const { data: transactions = [], isLoading: transactionsLoading } = useQuery({
     queryKey: ['/api/wallet/transactions'],
-    queryFn: () => apiRequest('GET', '/api/wallet/transactions'),
+    queryFn: async () => {
+      const result = await apiRequest('GET', '/api/wallet/transactions');
+      return Array.isArray(result) ? result : [];
+    },
   });
 
   // Fetch supported countries
   const { data: supportedCountries = [], isLoading: countriesLoading } = useQuery({
     queryKey: ['/api/wallet/countries'],
-    queryFn: () => apiRequest('GET', '/api/wallet/countries'),
+    queryFn: async () => {
+      const result = await apiRequest('GET', '/api/wallet/countries');
+      return Array.isArray(result) ? result : [];
+    },
   });
 
   // Add payment method mutation
@@ -654,7 +666,7 @@ export default function ComprehensiveWallet() {
                     <p className="text-gray-400 text-center py-8">No transactions yet</p>
                   ) : (
                     <div className="space-y-4">
-                      {transactions.slice(0, 5).map((transaction: WalletTransaction) => (
+                      {(transactions || []).slice(0, 5).map((transaction: WalletTransaction) => (
                         <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                           <div className="flex items-center space-x-3">
                             <div className={`w-2 h-2 rounded-full ${getStatusColor(transaction.status)}`} />
