@@ -1703,78 +1703,91 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Ultra Mega Admin Configuration API endpoints (6000+ settings per category)
+  // Optimized Ultra Mega Admin Configuration API endpoints (54,180+ settings with fast loading)
   app.get('/api/mega-admin-config', async (req, res) => {
     try {
-      // Import ultra mega admin service with 6000+ settings per category
-      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
-      res.json(ultraMegaAdminService.getConfig());
+      // Import optimized ultra mega admin service with lazy loading and caching
+      const { optimizedUltraMegaAdminService } = await import("./services/optimizedMegaAdminService.js");
+      
+      // Check if user wants full config or just structure
+      const includeData = req.query.full === 'true';
+      
+      if (includeData) {
+        res.json(optimizedUltraMegaAdminService.getConfig());
+      } else {
+        // Return lightweight structure for faster loading
+        res.json({
+          sections: ['system', 'trading', 'security', 'ui', 'wallet', 'konsai', 'notifications', 'analytics', 'infrastructure'],
+          totalSettings: 54180,
+          message: 'Use ?full=true to load complete configuration'
+        });
+      }
     } catch (error) {
-      console.error('Error fetching ultra mega admin configuration:', error);
-      res.status(500).json({ error: 'Failed to fetch ultra mega admin configuration' });
+      console.error('Error fetching optimized mega admin configuration:', error);
+      res.status(500).json({ error: 'Failed to fetch optimized mega admin configuration' });
     }
   });
 
   app.get('/api/mega-admin-config/stats', async (req, res) => {
     try {
-      // Import ultra mega admin service with 6000+ settings per category
-      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
-      res.json(ultraMegaAdminService.getStatistics());
+      // Import optimized ultra mega admin service with lazy loading and caching
+      const { optimizedUltraMegaAdminService } = await import("./services/optimizedMegaAdminService.js");
+      res.json(optimizedUltraMegaAdminService.getStatistics());
     } catch (error) {
-      console.error('Error fetching ultra mega admin stats:', error);
-      res.status(500).json({ error: 'Failed to fetch ultra mega admin stats' });
+      console.error('Error fetching optimized mega admin stats:', error);
+      res.status(500).json({ error: 'Failed to fetch optimized mega admin stats' });
     }
   });
 
   app.get('/api/mega-admin-config/:section', async (req, res) => {
     try {
-      // Import ultra mega admin service with 6000+ settings per category
-      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
-      const section = ultraMegaAdminService.getSection(req.params.section);
+      // Import optimized ultra mega admin service with lazy loading and caching
+      const { optimizedUltraMegaAdminService } = await import("./services/optimizedMegaAdminService.js");
+      const section = optimizedUltraMegaAdminService.getSection(req.params.section);
       if (!section) {
         return res.status(404).json({ error: 'Section not found' });
       }
       res.json(section);
     } catch (error) {
-      console.error('Error fetching ultra mega admin section:', error);
-      res.status(500).json({ error: 'Failed to fetch ultra mega admin section' });
+      console.error('Error fetching optimized mega admin section:', error);
+      res.status(500).json({ error: 'Failed to fetch optimized mega admin section' });
     }
   });
 
   app.put('/api/mega-admin-config/:section', async (req, res) => {
     try {
-      // Import ultra mega admin service with 6000+ settings per category
-      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
-      ultraMegaAdminService.updateSection(req.params.section, req.body);
-      res.json({ success: true, message: 'Ultra mega section updated successfully' });
+      // Import optimized ultra mega admin service with lazy loading and caching
+      const { optimizedUltraMegaAdminService } = await import("./services/optimizedMegaAdminService.js");
+      optimizedUltraMegaAdminService.updateSection(req.params.section, req.body);
+      res.json({ success: true, message: 'Optimized ultra mega section updated successfully' });
     } catch (error) {
-      console.error('Error updating ultra mega admin section:', error);
-      res.status(500).json({ error: 'Failed to update ultra mega admin section' });
+      console.error('Error updating optimized mega admin section:', error);
+      res.status(500).json({ error: 'Failed to update optimized mega admin section' });
     }
   });
 
   app.put('/api/mega-admin-config/:section/:key', async (req, res) => {
     try {
-      // Import ultra mega admin service with 6000+ settings per category
-      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
+      // Import optimized ultra mega admin service with lazy loading and caching
+      const { optimizedUltraMegaAdminService } = await import("./services/optimizedMegaAdminService.js");
       const { value } = req.body;
-      ultraMegaAdminService.updateSetting(req.params.section, req.params.key, value);
-      res.json({ success: true, message: 'Ultra mega setting updated successfully' });
+      optimizedUltraMegaAdminService.updateSetting(req.params.section, req.params.key, value);
+      res.json({ success: true, message: 'Optimized ultra mega setting updated successfully' });
     } catch (error) {
-      console.error('Error updating ultra mega admin setting:', error);
-      res.status(500).json({ error: 'Failed to update ultra mega admin setting' });
+      console.error('Error updating optimized mega admin setting:', error);
+      res.status(500).json({ error: 'Failed to update optimized mega admin setting' });
     }
   });
 
   app.get('/api/mega-admin-config/search/:query', async (req, res) => {
     try {
-      // Import ultra mega admin service with 6000+ settings per category
-      const { ultraMegaAdminService } = await import("./services/expandedMegaAdminService6000.js");
-      const results = ultraMegaAdminService.searchSettings(req.params.query);
+      // Import optimized ultra mega admin service with lazy loading and caching
+      const { optimizedUltraMegaAdminService } = await import("./services/optimizedMegaAdminService.js");
+      const results = optimizedUltraMegaAdminService.searchSettings(req.params.query);
       res.json(results);
     } catch (error) {
-      console.error('Error searching ultra mega admin settings:', error);
-      res.status(500).json({ error: 'Failed to search ultra mega admin settings' });
+      console.error('Error searching optimized mega admin settings:', error);
+      res.status(500).json({ error: 'Failed to search optimized mega admin settings' });
     }
   });
 
