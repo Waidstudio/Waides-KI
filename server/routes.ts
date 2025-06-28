@@ -522,7 +522,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       ];
 
       // Filter by country if specified
-      if (country) {
+      if (country && typeof country === 'string') {
         const filteredGateways = allGateways.filter(gateway => 
           gateway.countries.includes(country) || gateway.countries.includes('GLOBAL')
         );

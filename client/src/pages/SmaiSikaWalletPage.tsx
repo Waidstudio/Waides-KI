@@ -109,10 +109,13 @@ export default function SmaiSikaWalletPage() {
 
   // Fetch gateways for selected country
   const { data: gateways = [] } = useQuery<Gateway[]>({
-    queryKey: ['/api/wallet/gateways'],
-    queryFn: () => selectedCountry 
-      ? apiRequest('GET', `/api/wallet/gateways?country=${selectedCountry}`)
-      : apiRequest('GET', '/api/wallet/gateways'),
+    queryKey: ['/api/wallet/gateways', selectedCountry],
+    queryFn: async () => {
+      const response = selectedCountry 
+        ? await apiRequest('GET', `/api/wallet/gateways?country=${selectedCountry}`)
+        : await apiRequest('GET', '/api/wallet/gateways');
+      return response.json();
+    },
     enabled: !!selectedCountry,
     staleTime: 1000 * 60 * 5
   });
@@ -271,8 +274,7 @@ export default function SmaiSikaWalletPage() {
       amount: parseFloat(depositAmount),
       currency: gateway.currencies[0],
       providerId: selectedGateway,
-      country: selectedCountry,
-      accountDetails
+      country: selectedCountry
     });
   };
 
