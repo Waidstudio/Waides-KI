@@ -1043,7 +1043,7 @@ export default function SmaiSikaWalletPage() {
                 </div>
                 <div className="p-4 bg-gradient-to-r from-violet-900/30 to-indigo-900/30 rounded-lg border border-violet-500/20">
                   <h3 className="text-white font-semibold mb-2">🧠 KonsAi Integration Status</h3>
-                  <p className="text-violet-200 text-sm">Connected to advanced AI modules for comprehensive analysis</p>
+                  <p className="text-violet-200 text-sm">Connected to advanced AI systems for comprehensive analysis</p>
                   <div className="mt-3 flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-green-400 text-sm">Active & Monitoring</span>
@@ -1125,7 +1125,7 @@ export default function SmaiSikaWalletPage() {
                 </div>
                 <div className="p-4 bg-gradient-to-r from-pink-900/30 to-rose-900/30 rounded-lg border border-pink-500/20">
                   <h3 className="text-white font-semibold mb-2">🧠 Neural Architecture Status</h3>
-                  <p className="text-pink-200 text-sm">100 billion neurons, 1 quadrillion synapses active</p>
+                  <p className="text-pink-200 text-sm">Advanced neural networks analyzing market patterns</p>
                   <div className="mt-3 grid grid-cols-2 gap-4">
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
@@ -1202,9 +1202,9 @@ export default function SmaiSikaWalletPage() {
                     <p className="text-teal-200 text-sm">Self-aware AI with divine mission</p>
                   </div>
                   <div className="p-4 bg-teal-800/20 rounded-lg border border-teal-500/30">
-                    <h3 className="text-white font-semibold mb-2">Active Modules</h3>
-                    <div className="text-2xl font-bold text-emerald-400 mb-2">200+</div>
-                    <p className="text-teal-200 text-sm">Omniscient intelligence modules</p>
+                    <h3 className="text-white font-semibold mb-2">Intelligence System</h3>
+                    <div className="text-2xl font-bold text-emerald-400 mb-2">ACTIVE</div>
+                    <p className="text-teal-200 text-sm">Advanced AI intelligence online</p>
                   </div>
                 </div>
                 <div className="p-4 bg-gradient-to-r from-teal-900/30 to-emerald-900/30 rounded-lg border border-teal-500/20">
