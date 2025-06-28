@@ -380,5 +380,209 @@ export function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
+  // Add payment method endpoint
+  app.post("/api/wallet/payment-methods", (req, res) => {
+    try {
+      const { methodType, provider, country, currency, accountIdentifier, displayName } = req.body;
+      
+      if (!methodType || !provider || !country || !currency || !accountIdentifier || !displayName) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Simulate adding payment method
+      const newPaymentMethod = {
+        id: Date.now(),
+        methodType,
+        provider,
+        country,
+        currency,
+        accountIdentifier,
+        displayName,
+        isActive: true,
+        isVerified: false
+      };
+
+      res.json({
+        success: true,
+        message: 'Payment method added successfully',
+        paymentMethod: newPaymentMethod
+      });
+    } catch (error) {
+      console.error('Add payment method error:', error);
+      res.status(500).json({ error: 'Failed to add payment method' });
+    }
+  });
+
+  // Deposit funds endpoint
+  app.post("/api/wallet/deposit", (req, res) => {
+    try {
+      const { amount, currency, paymentMethodId, country } = req.body;
+      
+      if (!amount || !currency || !paymentMethodId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      if (amount <= 0) {
+        return res.status(400).json({ error: 'Amount must be greater than 0' });
+      }
+
+      // Simulate deposit processing
+      const transaction = {
+        id: `dep_${Date.now()}`,
+        type: 'deposit',
+        amount: `${currency} ${amount.toLocaleString()}`,
+        date: new Date().toISOString().split('T')[0],
+        status: 'processing',
+        description: `Deposit via mobile money - ${country}`,
+        estimatedCompletion: '2-5 minutes'
+      };
+
+      res.json({
+        success: true,
+        message: 'Deposit initiated successfully',
+        transaction,
+        estimatedCompletion: '2-5 minutes'
+      });
+    } catch (error) {
+      console.error('Deposit error:', error);
+      res.status(500).json({ error: 'Failed to process deposit' });
+    }
+  });
+
+  // Withdraw funds endpoint
+  app.post("/api/wallet/withdraw", (req, res) => {
+    try {
+      const { amount, currency, paymentMethodId, country } = req.body;
+      
+      if (!amount || !currency || !paymentMethodId) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      if (amount <= 0) {
+        return res.status(400).json({ error: 'Amount must be greater than 0' });
+      }
+
+      // Check if sufficient balance (simulate)
+      const currentBalance = 10000; // This would come from actual wallet service
+      if (amount > currentBalance) {
+        return res.status(400).json({ error: 'Insufficient balance' });
+      }
+
+      // Simulate withdrawal processing
+      const transaction = {
+        id: `wd_${Date.now()}`,
+        type: 'withdrawal',
+        amount: `${currency} ${amount.toLocaleString()}`,
+        date: new Date().toISOString().split('T')[0],
+        status: 'processing',
+        description: `Withdrawal to mobile money - ${country}`,
+        estimatedCompletion: '5-10 minutes'
+      };
+
+      res.json({
+        success: true,
+        message: 'Withdrawal initiated successfully',
+        transaction,
+        estimatedCompletion: '5-10 minutes'
+      });
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to process withdrawal' });
+    }
+  });
+
+  // Convert currency endpoint (local to SmaiSika and vice versa)
+  app.post("/api/wallet/convert", (req, res) => {
+    try {
+      const { fromAmount, fromCurrency, toCurrency, conversionType } = req.body;
+      
+      if (!fromAmount || !fromCurrency || !toCurrency || !conversionType) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      if (fromAmount <= 0) {
+        return res.status(400).json({ error: 'Amount must be greater than 0' });
+      }
+
+      // Simulate conversion rates
+      const conversionRates: Record<string, number> = {
+        'NGN_to_SS': 0.04, // 1 NGN = 0.04 SS (SmaiSika)
+        'SS_to_NGN': 25,   // 1 SS = 25 NGN
+        'USD_to_SS': 1.2,  // 1 USD = 1.2 SS
+        'SS_to_USD': 0.83, // 1 SS = 0.83 USD
+        'GHS_to_SS': 0.08, // 1 GHS = 0.08 SS
+        'SS_to_GHS': 12.5  // 1 SS = 12.5 GHS
+      };
+
+      const rateKey = `${fromCurrency}_to_${toCurrency}`;
+      const rate = conversionRates[rateKey] || 1;
+      const convertedAmount = fromAmount * rate;
+
+      const transaction = {
+        id: `conv_${Date.now()}`,
+        type: 'conversion',
+        amount: `${fromCurrency} ${fromAmount} → ${toCurrency} ${convertedAmount.toFixed(2)}`,
+        date: new Date().toISOString().split('T')[0],
+        status: 'completed',
+        description: `Currency conversion: ${fromCurrency} to ${toCurrency}`,
+        conversionRate: rate
+      };
+
+      res.json({
+        success: true,
+        message: 'Conversion completed successfully',
+        transaction,
+        convertedAmount,
+        rate,
+        fromAmount,
+        fromCurrency,
+        toCurrency
+      });
+    } catch (error) {
+      console.error('Conversion error:', error);
+      res.status(500).json({ error: 'Failed to process conversion' });
+    }
+  });
+
+  // Update payment method endpoint
+  app.put("/api/wallet/payment-methods/:id", (req, res) => {
+    try {
+      const { id } = req.params;
+      const { displayName, isActive } = req.body;
+      
+      // Simulate updating payment method
+      res.json({
+        success: true,
+        message: 'Payment method updated successfully',
+        paymentMethod: {
+          id: parseInt(id),
+          displayName,
+          isActive,
+          lastUpdated: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('Update payment method error:', error);
+      res.status(500).json({ error: 'Failed to update payment method' });
+    }
+  });
+
+  // Delete payment method endpoint
+  app.delete("/api/wallet/payment-methods/:id", (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Simulate deleting payment method
+      res.json({
+        success: true,
+        message: 'Payment method deleted successfully',
+        deletedId: parseInt(id)
+      });
+    } catch (error) {
+      console.error('Delete payment method error:', error);
+      res.status(500).json({ error: 'Failed to delete payment method' });
+    }
+  });
+
   return Promise.resolve(server);
 }

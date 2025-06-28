@@ -87,6 +87,12 @@ export default function ComprehensiveWallet() {
   const [isAddPaymentMethodOpen, setIsAddPaymentMethodOpen] = useState(false);
   const [fundingMethod, setFundingMethod] = useState('mobile');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+  
+  // Currency conversion state
+  const [isConvertOpen, setIsConvertOpen] = useState(false);
+  const [convertAmount, setConvertAmount] = useState('');
+  const [fromCurrency, setFromCurrency] = useState('NGN');
+  const [toCurrency, setToCurrency] = useState('SS');
 
   // Fetch African payment providers
   const { data: africanProviders = [], isLoading: providersLoading } = useQuery({
@@ -182,6 +188,28 @@ export default function ComprehensiveWallet() {
       toast({
         title: "Withdrawal Failed",
         description: error.message || "Failed to process withdrawal",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Process conversion mutation
+  const processConversionMutation = useMutation({
+    mutationFn: (data: any) => apiRequest('POST', '/api/wallet/convert', data),
+    onSuccess: (result: any) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+      toast({
+        title: "Conversion Successful",
+        description: `Converted ${result.fromCurrency} ${result.fromAmount} to ${result.toCurrency} ${result.convertedAmount.toFixed(2)}`,
+      });
+      setIsConvertOpen(false);
+      setConvertAmount('');
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Conversion Failed",
+        description: error.message || "Failed to process conversion",
         variant: "destructive",
       });
     },
