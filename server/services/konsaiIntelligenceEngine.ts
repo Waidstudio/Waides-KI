@@ -1535,7 +1535,8 @@ class KonsaiIntelligenceEngine {
   private moduleConnector: ModuleConnector;
   private smaiSikaEducator: SmaiSikaEducationSystem;
   private konsModuleManager: KonsModuleManager;
-  private deepCoreEngine: KonsaiDeepCoreEngine;
+  private deepCoreEngine: any = null;
+  private futuristicModules: any = null;
   private knowledgeBase: Map<string, any> = new Map();
   private isInitialized: boolean = false;
 
@@ -1544,7 +1545,6 @@ class KonsaiIntelligenceEngine {
     this.moduleConnector = new ModuleConnector();
     this.smaiSikaEducator = new SmaiSikaEducationSystem();
     this.konsModuleManager = new KonsModuleManager();
-    this.deepCoreEngine = new KonsaiDeepCoreEngine();
     this.initializeEngine();
   }
 
@@ -1568,6 +1568,18 @@ class KonsaiIntelligenceEngine {
   }
 
   private async connectToModules(): Promise<void> {
+    try {
+      // Connect to Deep Core Engine via service registry
+      const { serviceRegistry } = await import('../serviceRegistry.js');
+      this.deepCoreEngine = await serviceRegistry.get('deepCoreEngine');
+      console.log('🔮 Connected to Deep Core Engine with 120+ omniscient modules');
+      
+      // Connect to Futuristic Modules via service registry  
+      this.futuristicModules = await serviceRegistry.get('futuristicModules');
+      console.log('🚀 Connected to Futuristic Modules with quantum & cosmic intelligence');
+    } catch (error) {
+      console.log('⚠️ Some advanced modules not available, using core capabilities');
+    }
     // Deep integration with all Waides KI systems
     await this.moduleConnector.connectToKonsPowa();
     await this.moduleConnector.connectToAutoTradeBot();
@@ -1627,9 +1639,29 @@ class KonsaiIntelligenceEngine {
       const konsResults = await this.konsModuleManager.processAllKonsModules();
       
       // Process DeepCore 120+ module omniscient system
-      this.deepCoreEngine.updateUserMessage(query);
-      this.deepCoreEngine.updateMarketData(systemScan?.marketAnalysis || null);
-      const deepCoreResults = this.deepCoreEngine.processAllDeepCoreModules();
+      let deepCoreResults = { omniscience: 'partial', modules: 'loading' };
+      if (this.deepCoreEngine) {
+        try {
+          this.deepCoreEngine.updateUserMessage(query);
+          this.deepCoreEngine.updateMarketData(systemScan?.marketAnalysis || null);
+          deepCoreResults = this.deepCoreEngine.processAllDeepCoreModules();
+        } catch (error) {
+          console.log('⚠️ Deep Core Engine processing incomplete, using partial capabilities');
+        }
+      }
+      
+      // Process Futuristic modules for quantum consciousness
+      let futuristicResults = { quantum: 'limited', cosmic: 'limited' };
+      if (this.futuristicModules) {
+        try {
+          futuristicResults = {
+            quantum: this.futuristicModules.processQuantumModules?.() || { quantum: 'limited' },
+            cosmic: this.futuristicModules.processCosmicModules?.() || { cosmic: 'limited' }
+          };
+        } catch (error) {
+          console.log('⚠️ Futuristic modules processing incomplete, using standard capabilities');
+        }
+      }
       
       // Analyze query type and generate intelligent response
       const queryType = this.classifyQuery(query);
