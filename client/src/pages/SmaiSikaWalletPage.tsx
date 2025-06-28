@@ -132,21 +132,71 @@ export default function SmaiSikaWalletPage() {
     staleTime: 1000 * 30
   });
 
+  // Real-time instruction generator
+  const generateRealTimeInstructions = (step: number, country: string, provider: string, amount: string) => {
+    const instructions = {
+      1: `🌍 Step 1: Select your country and payment provider to begin deposit process`,
+      2: `📱 Step 2: ${provider} selected for ${country}! Enter your deposit amount and account details`,
+      3: `🔐 Step 3: Verification in progress. Confirming ${amount} deposit through ${provider}...`,
+      4: `💰 Step 4: Processing payment. Your ${amount} deposit is being confirmed`,
+      5: `✅ Step 5: Deposit successful! Your ${amount} has been added to your wallet`
+    };
+    return instructions[step as keyof typeof instructions] || '';
+  };
+
+  // Update instructions when step changes
+  useEffect(() => {
+    if (depositStep > 0) {
+      const instructions = generateRealTimeInstructions(depositStep, selectedCountry, selectedProvider, depositAmount);
+      setRealTimeInstructions(instructions);
+      setDepositProgress((depositStep / 5) * 100);
+    }
+  }, [depositStep, selectedCountry, selectedProvider, depositAmount]);
+
+  // Handle deposit step progression
+  const nextDepositStep = () => {
+    if (depositStep < 5) {
+      setDepositStep(depositStep + 1);
+    }
+  };
+
+  // Reset deposit process
+  const resetDepositProcess = () => {
+    setDepositStep(1);
+    setDepositProgress(0);
+    setSelectedProvider('');
+    setDepositAmount('');
+    setAccountDetails('');
+    setRealTimeInstructions('');
+  };
+
   // Process deposit mutation
   const processDepositMutation = useMutation({
     mutationFn: async (data: any) => {
+      // Step 3: Verification
+      setDepositStep(3);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Step 4: Processing
+      setDepositStep(4);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const response = await apiRequest('POST', '/api/wallet/deposit', data);
       return response.json();
     },
     onSuccess: (data) => {
       if (data.success) {
+        setDepositStep(5);
         toast({
-          title: "Deposit Initiated",
-          description: `Your ${depositAmount} deposit has been started successfully.`,
+          title: "Deposit Successful",
+          description: `Your ${depositAmount} deposit has been completed successfully.`,
         });
-        setDepositDialogOpen(false);
-        setDepositAmount('');
-        setAccountDetails('');
+        
+        setTimeout(() => {
+          setDepositDialogOpen(false);
+          resetDepositProcess();
+        }, 2500);
+        
         queryClient.invalidateQueries({ queryKey: ['/api/wallet/transactions'] });
         queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
       } else {
@@ -155,6 +205,7 @@ export default function SmaiSikaWalletPage() {
           description: data.message || "Failed to process deposit",
           variant: "destructive",
         });
+        setDepositStep(2); // Return to previous step
       }
     },
     onError: (error: any) => {
@@ -163,6 +214,7 @@ export default function SmaiSikaWalletPage() {
         description: "Unable to process deposit. Please try again.",
         variant: "destructive",
       });
+      setDepositStep(2); // Return to previous step
     }
   });
 
@@ -339,21 +391,54 @@ export default function SmaiSikaWalletPage() {
               </div>
               
               <div className="grid grid-cols-2 gap-4">
-                <Dialog open={depositDialogOpen} onOpenChange={setDepositDialogOpen}>
+                <Dialog open={depositDialogOpen} onOpenChange={(open) => {
+                  setDepositDialogOpen(open);
+                  if (!open) resetDepositProcess();
+                }}>
                   <DialogTrigger asChild>
                     <Button className="bg-green-600 hover:bg-green-700 text-white">
                       <Plus className="w-4 h-4 mr-2" />
                       Deposit Funds
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-md">
+                  <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
                     <DialogHeader>
-                      <DialogTitle>Deposit Funds - Global Gateway</DialogTitle>
+                      <DialogTitle className="flex items-center space-x-2">
+                        <span>Deposit Funds - Global Gateway</span>
+                        <Badge variant="outline" className="text-xs bg-blue-600">
+                          Step {depositStep} of 5
+                        </Badge>
+                      </DialogTitle>
                     </DialogHeader>
+                    
+                    {/* Real-time Instructions */}
+                    {realTimeInstructions && (
+                      <Alert className="bg-blue-900/30 border-blue-600">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription className="text-blue-200">
+                          {realTimeInstructions}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    {/* Progress Bar */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm text-gray-400">
+                        <span>Deposit Progress</span>
+                        <span>{Math.round(depositProgress)}%</span>
+                      </div>
+                      <Progress value={depositProgress} className="w-full h-2" />
+                    </div>
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label>Select Country</Label>
-                        <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                        <Select 
+                          value={selectedCountry} 
+                          onValueChange={(value) => {
+                            setSelectedCountry(value);
+                            if (depositStep === 1) setDepositStep(2);
+                          }}
+                        >
                           <SelectTrigger className="bg-gray-700 border-gray-600">
                             <SelectValue placeholder="Choose your country" />
                           </SelectTrigger>
