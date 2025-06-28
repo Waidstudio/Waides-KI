@@ -1474,6 +1474,364 @@ export function FuturisticAdminPanel() {
             </div>
           </TabsContent>
 
+          {/* Trading Management Tab */}
+          <TabsContent value="trading" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Trading Management</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-green-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-200 text-sm font-medium">Total Trades</p>
+                        <p className="text-2xl font-bold text-white">{tradingStats?.totalTrades || 0}</p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-green-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-blue-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-200 text-sm font-medium">Success Rate</p>
+                        <p className="text-2xl font-bold text-white">{tradingStats?.successRate || 0}%</p>
+                      </div>
+                      <BarChart3 className="w-8 h-8 text-blue-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-purple-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-200 text-sm font-medium">P&L</p>
+                        <p className="text-2xl font-bold text-white">${tradingStats?.profitLoss?.toLocaleString() || 0}</p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-purple-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Financial Management Tab */}
+          <TabsContent value="financial" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Financial Management</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-emerald-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-emerald-200 text-sm font-medium">Total Revenue</p>
+                        <p className="text-2xl font-bold text-white">${financialStats?.totalRevenue?.toLocaleString() || 0}</p>
+                      </div>
+                      <DollarSign className="w-8 h-8 text-emerald-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-cyan-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-cyan-200 text-sm font-medium">Monthly Revenue</p>
+                        <p className="text-2xl font-bold text-white">${financialStats?.monthlyRevenue?.toLocaleString() || 0}</p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-cyan-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-orange-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-200 text-sm font-medium">Total Balance</p>
+                        <p className="text-2xl font-bold text-white">${financialStats?.totalBalance?.toLocaleString() || 0}</p>
+                      </div>
+                      <Users className="w-8 h-8 text-orange-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Security Management Tab */}
+          <TabsContent value="security" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Security Management</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-red-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-red-200 text-sm font-medium">Active Users</p>
+                        <p className="text-2xl font-bold text-white">{securityStats?.activeUsers || 0}</p>
+                      </div>
+                      <Users className="w-8 h-8 text-red-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-yellow-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-yellow-200 text-sm font-medium">Security Threats</p>
+                        <p className="text-2xl font-bold text-white">{securityStats?.securityThreats || 0}</p>
+                      </div>
+                      <Shield className="w-8 h-8 text-yellow-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-indigo-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-indigo-200 text-sm font-medium">Firewall Status</p>
+                        <p className="text-lg font-bold text-white">{securityStats?.firewallStatus || 'Unknown'}</p>
+                      </div>
+                      <Lock className="w-8 h-8 text-indigo-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* AI Systems Tab */}
+          <TabsContent value="ai-systems" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">AI Systems Management</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-cyan-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-cyan-200 text-sm font-medium">KonsAI Modules</p>
+                        <p className="text-2xl font-bold text-white">{aiStats?.konsaiModules || 0}</p>
+                      </div>
+                      <Brain className="w-8 h-8 text-cyan-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-purple-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-purple-200 text-sm font-medium">Accuracy</p>
+                        <p className="text-2xl font-bold text-white">{aiStats?.accuracy || 0}%</p>
+                      </div>
+                      <Zap className="w-8 h-8 text-purple-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-green-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-green-200 text-sm font-medium">Learning Rate</p>
+                        <p className="text-2xl font-bold text-white">{aiStats?.learningRate || 0}%</p>
+                      </div>
+                      <TrendingUp className="w-8 h-8 text-green-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Performance Tab */}
+          <TabsContent value="performance" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Performance Management</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-blue-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-200 text-sm font-medium">System Uptime</p>
+                        <p className="text-2xl font-bold text-white">{performanceStats?.systemUptime || 0}s</p>
+                      </div>
+                      <Clock className="w-8 h-8 text-blue-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-emerald-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-emerald-200 text-sm font-medium">Response Time</p>
+                        <p className="text-2xl font-bold text-white">{performanceStats?.responseTime || 0}ms</p>
+                      </div>
+                      <Zap className="w-8 h-8 text-emerald-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-orange-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-orange-200 text-sm font-medium">Memory Usage</p>
+                        <p className="text-2xl font-bold text-white">{performanceStats?.memoryUsage || 0}%</p>
+                      </div>
+                      <Monitor className="w-8 h-8 text-orange-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Infrastructure Tab */}
+          <TabsContent value="infrastructure" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Infrastructure Management</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card className="bg-black/20 border-indigo-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-indigo-200 text-sm font-medium">Server Load</p>
+                        <p className="text-2xl font-bold text-white">{infrastructureStats?.serverLoad || 0}%</p>
+                      </div>
+                      <Server className="w-8 h-8 text-indigo-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-teal-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-teal-200 text-sm font-medium">DB Connections</p>
+                        <p className="text-2xl font-bold text-white">{infrastructureStats?.databaseConnections || 0}</p>
+                      </div>
+                      <Database className="w-8 h-8 text-teal-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-pink-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-pink-200 text-sm font-medium">Backup Status</p>
+                        <p className="text-lg font-bold text-white">{infrastructureStats?.backupStatus || 'Unknown'}</p>
+                      </div>
+                      <Shield className="w-8 h-8 text-pink-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Transactions Tab */}
+          <TabsContent value="transactions" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">Transaction Management</h3>
+              <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {transactions?.slice(0, 10)?.map((transaction: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full ${
+                            transaction.status === 'completed' ? 'bg-green-400' :
+                            transaction.status === 'pending' ? 'bg-yellow-400' : 'bg-red-400'
+                          }`}></div>
+                          <div>
+                            <p className="text-white font-medium">{transaction.type}</p>
+                            <p className="text-white/60 text-sm">User: {transaction.username}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-white font-mono">${transaction.amount}</p>
+                          <p className="text-white/60 text-sm">{transaction.status}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* System Logs Tab */}
+          <TabsContent value="logs" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">System Logs</h3>
+              <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                <CardContent className="p-6">
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {logs?.slice(0, 20)?.map((log: any, index: number) => (
+                      <div key={index} className="flex items-start space-x-3 p-2 bg-white/5 rounded text-sm">
+                        <div className={`w-2 h-2 mt-1 rounded-full ${
+                          log.level === 'error' ? 'bg-red-400' :
+                          log.level === 'warning' ? 'bg-yellow-400' : 'bg-green-400'
+                        }`}></div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-white/80">{log.message}</span>
+                            <span className="text-white/50 text-xs">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                          </div>
+                          <p className="text-white/60 text-xs mt-1">{log.level} - {log.source}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Configuration Tab */}
+          <TabsContent value="configuration" className="space-y-6">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold text-white mb-4">System Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white">System Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70">Maintenance Mode</Label>
+                      <Switch checked={config?.system?.maintenanceMode || false} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70">Debug Mode</Label>
+                      <Switch checked={config?.system?.debugMode || false} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70">API Rate Limiting</Label>
+                      <Switch checked={config?.api?.rateLimitEnabled || true} />
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white">Security Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70">2FA Required</Label>
+                      <Switch checked={config?.security?.twoFactorRequired || false} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70">IP Whitelisting</Label>
+                      <Switch checked={config?.security?.ipWhitelistEnabled || false} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70">Session Timeout</Label>
+                      <span className="text-white">{config?.security?.sessionTimeout || 3600}s</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>
