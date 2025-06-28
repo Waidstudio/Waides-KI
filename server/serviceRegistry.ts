@@ -139,8 +139,7 @@ serviceRegistry.register('konsaiEngine', async () => {
   console.log('Loading service: KonsAi Intelligence Engine - Unified System');
   try {
     // Load the single unified KonsAi Intelligence Engine
-    const konsaiModule = await import('./services/konsaiIntelligenceEngine.js');
-    const KonsaiIntelligenceEngine = konsaiModule.default || konsaiModule.KonsaiIntelligenceEngine;
+    const KonsaiIntelligenceEngine = (await import('./services/konsaiIntelligenceEngine.js')).default;
     const konsaiEngine = new KonsaiIntelligenceEngine();
     
     console.log('Successfully loaded unified KonsAi Intelligence Engine');
@@ -179,5 +178,3 @@ serviceRegistry.register('konsaiEngineStandalone', async () => {
     }
   };
 });
-
-export { serviceRegistry };
