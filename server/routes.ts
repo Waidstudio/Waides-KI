@@ -1836,6 +1836,99 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced Admin routes with database connectivity
+  app.get('/api/admin/enhanced-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getEnhancedStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching enhanced admin stats:', error);
+      res.status(500).json({ error: 'Failed to fetch enhanced stats' });
+    }
+  });
+
+  app.get('/api/admin/configuration', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const config = await enhancedAdminService.getConfiguration();
+      res.json(config);
+    } catch (error: any) {
+      console.error('Error fetching admin configuration:', error);
+      res.status(500).json({ error: 'Failed to fetch configuration' });
+    }
+  });
+
+  app.put('/api/admin/configuration', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const config = await enhancedAdminService.updateConfiguration(req.body);
+      res.json(config);
+    } catch (error: any) {
+      console.error('Error updating admin configuration:', error);
+      res.status(500).json({ error: 'Failed to update configuration' });
+    }
+  });
+
+  app.get('/api/admin/users', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const search = req.query.search as string || '';
+      
+      const users = await enhancedAdminService.getUsers(page, limit, search);
+      res.json(users);
+    } catch (error: any) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
+
+  app.get('/api/admin/transactions', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const filter = req.query.filter as string || '';
+      
+      const transactions = await enhancedAdminService.getTransactions(page, limit, filter);
+      res.json(transactions);
+    } catch (error: any) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+  });
+
+  app.get('/api/admin/trades', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 50;
+      
+      const trades = await enhancedAdminService.getTrades(page, limit);
+      res.json(trades);
+    } catch (error: any) {
+      console.error('Error fetching trades:', error);
+      res.status(500).json({ error: 'Failed to fetch trades' });
+    }
+  });
+
+  app.get('/api/admin/logs', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 100;
+      const level = req.query.level as string || '';
+      
+      const logs = await enhancedAdminService.getSystemLogs(page, limit, level);
+      res.json(logs);
+    } catch (error: any) {
+      console.error('Error fetching logs:', error);
+      res.status(500).json({ error: 'Failed to fetch logs' });
+    }
+  });
+
   // Advanced Admin Configuration Routes - 500+ Settings
   app.get("/api/admin/advanced-config", async (req, res) => {
     try {

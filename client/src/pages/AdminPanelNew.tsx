@@ -1,5 +1,5 @@
-import { EnhancedAdminPanel } from '@/components/EnhancedAdminPanel';
+import { FuturisticAdminPanel } from '@/components/FuturisticAdminPanel';
 
 export default function AdminPanel() {
-  return <EnhancedAdminPanel />;
+  return <FuturisticAdminPanel />;
 }
