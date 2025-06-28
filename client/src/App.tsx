@@ -193,7 +193,6 @@ function Router() {
         <Switch>
           <Route path="/" component={WaidesKIVisionPortal} />
           <Route path="/wallet" component={SmaiSikaWalletPage} />
-          <Route path="/smai-sika-wallet" component={SmaiSikaWalletPage} />
           <Route path="/biometric-trading" component={BiometricTradingInterface} />
           <Route path="/profile" component={ProfilePage} />
           <Route path="/dashboard" component={Dashboard} />
