@@ -355,27 +355,26 @@ export function FuturisticAdminPanel() {
       <div className="w-full max-w-none p-3 md:p-4 lg:p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 md:space-y-4 lg:space-y-6 w-full">
           {/* Scrollable Tabs List */}
-          <div className="relative w-full overflow-hidden">
-            <ScrollArea className="w-full">
-              <div className="pb-2 w-full">
-                <TabsList className="inline-flex h-auto p-1 bg-black/20 backdrop-blur-lg border border-white/20 rounded-xl min-w-max w-full md:w-auto justify-start">
-                  {tabs.map((tab) => {
-                    const Icon = tab.icon;
-                    return (
-                      <TabsTrigger
-                        key={tab.id}
-                        value={tab.id}
-                        className="flex items-center space-x-2 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-300 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/10 whitespace-nowrap"
-                      >
-                        <div className={`w-2 h-2 rounded-full ${tab.color}`}></div>
-                        <Icon className="w-3 h-3 md:w-4 md:h-4" />
-                        <span className="font-medium text-xs md:text-sm">{tab.label}</span>
-                      </TabsTrigger>
-                    );
-                  })}
-                </TabsList>
-              </div>
-            </ScrollArea>
+          <div className="relative w-full overflow-x-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+            <div className="pb-2 w-full">
+              <TabsList className="inline-flex h-auto p-1 bg-black/20 backdrop-blur-lg border border-white/20 rounded-xl min-w-max whitespace-nowrap gap-1"
+                style={{ width: 'max-content' }}>
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <TabsTrigger
+                      key={tab.id}
+                      value={tab.id}
+                      className="flex items-center space-x-1 md:space-x-2 px-2 md:px-3 lg:px-4 py-2 md:py-3 rounded-lg transition-all duration-300 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/10 whitespace-nowrap flex-shrink-0"
+                    >
+                      <div className={`w-2 h-2 rounded-full ${tab.color}`}></div>
+                      <Icon className="w-3 h-3 md:w-4 md:h-4" />
+                      <span className="font-medium text-xs md:text-sm">{tab.label}</span>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
           </div>
 
           {/* Dashboard Tab */}
