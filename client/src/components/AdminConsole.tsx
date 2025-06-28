@@ -1,15 +1,256 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 import { 
   Shield, BarChart3, Users, DollarSign, Brain, Settings, 
   TrendingUp, Bell, Database, Activity, Zap, Rocket, 
-  RefreshCw, Save, X, Link, Brush, Cpu, Bot, Menu 
+  RefreshCw, Save, X, Link, Brush, Cpu, Bot, Menu,
+  Download, Upload, RotateCcw, Check, AlertTriangle, Search
 } from "lucide-react";
+
+// Helper functions for configuration management
+const getSettingDescription = (key: string): string => {
+  const descriptions: Record<string, string> = {
+    // System Settings
+    maintenance_mode: "Enable maintenance mode to restrict access",
+    debug_logging: "Enable detailed debug logging for troubleshooting",
+    rate_limiting: "Enable API rate limiting to prevent abuse",
+    max_requests_per_minute: "Maximum API requests allowed per minute",
+    api_timeout: "API request timeout in milliseconds",
+    cache_ttl: "Cache time-to-live in seconds",
+    
+    // Trading Settings
+    auto_trading_enabled: "Enable autonomous trading functionality",
+    max_position_size: "Maximum position size in USDT",
+    risk_level: "Trading risk tolerance level",
+    stop_loss_percentage: "Default stop loss percentage",
+    take_profit_percentage: "Default take profit percentage",
+    
+    // Wallet Settings
+    min_deposit: "Minimum deposit amount",
+    max_deposit: "Maximum deposit amount",
+    conversion_fee_rate: "Currency conversion fee percentage",
+    instant_withdrawal: "Enable instant withdrawals",
+    
+    // KonsAi Settings
+    intelligence_level: "AI intelligence complexity level",
+    response_delay: "Response delay in milliseconds",
+    learning_enabled: "Enable AI learning and adaptation",
+    personality_mode: "AI personality type",
+    
+    // Security Settings
+    two_factor_auth: "Enable two-factor authentication",
+    biometric_auth: "Enable biometric authentication",
+    password_complexity: "Minimum password complexity score",
+    
+    // UI Settings
+    theme: "Application theme",
+    primary_color: "Primary color scheme",
+    font_size: "Base font size in pixels",
+    dark_mode: "Enable dark mode interface",
+    
+    // Performance Settings
+    caching_strategy: "Caching strategy type",
+    cache_duration: "Cache duration in seconds",
+    
+    // Default fallback
+    default: "Configuration setting for system optimization"
+  };
+  
+  return descriptions[key] || descriptions.default;
+};
+
+const renderSettingControl = (key: string, value: any, onChange: (key: string, value: any) => void) => {
+  // Boolean controls
+  if (typeof value === 'boolean') {
+    return (
+      <Switch
+        checked={value}
+        onCheckedChange={(checked) => onChange(key, checked)}
+        className="data-[state=checked]:bg-blue-600"
+      />
+    );
+  }
+  
+  // Number controls
+  if (typeof value === 'number') {
+    // Percentage sliders
+    if (key.includes('percentage') || key.includes('rate') || key.includes('threshold')) {
+      return (
+        <div className="space-y-2">
+          <Slider
+            value={[value]}
+            onValueChange={(values) => onChange(key, values[0])}
+            max={100}
+            min={0}
+            step={0.1}
+            className="w-full"
+          />
+          <div className="text-xs text-gray-400 text-right">{value}%</div>
+        </div>
+      );
+    }
+    
+    // Regular number inputs
+    return (
+      <Input
+        type="number"
+        value={value}
+        onChange={(e) => onChange(key, parseFloat(e.target.value) || 0)}
+        className="bg-gray-700 border-gray-600 text-white"
+      />
+    );
+  }
+  
+  // String controls with predefined options
+  if (typeof value === 'string') {
+    // Select controls for specific settings
+    if (key === 'risk_level') {
+      return (
+        <Select value={value} onValueChange={(val) => onChange(key, val)}>
+          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="conservative">Conservative</SelectItem>
+            <SelectItem value="moderate">Moderate</SelectItem>
+            <SelectItem value="aggressive">Aggressive</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    if (key === 'theme') {
+      return (
+        <Select value={value} onValueChange={(val) => onChange(key, val)}>
+          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="dark">Dark</SelectItem>
+            <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="auto">Auto</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    if (key === 'intelligence_level') {
+      return (
+        <Select value={value} onValueChange={(val) => onChange(key, val)}>
+          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="basic">Basic</SelectItem>
+            <SelectItem value="advanced">Advanced</SelectItem>
+            <SelectItem value="expert">Expert</SelectItem>
+            <SelectItem value="transcendent">Transcendent</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    if (key === 'personality_mode') {
+      return (
+        <Select value={value} onValueChange={(val) => onChange(key, val)}>
+          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="professional">Professional</SelectItem>
+            <SelectItem value="friendly">Friendly</SelectItem>
+            <SelectItem value="analytical">Analytical</SelectItem>
+            <SelectItem value="balanced">Balanced</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    // Color picker for color settings
+    if (key.includes('color')) {
+      return (
+        <div className="flex items-center space-x-2">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(key, e.target.value)}
+            className="w-12 h-8 rounded border-gray-600"
+          />
+          <Input
+            value={value}
+            onChange={(e) => onChange(key, e.target.value)}
+            className="bg-gray-700 border-gray-600 text-white flex-1"
+          />
+        </div>
+      );
+    }
+    
+    // Default text input
+    return (
+      <Input
+        value={value}
+        onChange={(e) => onChange(key, e.target.value)}
+        className="bg-gray-700 border-gray-600 text-white"
+      />
+    );
+  }
+  
+  // Array controls
+  if (Array.isArray(value)) {
+    return (
+      <Textarea
+        value={value.join(', ')}
+        onChange={(e) => onChange(key, e.target.value.split(', ').filter(Boolean))}
+        className="bg-gray-700 border-gray-600 text-white"
+        placeholder="Enter comma-separated values"
+        rows={3}
+      />
+    );
+  }
+  
+  // Object controls (simplified JSON editor)
+  if (typeof value === 'object' && value !== null) {
+    return (
+      <Textarea
+        value={JSON.stringify(value, null, 2)}
+        onChange={(e) => {
+          try {
+            const parsed = JSON.parse(e.target.value);
+            onChange(key, parsed);
+          } catch (error) {
+            // Handle invalid JSON gracefully
+          }
+        }}
+        className="bg-gray-700 border-gray-600 text-white font-mono text-xs"
+        rows={4}
+      />
+    );
+  }
+  
+  // Fallback
+  return (
+    <Input
+      value={String(value)}
+      onChange={(e) => onChange(key, e.target.value)}
+      className="bg-gray-700 border-gray-600 text-white"
+    />
+  );
+};
 
 interface AdminConsoleProps {
   onExit: () => void;
@@ -21,6 +262,101 @@ interface AdminConsoleProps {
 
 export default function AdminConsole({ onExit, status, config, activeTab, setActiveTab }: AdminConsoleProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [configSection, setConfigSection] = useState('system');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch advanced configuration
+  const { data: advancedConfig, isLoading } = useQuery({
+    queryKey: ['/api/admin/advanced-config'],
+    refetchInterval: 5000, // Real-time updates every 5 seconds
+  });
+
+  // Fetch specific configuration section
+  const { data: sectionConfig, refetch: refetchSection } = useQuery({
+    queryKey: ['/api/admin/advanced-config', configSection],
+    enabled: !!configSection,
+    refetchInterval: 2000, // Real-time updates
+  });
+
+  // Update configuration mutation
+  const updateConfigMutation = useMutation({
+    mutationFn: async ({ section, data }: { section: string; data: any }) => {
+      const result = await apiRequest('PUT', `/api/admin/advanced-config/${section}`, data);
+      return result.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Configuration Updated",
+        description: "Settings saved successfully",
+      });
+      setUnsavedChanges(false);
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/advanced-config'] });
+      refetchSection();
+    },
+    onError: () => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to save configuration",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Reset configuration mutation
+  const resetConfigMutation = useMutation({
+    mutationFn: async (section?: string) => {
+      const result = await apiRequest('POST', `/api/admin/advanced-config/reset${section ? `/${section}` : ''}`);
+      return result.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Configuration Reset",
+        description: "Settings restored to defaults",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/advanced-config'] });
+      refetchSection();
+    },
+  });
+
+  // Export configuration
+  const exportConfig = async () => {
+    try {
+      const response = await fetch('/api/admin/advanced-config/export');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'waides-ki-config.json';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast({
+        title: "Export Complete",
+        description: "Configuration downloaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export configuration",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleConfigChange = (key: string, value: any) => {
+    setUnsavedChanges(true);
+    // Update local state here if needed
+  };
+
+  const saveChanges = () => {
+    if (sectionConfig) {
+      updateConfigMutation.mutate({ section: configSection, data: sectionConfig });
+    }
+  };
 
   const NavigationContent = () => (
     <div className="p-4">
@@ -394,8 +730,188 @@ export default function AdminConsole({ onExit, status, config, activeTab, setAct
                 </div>
               )}
 
+              {/* Advanced Configuration Management */}
+              {activeTab === 'advanced-config' && (
+                <div className="space-y-4 lg:space-y-6">
+                  {/* Configuration Header */}
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Advanced Configuration</h3>
+                      <p className="text-gray-400">
+                        Complete control over 500+ system settings with real-time updates
+                      </p>
+                      {advancedConfig && (
+                        <div className="flex items-center space-x-4 mt-2">
+                          <Badge variant="outline" className="text-green-400 border-green-400">
+                            {Object.keys(advancedConfig).length} Sections
+                          </Badge>
+                          <Badge variant="outline" className="text-blue-400 border-blue-400">
+                            500+ Settings
+                          </Badge>
+                          {unsavedChanges && (
+                            <Badge variant="destructive">
+                              Unsaved Changes
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSearchQuery('')}
+                        className="bg-gray-800 border-gray-600 text-gray-300"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Clear Search
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={exportConfig}
+                        className="bg-gray-800 border-gray-600 text-gray-300"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Export
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => resetConfigMutation.mutate(configSection)}
+                        className="bg-red-600/20 border-red-600 text-red-400"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Reset Section
+                      </Button>
+                      {unsavedChanges && (
+                        <Button
+                          size="sm"
+                          onClick={saveChanges}
+                          disabled={updateConfigMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          Save Changes
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <Input
+                      placeholder="Search 500+ settings..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-gray-800 border-gray-600 text-white pl-10"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  </div>
+
+                  {/* Configuration Sections */}
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Section Selector */}
+                    <div className="lg:col-span-1">
+                      <Card className="bg-gray-800 border-gray-700">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-base">Configuration Sections</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                          {advancedConfig && Object.keys(advancedConfig).map((section) => (
+                            <button
+                              key={section}
+                              onClick={() => setConfigSection(section)}
+                              className={`w-full text-left px-3 py-2 rounded-md transition-colors text-sm ${
+                                configSection === section
+                                  ? 'bg-blue-600 text-white'
+                                  : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="capitalize">{section.replace('_', ' ')}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {advancedConfig[section] ? Object.keys(advancedConfig[section]).length : 0}
+                                </Badge>
+                              </div>
+                            </button>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Settings Panel */}
+                    <div className="lg:col-span-3">
+                      <Card className="bg-gray-800 border-gray-700">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-white text-base capitalize">
+                            {configSection.replace('_', ' ')} Settings
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          {isLoading ? (
+                            <div className="flex items-center justify-center py-12">
+                              <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+                            </div>
+                          ) : sectionConfig ? (
+                            <ScrollArea className="h-96">
+                              <div className="space-y-4">
+                                {Object.entries(sectionConfig).map(([key, value]) => (
+                                  <div key={key} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-700/50 rounded-lg">
+                                    <div>
+                                      <Label className="text-white font-medium capitalize">
+                                        {key.replace(/_/g, ' ')}
+                                      </Label>
+                                      <p className="text-xs text-gray-400 mt-1">
+                                        {getSettingDescription(key)}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      {renderSettingControl(key, value, handleConfigChange)}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </ScrollArea>
+                          ) : (
+                            <div className="text-center py-12">
+                              <AlertTriangle className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+                              <p className="text-gray-400">Failed to load configuration section</p>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Configuration Summary */}
+                  {advancedConfig && (
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-white text-base">Configuration Summary</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                          {Object.entries(advancedConfig).map(([section, settings]) => (
+                            <div key={section} className="text-center">
+                              <div className="text-2xl font-bold text-blue-400">
+                                {typeof settings === 'object' ? Object.keys(settings).length : 0}
+                              </div>
+                              <div className="text-xs text-gray-400 capitalize">
+                                {section.replace('_', ' ')}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
+
               {/* Other tab content placeholder */}
-              {!['dashboard', 'system'].includes(activeTab) && (
+              {!['dashboard', 'system', 'advanced-config'].includes(activeTab) && (
                 <div className="text-center py-12">
                   <h3 className="text-xl font-semibold text-white mb-2">
                     {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Configuration
@@ -403,32 +919,6 @@ export default function AdminConsole({ onExit, status, config, activeTab, setAct
                   <p className="text-gray-400">
                     Advanced {activeTab} settings and controls will be displayed here.
                   </p>
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Card className="bg-gray-700 border-gray-600">
-                      <CardHeader>
-                        <CardTitle className="text-blue-400">Configuration Panel</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300">Manage {activeTab} settings and preferences</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gray-700 border-gray-600">
-                      <CardHeader>
-                        <CardTitle className="text-green-400">Real-time Monitoring</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300">Live {activeTab} metrics and analytics</p>
-                      </CardContent>
-                    </Card>
-                    <Card className="bg-gray-700 border-gray-600">
-                      <CardHeader>
-                        <CardTitle className="text-purple-400">Advanced Controls</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300">Expert {activeTab} configuration options</p>
-                      </CardContent>
-                    </Card>
-                  </div>
                 </div>
               )}
             </div>

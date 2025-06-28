@@ -1645,6 +1645,103 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Advanced Admin Configuration Routes - 500+ Settings
+  app.get("/api/admin/advanced-config", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      const config = advancedAdminConfigService.getConfig();
+      res.json(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get configuration" });
+    }
+  });
+
+  app.get("/api/admin/advanced-config/:section", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      const section = advancedAdminConfigService.getConfigSection(req.params.section);
+      if (section) {
+        res.json(section);
+      } else {
+        res.status(404).json({ error: "Configuration section not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get configuration section" });
+    }
+  });
+
+  app.put("/api/admin/advanced-config/:section", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      advancedAdminConfigService.updateConfig(req.params.section, req.body);
+      
+      const validation = advancedAdminConfigService.validateConfig();
+      if (!validation.valid) {
+        return res.status(400).json({ error: "Invalid configuration", details: validation.errors });
+      }
+      
+      const updatedSection = advancedAdminConfigService.getConfigSection(req.params.section);
+      res.json({ 
+        success: true, 
+        message: "Configuration updated successfully",
+        data: updatedSection 
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update configuration" });
+    }
+  });
+
+  app.post("/api/admin/advanced-config/reset/:section?", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      advancedAdminConfigService.resetToDefaults(req.params.section);
+      res.json({ 
+        success: true, 
+        message: req.params.section 
+          ? `${req.params.section} configuration reset to defaults`
+          : "All configuration reset to defaults"
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reset configuration" });
+    }
+  });
+
+  app.get("/api/admin/advanced-config/export", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      const config = advancedAdminConfigService.exportConfig();
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="waides-ki-config.json"');
+      res.send(config);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to export configuration" });
+    }
+  });
+
+  app.post("/api/admin/advanced-config/import", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      const success = advancedAdminConfigService.importConfig(JSON.stringify(req.body));
+      if (success) {
+        res.json({ success: true, message: "Configuration imported successfully" });
+      } else {
+        res.status(400).json({ error: "Invalid configuration format" });
+      }
+    } catch (error) {
+      res.status(500).json({ error: "Failed to import configuration" });
+    }
+  });
+
+  app.get("/api/admin/advanced-config/validate", async (req, res) => {
+    try {
+      const { advancedAdminConfigService } = await import('./services/advancedAdminConfigService.js');
+      const validation = advancedAdminConfigService.validateConfig();
+      res.json(validation);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to validate configuration" });
+    }
+  });
+
   app.get('/api/admin/users', (req, res) => {
     try {
       const users = [
