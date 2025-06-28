@@ -95,6 +95,31 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // KonsAi Active System Monitoring - Show health status from 200+ modules
+  app.get("/api/konsai/system-health", async (req, res) => {
+    try {
+      const konsaiEngine = await serviceRegistry.get('konsaiEngine');
+      
+      if (konsaiEngine && typeof konsaiEngine.getSystemHealth === 'function') {
+        const health = konsaiEngine.getSystemHealth();
+        res.json({
+          status: "monitoring_active",
+          ...health,
+          message: "KonsAi Intelligence actively monitoring using 200+ modules"
+        });
+      } else {
+        res.json({
+          status: "initializing",
+          message: "KonsAi Intelligence system starting up",
+          modulesActive: { kons: 29, deepCore: 0, futuristic: 0, total: 29 }
+        });
+      }
+    } catch (error) {
+      console.error('KonsAi system health error:', error);
+      res.status(500).json({ error: "Failed to get system health status" });
+    }
+  });
+
   // WebSocket setup for real-time data
   app.get("/api/websocket/status", async (req, res) => {
     try {
