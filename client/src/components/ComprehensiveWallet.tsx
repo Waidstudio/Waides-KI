@@ -483,100 +483,263 @@ export default function ComprehensiveWallet() {
                 </TabsList>
 
                 <TabsContent value="mobile" className="space-y-4">
-                  {paymentMethods.length === 0 ? (
-                    <Alert className="bg-yellow-900 border-yellow-700">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>
-                        No mobile money accounts found. Please add a payment method first.
-                      </AlertDescription>
-                    </Alert>
-                  ) : (
-                    <>
-                      <div className="space-y-2">
-                        <Label>Select Payment Method</Label>
-                        <Select onValueChange={(value) => {
-                          const method = paymentMethods.find((m: PaymentMethod) => m.id.toString() === value);
-                          setSelectedPaymentMethod(method || null);
-                        }}>
-                          <SelectTrigger className="bg-gray-800 border-gray-700">
-                            <SelectValue placeholder="Choose your mobile money account" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {paymentMethods.map((method: PaymentMethod) => (
-                              <SelectItem key={method.id} value={method.id.toString()}>
-                                <div className="flex items-center space-x-2">
-                                  <span>{method.provider}</span>
-                                  <span className="text-gray-400">({method.accountIdentifier})</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                  <div className="space-y-2">
+                    <Label>Select Country</Label>
+                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Choose your country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supportedCountries.map((country: CountryInfo) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            <div className="flex items-center space-x-2">
+                              <span>{country.name}</span>
+                              <span className="text-gray-400">({country.providers} providers)</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                      <div className="space-y-2">
-                        <Label>Amount ({selectedPaymentMethod?.currency || 'Currency'})</Label>
-                        <Input
-                          type="number"
-                          placeholder="Enter amount"
-                          value={depositAmount}
-                          onChange={(e) => setDepositAmount(e.target.value)}
-                          className="bg-gray-800 border-gray-700"
-                        />
-                      </div>
+                  {globalProviders.length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Select Payment Provider</Label>
+                      <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                        <SelectTrigger className="bg-gray-800 border-gray-700">
+                          <SelectValue placeholder="Choose payment provider" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {globalProviders.map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id}>
+                              <div className="flex items-center space-x-2">
+                                <span>{provider.name}</span>
+                                <span className="text-gray-400">({provider.type})</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
-                      {selectedPaymentMethod && (
-                        <div className="p-4 bg-gray-800 rounded-lg">
-                          <h4 className="font-semibold mb-2">Transaction Details</h4>
+                  <div className="space-y-2">
+                    <Label>Amount</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(e.target.value)}
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Account Details (Phone Number)</Label>
+                    <Input
+                      type="tel"
+                      placeholder="Enter phone number"
+                      value={accountDetails}
+                      onChange={(e) => setAccountDetails(e.target.value)}
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+
+                  {selectedProvider && globalProviders.find((p: any) => p.id === selectedProvider) && (
+                    <div className="p-4 bg-gray-800 rounded-lg">
+                      <h4 className="font-semibold mb-2">Transaction Details</h4>
+                      {(() => {
+                        const provider = globalProviders.find((p: any) => p.id === selectedProvider);
+                        return provider ? (
                           <div className="space-y-1 text-sm text-gray-400">
                             <div className="flex justify-between">
                               <span>Provider:</span>
-                              <span>{selectedPaymentMethod.provider}</span>
+                              <span>{provider.name}</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Account:</span>
-                              <span>{selectedPaymentMethod.accountIdentifier}</span>
+                              <span>Type:</span>
+                              <span>{provider.type}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>Processing Time:</span>
-                              <span>2-5 minutes</span>
+                              <span>{provider.processingTime}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Fees:</span>
+                              <span>{provider.fees.percentage}% + {provider.fees.fixed}</span>
                             </div>
                           </div>
-                        </div>
-                      )}
-
-                      <Button 
-                        onClick={handleDeposit}
-                        disabled={!depositAmount || !selectedPaymentMethod || processDepositMutation.isPending}
-                        className="w-full bg-green-600 hover:bg-green-700"
-                      >
-                        {processDepositMutation.isPending ? (
-                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        ) : (
-                          <Plus className="w-4 h-4 mr-2" />
-                        )}
-                        Deposit Funds
-                      </Button>
-                    </>
+                        ) : null;
+                      })()}
+                    </div>
                   )}
+
+                  <Button 
+                    onClick={handleDeposit}
+                    disabled={!depositAmount || !selectedProvider || !accountDetails || processDepositMutation.isPending}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    {processDepositMutation.isPending ? (
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
+                    Deposit Funds
+                  </Button>
                 </TabsContent>
 
                 <TabsContent value="bank" className="space-y-4">
-                  <Alert className="bg-blue-900 border-blue-700">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Bank transfer functionality will be available soon. Currently supporting mobile money payments.
-                    </AlertDescription>
-                  </Alert>
+                  <div className="space-y-2">
+                    <Label>Select Country</Label>
+                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Choose your country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supportedCountries.map((country: CountryInfo) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            <div className="flex items-center space-x-2">
+                              <span>{country.name}</span>
+                              <span className="text-gray-400">({country.providers} providers)</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {globalProviders.filter((p: any) => p.type === 'bank_transfer').length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Select Bank</Label>
+                      <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                        <SelectTrigger className="bg-gray-800 border-gray-700">
+                          <SelectValue placeholder="Choose bank" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {globalProviders.filter((p: any) => p.type === 'bank_transfer').map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id}>
+                              <div className="flex items-center space-x-2">
+                                <span>{provider.name}</span>
+                                <span className="text-gray-400">(Bank Transfer)</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label>Amount</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(e.target.value)}
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Account Number</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter account number"
+                      value={accountDetails}
+                      onChange={(e) => setAccountDetails(e.target.value)}
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={handleDeposit}
+                    disabled={!depositAmount || !selectedProvider || !accountDetails || processDepositMutation.isPending}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    {processDepositMutation.isPending ? (
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
+                    Process Bank Transfer
+                  </Button>
                 </TabsContent>
 
                 <TabsContent value="crypto" className="space-y-4">
-                  <Alert className="bg-blue-900 border-blue-700">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Cryptocurrency deposits will be available soon. Currently supporting mobile money payments.
-                    </AlertDescription>
-                  </Alert>
+                  <div className="space-y-2">
+                    <Label>Select Country</Label>
+                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger className="bg-gray-800 border-gray-700">
+                        <SelectValue placeholder="Choose your country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supportedCountries.map((country: CountryInfo) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            <div className="flex items-center space-x-2">
+                              <span>{country.name}</span>
+                              <span className="text-gray-400">({country.providers} providers)</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {globalProviders.filter((p: any) => p.type === 'digital_wallet').length > 0 && (
+                    <div className="space-y-2">
+                      <Label>Select Crypto Provider</Label>
+                      <Select value={selectedProvider} onValueChange={setSelectedProvider}>
+                        <SelectTrigger className="bg-gray-800 border-gray-700">
+                          <SelectValue placeholder="Choose crypto provider" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {globalProviders.filter((p: any) => p.type === 'digital_wallet').map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id}>
+                              <div className="flex items-center space-x-2">
+                                <span>{provider.name}</span>
+                                <span className="text-gray-400">(Digital Wallet)</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label>Amount</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={depositAmount}
+                      onChange={(e) => setDepositAmount(e.target.value)}
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Wallet Address</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter wallet address"
+                      value={accountDetails}
+                      onChange={(e) => setAccountDetails(e.target.value)}
+                      className="bg-gray-800 border-gray-700"
+                    />
+                  </div>
+
+                  <Button 
+                    onClick={handleDeposit}
+                    disabled={!depositAmount || !selectedProvider || !accountDetails || processDepositMutation.isPending}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                  >
+                    {processDepositMutation.isPending ? (
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
+                    Process Crypto Deposit
+                  </Button>
                 </TabsContent>
               </Tabs>
             </DialogContent>
