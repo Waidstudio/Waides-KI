@@ -15,7 +15,7 @@ import {
   type AdminPermission,
   AdminRoles,
   RolePermissions,
-} from '@shared/authSchema';
+} from '@shared/schema';
 
 // Environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'waides-ki-admin-secret-2025';
@@ -451,7 +451,7 @@ export class AuthService {
           resource: adminActivityLogs.resource,
           details: adminActivityLogs.details,
           ipAddress: adminActivityLogs.ipAddress,
-          timestamp: adminActivityLogs.timestamp,
+          timestamp: adminActivityLogs.createdAt,
           success: adminActivityLogs.success,
           username: adminUsers.username,
         })

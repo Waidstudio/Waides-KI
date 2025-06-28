@@ -16,7 +16,7 @@ import {
   getUserAgent,
   updateLoginAttempts
 } from "./middleware/authMiddleware.js";
-import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/authSchema.js";
+import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/schema.js";
 
 // WebSocket setup for real-time features
 let wss: any = null;
