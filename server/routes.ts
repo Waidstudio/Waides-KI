@@ -377,6 +377,31 @@ export function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
+  // Get global payment gateways by country
+  app.get("/api/wallet/gateways/:countryCode", async (req, res) => {
+    try {
+      const { countryCode } = req.params;
+      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      const gateways = globalPaymentGateways.getGatewaysByCountry(countryCode);
+      res.json(gateways);
+    } catch (error) {
+      console.error('Error fetching gateways:', error);
+      res.status(500).json({ error: 'Failed to fetch payment gateways' });
+    }
+  });
+
+  // Get supported countries
+  app.get("/api/wallet/global-countries", async (req, res) => {
+    try {
+      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      const countries = globalPaymentGateways.getSupportedCountries();
+      res.json(countries);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      res.status(500).json({ error: 'Failed to fetch supported countries' });
+    }
+  });
+
   // Get payment providers for a country
   app.get("/api/wallet/providers/:countryCode", async (req, res) => {
     try {
@@ -452,35 +477,34 @@ export function registerRoutes(app: Express): Promise<Server> {
 
       const { globalPaymentGateway } = await import("./services/globalPaymentGateway.js");
       
-      // Validate provider
-      const provider = globalPaymentGateway.getProvider(providerId);
-      if (!provider) {
-        return res.status(400).json({ error: 'Invalid payment provider' });
+      // Use global payment gateways for processing
+      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      
+      // Validate gateway
+      const gateway = globalPaymentGateways.getGateway(providerId);
+      if (!gateway) {
+        return res.status(400).json({ error: 'Invalid payment gateway' });
       }
 
-      if (!provider.countries.includes(country)) {
-        return res.status(400).json({ error: 'Provider not available in this country' });
+      if (!gateway.countries.includes(country) && !gateway.countries.includes('GLOBAL')) {
+        return res.status(400).json({ error: 'Gateway not available in this country' });
       }
 
-      if (!provider.currencies.includes(currency)) {
-        return res.status(400).json({ error: 'Currency not supported by this provider' });
+      if (!gateway.currencies.includes(currency)) {
+        return res.status(400).json({ error: 'Currency not supported by this gateway' });
       }
 
-      // Process payment with real-time response
-      const paymentRequest = {
+      // Process deposit with enhanced global gateway
+      const depositRequest = {
         amount: parseFloat(amount),
         currency,
-        providerId,
-        userId: 'user_123', // In real app, get from session
+        gateway: providerId,
         country,
         accountDetails,
-        metadata: {
-          source: 'wallet_deposit',
-          timestamp: new Date().toISOString()
-        }
+        userId: 'user_123' // In real app, get from session
       };
 
-      const paymentResponse = await globalPaymentGateway.processPayment(paymentRequest);
+      const paymentResponse = await globalPaymentGateways.processDeposit(depositRequest);
 
       // Create transaction record
       const transaction = {
@@ -489,25 +513,22 @@ export function registerRoutes(app: Express): Promise<Server> {
         amount: `${currency} ${paymentResponse.amount.toLocaleString()}`,
         currency: paymentResponse.currency,
         status: paymentResponse.status,
-        providerId,
-        providerName: provider.name,
+        gateway: providerId,
+        gatewayName: gateway.name,
         country,
-        reference: paymentResponse.reference,
-        estimatedTime: paymentResponse.estimatedTime || provider.processingTime,
         fees: paymentResponse.fees,
         netAmount: paymentResponse.amount - paymentResponse.fees,
-        paymentUrl: paymentResponse.paymentUrl,
-        instructions: paymentResponse.instructions,
+        estimatedTime: paymentResponse.estimatedTime,
         date: new Date().toISOString().split('T')[0],
-        description: `Deposit via ${provider.name} - ${country}`,
+        description: `Deposit via ${gateway.name} - ${country}`,
         timestamp: new Date().toISOString()
       };
 
-      console.log(`💰 Deposit initiated: ${transaction.id} - ${provider.name} - ${currency} ${amount}`);
+      console.log(`💰 Global deposit initiated: ${transaction.id} - ${gateway.name} - ${currency} ${amount}`);
 
       res.json({
         success: paymentResponse.success,
-        message: paymentResponse.success ? 'Deposit initiated successfully' : 'Deposit failed',
+        message: paymentResponse.success ? 'Global deposit initiated successfully' : 'Deposit failed',
         transaction,
         paymentResponse
       });
@@ -586,6 +607,72 @@ export function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Withdrawal error:', error);
       res.status(500).json({ error: 'Failed to process withdrawal' });
+    }
+  });
+
+  // SmaiSika conversion endpoint
+  app.post("/api/wallet/convert-to-smaisika", async (req, res) => {
+    try {
+      const { amount, currency, userId } = req.body;
+      
+      if (!amount || !currency || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid amount or currency' });
+      }
+
+      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      
+      // Process conversion to SmaiSika
+      const conversionRequest = {
+        amount: parseFloat(amount),
+        fromCurrency: currency,
+        toCurrency: 'SS',
+        userId: userId || 'user_123'
+      };
+
+      const conversionResponse = await globalPaymentGateways.processConversion(conversionRequest);
+
+      console.log(`🔄 SmaiSika conversion: ${amount} ${currency} → ${conversionResponse.toAmount} SS`);
+
+      res.json({
+        success: conversionResponse.success,
+        message: 'Successfully converted to SmaiSika',
+        conversion: {
+          id: conversionResponse.conversionId,
+          fromAmount: conversionResponse.fromAmount,
+          fromCurrency: conversionResponse.fromCurrency,
+          toAmount: conversionResponse.toAmount,
+          toCurrency: conversionResponse.toCurrency,
+          rate: conversionResponse.rate,
+          timestamp: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('SmaiSika conversion error:', error);
+      res.status(500).json({ error: 'Failed to convert to SmaiSika' });
+    }
+  });
+
+  // Get FX rates endpoint
+  app.get("/api/wallet/fx-rates", async (req, res) => {
+    try {
+      const { globalPaymentGateways } = await import("./services/globalPaymentGateways.js");
+      
+      const currencies = ['NGN', 'GHS', 'KES', 'ZAR', 'USD', 'GBP', 'EUR', 'INR', 'PHP', 'IDR', 'CAD', 'BRL', 'ARS', 'USDT', 'USDC', 'BTC', 'ETH'];
+      const rates = currencies.map(currency => ({
+        currency,
+        rate: globalPaymentGateways.getFXRate(currency),
+        symbol: currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : currency,
+        lastUpdated: new Date().toISOString()
+      }));
+
+      res.json({
+        baseCurrency: 'SS',
+        rates,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('FX rates error:', error);
+      res.status(500).json({ error: 'Failed to fetch FX rates' });
     }
   });
 
