@@ -1804,8 +1804,8 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/validate', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      const validation = megaAdminConfigService.validateConfiguration();
+      // Using workingMegaAdminService
+      const validation = workingMegaAdminService.validateConfig();
       res.json(validation);
     } catch (error) {
       console.error('Error validating mega admin configuration:', error);
@@ -1815,8 +1815,8 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/reset/:section', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      megaAdminConfigService.resetSection(req.params.section);
+      // Using workingMegaAdminService
+      workingMegaAdminService.resetSection(req.params.section);
       res.json({ success: true, message: 'Section reset successfully' });
     } catch (error) {
       console.error('Error resetting mega admin section:', error);
@@ -1826,12 +1826,74 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/reset-all', (req, res) => {
     try {
-      // Using imported megaAdminConfigService
-      megaAdminConfigService.resetAll();
+      // Using workingMegaAdminService
+      // Reset all sections by resetting each individually
+      const config = workingMegaAdminService.getConfig();
+      Object.keys(config).forEach(section => {
+        workingMegaAdminService.resetSection(section);
+      });
       res.json({ success: true, message: 'All configuration reset successfully' });
     } catch (error) {
       console.error('Error resetting all mega admin configuration:', error);
       res.status(500).json({ error: 'Failed to reset all mega admin configuration' });
+    }
+  });
+
+  // Advanced Configuration Management API endpoints for expanded system
+  app.get('/api/mega-admin-config/categories', (req, res) => {
+    try {
+      const stats = workingMegaAdminService.getSettingsCountByCategory();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching configuration categories:', error);
+      res.status(500).json({ error: 'Failed to fetch configuration categories' });
+    }
+  });
+
+  app.post('/api/mega-admin-config/bulk-update', (req, res) => {
+    try {
+      const { updates } = req.body;
+      // Process bulk updates across multiple sections
+      Object.entries(updates).forEach(([section, sectionUpdates]) => {
+        workingMegaAdminService.updateSection(section, sectionUpdates);
+      });
+      res.json({ success: true, message: 'Bulk configuration update completed' });
+    } catch (error) {
+      console.error('Error performing bulk configuration update:', error);
+      res.status(500).json({ error: 'Failed to perform bulk configuration update' });
+    }
+  });
+
+  app.get('/api/mega-admin-config/advanced-settings', (req, res) => {
+    try {
+      // Return advanced settings summary with enhancement paths
+      const config = workingMegaAdminService.getConfig();
+      const advancedSettings = {
+        currentSettings: Object.keys(config).reduce((total, section) => 
+          total + Object.keys(config[section as keyof typeof config]).length, 0),
+        expandedModules: [
+          'kubernetes_orchestration',
+          'microservices_mesh',
+          'blockchain_integration',
+          'quantum_computing',
+          'edge_ai_processing',
+          'real_time_analytics',
+          'advanced_security',
+          'compliance_frameworks',
+          'data_governance',
+          'automated_testing'
+        ],
+        enhancementPaths: {
+          aiMl: ['neural_networks', 'reinforcement_learning', 'computer_vision'],
+          blockchain: ['smart_contracts', 'defi_protocols', 'nft_management'],
+          quantum: ['quantum_algorithms', 'quantum_encryption', 'quantum_networking'],
+          edge: ['iot_management', 'edge_computing', 'real_time_processing']
+        }
+      };
+      res.json(advancedSettings);
+    } catch (error) {
+      console.error('Error fetching advanced settings:', error);
+      res.status(500).json({ error: 'Failed to fetch advanced settings' });
     }
   });
 
