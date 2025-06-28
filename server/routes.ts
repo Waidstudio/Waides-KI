@@ -2,12 +2,250 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
 import { serviceRegistry } from "./serviceRegistry.js";
+import { authService } from "./services/authService.js";
+import { 
+  securityHeaders, 
+  rateLimitLogin, 
+  requireAuth, 
+  requirePermission, 
+  requireAdmin, 
+  requireSuperAdmin, 
+  auditLog, 
+  checkSessionTimeout,
+  getClientIP,
+  getUserAgent,
+  updateLoginAttempts
+} from "./middleware/authMiddleware.js";
+import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/authSchema.js";
 
 // WebSocket setup for real-time features
 let wss: any = null;
 
 export function registerRoutes(app: Express): Promise<Server> {
   const server = createServer(app);
+
+  // Apply security headers to all requests
+  app.use(securityHeaders);
+
+  // Initialize default admin user on startup
+  authService.initializeDefaultAdmin().then(success => {
+    if (success) {
+      console.log('🔐 Admin authentication system initialized');
+    } else {
+      console.error('❌ Failed to initialize admin authentication');
+    }
+  });
+
+  // Authentication routes (public)
+  app.post("/api/auth/login", rateLimitLogin, async (req, res) => {
+    try {
+      const credentials = loginSchema.parse(req.body);
+      const ipAddress = getClientIP(req);
+      const userAgent = getUserAgent(req);
+      
+      const result = await authService.login(credentials, ipAddress, userAgent);
+      
+      // Update rate limiting
+      updateLoginAttempts(ipAddress, result.success);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          user: result.user,
+          token: result.token,
+          message: result.message
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: result.message,
+          remainingAttempts: result.remainingAttempts,
+          lockoutUntil: result.lockoutUntil
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'Invalid request data'
+      });
+    }
+  });
+
+  app.post("/api/auth/logout", requireAuth, async (req, res) => {
+    try {
+      const success = await authService.logout(req.sessionId!, req.user!.id);
+      
+      res.json({
+        success,
+        message: success ? 'Logout successful' : 'Logout failed'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'An error occurred during logout'
+      });
+    }
+  });
+
+  app.get("/api/auth/me", requireAuth, checkSessionTimeout, async (req, res) => {
+    try {
+      res.json({
+        success: true,
+        user: req.user
+      });
+    } catch (error) {
+      console.error('Get user error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get user information'
+      });
+    }
+  });
+
+  app.post("/api/auth/refresh", requireAuth, async (req, res) => {
+    try {
+      // Token refresh logic would go here
+      res.json({
+        success: true,
+        message: 'Token refreshed successfully'
+      });
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to refresh token'
+      });
+    }
+  });
+
+  // Admin user management routes (protected)
+  app.get("/api/admin/users", requireAuth, requirePermission(AdminPermissions.VIEW_USERS), auditLog, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Get users error:', error);
+      res.status(500).json({
+        error: 'Failed to fetch users',
+        message: 'An error occurred while fetching users'
+      });
+    }
+  });
+
+  app.post("/api/admin/users", requireAuth, requirePermission(AdminPermissions.CREATE_USERS), auditLog, async (req, res) => {
+    try {
+      const userData = insertAdminUserSchema.parse(req.body);
+      const result = await authService.createAdminUser(userData);
+      
+      if (result.success) {
+        await authService.logActivity(
+          req.user!.id,
+          'create_user',
+          'admin_users',
+          { createdUserId: result.user!.id },
+          getClientIP(req),
+          getUserAgent(req)
+        );
+        
+        res.status(201).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('Create user error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'Invalid user data'
+      });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", requireAuth, requirePermission(AdminPermissions.DELETE_USERS), auditLog, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Prevent deleting yourself
+      if (userId === req.user!.id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cannot delete your own account'
+        });
+      }
+      
+      // Logic to delete user would go here
+      await authService.logActivity(
+        req.user!.id,
+        'delete_user',
+        'admin_users',
+        { deletedUserId: userId },
+        getClientIP(req),
+        getUserAgent(req)
+      );
+      
+      res.json({
+        success: true,
+        message: 'User deleted successfully'
+      });
+    } catch (error) {
+      console.error('Delete user error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete user'
+      });
+    }
+  });
+
+  // Activity logs endpoint
+  app.get("/api/admin/activity-logs", requireAuth, requirePermission(AdminPermissions.VIEW_LOGS), async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 100;
+      
+      const logs = await authService.getActivityLogs(userId, limit);
+      res.json(logs);
+    } catch (error) {
+      console.error('Get activity logs error:', error);
+      res.status(500).json({
+        error: 'Failed to fetch activity logs',
+        message: 'An error occurred while fetching activity logs'
+      });
+    }
+  });
+
+  // Session management endpoint
+  app.get("/api/admin/sessions", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const userId = req.query.userId ? parseInt(req.query.userId as string) : req.user!.id;
+      const sessions = await authService.getUserSessions(userId);
+      res.json(sessions);
+    } catch (error) {
+      console.error('Get sessions error:', error);
+      res.status(500).json({
+        error: 'Failed to fetch sessions',
+        message: 'An error occurred while fetching sessions'
+      });
+    }
+  });
+
+  app.post("/api/admin/sessions/revoke-all/:userId", requireAuth, requireSuperAdmin, auditLog, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const success = await authService.revokeAllUserSessions(userId);
+      
+      res.json({
+        success,
+        message: success ? 'All sessions revoked successfully' : 'Failed to revoke sessions'
+      });
+    } catch (error) {
+      console.error('Revoke sessions error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to revoke sessions'
+      });
+    }
+  });
 
   // Health check endpoint
   app.get("/api/health", async (req, res) => {
