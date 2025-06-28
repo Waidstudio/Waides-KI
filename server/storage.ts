@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
-import { users, apiKeys, ethData, signals, candlesticks, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick } from "@shared/schema";
+import { users, apiKeys, ethData, signals, candlesticks, adminUsers, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick, type AdminUser, type InsertAdminUser } from "@shared/schema";
 
 // Export db for use in other services
 export { db };
@@ -10,6 +10,12 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
+
+  // Admin user methods
+  getAdminUser(id: number): Promise<AdminUser | undefined>;
+  getAdminUserByEmail(email: string): Promise<AdminUser | undefined>;
+  createAdminUser(user: InsertAdminUser): Promise<AdminUser>;
+  getAllAdminUsers(): Promise<AdminUser[]>;
   
   getApiKey(service: string): Promise<ApiKey | undefined>;
   upsertApiKey(apiKey: InsertApiKey): Promise<ApiKey>;
@@ -61,6 +67,29 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  // Admin user methods
+  async getAdminUser(id: number): Promise<AdminUser | undefined> {
+    const [user] = await db.select().from(adminUsers).where(eq(adminUsers.id, id));
+    return user || undefined;
+  }
+
+  async getAdminUserByEmail(email: string): Promise<AdminUser | undefined> {
+    const [user] = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
+    return user || undefined;
+  }
+
+  async createAdminUser(insertUser: InsertAdminUser): Promise<AdminUser> {
+    const [user] = await db
+      .insert(adminUsers)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async getAllAdminUsers(): Promise<AdminUser[]> {
+    return await db.select().from(adminUsers).orderBy(desc(adminUsers.createdAt));
   }
 
   async getApiKey(service: string): Promise<ApiKey | undefined> {

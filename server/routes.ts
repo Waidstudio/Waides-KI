@@ -123,13 +123,13 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Admin user management routes (protected)
   app.get("/api/admin/users", requireAuth, requirePermission(AdminPermissions.VIEW_USERS), auditLog, async (req, res) => {
     try {
-      const users = await storage.getAllUsers();
+      const users = await storage.getAllAdminUsers();
       res.json(users);
     } catch (error) {
-      console.error('Get users error:', error);
+      console.error('Get admin users error:', error);
       res.status(500).json({
-        error: 'Failed to fetch users',
-        message: 'An error occurred while fetching users'
+        error: 'Failed to fetch admin users',
+        message: 'An error occurred while fetching admin users'
       });
     }
   });
