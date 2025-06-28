@@ -103,6 +103,10 @@ export default function SmaiSikaWalletPage() {
   const [realTimeInstructions, setRealTimeInstructions] = useState<string>('');
   const [depositProgress, setDepositProgress] = useState<number>(0);
   const [selectedProvider, setSelectedProvider] = useState<string>('');
+  
+  // Virtual account generation state
+  const [generatedAccounts, setGeneratedAccounts] = useState<any[]>([]);
+  const [accountGenerating, setAccountGenerating] = useState<string>('');
 
   // Fetch global countries
   const { data: countries = [] } = useQuery<Country[]>({
@@ -330,6 +334,61 @@ export default function SmaiSikaWalletPage() {
   const smaiSikaBalance: SmaiSikaBalance = {
     balance: 847.32,
     symbol: 'SS'
+  };
+
+  // Virtual account generation functions
+  const generateBankAccount = async (currency: string, country: string) => {
+    setAccountGenerating(`${currency}_bank`);
+    try {
+      const response = await apiRequest('POST', '/api/virtual-accounts/generate-bank', {
+        currency,
+        country,
+        userId: 'user_123'
+      });
+      const account = await response.json();
+      
+      setGeneratedAccounts(prev => [...prev, { ...account, type: 'bank' }]);
+      
+      toast({
+        title: "Bank Account Generated",
+        description: `Your ${currency} bank account has been created successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate bank account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAccountGenerating('');
+    }
+  };
+
+  const generateCryptoWallet = async (currency: string) => {
+    setAccountGenerating(`${currency}_crypto`);
+    try {
+      const response = await apiRequest('POST', '/api/virtual-accounts/generate-crypto', {
+        currency,
+        network: currency === 'USDT' ? 'TRC20' : currency === 'BTC' ? 'BITCOIN' : 'ETHEREUM',
+        userId: 'user_123'
+      });
+      const wallet = await response.json();
+      
+      setGeneratedAccounts(prev => [...prev, { ...wallet, type: 'crypto' }]);
+      
+      toast({
+        title: "Crypto Wallet Generated",
+        description: `Your ${currency} wallet has been created successfully`,
+      });
+    } catch (error) {
+      toast({
+        title: "Generation Failed",
+        description: "Failed to generate crypto wallet. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAccountGenerating('');
+    }
   };
 
   return (
@@ -589,10 +648,11 @@ export default function SmaiSikaWalletPage() {
 
         {/* Tabs Section */}
         <Tabs defaultValue="history" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
             <TabsTrigger value="history" className="text-white">Transaction History</TabsTrigger>
             <TabsTrigger value="rates" className="text-white">FX Rates</TabsTrigger>
             <TabsTrigger value="gateways" className="text-white">Payment Gateways</TabsTrigger>
+            <TabsTrigger value="virtual-accounts" className="text-white">Virtual Accounts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="history">
@@ -686,6 +746,118 @@ export default function SmaiSikaWalletPage() {
                     </Card>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="virtual-accounts">
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <Building className="w-5 h-5" />
+                  <span>Personal Virtual Account Generation</span>
+                </CardTitle>
+                <p className="text-gray-400">Generate bank accounts and crypto wallets for direct local transfers</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Bank Account Generation */}
+                  <div className="space-y-4">
+                    <h3 className="text-white font-medium flex items-center space-x-2">
+                      <Building className="w-4 h-4" />
+                      <span>Bank Account Generation</span>
+                    </h3>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">Nigeria (NGN)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => generateBankAccount('NGN', 'Nigeria')}
+                        disabled={accountGenerating === 'NGN_bank'}
+                      >
+                        {accountGenerating === 'NGN_bank' ? 'Generating...' : 'Generate NGN Bank Account'}
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Get personal Nigerian bank details for direct transfers</p>
+                    </div>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">United States (USD)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => generateBankAccount('USD', 'United States')}
+                        disabled={accountGenerating === 'USD_bank'}
+                      >
+                        {accountGenerating === 'USD_bank' ? 'Generating...' : 'Generate USD Bank Account'}
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Get personal US bank details for wire transfers</p>
+                    </div>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">United Kingdom (GBP)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => generateBankAccount('GBP', 'United Kingdom')}
+                        disabled={accountGenerating === 'GBP_bank'}
+                      >
+                        {accountGenerating === 'GBP_bank' ? 'Generating...' : 'Generate GBP Bank Account'}
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Get personal UK bank details for local transfers</p>
+                    </div>
+                  </div>
+
+                  {/* Crypto Wallet Generation */}
+                  <div className="space-y-4">
+                    <h3 className="text-white font-medium flex items-center space-x-2">
+                      <Bitcoin className="w-4 h-4" />
+                      <span>Crypto Wallet Generation</span>
+                    </h3>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">USDT (TRC20)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                        Generate USDT Wallet
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Get personal USDT wallet address for direct deposits</p>
+                    </div>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">Bitcoin (BTC)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                        Generate BTC Wallet
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Get personal Bitcoin wallet address for BTC deposits</p>
+                    </div>
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-300">Ethereum (ETH)</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
+                      </div>
+                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                        Generate ETH Wallet
+                      </Button>
+                      <p className="text-xs text-gray-400 mt-2">Get personal Ethereum wallet address for ETH deposits</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Information Alert */}
+                <Alert className="mt-6 bg-blue-900/30 border-blue-600">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription className="text-blue-200">
+                    Virtual accounts are generated instantly and are unique to your SmaiSika wallet. 
+                    All deposits to these accounts are automatically converted to SmaiSika (SS) at real-time rates.
+                  </AlertDescription>
+                </Alert>
               </CardContent>
             </Card>
           </TabsContent>
