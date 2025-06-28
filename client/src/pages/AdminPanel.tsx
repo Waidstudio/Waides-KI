@@ -14,7 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import AdminConsole from '@/components/AdminConsole';
+import AdminConsole from '@/components/AdminConsoleFixed';
 import {
   Settings,
   Database,
