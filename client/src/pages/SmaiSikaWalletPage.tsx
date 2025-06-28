@@ -822,8 +822,12 @@ export default function SmaiSikaWalletPage() {
                         <span className="text-gray-300">USDT (TRC20)</span>
                         <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
                       </div>
-                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                        Generate USDT Wallet
+                      <Button 
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={() => generateCryptoWallet('USDT')}
+                        disabled={accountGenerating === 'USDT_crypto'}
+                      >
+                        {accountGenerating === 'USDT_crypto' ? 'Generating...' : 'Generate USDT Wallet'}
                       </Button>
                       <p className="text-xs text-gray-400 mt-2">Get personal USDT wallet address for direct deposits</p>
                     </div>
@@ -832,8 +836,12 @@ export default function SmaiSikaWalletPage() {
                         <span className="text-gray-300">Bitcoin (BTC)</span>
                         <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
                       </div>
-                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                        Generate BTC Wallet
+                      <Button 
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={() => generateCryptoWallet('BTC')}
+                        disabled={accountGenerating === 'BTC_crypto'}
+                      >
+                        {accountGenerating === 'BTC_crypto' ? 'Generating...' : 'Generate BTC Wallet'}
                       </Button>
                       <p className="text-xs text-gray-400 mt-2">Get personal Bitcoin wallet address for BTC deposits</p>
                     </div>
@@ -842,8 +850,12 @@ export default function SmaiSikaWalletPage() {
                         <span className="text-gray-300">Ethereum (ETH)</span>
                         <Badge variant="outline" className="text-green-400 border-green-400">Available</Badge>
                       </div>
-                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
-                        Generate ETH Wallet
+                      <Button 
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                        onClick={() => generateCryptoWallet('ETH')}
+                        disabled={accountGenerating === 'ETH_crypto'}
+                      >
+                        {accountGenerating === 'ETH_crypto' ? 'Generating...' : 'Generate ETH Wallet'}
                       </Button>
                       <p className="text-xs text-gray-400 mt-2">Get personal Ethereum wallet address for ETH deposits</p>
                     </div>
