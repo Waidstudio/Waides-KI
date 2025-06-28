@@ -31,7 +31,10 @@ import {
   Clock,
   DollarSign,
   Shield,
-  Settings
+  Settings,
+  Copy,
+  QrCode,
+  Key
 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
