@@ -124,7 +124,14 @@ export function OptimizedMegaConfigTabs({ onConfigChange }: OptimizedMegaConfigT
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1"
           />
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={(e) => {
+              e.preventDefault();
+              // Handle loading all settings
+            }}
+          >
             Load All Settings
           </Button>
         </div>
@@ -145,7 +152,14 @@ export function OptimizedMegaConfigTabs({ onConfigChange }: OptimizedMegaConfigT
                   <span className="text-sm text-muted-foreground">
                     {typeof settingValue === 'boolean' ? (settingValue ? 'ON' : 'OFF') : settingValue}
                   </span>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // Handle edit setting
+                    }}
+                  >
                     Edit
                   </Button>
                 </div>
@@ -157,7 +171,14 @@ export function OptimizedMegaConfigTabs({ onConfigChange }: OptimizedMegaConfigT
             <p className="text-sm text-muted-foreground mb-2">
               Showing 50 of 6,020+ {section} settings
             </p>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                // Handle loading more settings
+              }}
+            >
               Load More Settings (5,970+ remaining)
             </Button>
           </div>
