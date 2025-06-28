@@ -38,19 +38,19 @@ import {
   Zap,
   Brain,
   Lock,
+  BarChart,
+  Maximize2,
+  Link,
   Unlock,
   Monitor,
   Server,
   Network,
   Code,
   Palette,
-  Bell,
-  BarChart3,
   ShieldCheck,
   Gauge,
   Mail,
   Archive,
-  Rocket,
   Package,
   Smartphone,
   Search,
@@ -60,15 +60,12 @@ import {
   ScrollText,
   Heart,
   Wrench,
-  Brush,
-  Cpu,
   Languages,
   Share2,
   GitBranch,
   PieChart,
   Upload,
-  ImageIcon,
-  X
+  ImageIcon
 } from 'lucide-react';
 
 interface AdminConfig {
@@ -272,6 +269,7 @@ interface Transaction {
 }
 
 export default function AdminPanel() {
+  const [isFullscreen, setIsFullscreen] = useState(true);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -481,6 +479,283 @@ export default function AdminPanel() {
     );
   }
 
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 bg-gray-900 text-white z-50 overflow-hidden flex flex-col">
+        {/* Admin App Header */}
+        <header className="bg-black border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Waides KI Admin Console</h1>
+              <p className="text-xs text-gray-400">Enterprise Control Panel v2.0</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {/* Live System Status */}
+            <div className="flex items-center space-x-2 px-3 py-1 bg-green-600/20 rounded-full">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-green-400 text-sm font-medium">System Online</span>
+            </div>
+            
+            {/* Active Users */}
+            <div className="flex items-center space-x-2 px-3 py-1 bg-blue-600/20 rounded-full">
+              <Users className="w-4 h-4 text-blue-400" />
+              <span className="text-blue-400 text-sm font-medium">{status?.active_users || 0} Users</span>
+            </div>
+            
+            {/* Memory Usage */}
+            <div className="flex items-center space-x-2 px-3 py-1 bg-yellow-600/20 rounded-full">
+              <Activity className="w-4 h-4 text-yellow-400" />
+              <span className="text-yellow-400 text-sm font-medium">{status?.memory_usage || 0}% RAM</span>
+            </div>
+            
+            {/* Exit Admin */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsFullscreen(false)}
+              className="bg-red-600/20 border-red-600 text-red-400 hover:bg-red-600/30"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Exit Admin
+            </Button>
+          </div>
+        </header>
+
+        {/* Admin App Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar Navigation */}
+          <aside className="w-80 bg-gray-800 border-r border-gray-700 overflow-y-auto">
+            <div className="p-4">
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Administration</h3>
+              
+              {/* Quick Actions */}
+              <div className="mb-6">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white justify-start"
+                    onClick={() => setActiveTab('dashboard')}
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white justify-start"
+                    onClick={() => setActiveTab('trading')}
+                  >
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Trading
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-purple-600 hover:bg-purple-700 text-white justify-start"
+                    onClick={() => setActiveTab('wallet')}
+                  >
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Wallet
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-orange-600 hover:bg-orange-700 text-white justify-start"
+                    onClick={() => setActiveTab('konsai')}
+                  >
+                    <Brain className="w-4 h-4 mr-2" />
+                    KonsAi
+                  </Button>
+                </div>
+              </div>
+
+              {/* Navigation Categories */}
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Core Systems</h4>
+                  <nav className="space-y-1">
+                    {[
+                      { id: 'dashboard', icon: BarChart3, label: 'Dashboard', color: 'text-green-400' },
+                      { id: 'system', icon: Settings, label: 'System Config', color: 'text-blue-400' },
+                      { id: 'trading', icon: TrendingUp, label: 'Trading Engine', color: 'text-purple-400' },
+                      { id: 'wallet', icon: DollarSign, label: 'Wallet System', color: 'text-yellow-400' },
+                      { id: 'users', icon: Users, label: 'User Management', color: 'text-cyan-400' }
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                          activeTab === item.id
+                            ? 'bg-gray-700 text-white'
+                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                      >
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Intelligence</h4>
+                  <nav className="space-y-1">
+                    {[
+                      { id: 'konsai', icon: Brain, label: 'KonsAi Engine', color: 'text-purple-400' },
+                      { id: 'ai-models', icon: Cpu, label: 'AI Models', color: 'text-blue-400' },
+                      { id: 'automation', icon: Bot, label: 'Automation', color: 'text-green-400' }
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                          activeTab === item.id
+                            ? 'bg-gray-700 text-white'
+                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                      >
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Configuration</h4>
+                  <nav className="space-y-1">
+                    {[
+                      { id: 'branding', icon: Brush, label: 'Branding', color: 'text-pink-400' },
+                      { id: 'security', icon: Shield, label: 'Security', color: 'text-red-400' },
+                      { id: 'notifications', icon: Bell, label: 'Notifications', color: 'text-orange-400' },
+                      { id: 'analytics', icon: BarChart, label: 'Analytics', color: 'text-cyan-400' },
+                      { id: 'integrations', icon: Link, label: 'Integrations', color: 'text-indigo-400' }
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                          activeTab === item.id
+                            ? 'bg-gray-700 text-white'
+                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                      >
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Advanced</h4>
+                  <nav className="space-y-1">
+                    {[
+                      { id: 'database', icon: Database, label: 'Database', color: 'text-emerald-400' },
+                      { id: 'performance', icon: Zap, label: 'Performance', color: 'text-yellow-400' },
+                      { id: 'monitoring', icon: Activity, label: 'Monitoring', color: 'text-blue-400' },
+                      { id: 'deployment', icon: Rocket, label: 'Deployment', color: 'text-purple-400' }
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setActiveTab(item.id)}
+                        className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                          activeTab === item.id
+                            ? 'bg-gray-700 text-white'
+                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                        }`}
+                      >
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </button>
+                    ))}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="flex-1 overflow-y-auto bg-gray-900">
+            <div className="p-6">
+              {/* Content Header */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white capitalize">
+                      {activeTab.replace('-', ' ')} {activeTab === 'konsai' ? 'Intelligence' : 'Management'}
+                    </h2>
+                    <p className="text-gray-400 mt-1">
+                      {activeTab === 'dashboard' && 'System overview and real-time metrics'}
+                      {activeTab === 'trading' && 'Trading engines and portfolio management'}
+                      {activeTab === 'wallet' && 'Wallet configuration and financial controls'}
+                      {activeTab === 'konsai' && 'AI intelligence configuration and monitoring'}
+                      {activeTab === 'users' && 'User accounts and access management'}
+                      {activeTab === 'system' && 'Core system configuration and settings'}
+                      {activeTab === 'security' && 'Security protocols and authentication'}
+                      {activeTab === 'branding' && 'Visual identity and brand management'}
+                      {!['dashboard', 'trading', 'wallet', 'konsai', 'users', 'system', 'security', 'branding'].includes(activeTab) && 'Advanced system configuration'}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Content Area with Existing Tabs */}
+              <div className="bg-gray-800 rounded-lg border border-gray-700 min-h-96">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <div className="border-b border-gray-700 px-6 py-4">
+                    <TabsList className="bg-gray-700 text-gray-300">
+                      <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                      <TabsTrigger value="system">System</TabsTrigger>
+                      <TabsTrigger value="trading">Trading</TabsTrigger>
+                      <TabsTrigger value="wallet">Wallet</TabsTrigger>
+                      <TabsTrigger value="konsai">KonsAi</TabsTrigger>
+                      <TabsTrigger value="users">Users</TabsTrigger>
+                      <TabsTrigger value="security">Security</TabsTrigger>
+                      <TabsTrigger value="branding">Branding</TabsTrigger>
+                      <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                      <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                      <TabsTrigger value="integrations">Integrations</TabsTrigger>
+                      <TabsTrigger value="database">Database</TabsTrigger>
+                      <TabsTrigger value="performance">Performance</TabsTrigger>
+                      <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
+                      <TabsTrigger value="deployment">Deployment</TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  <div className="p-6">
+                    {/* Use existing tab content here */}
+                    {renderTabContent()}
+                  </div>
+                </Tabs>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
       <div className="max-w-7xl mx-auto">
@@ -489,6 +764,13 @@ export default function AdminPanel() {
             <h1 className="text-3xl font-bold text-white">Admin Control Panel</h1>
             <p className="text-gray-400">Unified management interface for Waides KI</p>
           </div>
+          <Button
+            onClick={() => setIsFullscreen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Maximize2 className="w-4 h-4 mr-2" />
+            Enter Admin Mode
+          </Button>
           <div className="flex items-center space-x-4">
             <Badge variant={status?.maintenance_mode ? "destructive" : "secondary"}>
               {status?.maintenance_mode ? "Maintenance Mode" : "Live"}
