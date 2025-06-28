@@ -49,6 +49,14 @@ import { kons_WaidBotController } from './kons/kons_WaidBotController.js';
 // Deep Core Engine Integration for Complete Omniscient System
 import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine';
 
+// Revolutionary Konsai X Modules for Omnipotent Capabilities
+import kons_aeon from './kons/kons_aeon.js';
+import kons_sentinel from './kons/kons_sentinel.js';
+import kons_genoma from './kons/kons_genoma.js';
+import kons_noetik from './kons/kons_noetik.js';
+import kons_rive from './kons/kons_rive.js';
+import kons_coreum from './kons/kons_coreum.js';
+
 // SmaiSika Sacred Knowledge System
 interface SmaiSikaKnowledge {
   entity: string;
