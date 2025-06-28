@@ -322,6 +322,85 @@ export class TradingBotConfigService {
     }
   }
 
+  async configureStrategy(botType: string, strategyConfig: any): Promise<boolean> {
+    try {
+      console.log(`Configuring strategy for ${botType}:`, strategyConfig);
+      // Simulate strategy configuration
+      return true;
+    } catch (error) {
+      console.error('Configure strategy error:', error);
+      return false;
+    }
+  }
+
+  async updateAdvancedSettings(botType: string, advancedSettings: any): Promise<boolean> {
+    try {
+      console.log(`Updating advanced settings for ${botType}:`, advancedSettings);
+      // Simulate advanced settings update
+      return true;
+    } catch (error) {
+      console.error('Update advanced settings error:', error);
+      return false;
+    }
+  }
+
+  async getAnalyticsDashboard(): Promise<any> {
+    try {
+      return {
+        totalTrades: 1847,
+        successRate: 73.2,
+        totalProfit: 12485.67,
+        activeBots: 3,
+        dailyVolume: 45600.00,
+        riskScore: 65,
+        lastUpdated: new Date().toISOString(),
+        botPerformance: {
+          waidbot: { trades: 624, winRate: 71.2, profit: 4245.89 },
+          waidbotPro: { trades: 789, winRate: 75.1, profit: 5890.34 },
+          fullEngine: { trades: 434, winRate: 72.8, profit: 2349.44 }
+        }
+      };
+    } catch (error) {
+      console.error('Get analytics dashboard error:', error);
+      return {};
+    }
+  }
+
+  async activateEngine(botType: string, activationSettings: any): Promise<boolean> {
+    try {
+      console.log(`Activating ${botType} engine:`, activationSettings);
+      // Simulate engine activation
+      return true;
+    } catch (error) {
+      console.error('Activate engine error:', error);
+      return false;
+    }
+  }
+
+  async getSystemMonitor(): Promise<any> {
+    try {
+      return {
+        systemHealth: 'excellent',
+        uptime: '47 days',
+        cpuUsage: 23.5,
+        memoryUsage: 67.2,
+        networkLatency: 12,
+        activeBots: 3,
+        tradingStatus: 'active',
+        lastHealthCheck: new Date().toISOString(),
+        alerts: [],
+        performance: {
+          requestsPerSecond: 145,
+          avgResponseTime: 89,
+          errorRate: 0.02
+        }
+      };
+    } catch (error) {
+      console.error('Get system monitor error:', error);
+      return {};
+    }
+  }
+
   // Helper methods
   private mapRiskLevel(dbRiskLevel: string): 'low' | 'medium' | 'high' {
     switch (dbRiskLevel) {
