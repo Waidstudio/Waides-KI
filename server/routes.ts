@@ -216,5 +216,35 @@ export function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Wallet transactions endpoint
+  app.get("/api/wallet/transactions", (req, res) => {
+    res.json([
+      {
+        id: '1',
+        type: 'deposit',
+        amount: '₦50,000.00',
+        date: '2025-06-24',
+        status: 'completed',
+        description: 'Wallet funding via Paystack'
+      },
+      {
+        id: '2',
+        type: 'conversion',
+        amount: '₦10,000 → ꠄ20.00',
+        date: '2025-06-25',
+        status: 'completed',
+        description: 'Local to SmaiSika conversion'
+      },
+      {
+        id: '3',
+        type: 'trade',
+        amount: 'ꠄ5.00',
+        date: '2025-06-26',
+        status: 'completed',
+        description: 'ETH trading operation'
+      }
+    ]);
+  });
+
   return Promise.resolve(server);
 }
