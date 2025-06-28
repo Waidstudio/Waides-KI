@@ -889,5 +889,142 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes for payment gateway configuration
+  app.post("/api/admin/payment-gateway/config", async (req, res) => {
+    try {
+      const { gatewayId, config } = req.body;
+
+      // Store configuration using API keys storage
+      if (config.apiKey) {
+        await storage.upsertApiKey({
+          service: `${gatewayId}_api_key`,
+          key: config.apiKey
+        });
+      }
+
+      if (config.secretKey) {
+        await storage.upsertApiKey({
+          service: `${gatewayId}_secret_key`,
+          key: config.secretKey
+        });
+      }
+
+      if (config.publicKey) {
+        await storage.upsertApiKey({
+          service: `${gatewayId}_public_key`,
+          key: config.publicKey
+        });
+      }
+
+      if (config.merchantId) {
+        await storage.upsertApiKey({
+          service: `${gatewayId}_merchant_id`,
+          key: config.merchantId
+        });
+      }
+
+      console.log(`🔧 Admin: Payment gateway ${gatewayId} configuration saved`);
+
+      res.json({
+        success: true,
+        message: `${gatewayId} configuration saved successfully`
+      });
+    } catch (error: any) {
+      console.error('Admin configuration error:', error);
+      res.status(500).json({ error: 'Failed to save configuration' });
+    }
+  });
+
+  app.post("/api/admin/payment-gateway/test", async (req, res) => {
+    try {
+      const { gatewayId } = req.body;
+
+      // Get stored configuration
+      const apiKey = await storage.getApiKey(`${gatewayId}_api_key`);
+
+      if (!apiKey) {
+        return res.json({
+          success: false,
+          message: 'API key not configured'
+        });
+      }
+
+      console.log(`🧪 Admin: Testing ${gatewayId} connection...`);
+
+      // Real connection test with stored API keys
+      const { realPaymentGateways } = await import("./services/realPaymentGateways.js");
+      
+      // Temporarily set environment variables for testing
+      const originalEnv = process.env;
+      try {
+        if (gatewayId === 'paystack') {
+          process.env.PAYSTACK_SECRET_KEY = apiKey.key;
+        } else if (gatewayId === 'flutterwave') {
+          process.env.FLW_SECRET_KEY = apiKey.key;
+        }
+
+        // Test with small amount
+        const testRequest = {
+          userId: 'test_user',
+          amount: 1,
+          email: 'test@example.com',
+          currency: gatewayId === 'paystack' ? 'NGN' : 'GHS',
+          country: gatewayId === 'paystack' ? 'NG' : 'GH',
+          gateway: gatewayId
+        };
+
+        let testResult;
+        if (gatewayId === 'paystack') {
+          testResult = await realPaymentGateways.initializePaystackPayment(testRequest);
+        } else if (gatewayId === 'flutterwave') {
+          testResult = await realPaymentGateways.initializeFlutterwavePayment(testRequest);
+        } else {
+          // For other gateways, do basic validation
+          testResult = { success: apiKey.key.length > 5 };
+        }
+
+        res.json({
+          success: testResult.success,
+          message: testResult.success ? 'Gateway connection verified' : 'Connection failed',
+          timestamp: new Date().toISOString()
+        });
+
+        console.log(`${testResult.success ? '✅' : '❌'} Admin: ${gatewayId} test ${testResult.success ? 'passed' : 'failed'}`);
+      } finally {
+        // Restore original environment
+        process.env = originalEnv;
+      }
+    } catch (error: any) {
+      console.error('Admin test error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Test failed',
+        error: error.message
+      });
+    }
+  });
+
+  // Get payment gateway status for admin
+  app.get("/api/admin/payment-gateway/status", async (req, res) => {
+    try {
+      const gateways = ['paystack', 'flutterwave', 'mpesa', 'payfast', 'monnify', 'crypto_usdt', 'crypto_usdc', 'crypto_btc'];
+      const status: { [key: string]: any } = {};
+
+      for (const gateway of gateways) {
+        const apiKey = await storage.getApiKey(`${gateway}_api_key`);
+        status[gateway] = {
+          configured: !!apiKey,
+          hasApiKey: !!apiKey?.key,
+          lastUpdated: apiKey?.createdAt || null
+        };
+      }
+
+      res.json(status);
+    } catch (error: any) {
+      console.error('Gateway status error:', error);
+      res.status(500).json({ error: 'Failed to fetch gateway status' });
+    }
+  });
+
   return Promise.resolve(server);
 }

@@ -45,6 +45,7 @@ import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
 import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 import SMSConfigPage from "@/pages/SMSConfigPage";
+import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 

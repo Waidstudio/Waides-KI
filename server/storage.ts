@@ -149,6 +149,137 @@ export class DatabaseStorage implements IStorage {
       .limit(1);
     return candlestick || undefined;
   }
+
+  // In-memory wallet storage for real payment gateway integration
+  private walletData: Map<string, any> = new Map();
+
+  async createDeposit(deposit: any): Promise<any> {
+    const deposits = this.walletData.get('deposits') || [];
+    deposits.push({
+      ...deposit,
+      createdAt: new Date()
+    });
+    this.walletData.set('deposits', deposits);
+    console.log(`💾 Deposit created: ${deposit.id} - ${deposit.amount} ${deposit.currency}`);
+    return deposit;
+  }
+
+  async updateDepositStatus(id: string, status: string): Promise<void> {
+    const deposits = this.walletData.get('deposits') || [];
+    const depositIndex = deposits.findIndex((d: any) => d.id === id);
+    if (depositIndex !== -1) {
+      deposits[depositIndex].status = status;
+      deposits[depositIndex].updatedAt = new Date();
+      this.walletData.set('deposits', deposits);
+      console.log(`💾 Deposit status updated: ${id} → ${status}`);
+    }
+  }
+
+  async addToUserBalance(userId: string, amount: number, currency: string): Promise<void> {
+    const balances = this.walletData.get('balances') || {};
+    const userKey = `${userId}_${currency}`;
+    const currentBalance = balances[userKey] || 0;
+    balances[userKey] = currentBalance + amount;
+    this.walletData.set('balances', balances);
+    
+    // Record transaction
+    const transactions = this.walletData.get('transactions') || [];
+    transactions.push({
+      id: `tx_${Date.now()}`,
+      userId,
+      type: 'deposit',
+      amount,
+      currency,
+      status: 'completed',
+      timestamp: new Date(),
+      description: `Deposit of ${amount} ${currency}`
+    });
+    this.walletData.set('transactions', transactions);
+    
+    console.log(`💰 Balance added: ${userId} +${amount} ${currency} (Total: ${balances[userKey]})`);
+  }
+
+  async deductFromUserBalance(userId: string, amount: number, currency: string): Promise<void> {
+    const balances = this.walletData.get('balances') || {};
+    const userKey = `${userId}_${currency}`;
+    const currentBalance = balances[userKey] || 0;
+    
+    if (currentBalance < amount) {
+      throw new Error(`Insufficient ${currency} balance`);
+    }
+    
+    balances[userKey] = currentBalance - amount;
+    this.walletData.set('balances', balances);
+    
+    // Record transaction
+    const transactions = this.walletData.get('transactions') || [];
+    transactions.push({
+      id: `tx_${Date.now()}`,
+      userId,
+      type: 'withdrawal',
+      amount: -amount,
+      currency,
+      status: 'completed',
+      timestamp: new Date(),
+      description: `Withdrawal of ${amount} ${currency}`
+    });
+    this.walletData.set('transactions', transactions);
+    
+    console.log(`💸 Balance deducted: ${userId} -${amount} ${currency} (Remaining: ${balances[userKey]})`);
+  }
+
+  async getUserBalance(userId: string, currency: string): Promise<number> {
+    const balances = this.walletData.get('balances') || {};
+    const userKey = `${userId}_${currency}`;
+    return balances[userKey] || 0;
+  }
+
+  async addToSmaiSikaBalance(userId: string, amount: number): Promise<void> {
+    const smaiBalances = this.walletData.get('smaiBalances') || {};
+    const currentBalance = smaiBalances[userId] || 0;
+    smaiBalances[userId] = currentBalance + amount;
+    this.walletData.set('smaiBalances', smaiBalances);
+    
+    // Record transaction
+    const transactions = this.walletData.get('transactions') || [];
+    transactions.push({
+      id: `tx_${Date.now()}`,
+      userId,
+      type: 'conversion',
+      amount,
+      currency: 'SS',
+      status: 'completed',
+      timestamp: new Date(),
+      description: `Converted to ${amount.toFixed(4)} SmaiSika`
+    });
+    this.walletData.set('transactions', transactions);
+    
+    console.log(`🪙 SmaiSika added: ${userId} +${amount.toFixed(4)} SS (Total: ${smaiBalances[userId].toFixed(4)} SS)`);
+  }
+
+  async getSmaiSikaBalance(userId: string): Promise<number> {
+    const smaiBalances = this.walletData.get('smaiBalances') || {};
+    return smaiBalances[userId] || 0;
+  }
+
+  async createConversion(conversion: any): Promise<any> {
+    const conversions = this.walletData.get('conversions') || [];
+    conversions.push({
+      ...conversion,
+      createdAt: new Date()
+    });
+    this.walletData.set('conversions', conversions);
+    console.log(`🔄 Conversion created: ${conversion.id} - ${conversion.fromAmount} ${conversion.fromCurrency} → ${conversion.toAmount} ${conversion.toCurrency}`);
+    return conversion;
+  }
+
+  async getUserTransactions(userId: string): Promise<any[]> {
+    const transactions = this.walletData.get('transactions') || [];
+    return transactions
+      .filter((tx: any) => tx.userId === userId)
+      .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 50); // Last 50 transactions
+  }
 }
 
 export const storage = new DatabaseStorage();
