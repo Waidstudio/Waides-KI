@@ -107,6 +107,10 @@ export default function SmaiSikaWalletPage() {
   // Virtual account generation state
   const [generatedAccounts, setGeneratedAccounts] = useState<any[]>([]);
   const [accountGenerating, setAccountGenerating] = useState<string>('');
+  
+  // Currency conversion state
+  const [ssConversionAmount, setSsConversionAmount] = useState<string>('');
+  const [targetCurrency, setTargetCurrency] = useState<string>('');
 
   // Fetch global countries
   const { data: countries = [] } = useQuery<Country[]>({
@@ -253,6 +257,39 @@ export default function SmaiSikaWalletPage() {
         toast({
           title: "Conversion Failed",
           description: data.message || "Failed to convert to SmaiSika",
+          variant: "destructive",
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Conversion Error",
+        description: "Unable to process conversion. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Process SmaiSika to local currency conversion mutation
+  const convertSmaiSikaMutation = useMutation({
+    mutationFn: async (data: { ssAmount: number; targetCurrency: string }) => {
+      const response = await apiRequest('POST', '/api/convert-smaisika', data);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        toast({
+          title: "Conversion Successful",
+          description: `Converted ${data.ssAmount} SS to ${data.localCurrency} ${data.convertedAmount}`,
+        });
+        setSsConversionAmount('');
+        setTargetCurrency('');
+        queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/wallet/transactions'] });
+      } else {
+        toast({
+          title: "Conversion Failed",
+          description: data.message || "Failed to convert SmaiSika",
           variant: "destructive",
         });
       }
@@ -709,6 +746,7 @@ export default function SmaiSikaWalletPage() {
               <TabsTrigger value="neural-predictions" className="flex-shrink-0 bg-gradient-to-r from-rose-600 to-pink-600 text-white border-0 data-[state=active]:from-pink-400 data-[state=active]:to-rose-400 whitespace-nowrap px-4 py-2 rounded-md">🧠 Neural Predictions</TabsTrigger>
               <TabsTrigger value="blockchain-monitor" className="flex-shrink-0 bg-gradient-to-r from-yellow-600 to-orange-600 text-white border-0 data-[state=active]:from-orange-400 data-[state=active]:to-yellow-400 whitespace-nowrap px-4 py-2 rounded-md">⛓️ Blockchain Monitor</TabsTrigger>
               <TabsTrigger value="konsai-nexus" className="flex-shrink-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 data-[state=active]:from-teal-400 data-[state=active]:to-emerald-400 whitespace-nowrap px-4 py-2 rounded-md">🌟 KonsAi Nexus</TabsTrigger>
+              <TabsTrigger value="currency-conversion" className="flex-shrink-0 bg-gradient-to-r from-amber-600 to-yellow-600 text-white border-0 data-[state=active]:from-yellow-400 data-[state=active]:to-amber-400 whitespace-nowrap px-4 py-2 rounded-md">💱 Convert SS</TabsTrigger>
             </TabsList>
             <style>{`
               .scrollbar-hide::-webkit-scrollbar {
@@ -1285,6 +1323,121 @@ export default function SmaiSikaWalletPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-teal-300">Human Service:</span>
                       <Badge className="bg-blue-600">PRIORITY 1</Badge>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="currency-conversion">
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Convert SmaiSika to Local Currency</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert className="bg-amber-900/30 border-amber-600">
+                  <DollarSign className="h-4 w-4" />
+                  <AlertDescription className="text-amber-200">
+                    Convert your SmaiSika (SS) to local currency for withdrawal. Rate: 1 SS = 1 USD fixed forever.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Conversion Form */}
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-white">SmaiSika Amount</Label>
+                      <Input
+                        type="number"
+                        placeholder="Enter SS amount"
+                        value={ssConversionAmount}
+                        onChange={(e) => setSsConversionAmount(e.target.value)}
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                      <p className="text-gray-400 text-sm">
+                        Available: {smaiSikaBalance.balance.toFixed(2)} SS
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-white">Target Currency</Label>
+                      <Select value={targetCurrency} onValueChange={setTargetCurrency}>
+                        <SelectTrigger className="bg-gray-700 border-gray-600">
+                          <SelectValue placeholder="Select currency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="NGN">Nigerian Naira (NGN)</SelectItem>
+                          <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                          <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                          <SelectItem value="GBP">British Pound (GBP)</SelectItem>
+                          <SelectItem value="GHS">Ghanaian Cedi (GHS)</SelectItem>
+                          <SelectItem value="ZAR">South African Rand (ZAR)</SelectItem>
+                          <SelectItem value="KES">Kenyan Shilling (KES)</SelectItem>
+                          <SelectItem value="UGX">Ugandan Shilling (UGX)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <Button 
+                      onClick={handleSmaiSikaConversion}
+                      disabled={!ssConversionAmount || !targetCurrency || convertSmaiSikaMutation.isPending}
+                      className="w-full bg-amber-600 hover:bg-amber-700"
+                    >
+                      {convertSmaiSikaMutation.isPending ? (
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <ArrowUpDown className="w-4 h-4 mr-2" />
+                      )}
+                      Convert SmaiSika
+                    </Button>
+                  </div>
+
+                  {/* Conversion Preview */}
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-700/30 rounded-lg">
+                      <h4 className="text-white font-medium mb-3">Conversion Preview</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Amount:</span>
+                          <span className="text-white">{ssConversionAmount || '0'} SS</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Exchange Rate:</span>
+                          <span className="text-white">
+                            {targetCurrency && ssConversionAmount ? 
+                              getPreviewRate(targetCurrency) : '--'
+                            }
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Conversion Fee (2.5%):</span>
+                          <span className="text-white">
+                            {ssConversionAmount && targetCurrency ? 
+                              calculateConversionFee(parseFloat(ssConversionAmount), targetCurrency) : '--'
+                            }
+                          </span>
+                        </div>
+                        <Separator className="bg-gray-600" />
+                        <div className="flex justify-between font-medium">
+                          <span className="text-white">You'll Receive:</span>
+                          <span className="text-green-400">
+                            {ssConversionAmount && targetCurrency ? 
+                              calculateFinalAmount(parseFloat(ssConversionAmount), targetCurrency) : '--'
+                            }
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-blue-900/30 rounded-lg border border-blue-600">
+                      <h4 className="text-blue-200 font-medium mb-2">Withdrawal Instructions</h4>
+                      <p className="text-blue-100 text-sm">
+                        {targetCurrency && ssConversionAmount ? 
+                          getWithdrawalInstructions(targetCurrency) : 
+                          'Select currency and amount to see withdrawal instructions'
+                        }
+                      </p>
                     </div>
                   </div>
                 </div>
