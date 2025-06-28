@@ -1929,6 +1929,78 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trading Management Routes
+  app.get('/api/admin/trading-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getTradingStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching trading stats:', error);
+      res.status(500).json({ error: 'Failed to fetch trading stats' });
+    }
+  });
+
+  // Financial Management Routes
+  app.get('/api/admin/financial-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getFinancialStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching financial stats:', error);
+      res.status(500).json({ error: 'Failed to fetch financial stats' });
+    }
+  });
+
+  // Security Management Routes
+  app.get('/api/admin/security-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getSecurityStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching security stats:', error);
+      res.status(500).json({ error: 'Failed to fetch security stats' });
+    }
+  });
+
+  // AI Systems Management Routes
+  app.get('/api/admin/ai-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getAIStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching AI stats:', error);
+      res.status(500).json({ error: 'Failed to fetch AI stats' });
+    }
+  });
+
+  // Performance Management Routes
+  app.get('/api/admin/performance-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getPerformanceStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching performance stats:', error);
+      res.status(500).json({ error: 'Failed to fetch performance stats' });
+    }
+  });
+
+  // Infrastructure Management Routes
+  app.get('/api/admin/infrastructure-stats', async (req, res) => {
+    try {
+      const { enhancedAdminService } = await import('./services/enhancedAdminService');
+      const stats = await enhancedAdminService.getInfrastructureStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error fetching infrastructure stats:', error);
+      res.status(500).json({ error: 'Failed to fetch infrastructure stats' });
+    }
+  });
+
   // Advanced Admin Configuration Routes - 500+ Settings
   app.get("/api/admin/advanced-config", async (req, res) => {
     try {

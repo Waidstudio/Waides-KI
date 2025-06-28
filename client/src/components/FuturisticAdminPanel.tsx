@@ -215,6 +215,37 @@ export function FuturisticAdminPanel() {
     refetchInterval: 2000,
   });
 
+  // Fetch data for inactive tabs
+  const { data: tradingStats } = useQuery({
+    queryKey: ['/api/admin/trading-stats'],
+    refetchInterval: 5000,
+  });
+
+  const { data: financialStats } = useQuery({
+    queryKey: ['/api/admin/financial-stats'],
+    refetchInterval: 5000,
+  });
+
+  const { data: securityStats } = useQuery({
+    queryKey: ['/api/admin/security-stats'],
+    refetchInterval: 5000,
+  });
+
+  const { data: aiStats } = useQuery({
+    queryKey: ['/api/admin/ai-stats'],
+    refetchInterval: 5000,
+  });
+
+  const { data: performanceStats } = useQuery({
+    queryKey: ['/api/admin/performance-stats'],
+    refetchInterval: 5000,
+  });
+
+  const { data: infrastructureStats } = useQuery({
+    queryKey: ['/api/admin/infrastructure-stats'],
+    refetchInterval: 5000,
+  });
+
   // Configuration update mutation
   const updateConfigMutation = useMutation({
     mutationFn: async (updates: Partial<AdminConfiguration>) => {
