@@ -44,6 +44,9 @@ import { kons_PowaActivator } from './kons/kons_PowaActivator.js';
 import { kons_AutoFixCore } from './kons/kons_AutoFixCore.js';
 import { kons_WaidBotController } from './kons/kons_WaidBotController.js';
 
+// KonsModule: Integrator & Debugger (KID)
+const KonsKID = require('./kons/kons_kid.js');
+
 // Deep Core Engine Integration for Complete Omniscient System
 import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine';
 
@@ -1260,7 +1263,9 @@ class KonsModuleManager {
       // Self-Evolution + System Control Modules
       powaActivator: null,
       autoFixCore: null,
-      waidBotController: null
+      waidBotController: null,
+      // KonsModule: Integrator & Debugger (KID)
+      kid: null
     };
 
     try {
@@ -1356,6 +1361,12 @@ class KonsModuleManager {
       const waidBotControllerState = this.moduleStates.get('waidBotController') || {};
       konsResults.waidBotController = kons_WaidBotController(this.userMessage, this.marketData, waidBotControllerState);
       this.moduleStates.set('waidBotController', konsResults.waidBotController);
+
+      // Process KonsModule: Integrator & Debugger (KID)
+      const kidState = this.moduleStates.get('kid') || {};
+      const kidInstance = new KonsKID();
+      konsResults.kid = await kidInstance.processQuery(this.userMessage, this.marketData, kidState);
+      this.moduleStates.set('kid', konsResults.kid);
 
       // Process additional modules (placeholder for future implementation)
       // konsResults.tradeSense = kons_TradeSense(this.userMessage, this.marketData, {});
@@ -1482,6 +1493,21 @@ class KonsModuleManager {
       enhancedResponse += `\n\n🤖 Bot Network: ${konsResults.waidBotController.bot_status.overall_health} - ${konsResults.waidBotController.bot_status.sync_status}`;
       if (konsResults.waidBotController.master_override?.active) {
         enhancedResponse += `\n⚡ Master Override: ${konsResults.waidBotController.master_override.level} permissions active`;
+      }
+    }
+
+    // Integrate KonsModule: Integrator & Debugger (KID) insights
+    if (konsResults.kid) {
+      if (konsResults.kid.status === 'active' && konsResults.kid.insights?.length > 0) {
+        enhancedResponse += `\n\n🔧 System Health: ${konsResults.kid.insights.join(' | ')}`;
+      }
+      
+      if (konsResults.kid.warnings?.length > 0) {
+        enhancedResponse += `\n⚠️ System Issues: ${konsResults.kid.warnings.join(' | ')}`;
+      }
+      
+      if (konsResults.kid.actions?.length > 0) {
+        enhancedResponse += `\n🚀 Auto-fixes Applied: ${konsResults.kid.actions.join(' | ')}`;
       }
     }
 
