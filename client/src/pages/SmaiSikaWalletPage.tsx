@@ -373,7 +373,8 @@ export default function SmaiSikaWalletPage() {
         network: currency === 'USDT' ? 'TRC20' : currency === 'BTC' ? 'BITCOIN' : 'ETHEREUM',
         userId: 'user_123'
       });
-      const wallet = await response.json();
+      const data = await response.json();
+      const wallet = data.virtualWallet || data;
       
       setGeneratedAccounts(prev => [...prev, { ...wallet, type: 'crypto' }]);
       
