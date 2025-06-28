@@ -996,10 +996,22 @@ export default function SmaiSikaWalletPage() {
                                 <span className="text-gray-400">Country:</span>
                                 <span className="text-white">{account.country}</span>
                               </div>
-                              {account.routingCode && (
+                              {account.bankCode && (
                                 <div className="flex justify-between">
-                                  <span className="text-gray-400">Routing:</span>
-                                  <span className="text-white font-mono">{account.routingCode}</span>
+                                  <span className="text-gray-400">Bank Code:</span>
+                                  <span className="text-white font-mono">{account.bankCode}</span>
+                                </div>
+                              )}
+                              {account.swiftCode && (
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">SWIFT:</span>
+                                  <span className="text-white font-mono">{account.swiftCode}</span>
+                                </div>
+                              )}
+                              {account.provider && (
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Provider:</span>
+                                  <span className="text-white text-xs">{account.provider}</span>
                                 </div>
                               )}
                               <Button 
@@ -1026,10 +1038,12 @@ export default function SmaiSikaWalletPage() {
                                 <span className="text-gray-400">Network:</span>
                                 <span className="text-white">{account.network}</span>
                               </div>
-                              <div className="flex justify-between">
-                                <span className="text-gray-400">Type:</span>
-                                <span className="text-white">{account.addressType}</span>
-                              </div>
+                              {account.provider && (
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Provider:</span>
+                                  <span className="text-white text-xs">{account.provider}</span>
+                                </div>
+                              )}
                               <Button 
                                 variant="outline" 
                                 size="sm" 
