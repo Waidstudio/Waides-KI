@@ -1142,6 +1142,156 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Testing endpoint - Generate virtual bank account for ANY African country
+  app.post("/api/wallet/test/generate-bank-account", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const { userId = 'test_user', country, currency, preferredProvider } = req.body;
+      
+      if (!country || !currency) {
+        return res.status(400).json({ error: 'Missing required fields: country, currency' });
+      }
+      
+      const virtualAccount = await virtualAccountService.generateVirtualBankAccount(
+        userId, country, currency, preferredProvider
+      );
+      
+      res.json({
+        success: true,
+        testMode: true,
+        virtualAccount,
+        instructions: `TESTING MODE: This is a simulated ${country} bank account for SmaiSika deposits. Use these details to send ${currency} funds.`,
+        note: "This is a test account. In production, real banking APIs will be used."
+      });
+    } catch (error) {
+      console.error('Test bank account generation error:', error);
+      res.status(500).json({ error: error.message || 'Failed to generate test bank account' });
+    }
+  });
+
+  // Testing endpoint - Generate crypto wallet for testing
+  app.post("/api/wallet/test/generate-crypto-wallet", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const { userId = 'test_user', currency, preferredProvider } = req.body;
+      
+      if (!currency) {
+        return res.status(400).json({ error: 'Missing required field: currency' });
+      }
+      
+      const virtualWallet = await virtualAccountService.generateVirtualCryptoWallet(
+        userId, currency, preferredProvider
+      );
+      
+      res.json({
+        success: true,
+        testMode: true,
+        virtualWallet,
+        instructions: `TESTING MODE: Send ${currency} to this wallet address. Your SmaiSika balance will be credited automatically.`,
+        note: "This is a test wallet. In production, real crypto wallet APIs will be used."
+      });
+    } catch (error) {
+      console.error('Test crypto wallet generation error:', error);
+      res.status(500).json({ error: error.message || 'Failed to generate test crypto wallet' });
+    }
+  });
+
+  // Get all African countries supported for testing
+  app.get("/api/wallet/test/african-countries", async (req, res) => {
+    try {
+      const { virtualAccountService } = await import("./services/virtualAccountService.js");
+      const africanCountries = [
+        // Major African countries with full banking support
+        { code: 'NG', name: 'Nigeria', currency: 'NGN', providers: ['monnify', 'paystack', 'flutterwave'] },
+        { code: 'ZA', name: 'South Africa', currency: 'ZAR', providers: ['paystack', 'payfast', 'flutterwave'] },
+        { code: 'GH', name: 'Ghana', currency: 'GHS', providers: ['paystack', 'flutterwave'] },
+        { code: 'KE', name: 'Kenya', currency: 'KES', providers: ['paystack', 'mpesa', 'flutterwave'] },
+        { code: 'UG', name: 'Uganda', currency: 'UGX', providers: ['mpesa', 'flutterwave'] },
+        { code: 'TZ', name: 'Tanzania', currency: 'TZS', providers: ['mpesa', 'flutterwave'] },
+        { code: 'RW', name: 'Rwanda', currency: 'RWF', providers: ['flutterwave'] },
+        { code: 'ZM', name: 'Zambia', currency: 'ZMW', providers: ['flutterwave'] },
+        { code: 'MA', name: 'Morocco', currency: 'MAD', providers: ['cmi'] },
+        { code: 'EG', name: 'Egypt', currency: 'EGP', providers: ['fawry'] },
+        { code: 'ET', name: 'Ethiopia', currency: 'ETB', providers: ['hellocash'] },
+        { code: 'TN', name: 'Tunisia', currency: 'TND', providers: ['tunisie_telecom'] },
+        { code: 'SN', name: 'Senegal', currency: 'XOF', providers: ['orange_money_senegal'] },
+        { code: 'CI', name: 'Côte d\'Ivoire', currency: 'XOF', providers: ['orange_money_ci'] },
+        { code: 'CM', name: 'Cameroon', currency: 'XAF', providers: ['mtn_mobile_money_cm'] },
+        { code: 'BW', name: 'Botswana', currency: 'BWP', providers: ['myZaka'] },
+        { code: 'MZ', name: 'Mozambique', currency: 'MZN', providers: ['mpesa_mz'] },
+        // Additional African countries for comprehensive testing
+        { code: 'AO', name: 'Angola', currency: 'AOA', providers: ['test_bank'] },
+        { code: 'MW', name: 'Malawi', currency: 'MWK', providers: ['test_bank'] },
+        { code: 'ZW', name: 'Zimbabwe', currency: 'ZWL', providers: ['test_bank'] },
+        { code: 'BF', name: 'Burkina Faso', currency: 'XOF', providers: ['test_bank'] },
+        { code: 'ML', name: 'Mali', currency: 'XOF', providers: ['test_bank'] },
+        { code: 'NE', name: 'Niger', currency: 'XOF', providers: ['test_bank'] },
+        { code: 'TD', name: 'Chad', currency: 'XAF', providers: ['test_bank'] },
+        { code: 'CF', name: 'Central African Republic', currency: 'XAF', providers: ['test_bank'] },
+        { code: 'CG', name: 'Republic of the Congo', currency: 'XAF', providers: ['test_bank'] },
+        { code: 'GA', name: 'Gabon', currency: 'XAF', providers: ['test_bank'] },
+        { code: 'GQ', name: 'Equatorial Guinea', currency: 'XAF', providers: ['test_bank'] },
+        { code: 'ST', name: 'São Tomé and Príncipe', currency: 'STN', providers: ['test_bank'] },
+        { code: 'LY', name: 'Libya', currency: 'LYD', providers: ['test_bank'] },
+        { code: 'DZ', name: 'Algeria', currency: 'DZD', providers: ['test_bank'] },
+        { code: 'SD', name: 'Sudan', currency: 'SDG', providers: ['test_bank'] },
+        { code: 'SS', name: 'South Sudan', currency: 'SSP', providers: ['test_bank'] },
+        { code: 'SO', name: 'Somalia', currency: 'SOS', providers: ['test_bank'] },
+        { code: 'DJ', name: 'Djibouti', currency: 'DJF', providers: ['test_bank'] },
+        { code: 'ER', name: 'Eritrea', currency: 'ERN', providers: ['test_bank'] },
+        { code: 'LR', name: 'Liberia', currency: 'LRD', providers: ['test_bank'] },
+        { code: 'SL', name: 'Sierra Leone', currency: 'SLE', providers: ['test_bank'] },
+        { code: 'GN', name: 'Guinea', currency: 'GNF', providers: ['test_bank'] },
+        { code: 'GW', name: 'Guinea-Bissau', currency: 'XOF', providers: ['test_bank'] },
+        { code: 'GM', name: 'The Gambia', currency: 'GMD', providers: ['test_bank'] },
+        { code: 'CV', name: 'Cape Verde', currency: 'CVE', providers: ['test_bank'] },
+        { code: 'NA', name: 'Namibia', currency: 'NAD', providers: ['test_bank'] },
+        { code: 'SZ', name: 'Eswatini', currency: 'SZL', providers: ['test_bank'] },
+        { code: 'LS', name: 'Lesotho', currency: 'LSL', providers: ['test_bank'] },
+        { code: 'MU', name: 'Mauritius', currency: 'MUR', providers: ['test_bank'] },
+        { code: 'SC', name: 'Seychelles', currency: 'SCR', providers: ['test_bank'] },
+        { code: 'KM', name: 'Comoros', currency: 'KMF', providers: ['test_bank'] },
+        { code: 'MG', name: 'Madagascar', currency: 'MGA', providers: ['test_bank'] }
+      ];
+      
+      res.json({
+        success: true,
+        testMode: true,
+        countries: africanCountries,
+        totalCountries: africanCountries.length,
+        note: "All African countries supported for virtual account generation testing"
+      });
+    } catch (error) {
+      console.error('African countries list error:', error);
+      res.status(500).json({ error: 'Failed to get African countries list' });
+    }
+  });
+
+  // Get all crypto currencies supported for testing
+  app.get("/api/wallet/test/crypto-currencies", async (req, res) => {
+    try {
+      const cryptoCurrencies = [
+        { code: 'BTC', name: 'Bitcoin', network: 'Bitcoin', providers: ['coinbase', 'binance', 'blockchain_info'] },
+        { code: 'ETH', name: 'Ethereum', network: 'Ethereum', providers: ['coinbase', 'binance', 'blockchain_info'] },
+        { code: 'USDT', name: 'Tether USD', network: 'Ethereum/Tron', providers: ['coinbase', 'binance', 'tronlink'] },
+        { code: 'USDC', name: 'USD Coin', network: 'Ethereum', providers: ['coinbase', 'binance'] },
+        { code: 'BNB', name: 'Binance Coin', network: 'BSC', providers: ['binance'] },
+        { code: 'TRX', name: 'Tron', network: 'Tron', providers: ['tronlink'] }
+      ];
+      
+      res.json({
+        success: true,
+        testMode: true,
+        currencies: cryptoCurrencies,
+        totalCurrencies: cryptoCurrencies.length,
+        note: "All crypto currencies supported for virtual wallet generation testing"
+      });
+    } catch (error) {
+      console.error('Crypto currencies list error:', error);
+      res.status(500).json({ error: 'Failed to get crypto currencies list' });
+    }
+  });
+
   // Delete payment method endpoint
   app.delete("/api/wallet/payment-methods/:id", (req, res) => {
     try {
