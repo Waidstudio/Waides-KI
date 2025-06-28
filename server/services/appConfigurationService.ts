@@ -1,4 +1,11 @@
 interface AppConfiguration {
+  appName: string;
+  appVersion: string;
+  appDescription: string;
+  logo: string;
+  favicon: string;
+  theme: string;
+  maintenanceMode: boolean;
   branding: {
     app_name: string;
     logo_url: string;
@@ -10,6 +17,12 @@ interface AppConfiguration {
     text_color: string;
     font_family: string;
     theme_mode: 'light' | 'dark' | 'auto';
+  };
+  seo: {
+    title: string;
+    description: string;
+    keywords: string;
+    author: string;
   };
   features: {
     trading_enabled: boolean;
@@ -69,6 +82,19 @@ interface AppConfiguration {
 
 class AppConfigurationService {
   private config: AppConfiguration = {
+    appName: 'Waides KI',
+    appVersion: '1.0.0',
+    appDescription: 'Advanced AI-powered cryptocurrency trading platform with spiritual intelligence and autonomous wealth management.',
+    logo: '/images/waides-logo.png',
+    favicon: '/images/favicon.ico',
+    theme: 'dark',
+    maintenanceMode: false,
+    seo: {
+      title: 'Waides KI - AI Trading Platform',
+      description: 'Advanced AI-powered cryptocurrency trading platform with spiritual intelligence and autonomous wealth management.',
+      keywords: 'AI trading, cryptocurrency, SmaiSika, blockchain, automated trading, KonsAi',
+      author: 'Waides KI Team'
+    },
     branding: {
       app_name: 'Waides KI',
       logo_url: '/images/waides-logo.png',

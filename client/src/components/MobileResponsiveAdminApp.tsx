@@ -80,7 +80,9 @@ interface MegaAdminConfig {
 interface AppConfiguration {
   appName: string;
   appVersion: string;
+  appDescription: string;
   logo: string;
+  favicon: string;
   theme: string;
   maintenanceMode: boolean;
   features: {
@@ -88,6 +90,12 @@ interface AppConfiguration {
     wallet: boolean;
     admin: boolean;
     api: boolean;
+  };
+  seo: {
+    title: string;
+    description: string;
+    keywords: string;
+    author: string;
   };
 }
 
@@ -129,7 +137,7 @@ export default function MobileResponsiveAdminApp() {
     queryKey: ['mega-admin-config'],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/mega-admin/config');
+        const response = await fetch('/api/mega-admin-config');
         if (!response.ok) throw new Error('Failed to fetch config');
         return await response.json() as MegaAdminConfig;
       } catch (error) {
@@ -192,7 +200,7 @@ export default function MobileResponsiveAdminApp() {
   // Update mutation with optimistic updates
   const updateConfigMutation = useMutation({
     mutationFn: async ({ section, updates }: { section: string; updates: any }) => {
-      const response = await apiRequest('PUT', `/api/mega-admin/config/${section}`, updates);
+      const response = await apiRequest('PUT', `/api/mega-admin-config/${section}`, updates);
       return response;
     },
     onSuccess: () => {
@@ -206,6 +214,28 @@ export default function MobileResponsiveAdminApp() {
       toast({
         title: "Update Failed",
         description: "Failed to save configuration changes",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // App config mutation for branding updates
+  const updateAppConfigMutation = useMutation({
+    mutationFn: async (updates: any) => {
+      const response = await apiRequest('PUT', '/api/app-config', updates);
+      return response;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Branding Updated",
+        description: "Application branding has been saved successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['app-config'] });
+    },
+    onError: () => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to save branding changes",
         variant: "destructive",
       });
     }
@@ -576,50 +606,238 @@ export default function MobileResponsiveAdminApp() {
               </TabsContent>
 
               <TabsContent value="branding" className="space-y-6">
-                <Card className="bg-gray-800 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">Brand Management</CardTitle>
-                    <CardDescription>Customize application branding and appearance</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <Label className="text-white">Application Name</Label>
-                          <Input
-                            value={appConfig?.appName || 'Waides KI'}
-                            className="bg-gray-900 border-gray-700 text-white mt-2"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-white">Version</Label>
-                          <Input
-                            value={appConfig?.appVersion || '1.0.0'}
-                            className="bg-gray-900 border-gray-700 text-white mt-2"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-white">Theme</Label>
-                          <Select defaultValue="dark">
-                            <SelectTrigger className="bg-gray-900 border-gray-700 text-white mt-2">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="dark">Dark Theme</SelectItem>
-                              <SelectItem value="light">Light Theme</SelectItem>
-                              <SelectItem value="cosmic">Cosmic Theme</SelectItem>
-                            </SelectContent>
-                          </Select>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <Card className="bg-gray-800 border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="text-white">Application Information</CardTitle>
+                      <CardDescription>Basic application details and metadata</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label className="text-white">Application Name</Label>
+                        <Input
+                          value={appConfig?.appName || 'Waides KI'}
+                          onChange={(e) => updateAppConfigMutation.mutate({ appName: e.target.value })}
+                          className="bg-gray-900 border-gray-700 text-white mt-2"
+                          placeholder="Enter application name"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-white">Version</Label>
+                        <Input
+                          value={appConfig?.appVersion || '1.0.0'}
+                          onChange={(e) => updateAppConfigMutation.mutate({ appVersion: e.target.value })}
+                          className="bg-gray-900 border-gray-700 text-white mt-2"
+                          placeholder="e.g., 1.0.0"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-white">Application Description</Label>
+                        <Textarea
+                          value={appConfig?.appDescription || 'Advanced AI-powered trading platform'}
+                          onChange={(e) => updateAppConfigMutation.mutate({ appDescription: e.target.value })}
+                          className="bg-gray-900 border-gray-700 text-white mt-2"
+                          placeholder="Brief description of your application"
+                          rows={3}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-white">Theme</Label>
+                        <Select 
+                          value={appConfig?.theme || 'dark'}
+                          onValueChange={(value) => updateAppConfigMutation.mutate({ theme: value })}
+                        >
+                          <SelectTrigger className="bg-gray-900 border-gray-700 text-white mt-2">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="dark">Dark Theme</SelectItem>
+                            <SelectItem value="light">Light Theme</SelectItem>
+                            <SelectItem value="konsmik">Konsmik Theme</SelectItem>
+                            <SelectItem value="cyber">Cyber Theme</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-gray-800 border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="text-white">Visual Assets</CardTitle>
+                      <CardDescription>Upload and manage application logos and icons</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label className="text-white">Application Logo</Label>
+                        <div className="mt-2 border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+                          <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-400">Click to upload logo</p>
+                          <p className="text-xs text-gray-500 mt-1">PNG, JPG, SVG up to 5MB</p>
+                          <Button variant="outline" size="sm" className="mt-2">
+                            Choose File
+                          </Button>
                         </div>
                       </div>
-                      <div className="space-y-4">
+                      <div>
+                        <Label className="text-white">Favicon</Label>
+                        <div className="mt-2 border-2 border-dashed border-gray-600 rounded-lg p-4 text-center">
+                          <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-400">Upload favicon</p>
+                          <p className="text-xs text-gray-500 mt-1">ICO, PNG 16x16, 32x32, 64x64</p>
+                          <Button variant="outline" size="sm" className="mt-2">
+                            Choose Favicon
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">SEO & Meta Information</CardTitle>
+                    <CardDescription>Configure search engine optimization and social media metadata</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-white">Page Title</Label>
+                        <Input
+                          value={appConfig?.seo?.title || 'Waides KI - AI Trading Platform'}
+                          onChange={(e) => updateAppConfigMutation.mutate({ 
+                            seo: { ...appConfig?.seo, title: e.target.value }
+                          })}
+                          className="bg-gray-900 border-gray-700 text-white mt-2"
+                          placeholder="Page title for SEO"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-white">Author</Label>
+                        <Input
+                          value={appConfig?.seo?.author || 'Waides KI Team'}
+                          onChange={(e) => updateAppConfigMutation.mutate({ 
+                            seo: { ...appConfig?.seo, author: e.target.value }
+                          })}
+                          className="bg-gray-900 border-gray-700 text-white mt-2"
+                          placeholder="Application author"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-white">Meta Description</Label>
+                      <Textarea
+                        value={appConfig?.seo?.description || 'Advanced AI-powered cryptocurrency trading platform with spiritual intelligence and autonomous wealth management.'}
+                        onChange={(e) => updateAppConfigMutation.mutate({ 
+                          seo: { ...appConfig?.seo, description: e.target.value }
+                        })}
+                        className="bg-gray-900 border-gray-700 text-white mt-2"
+                        placeholder="Description for search engines and social media"
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-white">Keywords</Label>
+                      <Input
+                        value={appConfig?.seo?.keywords || 'AI trading, cryptocurrency, SmaiSika, blockchain, automated trading'}
+                        onChange={(e) => updateAppConfigMutation.mutate({ 
+                          seo: { ...appConfig?.seo, keywords: e.target.value }
+                        })}
+                        className="bg-gray-900 border-gray-700 text-white mt-2"
+                        placeholder="Comma-separated keywords for SEO"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Application Features</CardTitle>
+                    <CardDescription>Enable or disable core application features</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
                         <div>
-                          <Label className="text-white">Logo Upload</Label>
-                          <div className="mt-2 border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
-                            <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                            <p className="text-sm text-gray-400">Click to upload or drag and drop</p>
-                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 2MB</p>
-                          </div>
+                          <h4 className="font-medium text-white">Trading Engine</h4>
+                          <p className="text-sm text-gray-400">AI-powered trading</p>
+                        </div>
+                        <Switch 
+                          checked={appConfig?.features?.trading || true}
+                          onCheckedChange={(checked) => updateAppConfigMutation.mutate({ 
+                            features: { ...appConfig?.features, trading: checked }
+                          })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                        <div>
+                          <h4 className="font-medium text-white">SmaiSika Wallet</h4>
+                          <p className="text-sm text-gray-400">Digital wallet system</p>
+                        </div>
+                        <Switch 
+                          checked={appConfig?.features?.wallet || true}
+                          onCheckedChange={(checked) => updateAppConfigMutation.mutate({ 
+                            features: { ...appConfig?.features, wallet: checked }
+                          })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                        <div>
+                          <h4 className="font-medium text-white">Admin Panel</h4>
+                          <p className="text-sm text-gray-400">Administrative interface</p>
+                        </div>
+                        <Switch 
+                          checked={appConfig?.features?.admin || true}
+                          onCheckedChange={(checked) => updateAppConfigMutation.mutate({ 
+                            features: { ...appConfig?.features, admin: checked }
+                          })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                        <div>
+                          <h4 className="font-medium text-white">API Gateway</h4>
+                          <p className="text-sm text-gray-400">External integrations</p>
+                        </div>
+                        <Switch 
+                          checked={appConfig?.features?.api || true}
+                          onCheckedChange={(checked) => updateAppConfigMutation.mutate({ 
+                            features: { ...appConfig?.features, api: checked }
+                          })}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Maintenance & Status</CardTitle>
+                    <CardDescription>Control application availability and maintenance mode</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
+                        <div>
+                          <h4 className="font-medium text-white">Maintenance Mode</h4>
+                          <p className="text-sm text-gray-400">Temporarily disable public access</p>
+                        </div>
+                        <Switch 
+                          checked={appConfig?.maintenanceMode || false}
+                          onCheckedChange={(checked) => updateAppConfigMutation.mutate({ 
+                            maintenanceMode: checked
+                          })}
+                        />
+                      </div>
+                      <div className="p-4 bg-gray-900 rounded-lg">
+                        <h4 className="font-medium text-white mb-2">Quick Actions</h4>
+                        <div className="space-y-2">
+                          <Button variant="outline" size="sm" className="w-full">
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Clear Cache
+                          </Button>
+                          <Button variant="outline" size="sm" className="w-full">
+                            <Download className="h-4 w-4 mr-2" />
+                            Backup Settings
+                          </Button>
                         </div>
                       </div>
                     </div>
