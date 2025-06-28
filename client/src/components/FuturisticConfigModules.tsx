@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Zap, Brain, Shield, Eye, Cpu, Wifi, Globe, 
-  Rocket, Atom, Diamond, Lightning, Star, 
+  Rocket, Atom, Diamond, Star, 
   Target, Wand2, Sparkles, Gem, Crown, 
   Hexagon, Triangle, Circle, Square
 } from 'lucide-react';
