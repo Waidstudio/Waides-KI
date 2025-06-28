@@ -524,6 +524,10 @@ export default function AdminPanel() {
                   <Palette className="w-4 h-4" />
                   <span>Branding</span>
                 </TabsTrigger>
+                <TabsTrigger value="website-info" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Globe className="w-4 h-4" />
+                  <span>Website Info</span>
+                </TabsTrigger>
                 <TabsTrigger value="ui-design" className="flex items-center space-x-2 whitespace-nowrap">
                   <Eye className="w-4 h-4" />
                   <span>UI Design</span>
@@ -1443,14 +1447,305 @@ export default function AdminPanel() {
                     />
                   </div>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Website Description</Label>
+                    <Textarea
+                      value={editingConfig.branding?.meta_description ?? config?.branding?.meta_description}
+                      onChange={(e) => handleConfigUpdate('branding', 'meta_description', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white h-24"
+                      placeholder="Brief description of your application for search engines..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Keywords (SEO)</Label>
+                    <Textarea
+                      value={editingConfig.branding?.meta_keywords ?? config?.branding?.meta_keywords}
+                      onChange={(e) => handleConfigUpdate('branding', 'meta_keywords', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white h-24"
+                      placeholder="cryptocurrency, trading, AI, blockchain, ethereum..."
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Footer Text</Label>
+                    <Input
+                      value={editingConfig.branding?.footer_text ?? config?.branding?.footer_text}
+                      onChange={(e) => handleConfigUpdate('branding', 'footer_text', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="© 2025 Waides KI. All rights reserved."
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Social Media Image URL</Label>
+                    <Input
+                      value={editingConfig.branding?.og_image ?? config?.branding?.og_image}
+                      onChange={(e) => handleConfigUpdate('branding', 'og_image', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="https://example.com/social-preview.jpg"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Font Family</Label>
+                    <Select value={editingConfig.branding?.font_family ?? config?.branding?.font_family}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue placeholder="Select font family" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Inter">Inter</SelectItem>
+                        <SelectItem value="Roboto">Roboto</SelectItem>
+                        <SelectItem value="Open Sans">Open Sans</SelectItem>
+                        <SelectItem value="Montserrat">Montserrat</SelectItem>
+                        <SelectItem value="Poppins">Poppins</SelectItem>
+                        <SelectItem value="Lato">Lato</SelectItem>
+                        <SelectItem value="Source Sans Pro">Source Sans Pro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Background Gradient</Label>
+                    <Select value={editingConfig.branding?.background_gradient ?? config?.branding?.background_gradient}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue placeholder="Select gradient style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="cosmic">Cosmic Blue</SelectItem>
+                        <SelectItem value="sunset">Sunset Orange</SelectItem>
+                        <SelectItem value="ocean">Ocean Teal</SelectItem>
+                        <SelectItem value="forest">Forest Green</SelectItem>
+                        <SelectItem value="royal">Royal Purple</SelectItem>
+                        <SelectItem value="fire">Fire Red</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
                 <div>
                   <Label className="text-gray-300">Custom CSS</Label>
                   <Textarea
                     value={editingConfig.branding?.custom_css ?? config?.branding?.custom_css}
                     onChange={(e) => handleConfigUpdate('branding', 'custom_css', e.target.value)}
                     className="bg-gray-700 border-gray-600 text-white h-32"
-                    placeholder="/* Custom CSS styles */"
+                    placeholder="/* Custom CSS styles */
+.custom-header { background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+.trading-panel { border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }"
                   />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Website Info Tab */}
+          <TabsContent value="website-info" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Website Information & Description</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Comprehensive website details, project overview, and technical specifications
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Project Overview Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white border-b border-gray-600 pb-2">Project Overview</h3>
+                  <div>
+                    <Label className="text-gray-300">Project Title</Label>
+                    <Input
+                      value="Waides KI - Advanced AI Trading Platform"
+                      className="bg-gray-700 border-gray-600 text-white"
+                      readOnly
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Full Project Description</Label>
+                    <Textarea
+                      value="Waides KI is a next-generation autonomous wealth management platform that combines AI-driven insights with ethical trading principles. The platform features KonsAi Intelligence Engine with 220+ omniscient modules, SmaiSika global currency system with fixed 1:1 USD exchange rate, comprehensive trading automation, and advanced biometric security. Built with TypeScript/React frontend, Express.js backend, PostgreSQL database, and real-time WebSocket integration."
+                      className="bg-gray-700 border-gray-600 text-white h-32"
+                      readOnly
+                    />
+                  </div>
+                </div>
+
+                {/* Technical Architecture Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white border-b border-gray-600 pb-2">Technical Architecture</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Frontend Technologies</Label>
+                      <Textarea
+                        value="• React 18 with TypeScript
+• Vite build system
+• TanStack Query for state management
+• shadcn/ui component library
+• Tailwind CSS styling
+• Wouter routing
+• WebSocket integration"
+                        className="bg-gray-700 border-gray-600 text-white h-32"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">Backend Technologies</Label>
+                      <Textarea
+                        value="• Express.js with TypeScript
+• PostgreSQL database
+• Drizzle ORM
+• WebSocket server
+• Service registry architecture
+• Real-time data processing
+• RESTful API endpoints"
+                        className="bg-gray-700 border-gray-600 text-white h-32"
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Core Features Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white border-b border-gray-600 pb-2">Core Features</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">AI & Intelligence Features</Label>
+                      <Textarea
+                        value="• KonsAi Intelligence Engine (220+ modules)
+• Real-time market analysis
+• Autonomous trading decisions
+• Neural quantum singularity strategies
+• Divine quantum flux algorithms
+• Predictive analytics
+• Risk management AI"
+                        className="bg-gray-700 border-gray-600 text-white h-32"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">Trading & Financial Features</Label>
+                      <Textarea
+                        value="• SmaiSika global currency (1 SS = 1 USD)
+• Multi-currency wallet system
+• 54 African country support
+• Real-time ETH/USDT trading
+• Automated position management
+• Advanced risk controls
+• Biometric authentication"
+                        className="bg-gray-700 border-gray-600 text-white h-32"
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Security & Compliance Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white border-b border-gray-600 pb-2">Security & Compliance</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Security Features</Label>
+                      <Textarea
+                        value="• Biometric authentication (WebAuthn)
+• Multi-signature wallets
+• End-to-end encryption
+• Session management
+• IP whitelisting
+• 2FA requirements
+• Audit logging"
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">Compliance Standards</Label>
+                      <Textarea
+                        value="• GDPR compliance
+• KYC/AML procedures
+• Financial regulations
+• Data protection standards
+• Privacy policy enforcement
+• Terms of service
+• Regional compliance"
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Deployment & Infrastructure Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white border-b border-gray-600 pb-2">Deployment & Infrastructure</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Deployment Platform</Label>
+                      <Input
+                        value="Replit with PostgreSQL Database"
+                        className="bg-gray-700 border-gray-600 text-white"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">Runtime Environment</Label>
+                      <Input
+                        value="Node.js 20+ with Express.js Server"
+                        className="bg-gray-700 border-gray-600 text-white"
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Database</Label>
+                      <Input
+                        value="PostgreSQL 16 with 20+ Tables"
+                        className="bg-gray-700 border-gray-600 text-white"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">External APIs</Label>
+                      <Input
+                        value="CoinGecko, Binance WebSocket, OpenAI"
+                        className="bg-gray-700 border-gray-600 text-white"
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Development Information Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white border-b border-gray-600 pb-2">Development Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="text-gray-300">Development Commands</Label>
+                      <Textarea
+                        value="• npm run dev - Start development server
+• npm run build - Build production assets
+• npm run start - Start production server
+• npm run db:push - Deploy schema changes"
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-300">Key Dependencies</Label>
+                      <Textarea
+                        value="• @anthropic-ai/sdk - AI integration
+• @stripe/stripe-js - Payment processing
+• drizzle-orm - Database ORM
+• ws - WebSocket server
+• bcrypt - Password hashing"
+                        className="bg-gray-700 border-gray-600 text-white h-24"
+                        readOnly
+                      />
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
