@@ -53,6 +53,42 @@ interface AdminConfig {
     max_requests_per_minute: number;
     api_timeout: number;
     cache_ttl: number;
+    auto_scaling: boolean;
+    load_balancing: boolean;
+    cdn_enabled: boolean;
+    compression_enabled: boolean;
+    ssl_force: boolean;
+    backup_frequency: string;
+    monitoring_level: string;
+  };
+  branding: {
+    app_name: string;
+    logo_url: string;
+    favicon_url: string;
+    primary_color: string;
+    secondary_color: string;
+    accent_color: string;
+    font_family: string;
+    background_gradient: string;
+    custom_css: string;
+    footer_text: string;
+    meta_description: string;
+    meta_keywords: string;
+    og_image: string;
+  };
+  ui_customization: {
+    theme_mode: string;
+    sidebar_style: string;
+    navigation_type: string;
+    card_style: string;
+    animation_speed: string;
+    border_radius: string;
+    shadow_intensity: string;
+    typography_scale: string;
+    button_style: string;
+    form_style: string;
+    table_style: string;
+    chart_theme: string;
   };
   trading: {
     auto_trading_enabled: boolean;
@@ -61,6 +97,14 @@ interface AdminConfig {
     stop_loss_percentage: number;
     take_profit_percentage: number;
     allowed_pairs: string[];
+    trading_hours: string[];
+    max_daily_trades: number;
+    slippage_tolerance: number;
+    min_trade_amount: number;
+    max_leverage: number;
+    margin_requirements: number;
+    portfolio_diversification: boolean;
+    risk_management_ai: boolean;
   };
   wallet: {
     min_deposit: number;
@@ -69,6 +113,13 @@ interface AdminConfig {
     withdrawal_fee_rate: number;
     daily_withdrawal_limit: number;
     supported_currencies: string[];
+    instant_withdrawal: boolean;
+    multi_signature: boolean;
+    cold_storage_percentage: number;
+    insurance_coverage: boolean;
+    compliance_level: string;
+    kyc_requirements: string[];
+    aml_monitoring: boolean;
   };
   security: {
     session_timeout: number;
@@ -76,6 +127,14 @@ interface AdminConfig {
     require_2fa: boolean;
     password_min_length: number;
     api_key_expiry_days: number;
+    ip_whitelist: string[];
+    geo_blocking: boolean;
+    encryption_level: string;
+    audit_logging: boolean;
+    penetration_testing: boolean;
+    vulnerability_scanning: boolean;
+    backup_encryption: boolean;
+    data_retention_days: number;
   };
   konsai: {
     intelligence_level: string;
@@ -84,17 +143,71 @@ interface AdminConfig {
     memory_limit: number;
     auto_evolution: boolean;
     module_count: number;
+    personality_mode: string;
+    voice_synthesis: boolean;
+    emotion_detection: boolean;
+    context_awareness: boolean;
+    multilingual_support: boolean;
+    custom_knowledge_base: boolean;
+    api_integration_limit: number;
+    quantum_processing: boolean;
   };
   notifications: {
     email_enabled: boolean;
     sms_enabled: boolean;
     push_enabled: boolean;
     webhook_url: string;
+    slack_integration: boolean;
+    discord_integration: boolean;
+    telegram_integration: boolean;
     alert_thresholds: {
       price_change: number;
       volume_spike: number;
       balance_low: number;
+      system_load: number;
+      error_rate: number;
+      security_breach: number;
     };
+    notification_frequency: string;
+    quiet_hours: string[];
+  };
+  analytics: {
+    google_analytics_id: string;
+    mixpanel_token: string;
+    hotjar_id: string;
+    custom_tracking: boolean;
+    data_export: boolean;
+    real_time_dashboard: boolean;
+    user_behavior_tracking: boolean;
+    performance_monitoring: boolean;
+    conversion_tracking: boolean;
+    a_b_testing: boolean;
+  };
+  integrations: {
+    binance_api: boolean;
+    coinbase_api: boolean;
+    kraken_api: boolean;
+    stripe_payments: boolean;
+    paypal_payments: boolean;
+    bank_transfers: boolean;
+    crypto_payments: boolean;
+    ai_services: string[];
+    cloud_storage: string;
+    cdn_provider: string;
+    email_service: string;
+    sms_provider: string;
+  };
+  compliance: {
+    gdpr_enabled: boolean;
+    ccpa_enabled: boolean;
+    sox_compliance: boolean;
+    iso_27001: boolean;
+    pci_dss: boolean;
+    data_localization: string;
+    privacy_policy_url: string;
+    terms_of_service_url: string;
+    cookie_consent: boolean;
+    data_processing_agreement: boolean;
   };
 }
 
