@@ -246,5 +246,114 @@ export function registerRoutes(app: Express): Promise<Server> {
     ]);
   });
 
+  // Wallet countries endpoint
+  app.get("/api/wallet/countries", (req, res) => {
+    res.json([
+      { code: 'NG', name: 'Nigeria', currency: 'NGN', providers: 8 },
+      { code: 'GH', name: 'Ghana', currency: 'GHS', providers: 5 },
+      { code: 'KE', name: 'Kenya', currency: 'KES', providers: 6 },
+      { code: 'UG', name: 'Uganda', currency: 'UGX', providers: 4 },
+      { code: 'ZA', name: 'South Africa', currency: 'ZAR', providers: 7 },
+      { code: 'US', name: 'United States', currency: 'USD', providers: 12 },
+      { code: 'GB', name: 'United Kingdom', currency: 'GBP', providers: 9 },
+      { code: 'CA', name: 'Canada', currency: 'CAD', providers: 8 },
+      { code: 'AU', name: 'Australia', currency: 'AUD', providers: 6 }
+    ]);
+  });
+
+  // Wallet payment methods endpoint
+  app.get("/api/wallet/payment-methods", (req, res) => {
+    res.json([
+      {
+        id: 1,
+        methodType: 'mobile_money',
+        provider: 'MTN Mobile Money',
+        country: 'Nigeria',
+        currency: 'NGN',
+        accountIdentifier: '+234***1234',
+        displayName: 'MTN ***1234',
+        isActive: true,
+        isVerified: true
+      },
+      {
+        id: 2,
+        methodType: 'bank_account',
+        provider: 'Access Bank',
+        country: 'Nigeria',
+        currency: 'NGN',
+        accountIdentifier: '****5678',
+        displayName: 'Access Bank ***5678',
+        isActive: true,
+        isVerified: false
+      }
+    ]);
+  });
+
+  // Wallet African providers endpoint
+  app.get("/api/wallet/african-providers", (req, res) => {
+    res.json([
+      {
+        id: 1,
+        country: 'Nigeria',
+        countryCode: 'NG',
+        provider: 'MTN Mobile Money',
+        providerType: 'mobile_money',
+        currency: 'NGN',
+        minAmount: '₦100',
+        maxAmount: '₦500,000',
+        fees: '1.5%',
+        processingTime: '2-5 minutes',
+        logo: '/api/placeholder/32/32',
+        description: 'Nigeria\'s largest mobile money platform',
+        isActive: true
+      },
+      {
+        id: 2,
+        country: 'Nigeria',
+        countryCode: 'NG',
+        provider: 'Airtel Money',
+        providerType: 'mobile_money',
+        currency: 'NGN',
+        minAmount: '₦100',
+        maxAmount: '₦300,000',
+        fees: '1.8%',
+        processingTime: '2-5 minutes',
+        logo: '/api/placeholder/32/32',
+        description: 'Fast and reliable mobile payments',
+        isActive: true
+      },
+      {
+        id: 3,
+        country: 'Ghana',
+        countryCode: 'GH',
+        provider: 'MTN Mobile Money',
+        providerType: 'mobile_money',
+        currency: 'GHS',
+        minAmount: 'GH₵5',
+        maxAmount: 'GH₵10,000',
+        fees: '2.0%',
+        processingTime: '2-5 minutes',
+        logo: '/api/placeholder/32/32',
+        description: 'Ghana\'s most trusted mobile money service',
+        isActive: true
+      },
+      {
+        id: 4,
+        country: 'Kenya',
+        countryCode: 'KE',
+        provider: 'M-Pesa',
+        providerType: 'mobile_money',
+        currency: 'KES',
+        minAmount: 'KSh 100',
+        maxAmount: 'KSh 300,000',
+        fees: '1.2%',
+        processingTime: '1-3 minutes',
+        logo: '/api/placeholder/32/32',
+        description: 'Kenya\'s leading mobile money platform',
+        isActive: true
+      }
+    ]);
+  });
+
   return Promise.resolve(server);
 }

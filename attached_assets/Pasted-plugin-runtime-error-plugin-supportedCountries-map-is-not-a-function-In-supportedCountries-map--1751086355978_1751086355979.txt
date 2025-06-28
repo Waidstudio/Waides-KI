@@ -1,0 +1,28 @@
+plugin:runtime-error-plugin] supportedCountries.map is not a function. (In 'supportedCountries.map(
+                  (country) => /* @__PURE__ */ jsxDEV(SelectItem, { "data-replit-metadata": "client/src/components/ComprehensiveWallet.tsx:510:22", "data-component-name": "SelectItem", value: country.code, children: /* @__PURE__ */ jsxDEV("div", { "data-replit-metadata": "client/src/components/ComprehensiveWallet.tsx:511:26", "data-component-name": "div", className: "flex items-center space-x-2", children: [
+                    /* @__PURE__ */ jsxDEV("span", { "data-replit-metadata": "client/src/components/ComprehensiveWallet.tsx:512:28", "data-component-name": "span", children: country.name }, void 0, false, {
+                      fileName: "/home/runner/workspace/client/src/components/ComprehensiveWallet.tsx",
+                      lineNumber: 512,
+                      columnNumber: 29
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("span", { "data-replit-metadata": "client/src/components/ComprehensiveWallet.tsx:513:28", "data-component-name": "span", className: "text-gray-400", children: [
+                      "(",
+                      country.providers,
+                      " providers)"
+                    ] }, void 0, true, {
+                      fileName: "/home/runner/workspace/client/src/components/ComprehensiveWallet.tsx",
+                      lineNumber: 513,
+                      columnNumber: 29
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "/home/runner/workspace/client/src/components/ComprehensiveWallet.tsx",
+                    lineNumber: 511,
+                    columnNumber: 27
+                  }, this) }, country.code, false, {
+                    fileName: "/home/runner/workspace/client/src/components/ComprehensiveWallet.tsx",
+                    lineNumber: 510,
+                    columnNumber: 23
+                  }, this)
+                )', 'supportedCountries.map' is undefined)
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.js.

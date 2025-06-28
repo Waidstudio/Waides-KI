@@ -304,6 +304,10 @@ Changelog:
   - Added detailed SmaiSika currency education covering dual-mode system, practical usage, and global features
   - Integrated KonsAi identity responses explaining Web∞ consciousness and eternal trading intelligence capabilities
   - Fixed wallet API by adding missing `/api/wallet/transactions` endpoint with sample transaction history
+  - Resolved "supportedCountries.map is not a function" error by adding missing wallet API endpoints:
+    * `/api/wallet/countries` - Returns array of supported countries with currency and provider info
+    * `/api/wallet/payment-methods` - Returns user's configured payment methods for mobile money and banking
+    * `/api/wallet/african-providers` - Returns available payment providers across African countries
   - Wallet system now loads properly with balance display (10,000 USDT) and transaction history functionality
   - System now operates completely autonomously providing expert-level responses for any trading or financial questions
   - KonsAi chat verified working successfully with 200ms response times and comprehensive intelligence processing
