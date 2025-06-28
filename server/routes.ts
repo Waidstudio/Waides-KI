@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
 import { serviceRegistry } from "./serviceRegistry.js";
+import { appConfigurationService } from "./services/appConfigurationService.js";
+import { megaAdminConfigService } from "./services/megaAdminConfigService.js";
 
 // WebSocket setup for real-time features
 let wss: any = null;
@@ -1594,7 +1596,6 @@ export function registerRoutes(app: Express): Promise<Server> {
   // App Configuration API endpoints (for admin panel to control main app)
   app.get('/api/app-config', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
       res.json(appConfigurationService.getConfiguration());
     } catch (error) {
       console.error('Error fetching app configuration:', error);
@@ -1604,7 +1605,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/app-config/:section', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       const section = appConfigurationService.getSection(req.params.section);
       if (!section) {
         return res.status(404).json({ error: 'Section not found' });
@@ -1618,7 +1619,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/app-config/:section', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       appConfigurationService.updateSection(req.params.section, req.body);
       res.json({ success: true, message: 'Section updated successfully' });
     } catch (error) {
@@ -1629,7 +1630,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/app-config/:section/:key', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       const { value } = req.body;
       appConfigurationService.updateSetting(req.params.section, req.params.key, value);
       res.json({ success: true, message: 'Setting updated successfully' });
@@ -1641,7 +1642,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/app-config/upload/logo', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       const { logoData } = req.body;
       const logoUrl = appConfigurationService.uploadLogo(logoData);
       res.json({ success: true, logoUrl, message: 'Logo uploaded successfully' });
@@ -1653,7 +1654,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/app-config/upload/favicon', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       const { faviconData } = req.body;
       const faviconUrl = appConfigurationService.uploadFavicon(faviconData);
       res.json({ success: true, faviconUrl, message: 'Favicon uploaded successfully' });
@@ -1665,7 +1666,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/app-config/stats', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       res.json(appConfigurationService.getStats());
     } catch (error) {
       console.error('Error fetching app configuration stats:', error);
@@ -1675,7 +1676,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/app-config/export', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       const configJson = appConfigurationService.exportConfiguration();
       res.json({ success: true, configuration: configJson });
     } catch (error) {
@@ -1686,7 +1687,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/app-config/import', (req, res) => {
     try {
-      const { appConfigurationService } = require('./services/appConfigurationService');
+      // Using imported appConfigurationService
       const { configJson } = req.body;
       const result = appConfigurationService.importConfiguration(configJson);
       if (result.success) {
@@ -1703,7 +1704,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Mega Admin Configuration API endpoints (1000+ settings)
   app.get('/api/mega-admin-config', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       res.json(megaAdminConfigService.getConfiguration());
     } catch (error) {
       console.error('Error fetching mega admin configuration:', error);
@@ -1713,7 +1714,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/mega-admin-config/stats', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       res.json(megaAdminConfigService.getStats());
     } catch (error) {
       console.error('Error fetching mega admin stats:', error);
@@ -1723,7 +1724,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/mega-admin-config/:section', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       const section = megaAdminConfigService.getSection(req.params.section);
       if (!section) {
         return res.status(404).json({ error: 'Section not found' });
@@ -1737,7 +1738,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/mega-admin-config/:section', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       megaAdminConfigService.updateSection(req.params.section, req.body);
       res.json({ success: true, message: 'Section updated successfully' });
     } catch (error) {
@@ -1748,7 +1749,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/mega-admin-config/:section/:key', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       const { value } = req.body;
       megaAdminConfigService.updateSetting(req.params.section, req.params.key, value);
       res.json({ success: true, message: 'Setting updated successfully' });
@@ -1760,7 +1761,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/mega-admin-config/search/:query', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       const results = megaAdminConfigService.searchSettings(req.params.query);
       res.json(results);
     } catch (error) {
@@ -1771,7 +1772,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/export', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       const configJson = megaAdminConfigService.exportConfiguration();
       res.json({ success: true, configuration: configJson });
     } catch (error) {
@@ -1782,7 +1783,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/import', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       const { configJson } = req.body;
       const result = megaAdminConfigService.importConfiguration(configJson);
       if (result.success) {
@@ -1798,7 +1799,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/validate', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       const validation = megaAdminConfigService.validateConfiguration();
       res.json(validation);
     } catch (error) {
@@ -1809,7 +1810,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/reset/:section', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       megaAdminConfigService.resetSection(req.params.section);
       res.json({ success: true, message: 'Section reset successfully' });
     } catch (error) {
@@ -1820,7 +1821,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/mega-admin-config/reset-all', (req, res) => {
     try {
-      const { megaAdminConfigService } = require('./services/megaAdminConfigService');
+      // Using imported megaAdminConfigService
       megaAdminConfigService.resetAll();
       res.json({ success: true, message: 'All configuration reset successfully' });
     } catch (error) {
