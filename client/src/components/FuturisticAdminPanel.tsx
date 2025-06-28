@@ -259,8 +259,14 @@ export function FuturisticAdminPanel() {
     { id: 'transactions', label: 'Transactions', icon: Database, color: 'bg-cyan-500' },
     { id: 'logs', label: 'System Logs', icon: Eye, color: 'bg-pink-500' },
     { id: 'configuration', label: 'Configuration', icon: Settings, color: 'bg-violet-500' },
+    { id: 'advanced-config', label: 'Advanced Config', icon: Target, color: 'bg-rose-500' },
+    { id: 'system-control', label: 'System Control', icon: Cpu, color: 'bg-amber-500' },
+    { id: 'network-ops', label: 'Network Ops', icon: Network, color: 'bg-teal-500' },
+    { id: 'data-management', label: 'Data Mgmt', icon: HardDrive, color: 'bg-stone-500' },
     { id: 'quantum-ops', label: 'Quantum Ops', icon: Sparkles, color: 'bg-gradient-to-r from-purple-400 to-pink-400' },
-    { id: 'neural-core', label: 'Neural Core', icon: Cpu, color: 'bg-gradient-to-r from-blue-400 to-cyan-400' }
+    { id: 'neural-core', label: 'Neural Core', icon: Cpu, color: 'bg-gradient-to-r from-blue-400 to-cyan-400' },
+    { id: 'biometric-sync', label: 'Biometric Sync', icon: Lock, color: 'bg-gradient-to-r from-orange-400 to-red-400' },
+    { id: 'temporal-control', label: 'Temporal Control', icon: Clock, color: 'bg-gradient-to-r from-indigo-400 to-purple-400' }
   ];
 
   if (statsLoading || configLoading) {
@@ -344,27 +350,29 @@ export function FuturisticAdminPanel() {
         </div>
       </div>
 
-      <div className="container mx-auto p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <div className="container mx-auto p-4 md:p-6 max-w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
           {/* Scrollable Tabs List */}
-          <div className="relative">
-            <ScrollArea className="w-full whitespace-nowrap">
-              <TabsList className="inline-flex h-auto p-1 bg-black/20 backdrop-blur-lg border border-white/20 rounded-xl">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <TabsTrigger
-                      key={tab.id}
-                      value={tab.id}
-                      className="flex items-center space-x-2 px-4 py-3 rounded-lg transition-all duration-300 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/10"
-                    >
-                      <div className={`w-2 h-2 rounded-full ${tab.color}`}></div>
-                      <Icon className="w-4 h-4" />
-                      <span className="font-medium text-sm">{tab.label}</span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
+          <div className="relative w-full overflow-hidden">
+            <ScrollArea className="w-full">
+              <div className="pb-2">
+                <TabsList className="inline-flex h-auto p-1 bg-black/20 backdrop-blur-lg border border-white/20 rounded-xl min-w-max">
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <TabsTrigger
+                        key={tab.id}
+                        value={tab.id}
+                        className="flex items-center space-x-2 px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-300 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 hover:text-white hover:bg-white/10 whitespace-nowrap"
+                      >
+                        <div className={`w-2 h-2 rounded-full ${tab.color}`}></div>
+                        <Icon className="w-3 h-3 md:w-4 md:h-4" />
+                        <span className="font-medium text-xs md:text-sm">{tab.label}</span>
+                      </TabsTrigger>
+                    );
+                  })}
+                </TabsList>
+              </div>
             </ScrollArea>
           </div>
 
@@ -842,7 +850,598 @@ export function FuturisticAdminPanel() {
             </Card>
           </TabsContent>
 
-          {/* Add more tabs as needed */}
+          {/* Advanced Configuration Tab */}
+          <TabsContent value="advanced-config" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+              {/* AI & Machine Learning */}
+              <Card className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 border-purple-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Brain className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+                    <span>AI & Machine Learning</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Neural Network Depth</Label>
+                      <span className="text-purple-400 font-mono text-xs md:text-sm">128 layers</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Learning Rate Adaptation</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Model Complexity</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">Basic</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-purple-400 to-pink-400 h-2 rounded-full" style={{width: '87%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">Advanced</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Auto-Optimization</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Security & Encryption */}
+              <Card className="bg-gradient-to-br from-red-900/50 to-orange-900/50 border-red-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Lock className="w-4 h-4 md:w-5 md:h-5 text-red-400" />
+                    <span>Security & Encryption</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Quantum Encryption</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Multi-Factor Auth</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Security Level</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">Standard</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-red-400 to-orange-400 h-2 rounded-full" style={{width: '95%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">Maximum</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Biometric Verification</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Network & Connectivity */}
+              <Card className="bg-gradient-to-br from-teal-900/50 to-green-900/50 border-teal-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Globe className="w-4 h-4 md:w-5 md:h-5 text-teal-400" />
+                    <span>Network & Connectivity</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Global CDN</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Edge Computing</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Bandwidth Allocation</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">1GB</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-teal-400 to-green-400 h-2 rounded-full" style={{width: '78%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">100GB</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Load Balancing</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* User Experience */}
+              <Card className="bg-gradient-to-br from-indigo-900/50 to-blue-900/50 border-indigo-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Monitor className="w-4 h-4 md:w-5 md:h-5 text-indigo-400" />
+                    <span>User Experience</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Adaptive UI</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Dark Mode Default</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Animation Intensity</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">Minimal</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-indigo-400 to-blue-400 h-2 rounded-full" style={{width: '65%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">Rich</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Accessibility Mode</Label>
+                      <Switch />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* System Control Tab */}
+          <TabsContent value="system-control" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+              {/* Core Operations */}
+              <Card className="bg-gradient-to-br from-amber-900/50 to-yellow-900/50 border-amber-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Server className="w-4 h-4 md:w-5 md:h-5 text-amber-400" />
+                    <span>Core Operations</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-white text-xs md:text-sm">
+                      <Activity className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                      Start All Services
+                    </Button>
+                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs md:text-sm">
+                      <Clock className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                      Restart System
+                    </Button>
+                    <Button className="w-full bg-red-600 hover:bg-red-700 text-white text-xs md:text-sm">
+                      <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                      Emergency Stop
+                    </Button>
+                    <div className="pt-2 border-t border-white/10">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-white/70 text-xs md:text-sm">Maintenance Mode</Label>
+                        <Switch />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Resource Management */}
+              <Card className="bg-gradient-to-br from-emerald-900/50 to-teal-900/50 border-emerald-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Activity className="w-4 h-4 md:w-5 md:h-5 text-emerald-400" />
+                    <span>Resource Management</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">CPU Allocation</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">10%</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full" style={{width: '75%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">100%</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Memory Limit</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">1GB</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full" style={{width: '60%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">32GB</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Auto-Scaling</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Monitoring & Alerts */}
+              <Card className="bg-gradient-to-br from-purple-900/50 to-indigo-900/50 border-purple-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Eye className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+                    <span>Monitoring & Alerts</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Real-time Monitoring</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Performance Alerts</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Error Notifications</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Alert Sensitivity</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">Low</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-purple-400 to-indigo-400 h-2 rounded-full" style={{width: '70%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">High</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Network Operations Tab */}
+          <TabsContent value="network-ops" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+              {/* Connection Management */}
+              <Card className="bg-gradient-to-br from-teal-900/50 to-cyan-900/50 border-teal-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Globe className="w-4 h-4 md:w-5 md:h-5 text-teal-400" />
+                    <span>Connection Management</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Active Connections</span>
+                      <span className="text-teal-400 font-mono text-xs md:text-sm">24,847</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Peak Connections</span>
+                      <span className="text-cyan-400 font-mono text-xs md:text-sm">89,234</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Connection Pool</span>
+                      <span className="text-emerald-400 font-mono text-xs md:text-sm">1,000/2,500</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Connection Throttling</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Throttle Threshold</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">100</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-teal-400 to-cyan-400 h-2 rounded-full" style={{width: '80%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">10K</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Data Transfer */}
+              <Card className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 border-blue-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Activity className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
+                    <span>Data Transfer</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Inbound Traffic</span>
+                      <span className="text-blue-400 font-mono text-xs md:text-sm">847 GB/hr</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Outbound Traffic</span>
+                      <span className="text-indigo-400 font-mono text-xs md:text-sm">1.2 TB/hr</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Compression Ratio</span>
+                      <span className="text-cyan-400 font-mono text-xs md:text-sm">3.4:1</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Data Compression</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Traffic Shaping</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Data Management Tab */}
+          <TabsContent value="data-management" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+              {/* Storage Systems */}
+              <Card className="bg-gradient-to-br from-stone-900/50 to-gray-900/50 border-stone-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Database className="w-4 h-4 md:w-5 md:h-5 text-stone-400" />
+                    <span>Storage Systems</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Total Storage</span>
+                      <span className="text-stone-400 font-mono text-xs md:text-sm">847 TB</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Used Storage</span>
+                      <span className="text-orange-400 font-mono text-xs md:text-sm">234 TB</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Available Storage</span>
+                      <span className="text-green-400 font-mono text-xs md:text-sm">613 TB</span>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Storage Utilization</Label>
+                      <div className="w-full bg-white/10 rounded-full h-3">
+                        <div className="bg-gradient-to-r from-orange-400 to-red-400 h-3 rounded-full" style={{width: '28%'}}></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Auto-Backup</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Data Processing */}
+              <Card className="bg-gradient-to-br from-violet-900/50 to-purple-900/50 border-violet-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Layers className="w-4 h-4 md:w-5 md:h-5 text-violet-400" />
+                    <span>Data Processing</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Processing Queue</span>
+                      <span className="text-violet-400 font-mono text-xs md:text-sm">1,847 jobs</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Completed Today</span>
+                      <span className="text-purple-400 font-mono text-xs md:text-sm">24,593</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Processing Speed</span>
+                      <span className="text-cyan-400 font-mono text-xs md:text-sm">847 ops/sec</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Batch Processing</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Real-time Analytics</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Biometric Sync Tab */}
+          <TabsContent value="biometric-sync" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+              {/* Biometric Authentication */}
+              <Card className="bg-gradient-to-br from-orange-900/50 to-red-900/50 border-orange-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Lock className="w-4 h-4 md:w-5 md:h-5 text-orange-400" />
+                    <span>Biometric Authentication</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Fingerprint Scanner</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Face Recognition</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Voice Pattern</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Iris Scanning</Label>
+                      <Switch />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Security Threshold</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">Basic</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-orange-400 to-red-400 h-2 rounded-full" style={{width: '92%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">Maximum</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Human-AI Sync */}
+              <Card className="bg-gradient-to-br from-pink-900/50 to-rose-900/50 border-pink-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Brain className="w-4 h-4 md:w-5 md:h-5 text-pink-400" />
+                    <span>Human-AI Sync</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Sync Rate</span>
+                      <span className="text-pink-400 font-mono text-xs md:text-sm">98.7%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Neural Harmony</span>
+                      <span className="text-rose-400 font-mono text-xs md:text-sm">847 Hz</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Empathy Level</span>
+                      <span className="text-orange-400 font-mono text-xs md:text-sm">94.3%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Emotion Detection</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Stress Monitoring</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Temporal Control Tab */}
+          <TabsContent value="temporal-control" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+              {/* Time Manipulation */}
+              <Card className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-indigo-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Clock className="w-4 h-4 md:w-5 md:h-5 text-indigo-400" />
+                    <span>Time Manipulation</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Time Dilation Factor</span>
+                      <span className="text-indigo-400 font-mono text-xs md:text-sm">10,000x</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Future Vision Range</span>
+                      <span className="text-purple-400 font-mono text-xs md:text-sm">7 days</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Temporal Stability</span>
+                      <span className="text-cyan-400 font-mono text-xs md:text-sm">99.99%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Temporal Scanning</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-white/70 text-xs md:text-sm">Timeline Accuracy</Label>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs text-white/50">Standard</span>
+                        <div className="flex-1 px-2 md:px-3">
+                          <div className="w-full bg-white/10 rounded-full h-2">
+                            <div className="bg-gradient-to-r from-indigo-400 to-purple-400 h-2 rounded-full" style={{width: '96%'}}></div>
+                          </div>
+                        </div>
+                        <span className="text-xs text-white/50">Perfect</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Causality Protection */}
+              <Card className="bg-gradient-to-br from-violet-900/50 to-fuchsia-900/50 border-violet-500/20">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center space-x-2 text-sm md:text-base">
+                    <Shield className="w-4 h-4 md:w-5 md:h-5 text-violet-400" />
+                    <span>Causality Protection</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-white space-y-3 md:space-y-4">
+                  <div className="space-y-2 md:space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Active Timelines</span>
+                      <span className="text-violet-400 font-mono text-xs md:text-sm">∞ parallel</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Paradox Prevention</span>
+                      <span className="text-fuchsia-400 font-mono text-xs md:text-sm">100%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-white/70 text-xs md:text-sm">Reality Anchor</span>
+                      <span className="text-cyan-400 font-mono text-xs md:text-sm">Stable</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Timeline Protection</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white/70 text-xs md:text-sm">Causal Loop Detection</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
         </Tabs>
       </div>
     </div>
