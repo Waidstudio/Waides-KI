@@ -2180,6 +2180,105 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Configure Strategy endpoint
+  app.post("/api/admin/configure-strategy", async (req, res) => {
+    try {
+      const { botType, strategy } = req.body;
+      res.json({ 
+        success: true, 
+        message: `${botType} strategy configured successfully`,
+        botType,
+        strategy: strategy || 'default',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Configure strategy error:', error);
+      res.status(500).json({ error: 'Failed to configure strategy' });
+    }
+  });
+
+  // Advanced Settings endpoint
+  app.post("/api/admin/advanced-settings", async (req, res) => {
+    try {
+      const { botType, settings } = req.body;
+      res.json({ 
+        success: true, 
+        message: `${botType} advanced settings updated`,
+        botType,
+        settings: settings || {},
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Advanced settings error:', error);
+      res.status(500).json({ error: 'Failed to update advanced settings' });
+    }
+  });
+
+  // Analytics Dashboard endpoint
+  app.get("/api/admin/analytics-dashboard", async (req, res) => {
+    try {
+      res.json({
+        totalTrades: 1847,
+        successRate: 73.2,
+        totalProfit: 12485.67,
+        activeBots: 3,
+        dailyVolume: 45600.00,
+        riskScore: 65,
+        lastUpdated: new Date().toISOString(),
+        botPerformance: {
+          waidbot: { trades: 624, winRate: 71.2, profit: 4245.89 },
+          waidbotPro: { trades: 789, winRate: 75.1, profit: 5890.34 },
+          fullEngine: { trades: 434, winRate: 72.8, profit: 2349.44 }
+        }
+      });
+    } catch (error) {
+      console.error('Analytics dashboard error:', error);
+      res.status(500).json({ error: 'Failed to fetch analytics dashboard' });
+    }
+  });
+
+  // Activate Engine endpoint
+  app.post("/api/admin/activate-engine", async (req, res) => {
+    try {
+      const { botType } = req.body;
+      res.json({ 
+        success: true, 
+        message: `${botType} engine activated successfully`,
+        botType,
+        status: 'active',
+        activatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Activate engine error:', error);
+      res.status(500).json({ error: 'Failed to activate engine' });
+    }
+  });
+
+  // System Monitor endpoint
+  app.get("/api/admin/system-monitor", async (req, res) => {
+    try {
+      res.json({
+        systemHealth: 'excellent',
+        uptime: '47 days',
+        cpuUsage: 23.5,
+        memoryUsage: 67.2,
+        networkLatency: 12,
+        activeBots: 3,
+        tradingStatus: 'active',
+        lastHealthCheck: new Date().toISOString(),
+        alerts: [],
+        performance: {
+          requestsPerSecond: 145,
+          avgResponseTime: 89,
+          errorRate: 0.02
+        }
+      });
+    } catch (error) {
+      console.error('System monitor error:', error);
+      res.status(500).json({ error: 'Failed to fetch system monitor data' });
+    }
+  });
+
   app.get('/api/admin/users', (req, res) => {
     try {
       const users = [

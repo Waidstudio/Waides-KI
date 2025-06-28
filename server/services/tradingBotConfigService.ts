@@ -168,35 +168,62 @@ export class TradingBotConfigService {
 
   async updateTradingBotConfig(userId: string = this.DEFAULT_USER_ID, config: Partial<TradingBotConfig>): Promise<boolean> {
     try {
-      // Update user settings
+      // Update user settings - create if not exists
       if (config.waidbot || config.waidbotPro || config.fullEngine) {
+        const autoTradingEnabled = config.waidbot?.autoTrading || config.waidbotPro?.autoTrading || config.fullEngine?.autoTrading || false;
+        
         await db
-          .update(userSettings)
-          .set({
-            autoTradingEnabled: config.waidbot?.autoTrading || config.waidbotPro?.autoTrading || false,
+          .insert(userSettings)
+          .values({
+            userId: parseInt(userId),
+            autoTradingEnabled: autoTradingEnabled,
             maxPositionSize: config.waidbot?.positionSize?.toString() || '500',
             stopLossPercentage: config.riskManagement?.stopLossPercentage || 5,
             takeProfitPercentage: config.riskManagement?.takeProfitPercentage || 15,
             updatedAt: new Date()
           })
-          .where(eq(userSettings.userId, parseInt(userId)));
+          .onConflictDoUpdate({
+            target: userSettings.userId,
+            set: {
+              autoTradingEnabled: autoTradingEnabled,
+              maxPositionSize: config.waidbot?.positionSize?.toString() || '500',
+              stopLossPercentage: config.riskManagement?.stopLossPercentage || 5,
+              takeProfitPercentage: config.riskManagement?.takeProfitPercentage || 15,
+              updatedAt: new Date()
+            }
+          });
       }
 
-      // Update smai wallet configuration
+      // Update smai wallet configuration - create if not exists
       if (config.waidbot || config.waidbotPro || config.riskManagement) {
         const activeBot = this.determineActiveBot(config);
+        const botEnabled = config.waidbot?.autoTrading || config.waidbotPro?.autoTrading || config.fullEngine?.autoTrading || false;
         
         await db
-          .update(smaiWallets)
-          .set({
+          .insert(smaiWallets)
+          .values({
+            userId: userId,
+            balance: 10000,
+            currency: 'USDT',
             activeBot,
-            botEnabled: config.systemStatus?.liveTradingActive !== false,
+            botEnabled: botEnabled,
             riskLevel: this.mapRiskLevelToDb(config.waidbot?.riskLevel || 'medium'),
             stopLossPercentage: config.riskManagement?.stopLossPercentage?.toString() || '5',
             takeProfitPercentage: config.riskManagement?.takeProfitPercentage?.toString() || '15',
+            createdAt: new Date(),
             updatedAt: new Date()
           })
-          .where(eq(smaiWallets.userId, userId));
+          .onConflictDoUpdate({
+            target: smaiWallets.userId,
+            set: {
+              activeBot,
+              botEnabled: botEnabled,
+              riskLevel: this.mapRiskLevelToDb(config.waidbot?.riskLevel || 'medium'),
+              stopLossPercentage: config.riskManagement?.stopLossPercentage?.toString() || '5',
+              takeProfitPercentage: config.riskManagement?.takeProfitPercentage?.toString() || '15',
+              updatedAt: new Date()
+            }
+          });
       }
 
       return true;
