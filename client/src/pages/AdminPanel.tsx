@@ -42,7 +42,30 @@ import {
   Monitor,
   Server,
   Network,
-  Code
+  Code,
+  Palette,
+  Bell,
+  BarChart3,
+  ShieldCheck,
+  Gauge,
+  Mail,
+  Archive,
+  Rocket,
+  Package,
+  Smartphone,
+  Search,
+  FileText,
+  CreditCard,
+  UserCheck,
+  ScrollText,
+  Heart,
+  Wrench,
+  Brush,
+  Cpu,
+  Languages,
+  Share2,
+  GitBranch,
+  PieChart
 } from 'lucide-react';
 
 interface AdminConfig {
@@ -420,40 +443,156 @@ export default function AdminPanel() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid grid-cols-8 bg-gray-800 border-gray-700">
-            <TabsTrigger value="dashboard" className="flex items-center space-x-2">
-              <Monitor className="w-4 h-4" />
-              <span>Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger value="system" className="flex items-center space-x-2">
-              <Settings className="w-4 h-4" />
-              <span>System</span>
-            </TabsTrigger>
-            <TabsTrigger value="trading" className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>Trading</span>
-            </TabsTrigger>
-            <TabsTrigger value="wallet" className="flex items-center space-x-2">
-              <DollarSign className="w-4 h-4" />
-              <span>Wallet</span>
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center space-x-2">
-              <Users className="w-4 h-4" />
-              <span>Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="konsai" className="flex items-center space-x-2">
-              <Brain className="w-4 h-4" />
-              <span>KonsAi</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center space-x-2">
-              <Shield className="w-4 h-4" />
-              <span>Security</span>
-            </TabsTrigger>
-            <TabsTrigger value="logs" className="flex items-center space-x-2">
-              <Activity className="w-4 h-4" />
-              <span>Logs</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full bg-gray-800 border border-gray-700 rounded-lg p-2">
+            <div className="overflow-x-auto">
+              <TabsList className="flex w-max min-w-full bg-transparent space-x-1">
+                <TabsTrigger value="dashboard" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Monitor className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </TabsTrigger>
+                <TabsTrigger value="system" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Settings className="w-4 h-4" />
+                  <span>System</span>
+                </TabsTrigger>
+                <TabsTrigger value="branding" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Palette className="w-4 h-4" />
+                  <span>Branding</span>
+                </TabsTrigger>
+                <TabsTrigger value="ui-design" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Eye className="w-4 h-4" />
+                  <span>UI Design</span>
+                </TabsTrigger>
+                <TabsTrigger value="trading" className="flex items-center space-x-2 whitespace-nowrap">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Trading</span>
+                </TabsTrigger>
+                <TabsTrigger value="wallet" className="flex items-center space-x-2 whitespace-nowrap">
+                  <DollarSign className="w-4 h-4" />
+                  <span>Wallet</span>
+                </TabsTrigger>
+                <TabsTrigger value="users" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Users className="w-4 h-4" />
+                  <span>Users</span>
+                </TabsTrigger>
+                <TabsTrigger value="konsai" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Brain className="w-4 h-4" />
+                  <span>KonsAi</span>
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Shield className="w-4 h-4" />
+                  <span>Security</span>
+                </TabsTrigger>
+                <TabsTrigger value="notifications" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Bell className="w-4 h-4" />
+                  <span>Notifications</span>
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="flex items-center space-x-2 whitespace-nowrap">
+                  <BarChart3 className="w-4 h-4" />
+                  <span>Analytics</span>
+                </TabsTrigger>
+                <TabsTrigger value="integrations" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Zap className="w-4 h-4" />
+                  <span>Integrations</span>
+                </TabsTrigger>
+                <TabsTrigger value="compliance" className="flex items-center space-x-2 whitespace-nowrap">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Compliance</span>
+                </TabsTrigger>
+                <TabsTrigger value="performance" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Gauge className="w-4 h-4" />
+                  <span>Performance</span>
+                </TabsTrigger>
+                <TabsTrigger value="database" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Database className="w-4 h-4" />
+                  <span>Database</span>
+                </TabsTrigger>
+                <TabsTrigger value="api-management" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Code className="w-4 h-4" />
+                  <span>API Management</span>
+                </TabsTrigger>
+                <TabsTrigger value="cdn-cache" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Globe className="w-4 h-4" />
+                  <span>CDN & Cache</span>
+                </TabsTrigger>
+                <TabsTrigger value="email-sms" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Mail className="w-4 h-4" />
+                  <span>Email & SMS</span>
+                </TabsTrigger>
+                <TabsTrigger value="backup-restore" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Archive className="w-4 h-4" />
+                  <span>Backup & Restore</span>
+                </TabsTrigger>
+                <TabsTrigger value="monitoring" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Activity className="w-4 h-4" />
+                  <span>Monitoring</span>
+                </TabsTrigger>
+                <TabsTrigger value="deployment" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Rocket className="w-4 h-4" />
+                  <span>Deployment</span>
+                </TabsTrigger>
+                <TabsTrigger value="themes" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Brush className="w-4 h-4" />
+                  <span>Themes</span>
+                </TabsTrigger>
+                <TabsTrigger value="plugins" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Package className="w-4 h-4" />
+                  <span>Plugins</span>
+                </TabsTrigger>
+                <TabsTrigger value="workflows" className="flex items-center space-x-2 whitespace-nowrap">
+                  <GitBranch className="w-4 h-4" />
+                  <span>Workflows</span>
+                </TabsTrigger>
+                <TabsTrigger value="automation" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Bot className="w-4 h-4" />
+                  <span>Automation</span>
+                </TabsTrigger>
+                <TabsTrigger value="ai-models" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Cpu className="w-4 h-4" />
+                  <span>AI Models</span>
+                </TabsTrigger>
+                <TabsTrigger value="localization" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Languages className="w-4 h-4" />
+                  <span>Localization</span>
+                </TabsTrigger>
+                <TabsTrigger value="social-media" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Share2 className="w-4 h-4" />
+                  <span>Social Media</span>
+                </TabsTrigger>
+                <TabsTrigger value="payment-gateways" className="flex items-center space-x-2 whitespace-nowrap">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Payment Gateways</span>
+                </TabsTrigger>
+                <TabsTrigger value="mobile-apps" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Smartphone className="w-4 h-4" />
+                  <span>Mobile Apps</span>
+                </TabsTrigger>
+                <TabsTrigger value="seo-marketing" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Search className="w-4 h-4" />
+                  <span>SEO & Marketing</span>
+                </TabsTrigger>
+                <TabsTrigger value="content-management" className="flex items-center space-x-2 whitespace-nowrap">
+                  <FileText className="w-4 h-4" />
+                  <span>Content</span>
+                </TabsTrigger>
+                <TabsTrigger value="user-roles" className="flex items-center space-x-2 whitespace-nowrap">
+                  <UserCheck className="w-4 h-4" />
+                  <span>User Roles</span>
+                </TabsTrigger>
+                <TabsTrigger value="audit-logs" className="flex items-center space-x-2 whitespace-nowrap">
+                  <ScrollText className="w-4 h-4" />
+                  <span>Audit Logs</span>
+                </TabsTrigger>
+                <TabsTrigger value="system-health" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Heart className="w-4 h-4" />
+                  <span>System Health</span>
+                </TabsTrigger>
+                <TabsTrigger value="advanced" className="flex items-center space-x-2 whitespace-nowrap">
+                  <Wrench className="w-4 h-4" />
+                  <span>Advanced</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
@@ -1106,6 +1245,602 @@ export default function AdminPanel() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Branding Tab */}
+          <TabsContent value="branding" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Brand Identity</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Application Name</Label>
+                    <Input
+                      value={editingConfig.branding?.app_name ?? config?.branding?.app_name}
+                      onChange={(e) => handleConfigUpdate('branding', 'app_name', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="Waides KI"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Logo URL</Label>
+                    <Input
+                      value={editingConfig.branding?.logo_url ?? config?.branding?.logo_url}
+                      onChange={(e) => handleConfigUpdate('branding', 'logo_url', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="https://example.com/logo.png"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Primary Color</Label>
+                    <Input
+                      type="color"
+                      value={editingConfig.branding?.primary_color ?? config?.branding?.primary_color}
+                      onChange={(e) => handleConfigUpdate('branding', 'primary_color', e.target.value)}
+                      className="bg-gray-700 border-gray-600 h-10"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Secondary Color</Label>
+                    <Input
+                      type="color"
+                      value={editingConfig.branding?.secondary_color ?? config?.branding?.secondary_color}
+                      onChange={(e) => handleConfigUpdate('branding', 'secondary_color', e.target.value)}
+                      className="bg-gray-700 border-gray-600 h-10"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Accent Color</Label>
+                    <Input
+                      type="color"
+                      value={editingConfig.branding?.accent_color ?? config?.branding?.accent_color}
+                      onChange={(e) => handleConfigUpdate('branding', 'accent_color', e.target.value)}
+                      className="bg-gray-700 border-gray-600 h-10"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-gray-300">Custom CSS</Label>
+                  <Textarea
+                    value={editingConfig.branding?.custom_css ?? config?.branding?.custom_css}
+                    onChange={(e) => handleConfigUpdate('branding', 'custom_css', e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-white h-32"
+                    placeholder="/* Custom CSS styles */"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* UI Design Tab */}
+          <TabsContent value="ui-design" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Interface Customization</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Theme Mode</Label>
+                    <Select value={editingConfig.ui_customization?.theme_mode ?? config?.ui_customization?.theme_mode}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="dark">Dark Mode</SelectItem>
+                        <SelectItem value="light">Light Mode</SelectItem>
+                        <SelectItem value="auto">Auto (System)</SelectItem>
+                        <SelectItem value="cosmic">Cosmic Theme</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Navigation Type</Label>
+                    <Select value={editingConfig.ui_customization?.navigation_type ?? config?.ui_customization?.navigation_type}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="horizontal">Horizontal</SelectItem>
+                        <SelectItem value="sidebar">Sidebar</SelectItem>
+                        <SelectItem value="tabs">Tabs</SelectItem>
+                        <SelectItem value="floating">Floating</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Animation Speed</Label>
+                    <Select value={editingConfig.ui_customization?.animation_speed ?? config?.ui_customization?.animation_speed}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Disabled</SelectItem>
+                        <SelectItem value="slow">Slow</SelectItem>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="fast">Fast</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Card Style</Label>
+                    <Select value={editingConfig.ui_customization?.card_style ?? config?.ui_customization?.card_style}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="modern">Modern</SelectItem>
+                        <SelectItem value="minimal">Minimal</SelectItem>
+                        <SelectItem value="glass">Glass</SelectItem>
+                        <SelectItem value="neon">Neon</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Notification Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300">Email Notifications</Label>
+                    <Switch
+                      checked={editingConfig.notifications?.email_enabled ?? config?.notifications?.email_enabled}
+                      onCheckedChange={(checked) => handleConfigUpdate('notifications', 'email_enabled', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300">SMS Notifications</Label>
+                    <Switch
+                      checked={editingConfig.notifications?.sms_enabled ?? config?.notifications?.sms_enabled}
+                      onCheckedChange={(checked) => handleConfigUpdate('notifications', 'sms_enabled', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300">Push Notifications</Label>
+                    <Switch
+                      checked={editingConfig.notifications?.push_enabled ?? config?.notifications?.push_enabled}
+                      onCheckedChange={(checked) => handleConfigUpdate('notifications', 'push_enabled', checked)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-gray-300">Alert Thresholds</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                    <div>
+                      <Label className="text-gray-400 text-xs">Price Change (%)</Label>
+                      <Input
+                        type="number"
+                        value={editingConfig.notifications?.alert_thresholds?.price_change ?? config?.notifications?.alert_thresholds?.price_change}
+                        onChange={(e) => handleConfigUpdate('notifications', 'alert_thresholds', { 
+                          ...(editingConfig.notifications?.alert_thresholds ?? config?.notifications?.alert_thresholds), 
+                          price_change: parseFloat(e.target.value) 
+                        })}
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-400 text-xs">Volume Spike (%)</Label>
+                      <Input
+                        type="number"
+                        value={editingConfig.notifications?.alert_thresholds?.volume_spike ?? config?.notifications?.alert_thresholds?.volume_spike}
+                        onChange={(e) => handleConfigUpdate('notifications', 'alert_thresholds', { 
+                          ...(editingConfig.notifications?.alert_thresholds ?? config?.notifications?.alert_thresholds), 
+                          volume_spike: parseFloat(e.target.value) 
+                        })}
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-gray-400 text-xs">Balance Low ($)</Label>
+                      <Input
+                        type="number"
+                        value={editingConfig.notifications?.alert_thresholds?.balance_low ?? config?.notifications?.alert_thresholds?.balance_low}
+                        onChange={(e) => handleConfigUpdate('notifications', 'alert_thresholds', { 
+                          ...(editingConfig.notifications?.alert_thresholds ?? config?.notifications?.alert_thresholds), 
+                          balance_low: parseFloat(e.target.value) 
+                        })}
+                        className="bg-gray-700 border-gray-600 text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Analytics & Tracking</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Google Analytics ID</Label>
+                    <Input
+                      value={editingConfig.analytics?.google_analytics_id ?? config?.analytics?.google_analytics_id}
+                      onChange={(e) => handleConfigUpdate('analytics', 'google_analytics_id', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="GA-XXXXXXXXX-X"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Mixpanel Token</Label>
+                    <Input
+                      value={editingConfig.analytics?.mixpanel_token ?? config?.analytics?.mixpanel_token}
+                      onChange={(e) => handleConfigUpdate('analytics', 'mixpanel_token', e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      placeholder="Your Mixpanel token"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">User Tracking</Label>
+                    <Switch
+                      checked={editingConfig.analytics?.user_behavior_tracking ?? config?.analytics?.user_behavior_tracking}
+                      onCheckedChange={(checked) => handleConfigUpdate('analytics', 'user_behavior_tracking', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Performance</Label>
+                    <Switch
+                      checked={editingConfig.analytics?.performance_monitoring ?? config?.analytics?.performance_monitoring}
+                      onCheckedChange={(checked) => handleConfigUpdate('analytics', 'performance_monitoring', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">A/B Testing</Label>
+                    <Switch
+                      checked={editingConfig.analytics?.a_b_testing ?? config?.analytics?.a_b_testing}
+                      onCheckedChange={(checked) => handleConfigUpdate('analytics', 'a_b_testing', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Real-time</Label>
+                    <Switch
+                      checked={editingConfig.analytics?.real_time_dashboard ?? config?.analytics?.real_time_dashboard}
+                      onCheckedChange={(checked) => handleConfigUpdate('analytics', 'real_time_dashboard', checked)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Performance Tab */}
+          <TabsContent value="performance" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Performance Optimization</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">API Timeout (seconds)</Label>
+                    <Input
+                      type="number"
+                      value={editingConfig.system?.api_timeout ?? config?.system?.api_timeout}
+                      onChange={(e) => handleConfigUpdate('system', 'api_timeout', parseInt(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Cache TTL (minutes)</Label>
+                    <Input
+                      type="number"
+                      value={editingConfig.system?.cache_ttl ?? config?.system?.cache_ttl}
+                      onChange={(e) => handleConfigUpdate('system', 'cache_ttl', parseInt(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Auto Scaling</Label>
+                    <Switch
+                      checked={editingConfig.system?.auto_scaling ?? config?.system?.auto_scaling}
+                      onCheckedChange={(checked) => handleConfigUpdate('system', 'auto_scaling', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Load Balancing</Label>
+                    <Switch
+                      checked={editingConfig.system?.load_balancing ?? config?.system?.load_balancing}
+                      onCheckedChange={(checked) => handleConfigUpdate('system', 'load_balancing', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">CDN</Label>
+                    <Switch
+                      checked={editingConfig.system?.cdn_enabled ?? config?.system?.cdn_enabled}
+                      onCheckedChange={(checked) => handleConfigUpdate('system', 'cdn_enabled', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Compression</Label>
+                    <Switch
+                      checked={editingConfig.system?.compression_enabled ?? config?.system?.compression_enabled}
+                      onCheckedChange={(checked) => handleConfigUpdate('system', 'compression_enabled', checked)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Advanced Tab */}
+          <TabsContent value="advanced" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Advanced Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert className="border-yellow-600 bg-yellow-900/20">
+                  <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                  <AlertDescription className="text-yellow-200">
+                    Advanced settings require technical knowledge. Changes may affect system stability.
+                  </AlertDescription>
+                </Alert>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">KonsAi Intelligence Level</Label>
+                    <Select value={editingConfig.konsai?.intelligence_level ?? config?.konsai?.intelligence_level}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="basic">Basic (50 modules)</SelectItem>
+                        <SelectItem value="enhanced">Enhanced (120 modules)</SelectItem>
+                        <SelectItem value="omniscient">Omniscient (220+ modules)</SelectItem>
+                        <SelectItem value="transcendent">Transcendent (∞ modules)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Module Count</Label>
+                    <Input
+                      type="number"
+                      value={editingConfig.konsai?.module_count ?? config?.konsai?.module_count}
+                      onChange={(e) => handleConfigUpdate('konsai', 'module_count', parseInt(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Quantum Processing</Label>
+                    <Switch
+                      checked={editingConfig.konsai?.quantum_processing ?? config?.konsai?.quantum_processing}
+                      onCheckedChange={(checked) => handleConfigUpdate('konsai', 'quantum_processing', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Auto Evolution</Label>
+                    <Switch
+                      checked={editingConfig.konsai?.auto_evolution ?? config?.konsai?.auto_evolution}
+                      onCheckedChange={(checked) => handleConfigUpdate('konsai', 'auto_evolution', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Voice Synthesis</Label>
+                    <Switch
+                      checked={editingConfig.konsai?.voice_synthesis ?? config?.konsai?.voice_synthesis}
+                      onCheckedChange={(checked) => handleConfigUpdate('konsai', 'voice_synthesis', checked)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Integrations Tab */}
+          <TabsContent value="integrations" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Third-Party Integrations</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Binance API</Label>
+                    <Switch
+                      checked={editingConfig.integrations?.binance_api ?? config?.integrations?.binance_api}
+                      onCheckedChange={(checked) => handleConfigUpdate('integrations', 'binance_api', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Coinbase API</Label>
+                    <Switch
+                      checked={editingConfig.integrations?.coinbase_api ?? config?.integrations?.coinbase_api}
+                      onCheckedChange={(checked) => handleConfigUpdate('integrations', 'coinbase_api', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">Stripe Payments</Label>
+                    <Switch
+                      checked={editingConfig.integrations?.stripe_payments ?? config?.integrations?.stripe_payments}
+                      onCheckedChange={(checked) => handleConfigUpdate('integrations', 'stripe_payments', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300 text-sm">PayPal</Label>
+                    <Switch
+                      checked={editingConfig.integrations?.paypal_payments ?? config?.integrations?.paypal_payments}
+                      onCheckedChange={(checked) => handleConfigUpdate('integrations', 'paypal_payments', checked)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">Cloud Storage Provider</Label>
+                    <Select value={editingConfig.integrations?.cloud_storage ?? config?.integrations?.cloud_storage}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="aws">Amazon S3</SelectItem>
+                        <SelectItem value="gcp">Google Cloud Storage</SelectItem>
+                        <SelectItem value="azure">Azure Blob Storage</SelectItem>
+                        <SelectItem value="local">Local Storage</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">CDN Provider</Label>
+                    <Select value={editingConfig.integrations?.cdn_provider ?? config?.integrations?.cdn_provider}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cloudflare">Cloudflare</SelectItem>
+                        <SelectItem value="aws">AWS CloudFront</SelectItem>
+                        <SelectItem value="fastly">Fastly</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Database Tab */}
+          <TabsContent value="database" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Database Management</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">20</div>
+                    <div className="text-gray-400">Tables</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">497</div>
+                    <div className="text-gray-400">Total Records</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-yellow-400">2.4 MB</div>
+                    <div className="text-gray-400">Database Size</div>
+                  </div>
+                </div>
+                <Separator className="bg-gray-600" />
+                <div>
+                  <Label className="text-gray-300">Database Actions</Label>
+                  <div className="flex gap-2 mt-2">
+                    <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                      <Archive className="w-4 h-4 mr-2" />
+                      Backup Now
+                    </Button>
+                    <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Optimize
+                    </Button>
+                    <Button variant="outline" className="border-gray-600 text-gray-300 hover:bg-gray-700">
+                      <Activity className="w-4 h-4 mr-2" />
+                      Health Check
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Automation Tab */}
+          <TabsContent value="automation" className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">AI Automation Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300">WaidBot Automation</Label>
+                    <Switch
+                      checked={editingConfig.trading?.auto_trading_enabled ?? config?.trading?.auto_trading_enabled}
+                      onCheckedChange={(checked) => handleConfigUpdate('trading', 'auto_trading_enabled', checked)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-gray-300">KonsAi Auto Evolution</Label>
+                    <Switch
+                      checked={editingConfig.konsai?.auto_evolution ?? config?.konsai?.auto_evolution}
+                      onCheckedChange={(checked) => handleConfigUpdate('konsai', 'auto_evolution', checked)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label className="text-gray-300">AI Response Delay (ms)</Label>
+                    <Input
+                      type="number"
+                      value={editingConfig.konsai?.response_delay ?? config?.konsai?.response_delay}
+                      onChange={(e) => handleConfigUpdate('konsai', 'response_delay', parseInt(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-gray-300">Memory Limit (MB)</Label>
+                    <Input
+                      type="number"
+                      value={editingConfig.konsai?.memory_limit ?? config?.konsai?.memory_limit}
+                      onChange={(e) => handleConfigUpdate('konsai', 'memory_limit', parseInt(e.target.value))}
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Placeholder tabs for all remaining tabs */}
+          {[
+            'compliance', 'api-management', 'cdn-cache', 'email-sms', 'backup-restore', 
+            'monitoring', 'deployment', 'themes', 'plugins', 'workflows', 'ai-models',
+            'localization', 'social-media', 'payment-gateways', 'mobile-apps', 'seo-marketing',
+            'content-management', 'user-roles', 'audit-logs', 'system-health'
+          ].map((tabId) => (
+            <TabsContent key={tabId} value={tabId} className="space-y-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">
+                    {tabId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} Configuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <Settings className="w-12 h-12 mx-auto mb-2" />
+                      Configuration Panel
+                    </div>
+                    <p className="text-gray-500">
+                      Advanced {tabId.split('-').join(' ')} settings and customization options will be available here.
+                    </p>
+                    <Button variant="outline" className="mt-4 border-gray-600 text-gray-300 hover:bg-gray-700">
+                      Configure Settings
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          ))}
         </Tabs>
       </div>
     </div>
