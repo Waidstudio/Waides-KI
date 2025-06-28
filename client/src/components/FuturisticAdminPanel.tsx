@@ -284,56 +284,58 @@ export function FuturisticAdminPanel() {
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+    <div className={`min-h-screen w-full bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 overflow-x-hidden ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
       {/* Header */}
-      <div className="border-b border-white/10 bg-black/20 backdrop-blur-lg">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <Rocket className="w-6 h-6 text-white" />
+      <div className="border-b border-white/10 bg-black/20 backdrop-blur-lg w-full">
+        <div className="w-full max-w-none px-4 md:px-6 py-3 md:py-4">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-3 lg:space-y-0">
+            <div className="flex items-center space-x-3 md:space-x-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <Rocket className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Waides KI Admin Console</h1>
-                <p className="text-purple-200 text-sm">Futuristic Administration Portal v2.0</p>
+                <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-white">Waides KI Admin Console</h1>
+                <p className="text-purple-200 text-xs md:text-sm">Futuristic Administration Portal v2.0</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 md:space-x-4 w-full lg:w-auto">
+              <div className="relative w-full sm:w-auto">
+                <Search className="absolute left-2 md:left-3 top-2 md:top-3 h-3 w-3 md:h-4 md:w-4 text-gray-400" />
                 <Input
                   placeholder="Search anything..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64 bg-black/30 border-white/20 text-white placeholder-gray-400"
+                  className="pl-7 md:pl-10 w-full sm:w-48 md:w-64 bg-black/30 border-white/20 text-white placeholder-gray-400 text-xs md:text-sm h-8 md:h-10"
                 />
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsFullscreen(!isFullscreen)}
-                className="text-white hover:bg-white/10"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => queryClient.invalidateQueries()}
-                className="text-white hover:bg-white/10"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                  className="text-white hover:bg-white/10 p-1.5 md:p-2 h-8 w-8 md:h-10 md:w-10"
+                >
+                  <Maximize2 className="w-3 h-3 md:w-4 md:h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => queryClient.invalidateQueries()}
+                  className="text-white hover:bg-white/10 p-1.5 md:p-2 h-8 w-8 md:h-10 md:w-10"
+                >
+                  <RotateCcw className="w-3 h-3 md:w-4 md:h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Real-time Status Bar */}
-      <div className="bg-black/30 border-b border-white/10">
-        <div className="container mx-auto px-6 py-2">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-6">
+      <div className="bg-black/30 border-b border-white/10 w-full">
+        <div className="w-full max-w-none px-4 md:px-6 py-2">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between text-xs md:text-sm space-y-2 md:space-y-0">
+            <div className="flex flex-wrap items-center gap-3 md:gap-6">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-green-400">System Online</span>
@@ -343,20 +345,20 @@ export function FuturisticAdminPanel() {
               <div className="text-white/70">Memory: {stats?.system.memoryUsage || 0}%</div>
               <div className="text-white/70">Active Users: {stats?.users.active || 0}</div>
             </div>
-            <div className="text-purple-300">
+            <div className="text-purple-300 text-xs md:text-sm">
               Last Updated: {new Date().toLocaleTimeString()}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto p-4 md:p-6 max-w-full">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
+      <div className="w-full max-w-none p-3 md:p-4 lg:p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 md:space-y-4 lg:space-y-6 w-full">
           {/* Scrollable Tabs List */}
           <div className="relative w-full overflow-hidden">
             <ScrollArea className="w-full">
-              <div className="pb-2">
-                <TabsList className="inline-flex h-auto p-1 bg-black/20 backdrop-blur-lg border border-white/20 rounded-xl min-w-max">
+              <div className="pb-2 w-full">
+                <TabsList className="inline-flex h-auto p-1 bg-black/20 backdrop-blur-lg border border-white/20 rounded-xl min-w-max w-full md:w-auto justify-start">
                   {tabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
