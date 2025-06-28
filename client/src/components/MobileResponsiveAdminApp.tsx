@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import FuturisticConfigModules from './FuturisticConfigModules';
+import { OptimizedMegaConfigTabs } from './OptimizedMegaConfigTabs';
 import {
   Settings,
   Database,
@@ -156,12 +157,12 @@ export default function MobileResponsiveAdminApp() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Stable data fetching with error handling
+  // Stable data fetching with error handling - load full configuration
   const { data: megaConfig, isLoading: configLoading } = useQuery({
-    queryKey: ['mega-admin-config'],
+    queryKey: ['mega-admin-config-full'],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/mega-admin-config');
+        const response = await fetch('/api/mega-admin-config?full=true');
         if (!response.ok) throw new Error('Failed to fetch config');
         return await response.json() as MegaAdminConfig;
       } catch (error) {
