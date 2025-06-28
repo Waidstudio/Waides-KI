@@ -81,6 +81,7 @@ function Router() {
     { path: "/risk-backtesting", label: "Risk Backtesting" },
     { path: "/gateway", label: "Gateway" },
     { path: "/admin", label: "Admin" },
+    { path: "/admin-panel", label: "Admin Panel" },
     { path: "/config", label: "Configuration" },
     { path: "/api-docs", label: "API Docs" },
   ];
@@ -223,6 +224,7 @@ function Router() {
           <Route path="/sms-config" component={SMSConfigPage} />
           <Route path="/payment-admin" component={PaymentGatewayAdminPage} />
           <Route path="/admin" component={AdminPanel} />
+          <Route path="/admin-panel" component={AdminPanel} />
           <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />
           <Route component={NotFound} />
