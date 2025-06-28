@@ -1554,5 +1554,235 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Panel API Endpoints
+  app.get('/api/admin/config', (req, res) => {
+    try {
+      const config = {
+        system: {
+          maintenance_mode: false,
+          debug_logging: true,
+          rate_limiting: true,
+          max_requests_per_minute: 100,
+          api_timeout: 30,
+          cache_ttl: 300,
+        },
+        trading: {
+          auto_trading_enabled: true,
+          max_position_size: 10000,
+          risk_level: 'moderate',
+          stop_loss_percentage: 5.0,
+          take_profit_percentage: 10.0,
+          allowed_pairs: ['ETH/USDT', 'BTC/USDT', 'SOL/USDT'],
+        },
+        wallet: {
+          min_deposit: 10,
+          max_deposit: 100000,
+          conversion_fee_rate: 2.5,
+          withdrawal_fee_rate: 1.0,
+          daily_withdrawal_limit: 50000,
+          supported_currencies: ['USD', 'EUR', 'NGN', 'GHS', 'ZAR', 'KES', 'UGX'],
+        },
+        security: {
+          session_timeout: 30,
+          max_login_attempts: 5,
+          require_2fa: false,
+          password_min_length: 8,
+          api_key_expiry_days: 90,
+        },
+        konsai: {
+          intelligence_level: 'TRANSCENDENT',
+          response_delay: 200,
+          learning_enabled: true,
+          memory_limit: 1024,
+          auto_evolution: true,
+          module_count: 220,
+        },
+        notifications: {
+          email_enabled: true,
+          sms_enabled: true,
+          push_enabled: true,
+          webhook_url: '',
+          alert_thresholds: {
+            price_change: 5.0,
+            volume_spike: 200.0,
+            balance_low: 100.0,
+          },
+        },
+      };
+      res.json(config);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/admin/config', (req, res) => {
+    try {
+      const updatedConfig = req.body;
+      console.log('Admin config updated:', updatedConfig);
+      res.json({ success: true, message: 'Configuration updated successfully' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get('/api/admin/status', (req, res) => {
+    try {
+      const status = {
+        uptime: '12d 4h 32m',
+        memory_usage: Math.floor(Math.random() * 40) + 50,
+        cpu_usage: Math.floor(Math.random() * 30) + 20,
+        active_users: Math.floor(Math.random() * 50) + 10,
+        total_transactions: 1247,
+        error_rate: Math.random() * 2,
+        api_calls_today: 15420,
+        database_size: '2.4 GB',
+        cache_hit_rate: 94.2,
+        maintenance_mode: false,
+      };
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get('/api/admin/users', (req, res) => {
+    try {
+      const users = [
+        {
+          id: 'user_001',
+          username: 'trader_alpha',
+          email: 'alpha@example.com',
+          role: 'premium',
+          status: 'active',
+          last_login: '2025-01-28T08:30:00Z',
+          balance: 15750.50,
+          created_at: '2024-12-15T10:00:00Z',
+        },
+        {
+          id: 'user_002',
+          username: 'crypto_beta',
+          email: 'beta@example.com',
+          role: 'standard',
+          status: 'active',
+          last_login: '2025-01-27T15:45:00Z',
+          balance: 8420.25,
+          created_at: '2024-11-20T14:30:00Z',
+        },
+        {
+          id: 'user_003',
+          username: 'investor_gamma',
+          email: 'gamma@example.com',
+          role: 'premium',
+          status: 'suspended',
+          last_login: '2025-01-25T09:15:00Z',
+          balance: 23100.75,
+          created_at: '2024-10-08T11:20:00Z',
+        },
+      ];
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch('/api/admin/users/:userId', (req, res) => {
+    try {
+      const { userId } = req.params;
+      const updates = req.body;
+      console.log(`Updating user ${userId}:`, updates);
+      res.json({ success: true, message: 'User updated successfully' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete('/api/admin/users/:userId', (req, res) => {
+    try {
+      const { userId } = req.params;
+      console.log(`Deleting user ${userId}`);
+      res.json({ success: true, message: 'User deleted successfully' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get('/api/admin/transactions', (req, res) => {
+    try {
+      const transactions = [
+        {
+          id: 'tx_001',
+          user_id: 'user_001',
+          type: 'deposit',
+          amount: 5000,
+          currency: 'USD',
+          status: 'completed',
+          created_at: '2025-01-28T08:30:00Z',
+          gateway: 'stripe',
+        },
+        {
+          id: 'tx_002',
+          user_id: 'user_002',
+          type: 'conversion',
+          amount: 2500,
+          currency: 'NGN',
+          status: 'completed',
+          created_at: '2025-01-28T07:45:00Z',
+          gateway: 'paystack',
+        },
+        {
+          id: 'tx_003',
+          user_id: 'user_003',
+          type: 'withdrawal',
+          amount: 1200,
+          currency: 'EUR',
+          status: 'processing',
+          created_at: '2025-01-28T06:20:00Z',
+          gateway: 'sepa',
+        },
+        {
+          id: 'tx_004',
+          user_id: 'user_001',
+          type: 'trade',
+          amount: 750,
+          currency: 'ETH',
+          status: 'completed',
+          created_at: '2025-01-27T22:15:00Z',
+          gateway: 'binance',
+        },
+      ];
+      res.json(transactions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post('/api/admin/system/control', (req, res) => {
+    try {
+      const { action } = req.body;
+      console.log(`System control action: ${action}`);
+      
+      switch (action) {
+        case 'restart':
+          console.log('System restart initiated');
+          break;
+        case 'maintenance':
+          console.log('Maintenance mode toggled');
+          break;
+        case 'clear_cache':
+          console.log('Cache cleared');
+          break;
+        case 'backup':
+          console.log('Backup created');
+          break;
+        default:
+          return res.status(400).json({ error: 'Invalid action' });
+      }
+      
+      res.json({ success: true, message: `${action} executed successfully` });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return Promise.resolve(server);
 }

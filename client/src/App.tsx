@@ -20,7 +20,7 @@ import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
 import WaidbotEnginePage from "@/pages/WaidbotEnginePageEnhanced";
 import LiveDataPage from "@/pages/LiveDataPage";
-import AdminPage from "@/pages/AdminPage";
+import AdminPanel from "@/pages/AdminPanel";
 import APIDocsPage from "@/pages/APIDocsPage";
 import GatewayPage from "@/pages/GatewayPage";
 import LearningPage from "@/pages/learning";
@@ -222,7 +222,7 @@ function Router() {
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/sms-config" component={SMSConfigPage} />
           <Route path="/payment-admin" component={PaymentGatewayAdminPage} />
-          <Route path="/admin" component={AdminPage} />
+          <Route path="/admin" component={AdminPanel} />
           <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />
           <Route component={NotFound} />
