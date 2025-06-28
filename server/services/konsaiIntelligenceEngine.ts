@@ -45,7 +45,7 @@ import { kons_AutoFixCore } from './kons/kons_AutoFixCore.js';
 import { kons_WaidBotController } from './kons/kons_WaidBotController.js';
 
 // KonsModule: Integrator & Debugger (KID)
-const KonsKID = require('./kons/kons_kid.js');
+import { KonsModule as KonsKID } from './kons/kons_kid.js';
 
 // Deep Core Engine Integration for Complete Omniscient System
 import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine';

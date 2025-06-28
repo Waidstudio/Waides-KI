@@ -64,7 +64,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       }
 
       const konsaiEngine = await serviceRegistry.get('konsaiEngine');
-      const response = await konsaiEngine.processMessage(message);
+      const response = await konsaiEngine.generateEnhancedResponse(message);
       
       res.json({ response });
     } catch (error) {
