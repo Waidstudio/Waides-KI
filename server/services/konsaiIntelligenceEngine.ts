@@ -6,6 +6,7 @@
 
 import { ethAdvisor } from './ethAdvisor';
 import { timeWindowHelper } from './timeWindowHelper';
+import { konsaiSecurity } from './konsaiSecurityLayer';
 
 // Import all Kons modules for enhanced intelligence
 import { kons_MicroTradePulse } from './kons/kons_MicroTradePulse.js';
@@ -1671,8 +1672,11 @@ class KonsaiIntelligenceEngine {
       // Apply DeepCore Omniscient Enhancement to Response
       const fullyEnhancedResponse = this.deepCoreEngine.generateEnhancedOmniscientResponse(konsEnhancedResponse, deepCoreResults);
       
+      // Apply KonsAi Security Layer - strips internal module information
+      const secureResponse = konsaiSecurity.sanitizeResponse(fullyEnhancedResponse, 'frontend');
+      
       // Final security sanitization
-      return SecurityProtection.sanitizeResponse(fullyEnhancedResponse);
+      return SecurityProtection.sanitizeResponse(secureResponse);
       
     } catch (error) {
       return this.generateFallbackResponse(query);

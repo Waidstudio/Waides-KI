@@ -1043,7 +1043,7 @@ export default function SmaiSikaWalletPage() {
                 </div>
                 <div className="p-4 bg-gradient-to-r from-violet-900/30 to-indigo-900/30 rounded-lg border border-violet-500/20">
                   <h3 className="text-white font-semibold mb-2">🧠 KonsAi Integration Status</h3>
-                  <p className="text-violet-200 text-sm">Connected to 200+ AI modules for comprehensive analysis</p>
+                  <p className="text-violet-200 text-sm">Connected to advanced AI modules for comprehensive analysis</p>
                   <div className="mt-3 flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                     <span className="text-green-400 text-sm">Active & Monitoring</span>
