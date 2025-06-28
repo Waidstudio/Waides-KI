@@ -15,8 +15,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import FuturisticConfigModules from './FuturisticConfigModules';
-import { OptimizedMegaConfigTabs } from './OptimizedMegaConfigTabs';
 import {
   Settings,
   Database,
@@ -157,12 +155,12 @@ export default function MobileResponsiveAdminApp() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Stable data fetching with error handling - load full configuration
+  // Stable data fetching with error handling
   const { data: megaConfig, isLoading: configLoading } = useQuery({
-    queryKey: ['mega-admin-config-full'],
+    queryKey: ['mega-admin-config'],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/mega-admin-config?full=true');
+        const response = await fetch('/api/mega-admin-config');
         if (!response.ok) throw new Error('Failed to fetch config');
         return await response.json() as MegaAdminConfig;
       } catch (error) {
@@ -447,7 +445,7 @@ export default function MobileResponsiveAdminApp() {
         <div className="flex-1 overflow-hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
             <div className="bg-gray-900 border-b border-gray-800 px-4 sm:px-6">
-              <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 w-full max-w-4xl bg-gray-800">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full max-w-2xl bg-gray-800">
                 <TabsTrigger value="overview" className="text-xs sm:text-sm">
                   <Monitor className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Dashboard</span>
@@ -456,10 +454,6 @@ export default function MobileResponsiveAdminApp() {
                   <Settings className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Settings</span>
                 </TabsTrigger>
-                <TabsTrigger value="mega-config" className="text-xs sm:text-sm">
-                  <Zap className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">54K+ Config</span>
-                </TabsTrigger>
                 <TabsTrigger value="control" className="text-xs sm:text-sm">
                   <Cpu className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Features</span>
@@ -467,10 +461,6 @@ export default function MobileResponsiveAdminApp() {
                 <TabsTrigger value="branding" className="text-xs sm:text-sm">
                   <Palette className="h-4 w-4 mr-1 sm:mr-2" />
                   <span className="hidden sm:inline">Appearance</span>
-                </TabsTrigger>
-                <TabsTrigger value="futuristic" className="text-xs sm:text-sm">
-                  <Database className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">5000+ Modules</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -877,28 +867,6 @@ export default function MobileResponsiveAdminApp() {
                     </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
-
-              <TabsContent value="mega-config" className="space-y-6">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">⚡ Ultra Mega Configuration System</h2>
-                  <p className="text-gray-400">Access 54,180+ enterprise configuration options with optimized performance</p>
-                  <div className="mt-4 p-4 bg-gradient-to-r from-cyan-900/20 to-blue-900/20 rounded-lg border border-cyan-500/30">
-                    <p className="text-cyan-300 font-medium">🚀 Revolutionary configuration system with lazy loading and real-time updates</p>
-                  </div>
-                </div>
-                <OptimizedMegaConfigTabs />
-              </TabsContent>
-
-              <TabsContent value="futuristic" className="space-y-6">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">🌟 Revolutionary Futuristic Configuration System</h2>
-                  <p className="text-gray-400">Access 5000+ next-generation modules that control every aspect of your platform</p>
-                  <div className="mt-4 p-4 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 rounded-lg border border-purple-500/30">
-                    <p className="text-purple-300 font-medium">🚀 Each setting is an active module that controls app functionality in real-time</p>
-                  </div>
-                </div>
-                <FuturisticConfigModules />
               </TabsContent>
             </div>
           </Tabs>
