@@ -82,6 +82,7 @@ export default function ComprehensiveWallet() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('NG');
   const [selectedProvider, setSelectedProvider] = useState('');
+  const [accountDetails, setAccountDetails] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
   const [isAddPaymentMethodOpen, setIsAddPaymentMethodOpen] = useState(false);
@@ -95,7 +96,7 @@ export default function ComprehensiveWallet() {
   const [toCurrency, setToCurrency] = useState('SS');
 
   // Fetch African payment providers
-  const { data: africanProviders = [], isLoading: providersLoading } = useQuery({
+  const { data: africanProviders = [], isLoading: africanProvidersLoading } = useQuery({
     queryKey: ['/api/wallet/african-providers'],
     queryFn: async () => {
       const result = await apiRequest('GET', '/api/wallet/african-providers');
@@ -128,6 +129,17 @@ export default function ComprehensiveWallet() {
       const result = await apiRequest('GET', '/api/wallet/countries');
       return Array.isArray(result) ? result : [];
     },
+  });
+
+  // Fetch payment providers for selected country
+  const { data: globalProviders = [], isLoading: globalProvidersLoading } = useQuery({
+    queryKey: ['/api/wallet/providers', selectedCountry],
+    queryFn: async () => {
+      if (!selectedCountry) return [];
+      const result = await apiRequest('GET', `/api/wallet/providers/${selectedCountry}`);
+      return Array.isArray(result) ? result : [];
+    },
+    enabled: !!selectedCountry
   });
 
   // Add payment method mutation
@@ -238,8 +250,8 @@ export default function ComprehensiveWallet() {
       return;
     }
 
-    const providerInfo = Array.isArray(countryProviders) 
-      ? countryProviders.find(p => p.provider === selectedProvider) 
+    const providerInfo = Array.isArray(globalProviders) 
+      ? globalProviders.find(p => p.provider === selectedProvider) 
       : null;
     if (!providerInfo) return;
 
@@ -255,22 +267,36 @@ export default function ComprehensiveWallet() {
     addPaymentMethodMutation.mutate(paymentMethodData);
   };
 
-  // Handle deposit
+  // Handle deposit with global payment system
   const handleDeposit = async () => {
-    if (!depositAmount || !selectedPaymentMethod) {
+    if (!depositAmount || !selectedProvider || !selectedCountry || !accountDetails) {
       toast({
         title: "Missing Information",
-        description: "Please select amount and payment method",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const providerDetails = globalProviders.find((p: any) => p.id === selectedProvider);
+    if (!providerDetails) {
+      toast({
+        title: "Invalid Provider",
+        description: "Selected payment provider is not available",
         variant: "destructive",
       });
       return;
     }
 
     const depositData = {
-      amount: depositAmount,
-      paymentMethodId: selectedPaymentMethod.id,
-      localAmount: depositAmount,
-      localCurrency: selectedPaymentMethod.currency,
+      amount: parseFloat(depositAmount),
+      currency: providerDetails.currencies[0], // Use first supported currency
+      providerId: selectedProvider,
+      country: selectedCountry,
+      accountDetails: {
+        phoneNumber: accountDetails,
+        provider: providerDetails.name
+      }
     };
 
     processDepositMutation.mutate(depositData);
