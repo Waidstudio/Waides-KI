@@ -498,12 +498,12 @@ export function WaidesKICoreEnginePanel() {
               </CardContent>
             </Card>
 
-            {/* Neural Network */}
+            {/* Konsai Network */}
             <Card className="bg-gradient-to-br from-emerald-900/30 to-teal-900/30 border-emerald-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Network className="w-5 h-5 text-emerald-400" />
-                  Neural Architecture
+                  Konsai Architecture
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -853,7 +853,7 @@ export function WaidesKICoreEnginePanel() {
               </CardContent>
             </Card>
 
-            {/* Neural Learning Progress */}
+            {/* Konsai Learning Progress */}
             <Card className="col-span-full bg-gradient-to-br from-slate-900/30 to-gray-900/30 border-slate-500/30">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">

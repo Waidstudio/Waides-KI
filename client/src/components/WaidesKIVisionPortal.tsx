@@ -130,7 +130,7 @@ export default function WaidesKIVisionPortal() {
     setIsTyping(true);
 
     try {
-      // Simulate AI response for now
+      // Simulate KI response for now
       setTimeout(() => {
         const konsaiResponse: ChatMessage = {
           id: (Date.now() + 1).toString(),
@@ -167,7 +167,7 @@ export default function WaidesKIVisionPortal() {
   
   // Pure KonsAi chat interface
   
-  // Konsmik AI Enhancement States
+  // Konsmik KI Enhancement States
   const [aiPersonality, setAiPersonality] = useState({
     mode: 'spiritual' as 'spiritual' | 'analytical' | 'creative' | 'balanced',
     energyLevel: 85,
@@ -268,7 +268,7 @@ export default function WaidesKIVisionPortal() {
     }
   }, []);
 
-  // Konsmik AI speech synthesis function
+  // Konsmik KI speech synthesis function
   const speakMessage = (text: string) => {
     if (!speechSynthesis || !voiceSettings.enabled) return;
     
@@ -280,7 +280,7 @@ export default function WaidesKIVisionPortal() {
     utterance.rate = voiceSettings.rate;
     utterance.volume = voiceSettings.volume;
     
-    // Choose voice based on AI personality
+    // Choose voice based on KI personality
     const voices = speechSynthesis.getVoices();
     if (voices.length > 0) {
       const preferredVoice = voices.find(voice => 
@@ -510,7 +510,7 @@ export default function WaidesKIVisionPortal() {
     }
   });
 
-  // Voice command processing mutation with cosmic AI features
+  // Voice command processing mutation with cosmic KI features
   const voiceProcessingMutation = useMutation({
     mutationFn: async (command: string) => {
       const response = await fetch('/api/voice/process', {
@@ -573,7 +573,7 @@ export default function WaidesKIVisionPortal() {
     },
   });
 
-  // Voice processing mutation for cosmic AI features
+  // Voice processing mutation for cosmic KI features
   const voiceCommandMutation = useMutation({
     mutationFn: async (command: string) => {
       const response = await fetch('/api/voice/process', {
@@ -622,7 +622,7 @@ export default function WaidesKIVisionPortal() {
       } else if (data && data.fallback) {
         typeMessage(data.fallback, 'error', 50);
       } else {
-        typeMessage('AI processing complete', 'chatgpt', 85);
+        typeMessage('KI processing complete', 'chatgpt', 85);
       }
       setIsProcessing(false);
     },
@@ -1105,7 +1105,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             >
               <div className="flex items-center gap-1">
                 <Brain className="w-2.5 h-2.5" />
-                <span>AI Chat</span>
+                <span>KI Chat</span>
               </div>
             </button>
             <button
@@ -1154,7 +1154,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               </div>
               <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
               <p className="text-gray-400 max-w-md mb-4">
-                Your next-generation AI trading oracle. Ask anything about markets, strategies, or trading insights.
+                Your next-generation KI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
               
               {/* Quick Actions */}
@@ -1250,7 +1250,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                       <span className="text-cyan-300 font-medium">Oracle Mode Active</span>
                     </div>
                     <p className="text-cyan-200/80">
-                      Advanced dual-AI oracle with enhanced reasoning and mystical insights.
+                      Advanced dual-KI oracle with enhanced reasoning and mystical insights.
                     </p>
                   </div>
                 )}
@@ -1484,7 +1484,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               </div>
             </div>
             <div className="text-purple-300/80 text-lg">
-              Autonomous spiritual trading intelligence with quantum consciousness
+              Autonomous spiritual trading intelligence with kons powa consciousness
             </div>
           </div>
 

@@ -81,7 +81,7 @@ export function SigilLayer() {
   ];
 
   const strategies = [
-    'Divine_Quantum_Flux', 'Neural_Quantum_Singularity', 'Trend_Following_Basic', 'Breakout_Strategy', 'Mean_Reversion'
+    'Divine_Kons Powa_Flux', 'Konsai_Kons Powa_Singularity', 'Trend_Following_Basic', 'Breakout_Strategy', 'Mean_Reversion'
   ];
 
   const getPowerColor = (power: number) => {

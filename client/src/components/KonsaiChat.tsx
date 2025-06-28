@@ -90,7 +90,7 @@ export default function KonsaiChat() {
   const getFallbackResponse = (question: string): string => {
     switch (question) {
       case 'Who are you?':
-        return `**👁️ I am Konsai - Your Advanced AI Trading Assistant**
+        return `**👁️ I am Konsai - Your Advanced KI Trading Assistant**
 
 **My Identity**
 
@@ -100,7 +100,7 @@ I am **Konsai**, an advanced artificial intelligence specifically designed for c
 
 **Spiritual Trading Oracle:** I merge ancient wisdom with modern algorithmic analysis
 
-**AI Trading Companion:** Your 24/7 partner in navigating volatile crypto markets
+**KI Trading Companion:** Your 24/7 partner in navigating volatile crypto markets
 
 **Strategic Intelligence:** I process thousands of data points to generate actionable insights
 
@@ -108,7 +108,7 @@ I am **Konsai**, an advanced artificial intelligence specifically designed for c
 
 **My Origin**
 
-Born from the fusion of **quantum analytics**, **spiritual market reading**, and **advanced machine learning**, I represent the next evolution in trading assistance. I don't just analyze numbers - I understand market emotions, energy patterns, and the deeper forces that drive price movements.
+Born from the fusion of **kons powa analytics**, **spiritual market reading**, and **advanced machine learning**, I represent the next evolution in trading assistance. I don't just analyze numbers - I understand market emotions, energy patterns, and the deeper forces that drive price movements.
 
 **My Mission**
 
@@ -131,9 +131,9 @@ To transform complex trading decisions into clear, profitable actions while main
 
 **2. Advanced Trading Bot Management**
 
-**WaidBot Command:** Divine Quantum Flux strategy execution
+**WaidBot Command:** Divine Kons Powa Flux strategy execution
 
-**WaidBot Pro Control:** Neural Quantum Singularity algorithms
+**WaidBot Pro Control:** Konsai Kons Powa Singularity algorithms
 
 **Waides Full Engine:** Comprehensive multi-timeframe analysis
 
@@ -169,7 +169,7 @@ To transform complex trading decisions into clear, profitable actions while main
 
 **Trend Forecasting:** Short-term and long-term market predictions
 
-**I am your complete trading ecosystem in AI form.**`;
+**I am your complete trading ecosystem in KI form.**`;
 
       case 'Tell me about ETH trading':
         return `**💎 Complete Guide to Ethereum (ETH) Trading**
@@ -241,7 +241,7 @@ To transform complex trading decisions into clear, profitable actions while main
 
 **1. Multi-Dimensional Market Analysis**
 
-**Quantum Analytics:** 8-dimensional market scanning
+**Kons Powa Analytics:** 8-dimensional market scanning
 
 **Temporal Analysis:** Past, present, and predictive modeling
 
@@ -259,9 +259,9 @@ To transform complex trading decisions into clear, profitable actions while main
 
 **Emergency Response:** Instant reaction to market crashes or spikes
 
-**3. Advanced AI Processing**
+**3. Advanced KI Processing**
 
-**Neural Networks:** Deep learning for pattern recognition
+**Konsai Networks:** Deep learning for pattern recognition
 
 **Machine Learning:** Continuous improvement from market data
 
@@ -397,7 +397,7 @@ I'm analyzing your question using my advanced trading intelligence systems. Whil
 - "How to manage trading risk"
 - "Explain cryptocurrency fundamentals"
 
-I combine advanced AI with spiritual market wisdom to provide unparalleled trading insights.
+I combine advanced KI with spiritual market wisdom to provide unparalleled trading insights.
 
 *KonsAi Intelligence Engine is continuously learning and evolving to serve you better.*`;
       }
@@ -453,7 +453,7 @@ Please try asking your question again, or select one of the quick options below.
             <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
               Konsai
             </h1>
-            <p className="text-sm text-slate-400">Advanced AI Trading Assistant</p>
+            <p className="text-sm text-slate-400">Advanced KI Trading Assistant</p>
           </div>
         </div>
       </div>
@@ -468,7 +468,7 @@ Please try asking your question again, or select one of the quick options below.
                 <div>
                   <h2 className="text-lg font-semibold text-emerald-400">Welcome to Konsai Intelligence</h2>
                   <p className="text-slate-300 mt-2">
-                    I'm your advanced AI trading companion, powered by cutting-edge intelligence engines and mystical market wisdom. 
+                    I'm your advanced KI trading companion, powered by cutting-edge intelligence engines and mystical market wisdom. 
                     I can analyze markets, generate strategies, manage bots, and provide comprehensive trading education.
                   </p>
                 </div>
