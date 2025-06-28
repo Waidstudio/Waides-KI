@@ -785,43 +785,69 @@ export function FuturisticAdminPanel() {
                     </div>
                     
                     <div className="rounded-lg border border-white/20 overflow-hidden">
-                      <div className="bg-black/40 px-6 py-3 border-b border-white/10">
-                        <div className="grid grid-cols-6 gap-4 text-sm font-medium text-white/80">
-                          <span>User</span>
-                          <span>Experience</span>
-                          <span>Trading Style</span>
-                          <span>Balance</span>
-                          <span>Win Rate</span>
-                          <span>Status</span>
+                      {/* Table Header with Fixed Widths */}
+                      <div className="bg-black/40 px-4 py-3 border-b border-white/10 overflow-x-auto">
+                        <div className="min-w-[800px] grid grid-cols-6 gap-6 text-sm font-medium text-white/80">
+                          <span className="min-w-[200px]">User</span>
+                          <span className="min-w-[120px]">Experience</span>
+                          <span className="min-w-[130px]">Trading Style</span>
+                          <span className="min-w-[120px]">Balance</span>
+                          <span className="min-w-[100px]">Win Rate</span>
+                          <span className="min-w-[100px]">Status</span>
                         </div>
                       </div>
+                      
+                      {/* Scrollable Table Body */}
                       <div className="max-h-96 overflow-y-auto">
-                        {users && Array.isArray(users) && users.length > 0 ? users.map((user: any, index: number) => (
-                          <div key={user.id || index} className="px-6 py-4 border-b border-white/5 hover:bg-white/5">
-                            <div className="grid grid-cols-6 gap-4 text-sm">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
-                                  {user.username?.charAt(0).toUpperCase() || 'U'}
+                        <div className="overflow-x-auto">
+                          {users && Array.isArray(users) && users.length > 0 ? users.map((user: any, index: number) => (
+                            <div key={user.id || index} className="px-4 py-4 border-b border-white/5 hover:bg-white/5 transition-colors">
+                              <div className="min-w-[800px] grid grid-cols-6 gap-6 text-sm">
+                                {/* User Info - Fixed Width */}
+                                <div className="flex items-center space-x-3 min-w-[200px]">
+                                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                    {user.username?.charAt(0).toUpperCase() || 'U'}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="text-white font-medium truncate">{user.username || 'Unknown'}</div>
+                                    <div className="text-white/60 text-xs truncate">{user.email || 'No email'}</div>
+                                  </div>
                                 </div>
-                                <div>
-                                  <div className="text-white font-medium">{user.username || 'Unknown'}</div>
-                                  <div className="text-white/60 text-xs">{user.email || 'No email'}</div>
+                                
+                                {/* Experience - Fixed Width */}
+                                <div className="flex items-center min-w-[120px]">
+                                  <span className="text-white/70 truncate">{user.experienceLevel || 'Beginner'}</span>
+                                </div>
+                                
+                                {/* Trading Style - Fixed Width */}
+                                <div className="flex items-center min-w-[130px]">
+                                  <span className="text-white/70 truncate">{user.tradingStyle || 'Balanced'}</span>
+                                </div>
+                                
+                                {/* Balance - Fixed Width */}
+                                <div className="flex items-center min-w-[120px]">
+                                  <span className="text-green-400 font-mono">${Number(user.smaiBalance || 0).toFixed(2)}</span>
+                                </div>
+                                
+                                {/* Win Rate - Fixed Width */}
+                                <div className="flex items-center min-w-[100px]">
+                                  <span className="text-blue-400">{Number(user.winRate || 0).toFixed(1)}%</span>
+                                </div>
+                                
+                                {/* Status - Fixed Width */}
+                                <div className="flex items-center min-w-[100px]">
+                                  <Badge variant="secondary" className="bg-green-500/20 text-green-400 whitespace-nowrap">
+                                    Active
+                                  </Badge>
                                 </div>
                               </div>
-                              <span className="text-white/70">{user.experienceLevel || 'Beginner'}</span>
-                              <span className="text-white/70">{user.tradingStyle || 'Balanced'}</span>
-                              <span className="text-green-400 font-mono">${Number(user.smaiBalance || 0).toFixed(2)}</span>
-                              <span className="text-blue-400">{Number(user.winRate || 0).toFixed(1)}%</span>
-                              <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                                Active
-                              </Badge>
                             </div>
-                          </div>
-                        )) : (
-                          <div className="px-6 py-8 text-center">
-                            <div className="text-white/60">No users found</div>
-                          </div>
-                        )}
+                          )) : (
+                            <div className="px-6 py-8 text-center">
+                              <div className="text-white/60">No users found</div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
