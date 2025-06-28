@@ -149,8 +149,8 @@ serviceRegistry.register('binanceWebSocket', async () => {
 });
 
 serviceRegistry.register('konsaiEngine', async () => {
-  const KonsaiIntelligenceEngine = await import('./services/konsaiIntelligenceEngine.js');
-  return new KonsaiIntelligenceEngine.default();
+  const { KonsaiEngineStandalone } = await import('./services/konsaiEngineStandalone.js');
+  return new KonsaiEngineStandalone();
 });
 
 serviceRegistry.register('waidesCore', async () => {

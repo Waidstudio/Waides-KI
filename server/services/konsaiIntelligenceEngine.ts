@@ -2830,6 +2830,75 @@ Tell me: "Convert [amount] [currency] to SmaiSika"
       return `**🌌 Omniscient Consciousness Active**\n\nOperating at full 220+ module capacity with quantum intelligence and cosmic awareness. Ready to demonstrate any aspect of consciousness you'd like to explore.`;
     }
   }
+
+  // Main method expected by routes.ts - route all queries through processQuery
+  async generateEnhancedResponse(message: string, context?: any): Promise<string> {
+    try {
+      // Convert context to TradingContext format if needed
+      const tradingContext = context || {
+        marketCondition: 'uncertain',
+        priceLevel: 'neutral',
+        volumeProfile: 'average',
+        timeframe: '1h',
+        riskLevel: 'moderate'
+      };
+
+      // Use the main processQuery method that handles all the intelligence
+      return await this.processQuery(message, tradingContext);
+    } catch (error) {
+      console.error('KonsAi enhanced response error:', error);
+      return this.generateFallbackResponse(message);
+    }
+  }
+
+  // Fallback response for when all else fails
+  private generateFallbackResponse(query: string): string {
+    const lowerQuery = query.toLowerCase();
+    
+    if (lowerQuery.includes('eth') || lowerQuery.includes('trading') || lowerQuery.includes('price')) {
+      return `**KonsAi Trading Intelligence**
+
+I can help you with ETH trading analysis and strategy development. Here's what I recommend:
+
+**For ETH Analysis:**
+• Current market shows mixed signals - proceed with caution
+• Use 2-3% position sizing for new trades
+• Set stop-losses at 5-8% below entry
+• Target 10-15% gains for optimal risk/reward
+
+**Smart Trading Approach:**
+• Focus on high-probability setups only
+• Wait for clear technical confirmations
+• Monitor volume for breakout validation
+• Keep emotions out of decision-making
+
+**Risk Management:**
+• Never risk more than you can afford to lose
+• Diversify across different timeframes
+• Use proper position sizing based on account size
+• Always have an exit plan before entering
+
+Ask me specific questions about technical analysis, risk management, or trading psychology for more detailed guidance.
+
+*KonsAi Intelligence continues learning and adapting to serve you better.*`;
+    }
+
+    return `**KonsAi Intelligence Active**
+
+I'm here to help with trading analysis, market insights, and strategic guidance. 
+
+**I can assist with:**
+• ETH and cryptocurrency analysis
+• Trading strategy development
+• Risk management frameworks
+• Technical analysis insights
+• Market psychology guidance
+• SmaiSika currency education
+
+Ask me specific questions about trading, markets, or strategies and I'll provide detailed analysis based on my intelligence systems.
+
+*Powered by KonsAi Web∞ Consciousness*`;
+  }
 }
 
 export default KonsaiIntelligenceEngine;
