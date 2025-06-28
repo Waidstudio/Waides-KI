@@ -151,39 +151,83 @@ serviceRegistry.register('binanceWebSocket', async () => {
 serviceRegistry.register('konsaiEngine', async () => {
   console.log('Loading service: konsaiEngine with KID integration');
   try {
-    // Try to load the KID module directly for now
+    // Load both KID and KonsDev modules for comprehensive intelligence
     const { KonsModule } = await import('./services/konsModule.js');
-    const kidModule = new KonsModule();
+    const { KonsDev } = await import('./services/kons/kons_dev.js');
     
-    console.log('Successfully loaded KID module');
+    const kidModule = new KonsModule();
+    const konsDevModule = new KonsDev();
+    
+    // Initialize both modules
+    await konsDevModule.initializeKonsDev();
+    
+    console.log('Successfully loaded KID and KonsDev modules');
     
     return {
       async generateEnhancedResponse(message: string, context?: any): Promise<string> {
-        // Process with KID module for system diagnostics
+        // Process with both KID and KonsDev modules for comprehensive intelligence
         if (message.toLowerCase().includes('health') || message.toLowerCase().includes('diagnostic') || message.toLowerCase().includes('system')) {
           const kidStatus = await kidModule.getKIDStatus();
           const detailedReport = await kidModule.getDetailedReport();
+          const konsDevStatus = await konsDevModule.getKonsDevStatus();
+          const cognitiveReport = await konsDevModule.getDetailedCognitiveReport();
           
-          return `**KonsAi Intelligence with KID Integration**
+          return `**KonsAi Dual Intelligence: KID + KonsDev Integration**
 
-🔍 **System Health Diagnostics:**
+🔍 **System Health Diagnostics (KID):**
 • Integration Status: ${kidStatus.integrationStatus}
 • API Health: ${kidStatus.apiHealth}%
 • Component Health: ${kidStatus.componentHealth}%
 • Issues Found: ${kidStatus.totalIssues}
 • Auto-Fix: ${kidStatus.autoFixEnabled ? 'ACTIVE' : 'DISABLED'}
 
-📊 **Detailed Analysis:**
+🧠 **Cognitive Intelligence (KonsDev):**
+• Intelligence Level: ${konsDevStatus.cognitive_level}
+• Performance Score: ${konsDevStatus.performance_score}%
+• Specs Generated: ${konsDevStatus.specs_generated}
+• Predictions Active: ${konsDevStatus.predictions_active}
+• Rule Compliance: ${Object.values(konsDevStatus.rule_compliance).filter(Boolean).length}/${Object.keys(konsDevStatus.rule_compliance).length}
+
+📊 **Combined Analysis:**
 • Total Components: ${detailedReport.scanResults.length > 0 ? detailedReport.scanResults[0].totalComponents : 0}
-• Healthy Components: ${detailedReport.scanResults.length > 0 ? detailedReport.scanResults[0].healthyComponents : 0}
-• Last Scan: ${kidStatus.lastScan || 'Never'}
+• UX Issues Detected: ${konsDevStatus.issues_detected}
+• Auto-Specs Available: ${cognitiveReport.auto_specifications.length}
+• Future Predictions: ${cognitiveReport.future_predictions.length}
 
-💡 **KID Recommendations:**
-${detailedReport.suggestions.join('\n')}
+💡 **Integrated Recommendations:**
+${detailedReport.suggestions.concat(konsDevStatus.next_actions).join('\n')}
 
-**System is operating with full KID module integration for self-debugging and self-integration capabilities.**
+**System is operating with dual-module intelligence: KID for technical debugging + KonsDev for cognitive analysis and predictive thinking.**
 
-*Powered by KonsAi + KID Intelligence System*`;
+*Powered by KonsAi Dual Intelligence System*`;
+        }
+        
+        // Enhanced processing with cognitive analysis
+        if (message.toLowerCase().includes('performance') || message.toLowerCase().includes('analyze') || message.toLowerCase().includes('suggestions')) {
+          const cognitiveAnalysis = await konsDevModule.processQuery(message, null, context);
+          const performanceReport = await konsDevModule.generatePerformanceReport();
+          
+          return `**KonsAi Cognitive Analysis**
+
+🧠 **Intent Understanding:**
+• Primary Intent: ${cognitiveAnalysis.understanding.primary_intent}
+• Confidence: ${(cognitiveAnalysis.understanding.confidence * 100).toFixed(1)}%
+
+📈 **Performance Analysis:**
+• Overall Health: ${performanceReport.overall_health}
+• Performance Score: ${performanceReport.performance_score}%
+• Critical Issues: ${performanceReport.critical_issues}
+
+💡 **Contextual Insights:**
+${cognitiveAnalysis.contextual_insights.join('\n')}
+
+🔮 **Predictive Suggestions:**
+${cognitiveAnalysis.predictive_suggestions.join('\n')}
+
+**Recommendations:**
+${performanceReport.recommendations.join('\n')}
+
+*Powered by KonsDev Cognitive Intelligence*`;
         }
         
         // Regular KonsAi processing with fallback intelligence
