@@ -43,7 +43,7 @@ import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
 import AdminConfigPanel from "@/components/AdminConfigPanel";
 import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
-import ComprehensiveWallet from "@/components/ComprehensiveWallet";
+import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 import SMSConfigPage from "@/pages/SMSConfigPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
@@ -192,7 +192,8 @@ function Router() {
       <main>
         <Switch>
           <Route path="/" component={WaidesKIVisionPortal} />
-          <Route path="/wallet" component={ComprehensiveWallet} />
+          <Route path="/wallet" component={SmaiSikaWalletPage} />
+          <Route path="/smai-sika-wallet" component={SmaiSikaWalletPage} />
           <Route path="/biometric-trading" component={BiometricTradingInterface} />
           <Route path="/profile" component={ProfilePage} />
           <Route path="/dashboard" component={Dashboard} />
