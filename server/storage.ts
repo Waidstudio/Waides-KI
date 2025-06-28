@@ -9,6 +9,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
   
   getApiKey(service: string): Promise<ApiKey | undefined>;
   upsertApiKey(apiKey: InsertApiKey): Promise<ApiKey>;
@@ -56,6 +57,10 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
   }
 
   async getApiKey(service: string): Promise<ApiKey | undefined> {

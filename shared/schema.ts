@@ -548,3 +548,120 @@ export type InsertExecutionLog = z.infer<typeof insertExecutionLogSchema>;
 // Prophecy Log types
 export type ProphecyLog = typeof prophecyLogs.$inferSelect;
 export type InsertProphecyLog = z.infer<typeof insertProphecyLogSchema>;
+
+// Authentication tables for admin system
+export const adminUsers = pgTable("admin_users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role").notNull().default("viewer"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  isActive: boolean("is_active").default(true),
+  lastLogin: timestamp("last_login"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  twoFactorSecret: text("two_factor_secret"),
+});
+
+export const adminSessions = pgTable("admin_sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  userId: integer("user_id").notNull().references(() => adminUsers.id),
+  expiresAt: timestamp("expires_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const adminActivityLogs = pgTable("admin_activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => adminUsers.id),
+  action: text("action").notNull(),
+  resource: text("resource").notNull(),
+  details: jsonb("details"),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  success: boolean("success").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const adminLoginAttempts = pgTable("admin_login_attempts", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  ipAddress: text("ip_address").notNull(),
+  success: boolean("success").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Authentication schema types
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastLogin: true,
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional(),
+});
+
+export const updateAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  passwordHash: true,
+}).partial();
+
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
+export type UpdateAdminUser = z.infer<typeof updateAdminUserSchema>;
+export type LoginCredentials = z.infer<typeof loginSchema>;
+export type AdminSession = typeof adminSessions.$inferSelect;
+export type AdminActivityLog = typeof adminActivityLogs.$inferSelect;
+export type AdminLoginAttempt = typeof adminLoginAttempts.$inferSelect;
+
+// Admin roles and permissions
+export const AdminRoles = {
+  SUPER_ADMIN: "super_admin",
+  ADMIN: "admin",
+  VIEWER: "viewer",
+} as const;
+
+export type AdminRole = typeof AdminRoles[keyof typeof AdminRoles];
+
+export const AdminPermissions = {
+  VIEW_USERS: "view_users",
+  CREATE_USERS: "create_users",
+  UPDATE_USERS: "update_users",
+  DELETE_USERS: "delete_users",
+  VIEW_LOGS: "view_logs",
+  MANAGE_CONFIGURATION: "manage_configuration",
+  MANAGE_TRADING_BOTS: "manage_trading_bots",
+  VIEW_FINANCIAL_DATA: "view_financial_data",
+  MANAGE_SYSTEM: "manage_system",
+} as const;
+
+export type AdminPermission = typeof AdminPermissions[keyof typeof AdminPermissions];
+
+export const RolePermissions: Record<AdminRole, AdminPermission[]> = {
+  [AdminRoles.SUPER_ADMIN]: Object.values(AdminPermissions),
+  [AdminRoles.ADMIN]: [
+    AdminPermissions.VIEW_USERS,
+    AdminPermissions.CREATE_USERS,
+    AdminPermissions.UPDATE_USERS,
+    AdminPermissions.VIEW_LOGS,
+    AdminPermissions.MANAGE_CONFIGURATION,
+    AdminPermissions.MANAGE_TRADING_BOTS,
+    AdminPermissions.VIEW_FINANCIAL_DATA,
+  ],
+  [AdminRoles.VIEWER]: [
+    AdminPermissions.VIEW_USERS,
+    AdminPermissions.VIEW_LOGS,
+    AdminPermissions.VIEW_FINANCIAL_DATA,
+  ],
+};
