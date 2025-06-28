@@ -1232,7 +1232,7 @@ class KonsModuleManager {
   }
 
   // Process all Kons modules and return enhanced intelligence
-  processAllKonsModules(): any {
+  async processAllKonsModules(): Promise<any> {
     const konsResults = {
       microTradePulse: null,
       breathScanEngine: null,
@@ -1619,7 +1619,7 @@ class KonsaiIntelligenceEngine {
       // Process all Kons modules for enhanced intelligence
       this.konsModuleManager.updateUserMessage(query);
       this.konsModuleManager.updateMarketData(systemScan?.marketAnalysis || null);
-      const konsResults = this.konsModuleManager.processAllKonsModules();
+      const konsResults = await this.konsModuleManager.processAllKonsModules();
       
       // Process DeepCore 120+ module omniscient system
       this.deepCoreEngine.updateUserMessage(query);

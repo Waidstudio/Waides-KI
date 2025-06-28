@@ -149,12 +149,18 @@ serviceRegistry.register('binanceWebSocket', async () => {
 });
 
 serviceRegistry.register('konsaiEngine', async () => {
-  // Use fallback KonsAi engine that works independently
-  return {
-    async generateEnhancedResponse(message: string, context?: any): Promise<string> {
-      const query = message.toLowerCase();
-      
-      if (query.includes('eth') || query.includes('trading') || query.includes('price') || query.includes('strategy')) {
+  console.log('Loading service: konsaiEngine');
+  try {
+    const { KonsaiIntelligenceEngine } = await import('./services/konsaiIntelligenceEngine.js');
+    return new KonsaiIntelligenceEngine();
+  } catch (error) {
+    console.log('Loading fallback KonsAi engine');
+    // Use fallback KonsAi engine that works independently
+    return {
+      async generateEnhancedResponse(message: string, context?: any): Promise<string> {
+        const query = message.toLowerCase();
+        
+        if (query.includes('eth') || query.includes('trading') || query.includes('price') || query.includes('strategy')) {
         return `**KonsAi Trading Intelligence**
 
 I can help analyze ETH trading opportunities and provide strategic guidance.
@@ -283,6 +289,7 @@ Ask me specific questions about any trading topic and I'll provide detailed anal
       };
     }
   };
+  }
 });
 
 serviceRegistry.register('waidesCore', async () => {
