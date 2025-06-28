@@ -348,8 +348,8 @@ export default function MobileResponsiveAdminApp() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <h2 className="text-xl font-bold text-white">Loading Mega Admin Control Center</h2>
-          <p className="text-gray-400">Initializing 1000+ configuration settings...</p>
+          <h2 className="text-xl font-bold text-white">Welcome to Your Control Center</h2>
+          <p className="text-gray-400">Setting up your personalized dashboard...</p>
         </div>
       </div>
     );
@@ -364,10 +364,10 @@ export default function MobileResponsiveAdminApp() {
             <MobileNavigation />
             <div>
               <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-                Mega Admin Control Center
+                Platform Settings
               </h1>
               <p className="text-xs sm:text-sm text-gray-400">
-                Enterprise-level configuration management with 1000+ settings
+                Customize and manage your Waides KI experience
               </p>
             </div>
           </div>
@@ -382,7 +382,7 @@ export default function MobileResponsiveAdminApp() {
         {/* Desktop sidebar - hidden on mobile */}
         <div className="hidden lg:block w-80 bg-gray-900 border-r border-gray-800 h-screen overflow-y-auto">
           <div className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Configuration Sections</h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Settings Categories</h3>
             <div className="space-y-2">
               {Object.keys(SECTION_ICONS).map((section) => {
                 const Icon = SECTION_ICONS[section as keyof typeof SECTION_ICONS];
