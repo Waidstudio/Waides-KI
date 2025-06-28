@@ -2662,6 +2662,11 @@ export default function AdminPanel() {
             </Card>
           </TabsContent>
 
+          {/* Comprehensive Configuration Tab */}
+          <TabsContent value="comprehensive-config" className="space-y-6">
+            <ComprehensiveAdminPanel />
+          </TabsContent>
+
           {/* Placeholder tabs for all remaining tabs */}
           {[
             'compliance', 'api-management', 'cdn-cache', 'email-sms', 'backup-restore', 

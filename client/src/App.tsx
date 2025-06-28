@@ -223,7 +223,6 @@ function Router() {
           <Route path="/gateway" component={GatewayPage} />
           <Route path="/sms-config" component={SMSConfigPage} />
           <Route path="/payment-admin" component={PaymentGatewayAdminPage} />
-          <Route path="/admin" component={AdminPanel} />
           <Route path="/admin-panel" component={AdminPanel} />
           <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />

@@ -2092,5 +2092,105 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Comprehensive admin configuration endpoints
+  app.get('/api/admin/comprehensive-config', async (req, res) => {
+    try {
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      const config = comprehensiveAdminConfigService.getConfiguration();
+      res.json(config);
+    } catch (error: any) {
+      console.error('Error getting comprehensive config:', error);
+      res.status(500).json({ error: 'Failed to get comprehensive configuration' });
+    }
+  });
+
+  app.get('/api/admin/comprehensive-config/stats', async (req, res) => {
+    try {
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      const config = comprehensiveAdminConfigService.getConfiguration();
+      const stats = comprehensiveAdminConfigService.getConfigurationStatistics(config);
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error getting config stats:', error);
+      res.status(500).json({ error: 'Failed to get configuration statistics' });
+    }
+  });
+
+  app.get('/api/admin/comprehensive-config/search', async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.length < 2) {
+        return res.json({ results: [], count: 0 });
+      }
+      
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      const config = comprehensiveAdminConfigService.getConfiguration();
+      const results = comprehensiveAdminConfigService.searchSettings(config, query);
+      res.json(results);
+    } catch (error: any) {
+      console.error('Error searching config:', error);
+      res.status(500).json({ error: 'Failed to search configuration' });
+    }
+  });
+
+  app.put('/api/admin/comprehensive-config/:section', async (req, res) => {
+    try {
+      const section = req.params.section;
+      const updates = req.body;
+      
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      comprehensiveAdminConfigService.updateSection(section, updates);
+      res.json({ success: true, message: `${section} configuration updated` });
+    } catch (error: any) {
+      console.error('Error updating section:', error);
+      res.status(500).json({ error: 'Failed to update section configuration' });
+    }
+  });
+
+  app.put('/api/admin/comprehensive-config/:section/:key', async (req, res) => {
+    try {
+      const { section, key } = req.params;
+      const { value } = req.body;
+      
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      comprehensiveAdminConfigService.updateSetting(section, key, value);
+      res.json({ success: true, message: `${section}.${key} updated` });
+    } catch (error: any) {
+      console.error('Error updating setting:', error);
+      res.status(500).json({ error: 'Failed to update setting' });
+    }
+  });
+
+  app.post('/api/admin/comprehensive-config/:section/reset', async (req, res) => {
+    try {
+      const section = req.params.section;
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      comprehensiveAdminConfigService.resetSection(section);
+      res.json({ success: true, message: `${section} configuration reset to defaults` });
+    } catch (error: any) {
+      console.error('Error resetting section:', error);
+      res.status(500).json({ error: 'Failed to reset section configuration' });
+    }
+  });
+
+  app.get('/api/admin/comprehensive-config/export', async (req, res) => {
+    try {
+      const { comprehensiveAdminConfigService } = await import('./services/comprehensiveAdminConfig.js');
+      const config = comprehensiveAdminConfigService.getConfiguration();
+      const exportData = {
+        ...config,
+        exportedAt: new Date().toISOString(),
+        version: '1.0.0'
+      };
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="waides-ki-config.json"');
+      res.json(exportData);
+    } catch (error: any) {
+      console.error('Error exporting config:', error);
+      res.status(500).json({ error: 'Failed to export configuration' });
+    }
+  });
+
   return Promise.resolve(server);
 }
