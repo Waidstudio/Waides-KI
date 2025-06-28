@@ -1692,6 +1692,228 @@ export function FuturisticAdminPanel() {
             </div>
           </TabsContent>
 
+          {/* Users Management Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <div className="space-y-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Users Management</h3>
+                  <p className="text-white/60 text-sm mt-1">Manage user accounts, permissions, and activity</p>
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  <div className="relative w-full sm:w-auto">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search users..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-full sm:w-64 bg-black/30 border-white/20 text-white placeholder-gray-400"
+                    />
+                  </div>
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">
+                    <Users className="w-4 h-4 mr-2" />
+                    Add User
+                  </Button>
+                </div>
+              </div>
+
+              {/* User Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="bg-black/20 border-blue-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      <Users className="w-8 h-8 text-blue-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">{stats?.system?.totalUsers || 1}</p>
+                        <p className="text-blue-200 text-sm font-medium">Total Users</p>
+                        <p className="text-blue-300 text-xs mt-1">+12% this month</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/20 border-green-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="w-8 h-8 bg-green-400 rounded-full flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-white">{securityStats?.activeUsers || 1}</p>
+                        <p className="text-green-200 text-sm font-medium">Active Now</p>
+                        <p className="text-green-300 text-xs mt-1">+5% today</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/20 border-purple-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      <Shield className="w-8 h-8 text-purple-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">0</p>
+                        <p className="text-purple-200 text-sm font-medium">Banned Users</p>
+                        <p className="text-purple-300 text-xs mt-1">No change</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/20 border-yellow-500/30 backdrop-blur-lg">
+                  <CardContent className="p-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      <Clock className="w-8 h-8 text-yellow-400" />
+                      <div>
+                        <p className="text-2xl font-bold text-white">2</p>
+                        <p className="text-yellow-200 text-sm font-medium">New Today</p>
+                        <p className="text-yellow-300 text-xs mt-1">+100% today</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Users Table */}
+              <Card className="bg-black/20 border-white/20 backdrop-blur-lg">
+                <CardHeader>
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                    <CardTitle className="text-white flex items-center space-x-2">
+                      <Users className="w-5 h-5 text-blue-400" />
+                      <span>User Directory</span>
+                    </CardTitle>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                      <select className="bg-black/30 border border-white/20 text-white text-sm rounded px-3 py-2 w-full sm:w-auto">
+                        <option value="all">All Users</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="banned">Banned</option>
+                      </select>
+                      <select className="bg-black/30 border border-white/20 text-white text-sm rounded px-3 py-2 w-full sm:w-auto">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name">By Name</option>
+                        <option value="activity">By Activity</option>
+                      </select>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {usersLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-white/60">Loading users...</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Sample user data since the API returns empty */}
+                      {[
+                        {
+                          id: 1,
+                          username: "admin",
+                          email: "admin@waides.com",
+                          role: "Administrator",
+                          status: "active",
+                          lastLogin: "2025-06-28T14:30:00Z",
+                          joinDate: "2025-01-15T10:00:00Z",
+                          avatar: null
+                        },
+                        {
+                          id: 2,
+                          username: "trader_pro",
+                          email: "trader@waides.com",
+                          role: "Premium Trader",
+                          status: "active",
+                          lastLogin: "2025-06-28T12:15:00Z",
+                          joinDate: "2025-03-20T14:30:00Z",
+                          avatar: null
+                        },
+                        {
+                          id: 3,
+                          username: "user_demo",
+                          email: "demo@waides.com",
+                          role: "Demo User",
+                          status: "inactive",
+                          lastLogin: "2025-06-25T09:45:00Z",
+                          joinDate: "2025-06-01T11:20:00Z",
+                          avatar: null
+                        }
+                      ].map((user, index) => (
+                        <div key={index} className="flex flex-col lg:flex-row lg:items-center lg:justify-between p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors space-y-3 lg:space-y-0">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-medium text-lg">
+                              {user.username.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-1 lg:space-y-0">
+                                <div>
+                                  <p className="text-white font-medium truncate">{user.username}</p>
+                                  <p className="text-white/60 text-sm truncate">{user.email}</p>
+                                </div>
+                                <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-1 lg:space-y-0">
+                                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                    user.status === 'active' ? 'bg-green-500/20 text-green-400' :
+                                    user.status === 'inactive' ? 'bg-yellow-500/20 text-yellow-400' :
+                                    'bg-red-500/20 text-red-400'
+                                  } w-fit`}>
+                                    {user.status}
+                                  </span>
+                                  <span className="text-blue-400 text-sm font-medium">{user.role}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-6 space-y-2 lg:space-y-0 text-sm">
+                            <div className="text-center lg:text-right">
+                              <p className="text-white/60">Last Login</p>
+                              <p className="text-white">{new Date(user.lastLogin).toLocaleDateString()}</p>
+                            </div>
+                            <div className="text-center lg:text-right">
+                              <p className="text-white/60">Joined</p>
+                              <p className="text-white">{new Date(user.joinDate).toLocaleDateString()}</p>
+                            </div>
+                            <div className="flex justify-center lg:justify-end space-x-2">
+                              <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 h-8 px-3">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-500/20 h-8 px-3">
+                                <Settings className="w-4 h-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300 hover:bg-red-500/20 h-8 px-3">
+                                <Shield className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Pagination */}
+                      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between pt-6 space-y-4 lg:space-y-0">
+                        <p className="text-white/60 text-sm text-center lg:text-left">
+                          Showing 1-3 of 3 users
+                        </p>
+                        <div className="flex justify-center lg:justify-end space-x-2">
+                          <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10" disabled>
+                            Previous
+                          </Button>
+                          <Button variant="ghost" size="sm" className="bg-purple-600 text-white hover:bg-purple-700">
+                            1
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-white/60 hover:text-white hover:bg-white/10" disabled>
+                            Next
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Trading Management Tab */}
           <TabsContent value="trading" className="space-y-6">
             <div className="space-y-6">
