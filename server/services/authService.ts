@@ -166,7 +166,7 @@ export class AuthService {
         and(
           eq(adminLoginAttempts.email, email),
           eq(adminLoginAttempts.success, false),
-          gte(adminLoginAttempts.timestamp, since)
+          gte(adminLoginAttempts.createdAt, since)
         )
       );
 
@@ -457,7 +457,7 @@ export class AuthService {
         })
         .from(adminActivityLogs)
         .leftJoin(adminUsers, eq(adminActivityLogs.userId, adminUsers.id))
-        .orderBy(desc(adminActivityLogs.timestamp))
+        .orderBy(desc(adminActivityLogs.createdAt))
         .limit(limit);
 
       if (userId) {
