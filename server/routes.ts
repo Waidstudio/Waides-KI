@@ -2831,5 +2831,316 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===============================
+  // Enhanced Database-Backed Services API Endpoints
+  // ===============================
+
+  // Kons Powa Prediction endpoints
+  app.get("/api/kons-powa/prediction/current", async (req, res) => {
+    try {
+      const { konsPowaPredictionService } = await import('./services/konsPowaPredictionService.js');
+      const activePredictions = await konsPowaPredictionService.getActivePredictions();
+      
+      if (activePredictions.length > 0) {
+        res.json(activePredictions[0]);
+      } else {
+        // Generate new prediction if none exists
+        const ethMonitor = await serviceRegistry.get('ethMonitor');
+        const ethData = await ethMonitor.fetchEthData();
+        const prediction = await konsPowaPredictionService.generateKonsPowaPrediction(ethData.price);
+        res.json(prediction);
+      }
+    } catch (error) {
+      console.error('Error fetching Kons Powa prediction:', error);
+      res.status(500).json({ error: 'Failed to fetch current prediction' });
+    }
+  });
+
+  app.post("/api/kons-powa/prediction/generate", async (req, res) => {
+    try {
+      const { konsPowaPredictionService } = await import('./services/konsPowaPredictionService.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      const { marketData } = req.body;
+      const prediction = await konsPowaPredictionService.generateKonsPowaPrediction(ethData.price, marketData);
+      
+      res.json({
+        success: true,
+        prediction,
+        message: 'New Kons Powa prediction generated successfully'
+      });
+    } catch (error) {
+      console.error('Error generating Kons Powa prediction:', error);
+      res.status(500).json({ error: 'Failed to generate prediction' });
+    }
+  });
+
+  app.get("/api/kons-powa/prediction/history", async (req, res) => {
+    try {
+      const { konsPowaPredictionService } = await import('./services/konsPowaPredictionService.js');
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = await konsPowaPredictionService.getPredictionHistory(limit);
+      res.json(history);
+    } catch (error) {
+      console.error('Error fetching prediction history:', error);
+      res.status(500).json({ error: 'Failed to fetch prediction history' });
+    }
+  });
+
+  // Enhanced Market Analysis endpoints
+  app.get("/api/market-analysis/current", async (req, res) => {
+    try {
+      const { enhancedMarketAnalysisService } = await import('./services/enhancedMarketAnalysisService.js');
+      let analysis = await enhancedMarketAnalysisService.getLatestAnalysis();
+      
+      if (!analysis || await enhancedMarketAnalysisService.shouldGenerateNewAnalysis()) {
+        // Generate fresh analysis
+        const ethMonitor = await serviceRegistry.get('ethMonitor');
+        const ethData = await ethMonitor.fetchEthData();
+        analysis = await enhancedMarketAnalysisService.generateComprehensiveAnalysis(ethData.price, {
+          volume24h: ethData.volume,
+          marketCap: ethData.marketCap,
+          priceChange24h: ethData.priceChange24h
+        });
+      }
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error('Error fetching market analysis:', error);
+      res.status(500).json({ error: 'Failed to fetch current market analysis' });
+    }
+  });
+
+  app.post("/api/market-analysis/generate", async (req, res) => {
+    try {
+      const { enhancedMarketAnalysisService } = await import('./services/enhancedMarketAnalysisService.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      const { marketData } = req.body;
+      const analysis = await enhancedMarketAnalysisService.generateComprehensiveAnalysis(ethData.price, {
+        ...marketData,
+        volume24h: ethData.volume,
+        marketCap: ethData.marketCap,
+        priceChange24h: ethData.priceChange24h
+      });
+      
+      res.json({
+        success: true,
+        analysis,
+        message: 'New comprehensive market analysis generated successfully'
+      });
+    } catch (error) {
+      console.error('Error generating market analysis:', error);
+      res.status(500).json({ error: 'Failed to generate market analysis' });
+    }
+  });
+
+  app.get("/api/market-analysis/history", async (req, res) => {
+    try {
+      const { enhancedMarketAnalysisService } = await import('./services/enhancedMarketAnalysisService.js');
+      const limit = parseInt(req.query.limit as string) || 50;
+      const history = await enhancedMarketAnalysisService.getAnalysisHistory(limit);
+      res.json(history);
+    } catch (error) {
+      console.error('Error fetching analysis history:', error);
+      res.status(500).json({ error: 'Failed to fetch analysis history' });
+    }
+  });
+
+  // Enhanced Trading Strategies endpoints
+  app.get("/api/trading-strategies/active", async (req, res) => {
+    try {
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      const strategies = await enhancedTradingStrategiesService.getAllActiveStrategies();
+      res.json(strategies);
+    } catch (error) {
+      console.error('Error fetching active strategies:', error);
+      res.status(500).json({ error: 'Failed to fetch active strategies' });
+    }
+  });
+
+  app.get("/api/trading-strategies/:id", async (req, res) => {
+    try {
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      const strategyId = parseInt(req.params.id);
+      const strategy = await enhancedTradingStrategiesService.getStrategyById(strategyId);
+      
+      if (!strategy) {
+        return res.status(404).json({ error: 'Strategy not found' });
+      }
+      
+      res.json(strategy);
+    } catch (error) {
+      console.error('Error fetching strategy:', error);
+      res.status(500).json({ error: 'Failed to fetch strategy' });
+    }
+  });
+
+  app.get("/api/trading-strategies/:id/performance", async (req, res) => {
+    try {
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      const strategyId = parseInt(req.params.id);
+      const performance = await enhancedTradingStrategiesService.evaluateStrategyPerformance(strategyId);
+      res.json(performance);
+    } catch (error) {
+      console.error('Error fetching strategy performance:', error);
+      res.status(500).json({ error: 'Failed to fetch strategy performance' });
+    }
+  });
+
+  app.post("/api/trading-strategies/:id/simulate", async (req, res) => {
+    try {
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      const strategyId = parseInt(req.params.id);
+      const { marketConditions } = req.body;
+      
+      // Get current market data if not provided
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      const defaultMarketConditions = {
+        ethPrice: ethData.price,
+        rsi: 50,
+        volume: ethData.volume,
+        volatility: 10,
+        trend: 'NEUTRAL',
+        konsPowerLevel: 75,
+        neuralConfidence: 70,
+        momentumScore: 60,
+        ...marketConditions
+      };
+      
+      const simulation = await enhancedTradingStrategiesService.simulateStrategy(strategyId, defaultMarketConditions);
+      res.json(simulation);
+    } catch (error) {
+      console.error('Error simulating strategy:', error);
+      res.status(500).json({ error: 'Failed to simulate strategy' });
+    }
+  });
+
+  app.get("/api/trading-strategies/recommendations", async (req, res) => {
+    try {
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      // Get current market analysis for recommendations
+      const { enhancedMarketAnalysisService } = await import('./services/enhancedMarketAnalysisService.js');
+      const analysis = await enhancedMarketAnalysisService.getLatestAnalysis();
+      
+      const marketData = {
+        ethPrice: ethData.price,
+        rsi: analysis?.rsiValue || 50,
+        volume: ethData.volume,
+        volatility: analysis?.volatilityIndex || 10,
+        trend: analysis?.trendDirection || 'NEUTRAL',
+        fearGreedIndex: analysis?.fearGreedIndex || 50,
+        konsPowerLevel: 75,
+        neuralConfidence: 70,
+        momentumScore: 60
+      };
+      
+      const recommendations = await enhancedTradingStrategiesService.getStrategyRecommendations(marketData);
+      res.json(recommendations);
+    } catch (error) {
+      console.error('Error fetching strategy recommendations:', error);
+      res.status(500).json({ error: 'Failed to fetch strategy recommendations' });
+    }
+  });
+
+  app.post("/api/trading-strategies/:id/record-trade", async (req, res) => {
+    try {
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      const strategyId = parseInt(req.params.id);
+      const tradeData = req.body;
+      
+      const trade = await enhancedTradingStrategiesService.recordTrade(strategyId, tradeData);
+      res.json({
+        success: true,
+        trade,
+        message: 'Trade recorded successfully'
+      });
+    } catch (error) {
+      console.error('Error recording trade:', error);
+      res.status(500).json({ error: 'Failed to record trade' });
+    }
+  });
+
+  // Combined dashboard data endpoint
+  app.get("/api/dashboard/enhanced-data", async (req, res) => {
+    try {
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      // Get all enhanced services data
+      const { konsPowaPredictionService } = await import('./services/konsPowaPredictionService.js');
+      const { enhancedMarketAnalysisService } = await import('./services/enhancedMarketAnalysisService.js');
+      const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
+      
+      // Get current prediction
+      let prediction;
+      try {
+        const activePredictions = await konsPowaPredictionService.getActivePredictions();
+        if (activePredictions.length > 0) {
+          prediction = activePredictions[0];
+        } else {
+          prediction = await konsPowaPredictionService.generateKonsPowaPrediction(ethData.price);
+        }
+      } catch (error) {
+        console.error('Error getting prediction:', error);
+        prediction = null;
+      }
+      
+      // Get current market analysis
+      let marketAnalysis;
+      try {
+        marketAnalysis = await enhancedMarketAnalysisService.getLatestAnalysis();
+        if (!marketAnalysis || await enhancedMarketAnalysisService.shouldGenerateNewAnalysis()) {
+          marketAnalysis = await enhancedMarketAnalysisService.generateComprehensiveAnalysis(ethData.price, {
+            volume24h: ethData.volume,
+            marketCap: ethData.marketCap,
+            priceChange24h: ethData.priceChange24h
+          });
+        }
+      } catch (error) {
+        console.error('Error getting market analysis:', error);
+        marketAnalysis = null;
+      }
+      
+      // Get strategy recommendations
+      let strategies;
+      try {
+        const marketData = {
+          ethPrice: ethData.price,
+          rsi: marketAnalysis?.rsiValue || 50,
+          volume: ethData.volume24h,
+          volatility: marketAnalysis?.volatilityIndex || 10,
+          trend: marketAnalysis?.trendDirection || 'NEUTRAL',
+          fearGreedIndex: marketAnalysis?.fearGreedIndex || 50,
+          konsPowerLevel: prediction?.konsPowerLevel || 75,
+          neuralConfidence: 70,
+          momentumScore: 60
+        };
+        strategies = await enhancedTradingStrategiesService.getStrategyRecommendations(marketData);
+      } catch (error) {
+        console.error('Error getting strategies:', error);
+        strategies = [];
+      }
+      
+      res.json({
+        ethData,
+        konsPowaPrediction: prediction,
+        marketAnalysis,
+        strategyRecommendations: strategies,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching enhanced dashboard data:', error);
+      res.status(500).json({ error: 'Failed to fetch enhanced dashboard data' });
+    }
+  });
+
   return Promise.resolve(server);
 }

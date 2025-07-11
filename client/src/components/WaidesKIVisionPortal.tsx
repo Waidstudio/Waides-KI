@@ -96,11 +96,24 @@ export default function WaidesKIVisionPortal() {
   // Konsai chat handlers
   const handleQuickAction = (action: string) => {
     setShowWelcomeMessage(false);
+    
+    // Handle actions that need database data
+    if (action === 'kons-powa-prediction') {
+      handleKonsPowaPrediction();
+      return;
+    }
+    if (action === 'market-analysis') {
+      handleMarketAnalysis();
+      return;
+    }
+    if (action === 'generate-strategy') {
+      handleGenerateStrategy();
+      return;
+    }
+    
     const actionMessages: { [key: string]: string } = {
-      'generate-strategy': 'Generate a new trading strategy for ETH',
       'command-bots': 'Start all trading bots (WaidBot, WaidBot Pro, Waides Full Engine, SmaiSika Autonomous)',
       'fund-account': 'How do I fund my account with USDT?',
-      'market-analysis': 'Provide current market analysis and trading insights',
       'live-trading': 'Show me current live trading status and performance',
       'ask-anything': 'I have a question about trading'
     };
@@ -114,6 +127,124 @@ export default function WaidesKIVisionPortal() {
     setShowWelcomeMessage(false);
     handleSendKonsaiMessage(konsaiInput);
     setKonsaiInput('');
+  };
+
+  // Enhanced database-backed action handlers
+  const handleKonsPowaPrediction = async () => {
+    setIsProcessing(true);
+    try {
+      await refetchKonsPowaPrediction();
+      const prediction = konsPowaPrediction;
+      
+      if (prediction) {
+        let message = `**🔮 Kons Powa ETH Prediction (Database)**\n\n`;
+        message += `**Price:** $${prediction.ethPrice}\n`;
+        message += `**Prediction:** ${prediction.prediction}\n`;
+        message += `**Confidence:** ${prediction.confidence}%\n`;
+        message += `**Strategy:** ${prediction.strategy}\n`;
+        message += `**Timeframe:** ${prediction.timeframe}\n`;
+        message += `**Kons Power Level:** ${prediction.konsPowerLevel}%\n`;
+        message += `**Divine Alignment:** ${prediction.divineAlignment}%\n`;
+        message += `**Spiritual Energy:** ${prediction.spiritualEnergy}%\n`;
+        message += `**Reasoning:** ${prediction.reasoning}\n`;
+        
+        if (prediction.targetPrice) {
+          message += `**Target Price:** $${prediction.targetPrice}\n`;
+        }
+        if (prediction.stopLoss) {
+          message += `**Stop Loss:** $${prediction.stopLoss}\n`;
+        }
+        
+        typeMessage(message, 'oracle', prediction.confidence);
+      } else {
+        typeMessage('Unable to retrieve Kons Powa prediction at this time. Please try again.', 'error', 0);
+      }
+    } catch (error) {
+      console.error('Error fetching Kons Powa prediction:', error);
+      typeMessage('Error retrieving Kons Powa prediction. Please try again.', 'error', 0);
+    }
+    setIsProcessing(false);
+  };
+
+  const handleMarketAnalysis = async () => {
+    setIsProcessing(true);
+    try {
+      await refetchMarketAnalysis();
+      const analysis = marketAnalysis;
+      
+      if (analysis) {
+        let message = `**📊 Market Analysis (Database)**\n\n`;
+        message += `**ETH Price:** $${analysis.ethPrice}\n`;
+        message += `**24h Volume:** $${(analysis.volume24h / 1000000).toFixed(2)}M\n`;
+        message += `**Market Cap:** $${(analysis.marketCap / 1000000000).toFixed(2)}B\n`;
+        message += `**24h Change:** ${analysis.priceChange24h.toFixed(2)}%\n`;
+        message += `**Trend Direction:** ${analysis.trendDirection}\n`;
+        message += `**MACD Signal:** ${analysis.macdSignal}\n`;
+        message += `**RSI:** ${analysis.rsiValue}\n`;
+        message += `**Fear & Greed Index:** ${analysis.fearGreedIndex}\n`;
+        
+        if (analysis.indicators) {
+          message += `\n**Technical Indicators:**\n`;
+          if (analysis.indicators.rsi) message += `- RSI: ${analysis.indicators.rsi}\n`;
+          if (analysis.indicators.macd?.signal) message += `- MACD: ${analysis.indicators.macd.signal}\n`;
+          if (analysis.indicators.stochastic?.signal) message += `- Stochastic: ${analysis.indicators.stochastic.signal}\n`;
+        }
+        
+        typeMessage(message, 'oracle', 85);
+      } else {
+        typeMessage('Unable to retrieve market analysis at this time. Please try again.', 'error', 0);
+      }
+    } catch (error) {
+      console.error('Error fetching market analysis:', error);
+      typeMessage('Error retrieving market analysis. Please try again.', 'error', 0);
+    }
+    setIsProcessing(false);
+  };
+
+  const handleGenerateStrategy = async () => {
+    setIsProcessing(true);
+    try {
+      await refetchStrategies();
+      const strategies = strategyRecommendations;
+      
+      if (strategies && strategies.length > 0) {
+        let message = `**⚡ Trading Strategy Recommendations (Database)**\n\n`;
+        
+        strategies.slice(0, 3).forEach((strategy: any, index: number) => {
+          message += `**${index + 1}. ${strategy.name}**\n`;
+          message += `- **Type:** ${strategy.type}\n`;
+          message += `- **Risk Level:** ${strategy.riskLevel}\n`;
+          message += `- **Win Rate:** ${strategy.winRate}%\n`;
+          message += `- **Description:** ${strategy.description}\n\n`;
+        });
+        
+        typeMessage(message, 'oracle', 90);
+      } else {
+        // Fallback to enhanced dashboard data
+        await refetchEnhancedData();
+        const dashboardData = enhancedDashboardData;
+        
+        if (dashboardData) {
+          let message = `**⚡ Market-Based Strategy Recommendation**\n\n`;
+          message += `**Current ETH Price:** $${dashboardData.ethData.price}\n`;
+          message += `**24h Change:** ${dashboardData.ethData.priceChange24h.toFixed(2)}%\n`;
+          
+          if (dashboardData.konsPowaPrediction) {
+            message += `**Kons Powa Recommendation:** ${dashboardData.konsPowaPrediction.prediction}\n`;
+            message += `**Strategy:** ${dashboardData.konsPowaPrediction.strategy}\n`;
+            message += `**Risk Level:** ${dashboardData.konsPowaPrediction.riskLevel}\n`;
+          }
+          
+          typeMessage(message, 'oracle', 75);
+        } else {
+          typeMessage('Unable to retrieve strategy recommendations at this time. Please try again.', 'error', 0);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching strategies:', error);
+      typeMessage('Error retrieving strategy recommendations. Please try again.', 'error', 0);
+    }
+    setIsProcessing(false);
   };
 
 
@@ -351,6 +482,27 @@ export default function WaidesKIVisionPortal() {
   const { data: konsPrediction, isLoading: isKonsPredictionLoading, refetch: refetchKonsPrediction } = useQuery<DivineResponse>({
     queryKey: ['/api/divine-signal'],
     enabled: false, // Only fetch when explicitly requested
+  });
+
+  // Enhanced Database-Backed Services Queries
+  const { data: enhancedDashboardData, isLoading: isEnhancedLoading, refetch: refetchEnhancedData } = useQuery({
+    queryKey: ['/api/dashboard/enhanced-data'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const { data: konsPowaPrediction, isLoading: isKonsPowaPredictionLoading, refetch: refetchKonsPowaPrediction } = useQuery({
+    queryKey: ['/api/kons-powa/prediction/current'],
+    refetchInterval: 240000, // Refresh every 4 minutes
+  });
+
+  const { data: marketAnalysis, isLoading: isMarketAnalysisLoading, refetch: refetchMarketAnalysis } = useQuery({
+    queryKey: ['/api/market-analysis/current'],
+    refetchInterval: 180000, // Refresh every 3 minutes
+  });
+
+  const { data: strategyRecommendations, isLoading: isStrategiesLoading, refetch: refetchStrategies } = useQuery({
+    queryKey: ['/api/trading-strategies/recommendations'],
+    refetchInterval: 300000, // Refresh every 5 minutes
   });
 
   // Chat mutation
@@ -657,61 +809,7 @@ export default function WaidesKIVisionPortal() {
     typeMessageKonsmik(message, source, confidence, konslangProcessing, reasoning);
   };
 
-  // Kons Powa ETH Prediction Handler
-  const handleKonsPowaPrediction = async () => {
-    setIsProcessing(true);
-    setShowKonsPrediction(true);
-    
-    try {
-      const result = await refetchKonsPrediction();
-      const prediction = result.data;
-      
-      if (prediction && prediction.divineSignal) {
-        const signal = prediction.divineSignal;
-        
-        // Create formatted prediction message
-        const predictionMessage = `🔮 **Kons Powa ETH Prediction**
 
-**Direction:** ${signal.action}
-**Confidence:** ${signal.smaiPredict.confidence}%
-**Next Hour:** ${signal.smaiPredict.nextHourDirection}
-**Price Range:** $${signal.smaiPredict.predictedPriceRange.min.toFixed(2)} - $${signal.smaiPredict.predictedPriceRange.max.toFixed(2)}
-
-**Strategy:** ${signal.strategy}
-**Energy Purity:** ${signal.energeticPurity}%
-**Kons Mirror:** ${signal.konsMirror}
-
-**Spiritual Guidance:** ${signal.reason}
-
-*From ${signal.konsTitle} through sacred Kons Powa channel*`;
-
-        // Add prediction to chat
-        const predictionChatMessage: ChatMessage = {
-          id: Date.now().toString(),
-          sender: 'waides',
-          message: predictionMessage,
-          timestamp: new Date(),
-          source: 'oracle',
-          confidence: signal.smaiPredict.confidence,
-          konslangProcessing: `Divine Channel: ${signal.signalCode}`
-        };
-        
-        setMessages(prev => [...prev, predictionChatMessage]);
-        
-        // Speak prediction if voice is enabled
-        if (voiceSettings.enabled) {
-          const spokenText = `ETH prediction from Kons Powa: ${signal.action}, ${signal.smaiPredict.nextHourDirection} direction with ${signal.smaiPredict.confidence}% confidence. ${signal.reason}`;
-          speakMessage(spokenText);
-        }
-      }
-    } catch (error) {
-      console.error('Kons Powa prediction error:', error);
-      typeMessageKonsmik('Unable to connect to Kons Powa divine channel. Please try again.', 'error', 0);
-    }
-    
-    setIsProcessing(false);
-    setShowKonsPrediction(false);
-  };
 
   // Autonomous Trading Functions
   const startAutonomousTrading = async () => {
@@ -1160,14 +1258,14 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               {/* Quick Actions */}
               <div className="flex flex-wrap gap-2 mb-4 justify-center">
                 <Button
-                  onClick={handleKonsPowaPrediction}
-                  disabled={isProcessing || showKonsPrediction || isKonsPredictionLoading}
+                  onClick={() => handleQuickAction('kons-powa-prediction')}
+                  disabled={isProcessing || isKonsPowaPredictionLoading}
                   className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
-                  {showKonsPrediction || isKonsPredictionLoading ? (
+                  {isKonsPowaPredictionLoading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Connecting...
+                      Loading...
                     </>
                   ) : (
                     <>
@@ -1178,21 +1276,41 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 </Button>
                 
                 <Button
-                  onClick={() => setCurrentMessage("What's the market outlook for ETH?")}
+                  onClick={() => handleQuickAction('market-analysis')}
+                  disabled={isProcessing || isMarketAnalysisLoading}
                   variant="outline"
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
-                  <BarChart3 className="w-4 h-4" />
-                  Market Analysis
+                  {isMarketAnalysisLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-purple-300/30 border-t-purple-300 rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <BarChart3 className="w-4 h-4" />
+                      Market Analysis
+                    </>
+                  )}
                 </Button>
                 
                 <Button
-                  onClick={() => setCurrentMessage("Show me ETH trading strategies")}
+                  onClick={() => handleQuickAction('generate-strategy')}
+                  disabled={isProcessing || isStrategiesLoading}
                   variant="outline"
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
-                  <Brain className="w-4 h-4" />
-                  Trading Strategies
+                  {isStrategiesLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-purple-300/30 border-t-purple-300 rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="w-4 h-4" />
+                      Trading Strategies
+                    </>
+                  )}
                 </Button>
               </div>
 
