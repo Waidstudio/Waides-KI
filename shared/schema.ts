@@ -275,6 +275,87 @@ export const insertTradeSchema = createInsertSchema(trades).omit({
   executedAt: true,
 });
 
+// Enhanced prediction and analysis tables
+export const konsPowaPredictions = pgTable("kons_powa_predictions", {
+  id: serial("id").primaryKey(),
+  ethPrice: real("eth_price").notNull(),
+  prediction: text("prediction").notNull(), // 'BULLISH', 'BEARISH', 'NEUTRAL'
+  confidence: integer("confidence").notNull(), // 0-100
+  timeframe: text("timeframe").notNull(), // '1h', '4h', '1d', '1w'
+  strategy: text("strategy").notNull(),
+  reasoning: text("reasoning").notNull(),
+  targetPrice: real("target_price"),
+  stopLoss: real("stop_loss"),
+  riskLevel: text("risk_level").notNull().default("MEDIUM"),
+  konsPowerLevel: integer("kons_power_level").notNull().default(75),
+  divineAlignment: integer("divine_alignment").notNull().default(80),
+  spiritualEnergy: integer("spiritual_energy").notNull().default(85),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
+export const marketAnalyses = pgTable("market_analyses", {
+  id: serial("id").primaryKey(),
+  ethPrice: real("eth_price").notNull(),
+  volume24h: real("volume_24h"),
+  marketCap: real("market_cap"),
+  priceChange24h: real("price_change_24h"),
+  dominance: real("dominance"),
+  fearGreedIndex: integer("fear_greed_index"),
+  rsiValue: real("rsi_value"),
+  macdSignal: text("macd_signal"),
+  supportLevel: real("support_level"),
+  resistanceLevel: real("resistance_level"),
+  trendDirection: text("trend_direction").notNull(),
+  volatilityIndex: real("volatility_index"),
+  tradingVolume: real("trading_volume"),
+  analysisType: text("analysis_type").notNull().default("COMPREHENSIVE"),
+  insights: jsonb("insights").default("{}"),
+  indicators: jsonb("indicators").default("{}"),
+  recommendations: jsonb("recommendations").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const tradingStrategies = pgTable("trading_strategies", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  strategyType: text("strategy_type").notNull(), // 'SCALPING', 'SWING', 'POSITION', 'DCA'
+  riskLevel: text("risk_level").notNull().default("MEDIUM"),
+  timeframe: text("timeframe").notNull(),
+  entryConditions: jsonb("entry_conditions").notNull(),
+  exitConditions: jsonb("exit_conditions").notNull(),
+  riskManagement: jsonb("risk_management").notNull(),
+  backtestResults: jsonb("backtest_results").default("{}"),
+  performanceMetrics: jsonb("performance_metrics").default("{}"),
+  winRate: real("win_rate").default(0),
+  profitFactor: real("profit_factor").default(0),
+  maxDrawdown: real("max_drawdown").default(0),
+  sharpeRatio: real("sharpe_ratio").default(0),
+  isActive: boolean("is_active").default(true),
+  createdBy: text("created_by").default("SYSTEM"),
+  tags: jsonb("tags").default("[]"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const strategiesTradingHistory = pgTable("strategies_trading_history", {
+  id: serial("id").primaryKey(),
+  strategyId: integer("strategy_id").notNull().references(() => tradingStrategies.id),
+  ethPrice: real("eth_price").notNull(),
+  action: text("action").notNull(), // 'BUY', 'SELL', 'HOLD'
+  quantity: real("quantity").notNull(),
+  executedPrice: real("executed_price"),
+  profit: real("profit"),
+  profitPercentage: real("profit_percentage"),
+  confidence: integer("confidence").notNull(),
+  reasoning: text("reasoning").notNull(),
+  marketConditions: jsonb("market_conditions").default("{}"),
+  executedAt: timestamp("executed_at").defaultNow(),
+  status: text("status").notNull().default("COMPLETED"),
+});
+
 export type InsertWallet = z.infer<typeof insertWalletSchema>;
 export type Wallet = typeof wallets.$inferSelect;
 export type InsertMemory = z.infer<typeof insertMemorySchema>;
@@ -285,6 +366,37 @@ export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertTrade = z.infer<typeof insertTradeSchema>;
 export type Trade = typeof trades.$inferSelect;
+
+// Enhanced prediction and analysis schemas
+export const insertKonsPowaPredictionSchema = createInsertSchema(konsPowaPredictions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertMarketAnalysisSchema = createInsertSchema(marketAnalyses).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTradingStrategySchema = createInsertSchema(tradingStrategies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStrategyTradingHistorySchema = createInsertSchema(strategiesTradingHistory).omit({
+  id: true,
+  executedAt: true,
+});
+
+export type InsertKonsPowaPrediction = z.infer<typeof insertKonsPowaPredictionSchema>;
+export type KonsPowaPrediction = typeof konsPowaPredictions.$inferSelect;
+export type InsertMarketAnalysis = z.infer<typeof insertMarketAnalysisSchema>;
+export type MarketAnalysis = typeof marketAnalyses.$inferSelect;
+export type InsertTradingStrategy = z.infer<typeof insertTradingStrategySchema>;
+export type TradingStrategy = typeof tradingStrategies.$inferSelect;
+export type InsertStrategyTradingHistory = z.infer<typeof insertStrategyTradingHistorySchema>;
+export type StrategyTradingHistory = typeof strategiesTradingHistory.$inferSelect;
 
 // SmaiWallet - Core wallet system for autonomous wealth management
 export const smaiWallets = pgTable('smai_wallets', {

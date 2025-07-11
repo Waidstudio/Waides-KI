@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
-import { users, apiKeys, ethData, signals, candlesticks, adminUsers, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick, type AdminUser, type InsertAdminUser } from "@shared/schema";
+import { users, apiKeys, ethData, signals, candlesticks, adminUsers, konsPowaPredictions, marketAnalyses, tradingStrategies, strategiesTradingHistory, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick, type AdminUser, type InsertAdminUser, type KonsPowaPrediction, type InsertKonsPowaPrediction, type MarketAnalysis, type InsertMarketAnalysis, type TradingStrategy, type InsertTradingStrategy, type StrategyTradingHistory, type InsertStrategyTradingHistory } from "@shared/schema";
 
 // Export db for use in other services
 export { db };
@@ -44,6 +44,25 @@ export interface IStorage {
   getSmaiSikaBalance(userId: string): Promise<number>;
   createConversion(conversion: any): Promise<any>;
   getUserTransactions(userId: string): Promise<any[]>;
+
+  // Kons Powa Predictions
+  getActivePredictions(): Promise<KonsPowaPrediction[]>;
+  createPrediction(prediction: InsertKonsPowaPrediction): Promise<KonsPowaPrediction>;
+  getPredictionHistory(limit?: number): Promise<KonsPowaPrediction[]>;
+  expirePredictions(): Promise<void>;
+
+  // Market Analysis
+  getLatestMarketAnalysis(): Promise<MarketAnalysis | undefined>;
+  createMarketAnalysis(analysis: InsertMarketAnalysis): Promise<MarketAnalysis>;
+  getMarketAnalysisHistory(limit?: number): Promise<MarketAnalysis[]>;
+
+  // Trading Strategies
+  getActiveStrategies(): Promise<TradingStrategy[]>;
+  createStrategy(strategy: InsertTradingStrategy): Promise<TradingStrategy>;
+  getStrategyById(id: number): Promise<TradingStrategy | undefined>;
+  updateStrategy(id: number, updates: Partial<TradingStrategy>): Promise<TradingStrategy>;
+  getStrategyHistory(strategyId: number, limit?: number): Promise<StrategyTradingHistory[]>;
+  recordStrategyTrade(trade: InsertStrategyTradingHistory): Promise<StrategyTradingHistory>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -323,6 +342,84 @@ export class DatabaseStorage implements IStorage {
       .filter((tx: any) => tx.userId === userId)
       .sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 50); // Last 50 transactions
+  }
+
+  // Kons Powa Predictions
+  async getActivePredictions(): Promise<KonsPowaPrediction[]> {
+    return await db.select().from(konsPowaPredictions).where(eq(konsPowaPredictions.isActive, true)).orderBy(desc(konsPowaPredictions.createdAt));
+  }
+
+  async createPrediction(insertPrediction: InsertKonsPowaPrediction): Promise<KonsPowaPrediction> {
+    const [prediction] = await db
+      .insert(konsPowaPredictions)
+      .values(insertPrediction)
+      .returning();
+    return prediction;
+  }
+
+  async getPredictionHistory(limit: number = 50): Promise<KonsPowaPrediction[]> {
+    return await db.select().from(konsPowaPredictions).orderBy(desc(konsPowaPredictions.createdAt)).limit(limit);
+  }
+
+  async expirePredictions(): Promise<void> {
+    await db.update(konsPowaPredictions).set({ isActive: false }).where(eq(konsPowaPredictions.isActive, true));
+  }
+
+  // Market Analysis
+  async getLatestMarketAnalysis(): Promise<MarketAnalysis | undefined> {
+    const [analysis] = await db.select().from(marketAnalyses).orderBy(desc(marketAnalyses.createdAt));
+    return analysis || undefined;
+  }
+
+  async createMarketAnalysis(insertAnalysis: InsertMarketAnalysis): Promise<MarketAnalysis> {
+    const [analysis] = await db
+      .insert(marketAnalyses)
+      .values(insertAnalysis)
+      .returning();
+    return analysis;
+  }
+
+  async getMarketAnalysisHistory(limit: number = 50): Promise<MarketAnalysis[]> {
+    return await db.select().from(marketAnalyses).orderBy(desc(marketAnalyses.createdAt)).limit(limit);
+  }
+
+  // Trading Strategies
+  async getActiveStrategies(): Promise<TradingStrategy[]> {
+    return await db.select().from(tradingStrategies).where(eq(tradingStrategies.isActive, true)).orderBy(desc(tradingStrategies.createdAt));
+  }
+
+  async createStrategy(insertStrategy: InsertTradingStrategy): Promise<TradingStrategy> {
+    const [strategy] = await db
+      .insert(tradingStrategies)
+      .values(insertStrategy)
+      .returning();
+    return strategy;
+  }
+
+  async getStrategyById(id: number): Promise<TradingStrategy | undefined> {
+    const [strategy] = await db.select().from(tradingStrategies).where(eq(tradingStrategies.id, id));
+    return strategy || undefined;
+  }
+
+  async updateStrategy(id: number, updates: Partial<TradingStrategy>): Promise<TradingStrategy> {
+    const [strategy] = await db
+      .update(tradingStrategies)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(tradingStrategies.id, id))
+      .returning();
+    return strategy;
+  }
+
+  async getStrategyHistory(strategyId: number, limit: number = 50): Promise<StrategyTradingHistory[]> {
+    return await db.select().from(strategiesTradingHistory).where(eq(strategiesTradingHistory.strategyId, strategyId)).orderBy(desc(strategiesTradingHistory.executedAt)).limit(limit);
+  }
+
+  async recordStrategyTrade(insertTrade: InsertStrategyTradingHistory): Promise<StrategyTradingHistory> {
+    const [trade] = await db
+      .insert(strategiesTradingHistory)
+      .values(insertTrade)
+      .returning();
+    return trade;
   }
 }
 
