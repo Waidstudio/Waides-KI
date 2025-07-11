@@ -95,7 +95,7 @@ Changelog:
   - Successfully integrated KonsAi (200+ module omniscient system) for general questions beyond trading
   - Implemented intelligent query routing: trading queries → WaidBot Engine, general queries → KonsAi
   - Added comprehensive trading recommendations with specific page navigation buttons
-  - Updated all trading bot recommendations to point to WaidBot Engine (/full-engine) instead of basic WaidBot
+  - Updated all trading bot recommendations to point to WaidBot Engine (/waidbot-engine) instead of basic WaidBot
   - Enhanced chat interface with clickable page recommendation buttons for trading-related queries
   - System now provides ETH predictions, trading guidance, and general AI assistance through unified chat interface
   - All trading recommendations now direct users to WaidBot Engine for actual trading functionality

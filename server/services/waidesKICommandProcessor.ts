@@ -246,7 +246,7 @@ export class WaidesKICommandProcessor {
           autonomousMode: true,
           winRate: stats.autonomous_win_rate,
           totalTrades: stats.total_trades_executed,
-          navigationSuggestion: "/full-engine"
+          navigationSuggestion: "/waidbot-engine"
         },
         timestamp: Date.now(),
         executionTime: Date.now() - Date.now()
