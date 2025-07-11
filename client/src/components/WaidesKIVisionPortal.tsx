@@ -254,10 +254,10 @@ export default function WaidesKIVisionPortal() {
     // Trading bot queries
     if (query.includes('bot') || query.includes('waidbot') || query.includes('automated') || query.includes('auto')) {
       return {
-        message: `🤖 **Trading Bot Assistance**\n\n**Available Trading Bots:**\n\n• **WaidBot** - Basic ETH trading with divine guidance\n• **WaidBot Pro** - Advanced technical analysis\n• **Full Engine** - Complete autonomous trading\n\n**Recommended Actions:**\n✅ Visit the **WaidBot page** to configure your bot\n✅ Check your **SmaiSika wallet** balance first\n✅ Set your risk preferences and trading limits\n\n**Next Steps:** Click the navigation menu → WaidBot to get started!`,
+        message: `🤖 **Trading Bot Assistance**\n\n**Available Trading Bots:**\n\n• **WaidBot Engine** - Complete autonomous trading system\n• **WaidBot Pro** - Advanced technical analysis\n• **Full Engine** - Complete trading automation\n\n**Recommended Actions:**\n✅ Visit the **WaidBot Engine** to start trading\n✅ Check your **SmaiSika wallet** balance first\n✅ Set your risk preferences and trading limits\n\n**Next Steps:** Click the navigation menu → WaidBot Engine to get started!`,
         confidence: 90,
         recommendations: [
-          { page: 'WaidBot', route: '/waidbot', description: 'Configure and manage your trading bots' },
+          { page: 'WaidBot Engine', route: '/full-engine', description: 'Complete autonomous trading system' },
           { page: 'SmaiSika Wallet', route: '/smai-wallet', description: 'Check balance and fund your account' }
         ]
       };
@@ -303,23 +303,23 @@ export default function WaidesKIVisionPortal() {
     // General ETH queries
     if (query.includes('eth') || query.includes('ethereum')) {
       return {
-        message: `⚡ **Ethereum Trading Hub**\n\n**Current ETH:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n**24h Change:** ${enhancedDashboardData?.ethData?.priceChange24h?.toFixed(2) || 'N/A'}%\n\n**ETH Services:**\n• **Kons Powa Predictions** - Spiritual ETH analysis\n• **Technical Analysis** - Chart patterns and indicators\n• **Automated Trading** - ETH-focused bots\n• **Risk Management** - Position sizing and stops\n\n**Best Pages for ETH:**\n✅ **Dashboard** - ETH overview and metrics\n✅ **Charts** - ETH price analysis\n✅ **WaidBot** - ETH trading automation\n\n**Pro Tip:** Use the "Kons Powa ETH Prediction" button for divine insights!`,
+        message: `⚡ **Ethereum Trading Hub**\n\n**Current ETH:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n**24h Change:** ${enhancedDashboardData?.ethData?.priceChange24h?.toFixed(2) || 'N/A'}%\n\n**ETH Services:**\n• **Kons Powa Predictions** - Spiritual ETH analysis\n• **Technical Analysis** - Chart patterns and indicators\n• **Automated Trading** - ETH-focused bots\n• **Risk Management** - Position sizing and stops\n\n**Best Pages for ETH:**\n✅ **Dashboard** - ETH overview and metrics\n✅ **Charts** - ETH price analysis\n✅ **WaidBot Engine** - ETH trading automation\n\n**Pro Tip:** Use the "Kons Powa ETH Prediction" button for divine insights!`,
         confidence: 95,
         recommendations: [
           { page: 'Dashboard', route: '/dashboard', description: 'Complete ETH trading dashboard' },
           { page: 'Charts', route: '/charts', description: 'ETH technical analysis and charts' },
-          { page: 'WaidBot', route: '/waidbot', description: 'ETH-focused trading automation' }
+          { page: 'WaidBot Engine', route: '/full-engine', description: 'ETH-focused trading automation' }
         ]
       };
     }
     
     // Default trading response
     return {
-      message: `🔮 **Waides KI Trading Assistant**\n\nI understand you're interested in: "${messageText}"\n\n**I can help you with:**\n• Trading bot setup and management\n• Market analysis and predictions\n• Strategy development and education\n• Wallet management and funding\n• Risk management and safety\n\n**Popular Pages:**\n✅ **Dashboard** - Market overview\n✅ **WaidBot** - Trading automation\n✅ **Charts** - Technical analysis\n✅ **Learning** - Trading education\n\n**Quick Start:** Try the quick action buttons above or ask me specific questions about trading!`,
+      message: `🔮 **Waides KI Trading Assistant**\n\nI understand you're interested in: "${messageText}"\n\n**I can help you with:**\n• Trading bot setup and management\n• Market analysis and predictions\n• Strategy development and education\n• Wallet management and funding\n• Risk management and safety\n\n**Popular Pages:**\n✅ **Dashboard** - Market overview\n✅ **WaidBot Engine** - Trading automation\n✅ **Charts** - Technical analysis\n✅ **Learning** - Trading education\n\n**Quick Start:** Try the quick action buttons above or ask me specific questions about trading!`,
       confidence: 75,
       recommendations: [
         { page: 'Dashboard', route: '/dashboard', description: 'Start with market overview' },
-        { page: 'WaidBot', route: '/waidbot', description: 'Explore trading automation' },
+        { page: 'WaidBot Engine', route: '/full-engine', description: 'Explore trading automation' },
         { page: 'Learning', route: '/learning', description: 'Learn trading fundamentals' }
       ]
     };
