@@ -247,7 +247,83 @@ export default function WaidesKIVisionPortal() {
     setIsProcessing(false);
   };
 
-
+  // Handle trading-related queries with intelligent recommendations
+  const handleTradingQuery = async (messageText: string) => {
+    const query = messageText.toLowerCase();
+    
+    // Trading bot queries
+    if (query.includes('bot') || query.includes('waidbot') || query.includes('automated') || query.includes('auto')) {
+      return {
+        message: `🤖 **Trading Bot Assistance**\n\n**Available Trading Bots:**\n\n• **WaidBot** - Basic ETH trading with divine guidance\n• **WaidBot Pro** - Advanced technical analysis\n• **Full Engine** - Complete autonomous trading\n\n**Recommended Actions:**\n✅ Visit the **WaidBot page** to configure your bot\n✅ Check your **SmaiSika wallet** balance first\n✅ Set your risk preferences and trading limits\n\n**Next Steps:** Click the navigation menu → WaidBot to get started!`,
+        confidence: 90,
+        recommendations: [
+          { page: 'WaidBot', route: '/waidbot', description: 'Configure and manage your trading bots' },
+          { page: 'SmaiSika Wallet', route: '/smai-wallet', description: 'Check balance and fund your account' }
+        ]
+      };
+    }
+    
+    // Market analysis queries
+    if (query.includes('market') || query.includes('analysis') || query.includes('price') || query.includes('chart')) {
+      return {
+        message: `📊 **Market Analysis Available**\n\n**Current ETH Price:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n\n**Analysis Options:**\n• **Technical Analysis** - Charts, indicators, patterns\n• **Kons Powa Predictions** - Spiritual market readings\n• **Real-time Data** - Live price feeds and volume\n\n**Recommended Pages:**\n✅ **Charts** - View detailed technical analysis\n✅ **Dashboard** - Get market overview\n✅ **Live Data** - Real-time price monitoring\n\n**Quick Action:** Use the "Market Analysis" button above for instant insights!`,
+        confidence: 85,
+        recommendations: [
+          { page: 'Charts', route: '/charts', description: 'View detailed technical analysis and live charts' },
+          { page: 'Dashboard', route: '/dashboard', description: 'Get comprehensive market overview' },
+          { page: 'Live Data', route: '/live-data', description: 'Monitor real-time market data' }
+        ]
+      };
+    }
+    
+    // Strategy queries
+    if (query.includes('strategy') || query.includes('trading plan') || query.includes('how to trade')) {
+      return {
+        message: `🎯 **Trading Strategy Guidance**\n\n**Strategy Types:**\n• **Scalping** - Quick short-term trades\n• **Swing Trading** - Medium-term positions\n• **HODLing** - Long-term holding strategy\n• **Divine Guidance** - Kons Powa spiritual trading\n\n**Recommended Learning:**\n✅ **Trading Academy** - Complete education\n✅ **WaidBot Pro** - Advanced strategy analysis\n✅ **Risk Management** - Protect your capital\n\n**Get Started:** Click "Trading Strategies" button or visit the Learning page!`,
+        confidence: 88,
+        recommendations: [
+          { page: 'Learning', route: '/learning', description: 'Complete trading education and academy' },
+          { page: 'WaidBot Pro', route: '/waidbot-pro', description: 'Advanced strategy analysis and recommendations' }
+        ]
+      };
+    }
+    
+    // Wallet and funding queries
+    if (query.includes('fund') || query.includes('wallet') || query.includes('balance') || query.includes('money')) {
+      return {
+        message: `💰 **Wallet & Funding Help**\n\n**SmaiSika Wallet Balance:** ꠄ${smaiBalance?.toLocaleString() || 'Loading...'}\n**Local Currency:** ₦${localBalance?.toLocaleString() || 'Loading...'}\n\n**Funding Options:**\n• **Paystack** - Nigerian payment gateway\n• **Flutterwave** - African payment solutions\n• **Bank Transfer** - Direct local transfers\n• **Crypto Deposit** - USDT and other cryptocurrencies\n\n**Recommended Actions:**\n✅ **SmaiSika Wallet** - Manage your funds\n✅ **Admin Panel** - Configure payment methods\n\n**Safety First:** Always verify transactions and use secure payment methods!`,
+        confidence: 92,
+        recommendations: [
+          { page: 'SmaiSika Wallet', route: '/smai-wallet', description: 'Manage your wallet and view transactions' },
+          { page: 'Admin Panel', route: '/admin', description: 'Configure payment methods and security' }
+        ]
+      };
+    }
+    
+    // General ETH queries
+    if (query.includes('eth') || query.includes('ethereum')) {
+      return {
+        message: `⚡ **Ethereum Trading Hub**\n\n**Current ETH:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n**24h Change:** ${enhancedDashboardData?.ethData?.priceChange24h?.toFixed(2) || 'N/A'}%\n\n**ETH Services:**\n• **Kons Powa Predictions** - Spiritual ETH analysis\n• **Technical Analysis** - Chart patterns and indicators\n• **Automated Trading** - ETH-focused bots\n• **Risk Management** - Position sizing and stops\n\n**Best Pages for ETH:**\n✅ **Dashboard** - ETH overview and metrics\n✅ **Charts** - ETH price analysis\n✅ **WaidBot** - ETH trading automation\n\n**Pro Tip:** Use the "Kons Powa ETH Prediction" button for divine insights!`,
+        confidence: 95,
+        recommendations: [
+          { page: 'Dashboard', route: '/dashboard', description: 'Complete ETH trading dashboard' },
+          { page: 'Charts', route: '/charts', description: 'ETH technical analysis and charts' },
+          { page: 'WaidBot', route: '/waidbot', description: 'ETH-focused trading automation' }
+        ]
+      };
+    }
+    
+    // Default trading response
+    return {
+      message: `🔮 **Waides KI Trading Assistant**\n\nI understand you're interested in: "${messageText}"\n\n**I can help you with:**\n• Trading bot setup and management\n• Market analysis and predictions\n• Strategy development and education\n• Wallet management and funding\n• Risk management and safety\n\n**Popular Pages:**\n✅ **Dashboard** - Market overview\n✅ **WaidBot** - Trading automation\n✅ **Charts** - Technical analysis\n✅ **Learning** - Trading education\n\n**Quick Start:** Try the quick action buttons above or ask me specific questions about trading!`,
+      confidence: 75,
+      recommendations: [
+        { page: 'Dashboard', route: '/dashboard', description: 'Start with market overview' },
+        { page: 'WaidBot', route: '/waidbot', description: 'Explore trading automation' },
+        { page: 'Learning', route: '/learning', description: 'Learn trading fundamentals' }
+      ]
+    };
+  };
 
   const handleSendKonsaiMessage = async (messageText: string) => {
     const userMessage: ChatMessage = {
@@ -261,22 +337,70 @@ export default function WaidesKIVisionPortal() {
     setIsTyping(true);
 
     try {
-      // Simulate KI response for now
-      setTimeout(() => {
+      // Determine if this is trading-related or general question
+      const tradingKeywords = ['trade', 'trading', 'buy', 'sell', 'strategy', 'bot', 'fund', 'account', 'eth', 'ethereum', 'price', 'market', 'analysis', 'prediction', 'kons powa', 'waidbot', 'smai', 'wallet'];
+      const isTrading = tradingKeywords.some(keyword => messageText.toLowerCase().includes(keyword));
+      
+      if (isTrading) {
+        // Handle trading-related questions with recommendations
+        const response = await handleTradingQuery(messageText);
         const konsaiResponse: ChatMessage = {
           id: (Date.now() + 1).toString(),
           sender: 'waides',
-          message: `I understand you want: "${messageText}". I'm here to help with all your trading needs including strategy generation, bot management, account funding, and market analysis. How can I assist you further?`,
+          message: response.message,
           timestamp: new Date(),
-          source: 'incite'
+          source: 'combined',
+          confidence: response.confidence,
+          reasoning: response.recommendations
         };
         
         setMessages(prev => [...prev, konsaiResponse]);
         setIsTyping(false);
-      }, 1500);
+      } else {
+        // Use KonsAi for general questions
+        const response = await fetch('/api/konsai/query', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: messageText,
+            context: 'chat',
+            user_id: 'waides-user'
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const konsaiResponse: ChatMessage = {
+            id: (Date.now() + 1).toString(),
+            sender: 'waides',
+            message: data.response,
+            timestamp: new Date(),
+            source: 'enhanced_bot_memory',
+            confidence: data.confidence || 85
+          };
+          
+          setMessages(prev => [...prev, konsaiResponse]);
+        } else {
+          throw new Error('KonsAi service unavailable');
+        }
+        setIsTyping(false);
+      }
     } catch (error) {
       setIsTyping(false);
       console.error('Error sending message:', error);
+      
+      // Fallback response
+      const fallbackResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'waides',
+        message: "I'm processing your request. Let me help you with your trading and investment needs. Would you like me to show you market analysis, trading strategies, or help with account setup?",
+        timestamp: new Date(),
+        source: 'error'
+      };
+      
+      setMessages(prev => [...prev, fallbackResponse]);
     }
   };
   const [isListening, setIsListening] = useState(false);
@@ -1413,24 +1537,54 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   <div className="mt-4 space-y-2">
                     <div className="text-xs text-purple-300 font-semibold flex items-center gap-2">
                       <Brain className="w-3 h-3" />
-                      Reasoning Process
+                      {Array.isArray(message.reasoning) && message.reasoning.length > 0 && typeof message.reasoning[0] === 'object' && 'step' in message.reasoning[0] 
+                        ? 'Reasoning Process' 
+                        : 'Recommended Pages'}
                     </div>
                     {message.reasoning.map((step, index) => (
-                      <div key={index} className="bg-gray-900/40 border border-purple-500/10 rounded-lg p-3">
-                        <div className="text-xs text-purple-400 font-medium mb-1">
-                          Step {index + 1}: {step.step}
-                        </div>
-                        <div className="text-sm text-gray-300 mb-2">
-                          {step.analysis}
-                        </div>
-                        {step.data && Object.keys(step.data).length > 0 && (
-                          <div className="text-xs text-gray-400 bg-gray-800/60 rounded p-2">
-                            <strong>Data:</strong> {JSON.stringify(step.data, null, 2)}
+                      <div key={index}>
+                        {/* Traditional reasoning step display */}
+                        {typeof step === 'object' && 'step' in step ? (
+                          <div className="bg-gray-900/40 border border-purple-500/10 rounded-lg p-3">
+                            <div className="text-xs text-purple-400 font-medium mb-1">
+                              Step {index + 1}: {step.step}
+                            </div>
+                            <div className="text-sm text-gray-300 mb-2">
+                              {step.analysis}
+                            </div>
+                            {step.data && Object.keys(step.data).length > 0 && (
+                              <div className="text-xs text-gray-400 bg-gray-800/60 rounded p-2">
+                                <strong>Data:</strong> {JSON.stringify(step.data, null, 2)}
+                              </div>
+                            )}
+                            <div className="text-xs text-purple-300 mt-1">
+                              Confidence: {step.confidence}%
+                            </div>
+                          </div>
+                        ) : (
+                          /* Page recommendation display */
+                          <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/20 rounded-lg p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-purple-200 mb-1">
+                                  {step.page}
+                                </div>
+                                <div className="text-xs text-gray-300">
+                                  {step.description}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handlePageNavigation(step.route)}
+                                className="ml-3 inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-xs font-medium rounded-lg transition-all duration-200 transform hover:scale-105"
+                              >
+                                <span>Visit</span>
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         )}
-                        <div className="text-xs text-purple-300 mt-1">
-                          Confidence: {step.confidence}%
-                        </div>
                       </div>
                     ))}
                   </div>
