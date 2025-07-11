@@ -257,7 +257,7 @@ export default function WaidesKIVisionPortal() {
         message: `🤖 **Trading Bot Assistance**\n\n**Available Trading Bots:**\n\n• **WaidBot Engine** - Complete autonomous trading system\n• **WaidBot Pro** - Advanced technical analysis\n• **Full Engine** - Complete trading automation\n\n**Recommended Actions:**\n✅ Visit the **WaidBot Engine** to start trading\n✅ Check your **SmaiSika wallet** balance first\n✅ Set your risk preferences and trading limits\n\n**Next Steps:** Click the navigation menu → WaidBot Engine to get started!`,
         confidence: 90,
         recommendations: [
-          { page: 'WaidBot Engine', route: '/full-engine', description: 'Complete autonomous trading system' },
+          { page: 'WaidBot Engine', route: '/waidbot-engine', description: 'Complete autonomous trading system' },
           { page: 'SmaiSika Wallet', route: '/smai-wallet', description: 'Check balance and fund your account' }
         ]
       };
@@ -308,7 +308,7 @@ export default function WaidesKIVisionPortal() {
         recommendations: [
           { page: 'Dashboard', route: '/dashboard', description: 'Complete ETH trading dashboard' },
           { page: 'Charts', route: '/charts', description: 'ETH technical analysis and charts' },
-          { page: 'WaidBot Engine', route: '/full-engine', description: 'ETH-focused trading automation' }
+          { page: 'WaidBot Engine', route: '/waidbot-engine', description: 'ETH-focused trading automation' }
         ]
       };
     }
@@ -319,7 +319,7 @@ export default function WaidesKIVisionPortal() {
       confidence: 75,
       recommendations: [
         { page: 'Dashboard', route: '/dashboard', description: 'Start with market overview' },
-        { page: 'WaidBot Engine', route: '/full-engine', description: 'Explore trading automation' },
+        { page: 'WaidBot Engine', route: '/waidbot-engine', description: 'Explore trading automation' },
         { page: 'Learning', route: '/learning', description: 'Learn trading fundamentals' }
       ]
     };
