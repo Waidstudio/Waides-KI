@@ -42,7 +42,7 @@ const PageKnowledge = {
   "WaidBot Engine": {
     description: "Your personal ETH trading bot with autonomous decision-making capabilities.",
     keywords: ["waidbot", "bot", "trading bot", "automated", "trade", "eth bot", "engine"],
-    route: "waidbot"
+    route: "waidbot-engine"
   },
   "WaidBot Pro": {
     description: "Advanced professional trading system with quantum strategies and neural networks.",
