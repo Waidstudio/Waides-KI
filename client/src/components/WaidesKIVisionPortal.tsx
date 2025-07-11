@@ -770,7 +770,7 @@ export default function WaidesKIVisionPortal() {
         typeMessage(data.message, 'waidbot_summon', data.success ? 95 : 50);
         
         // Handle navigation suggestion for WaidBot activation
-        if (data.data?.navigationSuggestion === '/waidbot-engine' && data.data?.waidbotActivated) {
+        if (data.data?.navigationSuggestion === '/full-engine' && data.data?.waidbotActivated) {
           setTimeout(() => {
             typeMessage("Navigate to Waidbot Engine interface? Type 'yes' to proceed or continue chatting here.", 'waidbot_summon', 100);
           }, 2000);
