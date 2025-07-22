@@ -1176,9 +1176,16 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             questionMutation.mutate(currentMessage);
           }
           break;
-        default: // 'auto' mode
-          // Use enhanced KonsAI Intelligence Engine for all questions with intelligent guidance
-          enhancedChatMutation.mutate(currentMessage)
+        default: // 'auto' mode - Educational Learning Guide
+          // Use local Educational Memory Engine for learning guidance and page recommendations
+          const educationalResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
+          if (educationalResponse) {
+            typeMessage(educationalResponse.message, 'enhanced_bot_memory', educationalResponse.confidence);
+            setIsProcessing(false);
+          } else {
+            // Fallback to enhanced KonsAI if no educational match found
+            enhancedChatMutation.mutate(currentMessage);
+          }
           break;
       }
     }
@@ -1479,10 +1486,10 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   <div className="bg-emerald-900/30 border border-emerald-500/30 rounded-lg p-3 mb-2">
                     <div className="flex items-center gap-2 mb-1">
                       <Brain className="w-4 h-4 text-emerald-400" />
-                      <span className="text-emerald-300 font-medium">Auto Mode Active</span>
+                      <span className="text-emerald-300 font-medium">Educational Learning Guide</span>
                     </div>
                     <p className="text-emerald-200/80">
-                      Intelligent routing based on question type - spiritual, trading, or universal knowledge.
+                      Ask questions about trading and get detailed learning paths, page recommendations, and safety guidance.
                     </p>
                   </div>
                 )}
