@@ -1,4 +1,4 @@
-import UKC from "./UKC";
+import UKC from "./UniversalKnowledgeCore";
 import { getFlowRecommendation } from "./FlowComposer";
 import { autoConfigureBot } from "./WaidBotAutoSetup";
 import { detectPageRecommendation } from "./WaidesKI_MemoryEngine";

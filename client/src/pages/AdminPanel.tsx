@@ -14,7 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { EnhancedAdminPanel } from '@/components/EnhancedAdminPanel';
+import AdminConsole from '@/components/AdminConsole';
 import {
   Settings,
   Database,
@@ -2663,7 +2663,7 @@ export default function AdminPanel() {
 
           {/* Comprehensive Configuration Tab */}
           <TabsContent value="comprehensive-config" className="space-y-6">
-            <ComprehensiveAdminPanel />
+            <AdminConsole />
           </TabsContent>
 
           {/* Placeholder tabs for all remaining tabs */}

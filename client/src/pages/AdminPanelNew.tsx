@@ -1,5 +1,5 @@
-import { FuturisticAdminPanel } from '@/components/FuturisticAdminPanel';
+import AdminPanel from '@/components/AdminPanel';
 
-export default function AdminPanel() {
-  return <FuturisticAdminPanel />;
+export default function AdminPanelNew() {
+  return <AdminPanel />;
 }

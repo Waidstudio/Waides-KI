@@ -1,6 +1,6 @@
 import BotMemory from "./BotMemory";
-import getVisionProphecy, { timeMood, detectEmotion } from './VisionFlowEngine';
-import UKC from './UKC';
+import getVisionProphecy, { getTimeEnergyReading, detectEmotion } from './VisionFlowEngine';
+import UKC from './UniversalKnowledgeCore';
 import { saveQuestionsToUKC, getPendingQuestions, addQuestionAnswer } from './KnowledgeLoader';
 import PageKnowledge from './PageKnowledge';
 import BehaviorTracker from './BehaviorTracker';

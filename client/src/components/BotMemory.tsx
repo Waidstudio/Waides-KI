@@ -1,4 +1,22 @@
-const BotMemory = {
+// 🧠 Enhanced Bot Memory - TypeScript migrated from legacy JS
+export interface BotMemoryData {
+  name: string;
+  code: string;
+  identity: string;
+  tradingMission: string;
+  introQuestions: Record<string, string>;
+  tradingWisdom: Record<string, string>;
+  ethereumKnowledge: Record<string, string>;
+  spiritualConcepts: Record<string, string>;
+}
+
+export interface SmartAnswerResponse {
+  message: string;
+  confidence: number;
+  source: string;
+}
+
+const BotMemory: BotMemoryData = {
   name: "Waides KI",
   code: "Waides Konsmik Intelligence",
   identity: `
@@ -27,7 +45,6 @@ const BotMemory = {
     "what is your purpose": "To elevate human consciousness through ethical ETH trading while protecting your spiritual and financial wellbeing."
   },
   
-  // Enhanced knowledge base for deeper conversations
   tradingWisdom: {
     risk: "True wealth comes from protecting what you have, not from chasing what you want.",
     patience: "The market rewards those who breathe with its rhythm, not against it.",
@@ -50,5 +67,87 @@ const BotMemory = {
     growth: "Spiritual growth happens through embracing both success and failure as teachers."
   }
 };
+
+// Enhanced smart answer function with TypeScript support
+export function getSmartAnswer(
+  question: string, 
+  dashboardData?: any, 
+  walletBalance?: number,
+  ethPrice?: number
+): SmartAnswerResponse | null {
+  const q = question.toLowerCase().trim();
+  
+  // Check intro questions first
+  for (const [key, answer] of Object.entries(BotMemory.introQuestions)) {
+    if (q.includes(key.toLowerCase())) {
+      return {
+        message: answer,
+        confidence: 95,
+        source: 'bot_memory_intro'
+      };
+    }
+  }
+  
+  // Check trading wisdom
+  for (const [key, wisdom] of Object.entries(BotMemory.tradingWisdom)) {
+    if (q.includes(key)) {
+      return {
+        message: `💡 Trading Wisdom: ${wisdom}`,
+        confidence: 90,
+        source: 'bot_memory_wisdom'
+      };
+    }
+  }
+  
+  // Check Ethereum knowledge
+  for (const [key, knowledge] of Object.entries(BotMemory.ethereumKnowledge)) {
+    if (q.includes(key) || q.includes('ethereum') || q.includes('eth')) {
+      return {
+        message: `🔮 Ethereum Insight: ${knowledge}`,
+        confidence: 88,
+        source: 'bot_memory_ethereum'
+      };
+    }
+  }
+  
+  // Check spiritual concepts
+  for (const [key, concept] of Object.entries(BotMemory.spiritualConcepts)) {
+    if (q.includes(key)) {
+      return {
+        message: `✨ Spiritual Teaching: ${concept}`,
+        confidence: 85,
+        source: 'bot_memory_spiritual'
+      };
+    }
+  }
+  
+  // Enhanced responses with context data
+  if (q.includes('balance') && walletBalance !== undefined) {
+    return {
+      message: `Your current balance is ${walletBalance} USDT. Remember: true wealth is not just numbers, but the wisdom to grow them responsibly.`,
+      confidence: 92,
+      source: 'bot_memory_contextual'
+    };
+  }
+  
+  if (q.includes('price') && ethPrice !== undefined) {
+    return {
+      message: `ETH is currently at $${ethPrice}. The price is just the surface - I see deeper patterns in the market's spiritual energy.`,
+      confidence: 90,
+      source: 'bot_memory_contextual'
+    };
+  }
+  
+  // General wisdom responses
+  if (q.includes('help') || q.includes('guide')) {
+    return {
+      message: "I am here to guide you through the sacred art of ETH trading. Ask me about strategies, market wisdom, or the deeper meaning of wealth.",
+      confidence: 80,
+      source: 'bot_memory_general'
+    };
+  }
+  
+  return null; // No match found, defer to other systems
+}
 
 export default BotMemory;

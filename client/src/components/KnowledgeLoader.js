@@ -1,6 +1,6 @@
 // KnowledgeLoader.js - Handles loading and saving questions to UKC system
 
-import UKC from "./UKC";
+import UKC from "./UniversalKnowledgeCore";
 
 // Save questions to UKC for future learning
 export function saveQuestionsToUKC(questions) {

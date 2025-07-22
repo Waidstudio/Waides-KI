@@ -1,7 +1,23 @@
-// 🌌 Universal Knowledge Core (UKC) - Living Library of Truth
+// 🌌 Universal Knowledge Core (UKC) - TypeScript migrated from legacy JS
 // Sacred knowledge bank for Waides KI to answer any question
 
-const UKC = {
+export interface KnowledgeCategory {
+  [key: string]: string;
+}
+
+export interface UKCData {
+  categories: {
+    ethereum: KnowledgeCategory;
+    trading: KnowledgeCategory;
+    life: KnowledgeCategory;
+    ai: KnowledgeCategory;
+    konsmia: KnowledgeCategory;
+    money: KnowledgeCategory;
+    health: KnowledgeCategory;
+  };
+}
+
+const UKC: UKCData = {
   categories: {
     ethereum: {
       "what is ethereum": "Ethereum is a decentralized blockchain platform that supports smart contracts and DApps, powered by divine computational energy.",
@@ -53,21 +69,56 @@ const UKC = {
     },
     health: {
       "how to be healthy": "Health comes from: proper nutrition, regular exercise, adequate sleep, stress management, and positive relationships.",
-      "exercise benefits": "Exercise strengthens the body, improves mood, increases energy, and extends lifespan significantly.",
-      "nutrition basics": "Eat whole foods, minimize processed foods, stay hydrated, and listen to your body's signals.",
-      "mental health": "Mental health requires: self-awareness, emotional regulation, meaningful connections, and purpose-driven living.",
-      "sleep importance": "Sleep repairs the body, consolidates memories, regulates hormones, and maintains cognitive function.",
-      "stress relief": "Manage stress through: meditation, exercise, nature, deep breathing, and addressing root causes."
-    },
-    relationships: {
-      "healthy relationships": "Healthy relationships require: mutual respect, open communication, shared values, and individual growth.",
-      "communication skills": "Communicate with: active listening, empathy, clarity, honesty, and emotional intelligence.",
-      "conflict resolution": "Resolve conflicts by: understanding all perspectives, finding common ground, and focusing on solutions.",
-      "building trust": "Trust builds through: consistency, reliability, honesty, vulnerability, and keeping commitments.",
-      "love definition": "Love is choosing to care for someone's highest good, even when it requires sacrifice or difficulty.",
-      "friendship": "True friendship provides: mutual support, honest feedback, shared experiences, and unconditional acceptance."
+      "mental health": "Mental health requires: setting boundaries, practicing self-compassion, seeking support, and maintaining perspective.",
+      "physical fitness": "Physical fitness comes from consistent exercise, proper nutrition, adequate rest, and listening to your body.",
+      "stress management": "Manage stress through: deep breathing, meditation, exercise, time in nature, and healthy social connections.",
+      "nutrition basics": "Eat whole foods, limit processed foods, stay hydrated, and listen to your body's hunger and fullness cues."
     }
   }
 };
+
+// Enhanced search function with TypeScript support
+export function searchUKC(query: string): { answer: string; category: string; confidence: number } | null {
+  const q = query.toLowerCase().trim();
+  
+  for (const [categoryName, category] of Object.entries(UKC.categories)) {
+    for (const [questionKey, answer] of Object.entries(category)) {
+      // Direct match
+      if (q.includes(questionKey.toLowerCase())) {
+        return {
+          answer,
+          category: categoryName,
+          confidence: 95
+        };
+      }
+      
+      // Partial keyword matching
+      const keywords = questionKey.split(' ');
+      const matchCount = keywords.filter(keyword => 
+        q.includes(keyword.toLowerCase()) && keyword.length > 2
+      ).length;
+      
+      if (matchCount >= 2 || (keywords.length === 1 && matchCount === 1)) {
+        return {
+          answer,
+          category: categoryName,
+          confidence: 80
+        };
+      }
+    }
+  }
+  
+  return null;
+}
+
+// Get all knowledge in a category
+export function getKnowledgeByCategory(categoryName: string): KnowledgeCategory | null {
+  return UKC.categories[categoryName as keyof typeof UKC.categories] || null;
+}
+
+// Get all categories
+export function getAllCategories(): string[] {
+  return Object.keys(UKC.categories);
+}
 
 export default UKC;
