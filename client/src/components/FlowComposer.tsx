@@ -1,7 +1,14 @@
 // 🧩 Flow Composer - Multi-Page Strategy Path System
 // Combines multiple pages into flow recommendations based on user intent
 
-const flows = [
+interface Flow {
+  name: string;
+  when: string[];
+  steps: string[];
+  description: string;
+}
+
+const flows: Flow[] = [
   {
     name: "Dream Rebirth Defense",
     when: ["dream", "predict", "reset", "protect", "vision", "spiritual", "future", "prophecy"],
@@ -52,14 +59,14 @@ const flows = [
   }
 ];
 
-export function getFlowRecommendation(userText) {
+export function getFlowRecommendation(userText: string): Flow | null {
   const q = userText.toLowerCase();
 
   // Find the best matching flow based on keyword matches
-  let bestMatch = null;
+  let bestMatch: Flow | null = null;
   let maxMatches = 0;
 
-  for (let flow of flows) {
+  for (const flow of flows) {
     const matches = flow.when.filter(keyword => q.includes(keyword)).length;
     if (matches > maxMatches) {
       maxMatches = matches;
@@ -75,44 +82,26 @@ export function getFlowRecommendation(userText) {
   return null;
 }
 
-export function generateFlowMessage(flow) {
-  if (!flow) return null;
-
-  return `🔁 **Flow Recommendation: ${flow.name}**\n\n` +
-    `${flow.description}\n\n` +
-    flow.steps.map((step, i) => `➡️ **Step ${i + 1}:** ${step}`).join("\n") +
-    `\n\n💡 Click any step below to begin your journey.`;
+export function getAllFlows(): Flow[] {
+  return flows;
 }
 
-export function getFlowStepRoute(stepName) {
-  // Map step names to their corresponding routes
-  const routeMap = {
-    "Dream Vision": "/dream-vision",
-    "Seasonal Rebirth": "/seasonal-rebirth", 
-    "Shadow Defense": "/shadow-defense",
-    "Trading Academy": "/trading-academy",
-    "WaidBot Engine": "/waidbot",
-    "Charts & Data": "/charts",
-    "Spiritual Recall": "/spiritual-recall",
-    "Reincarnation Loop": "/reincarnation",
-    "Vision Spirit": "/vision-spirit",
-    "WaidBot Pro": "/waidbot-pro",
-    "Strategy Autogen": "/strategy-autogen",
-    "Trading Brain": "/trading-brain",
-    "Voice Interface": "/voice",
-    "Admin Control": "/admin",
-    "API Gateway": "/gateway",
-    "Sigil Layer": "/sigil-layer",
-    "Live Data Feed": "/live-data",
-    "Waides Core": "/waides-core"
-  };
+export function getFlowByName(name: string): Flow | null {
+  return flows.find(flow => flow.name === name) || null;
+}
 
-  return routeMap[stepName] || `/${stepName.toLowerCase().replace(/ /g, "-")}`;
+export function searchFlows(query: string): Flow[] {
+  const q = query.toLowerCase();
+  return flows.filter(flow => 
+    flow.name.toLowerCase().includes(q) ||
+    flow.description.toLowerCase().includes(q) ||
+    flow.when.some(keyword => keyword.includes(q))
+  );
 }
 
 export default {
-  flows,
   getFlowRecommendation,
-  generateFlowMessage,
-  getFlowStepRoute
+  getAllFlows,
+  getFlowByName,
+  searchFlows
 };

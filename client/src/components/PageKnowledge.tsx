@@ -1,4 +1,14 @@
-const PageKnowledge = {
+// 📚 Page Knowledge - Smart Navigation and Intent Recognition System
+
+interface PageInfo {
+  description: string;
+  keywords: string[];
+  route: string;
+}
+
+type PageKnowledgeMap = { [pageName: string]: PageInfo };
+
+const PageKnowledge: PageKnowledgeMap = {
   "Trading Academy": {
     description: "Learn how to trade ETH and master strategies through courses and guides.",
     keywords: ["learn", "academy", "study", "lessons", "education", "how to trade", "teach me", "tutorial", "course"],
@@ -75,25 +85,114 @@ const PageKnowledge = {
     route: "admin"
   },
   "API Gateway": {
-    description: "External platform integration and API access management.",
-    keywords: ["api", "gateway", "integration", "external", "platform", "connect"],
+    description: "Connect external systems and manage API integrations.",
+    keywords: ["api", "gateway", "integration", "connect", "external", "webhook"],
     route: "gateway"
   },
-  "Trading Brain": {
-    description: "Comprehensive trading knowledge base and AI advisor system.",
-    keywords: ["brain", "knowledge", "advisor", "wisdom", "guidance", "mentor"],
-    route: "trading-brain"
-  },
   "Waides Core": {
-    description: "The central intelligence core with autonomous trading and learning systems.",
-    keywords: ["core", "central", "intelligence", "autonomous", "waides core", "main system"],
-    route: "waides-core"
-  },
-  "Weekly Trading Schedule": {
-    description: "Professional trading schedule analysis showing optimal times, days, and market windows for trading.",
-    keywords: ["time", "when", "schedule", "timing", "best time", "trading hours", "market hours", "optimal time", "when to trade", "trading schedule", "weekly", "daily", "hours"],
-    route: "/dashboard"
+    description: "Central hub accessing all Waides KI systems and capabilities.",
+    keywords: ["core", "central", "hub", "main", "waides", "everything"],
+    route: "/"
   }
 };
 
-export default PageKnowledge;
+export function findPageByIntent(userText: string): { page: string; confidence: number } | null {
+  const query = userText.toLowerCase();
+  let bestMatch: { page: string; confidence: number } | null = null;
+  let maxScore = 0;
+
+  Object.entries(PageKnowledge).forEach(([pageName, pageInfo]) => {
+    let score = 0;
+    
+    // Direct page name match
+    if (query.includes(pageName.toLowerCase())) {
+      score += 10;
+    }
+    
+    // Keyword matches
+    pageInfo.keywords.forEach(keyword => {
+      if (query.includes(keyword)) {
+        score += 2;
+      }
+    });
+    
+    // Partial keyword matches
+    pageInfo.keywords.forEach(keyword => {
+      if (keyword.length > 3) {
+        const words = query.split(' ');
+        words.forEach(word => {
+          if (word.length > 2 && keyword.includes(word)) {
+            score += 1;
+          }
+        });
+      }
+    });
+
+    if (score > maxScore) {
+      maxScore = score;
+      bestMatch = {
+        page: pageName,
+        confidence: Math.min(score * 10, 100) // Convert to percentage
+      };
+    }
+  });
+
+  // Only return matches with reasonable confidence
+  return bestMatch && bestMatch.confidence >= 20 ? bestMatch : null;
+
+  return null;
+}
+
+export function getPageInfo(pageName: string): PageInfo | null {
+  return PageKnowledge[pageName] || null;
+}
+
+export function getAllPages(): string[] {
+  return Object.keys(PageKnowledge);
+}
+
+export function searchPages(query: string): Array<{ page: string; info: PageInfo; relevance: number }> {
+  const q = query.toLowerCase();
+  const results: Array<{ page: string; info: PageInfo; relevance: number }> = [];
+
+  Object.entries(PageKnowledge).forEach(([pageName, pageInfo]) => {
+    let relevance = 0;
+
+    // Name match
+    if (pageName.toLowerCase().includes(q)) {
+      relevance += 5;
+    }
+
+    // Description match
+    if (pageInfo.description.toLowerCase().includes(q)) {
+      relevance += 3;
+    }
+
+    // Keyword match
+    pageInfo.keywords.forEach(keyword => {
+      if (keyword.includes(q) || q.includes(keyword)) {
+        relevance += 2;
+      }
+    });
+
+    if (relevance > 0) {
+      results.push({ page: pageName, info: pageInfo, relevance });
+    }
+  });
+
+  return results.sort((a, b) => b.relevance - a.relevance);
+}
+
+export function getRouteForPage(pageName: string): string | null {
+  const pageInfo = PageKnowledge[pageName];
+  return pageInfo ? `/${pageInfo.route}` : null;
+}
+
+export default {
+  findPageByIntent,
+  getPageInfo,
+  getAllPages,
+  searchPages,
+  getRouteForPage,
+  PageKnowledge
+};

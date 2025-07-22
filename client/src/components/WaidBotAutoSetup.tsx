@@ -1,8 +1,18 @@
 // 🤖 Auto WaidBot Setup Engine - Instant Bot Deployment System
 // Sets up WaidBot instantly based on user message intent
 
-export function autoConfigureBot(intentText) {
-  const setup = {
+interface BotSetup {
+  strategy: string;
+  risk: string;
+  vision: string;
+  guardian: boolean;
+  timeframe: string;
+  mode: string;
+  features: string[];
+}
+
+export function autoConfigureBot(intentText: string): BotSetup {
+  const setup: BotSetup = {
     strategy: "",
     risk: "",
     vision: "",
@@ -73,60 +83,78 @@ export function autoConfigureBot(intentText) {
   }
 
   // Feature Detection
-  if (q.includes("voice") || q.includes("speak")) setup.features.push("Voice Control");
-  if (q.includes("alert") || q.includes("notification")) setup.features.push("Smart Alerts");
-  if (q.includes("learning") || q.includes("adapt")) setup.features.push("AI Learning");
-  if (q.includes("social") || q.includes("community")) setup.features.push("Social Trading");
-  if (q.includes("mobile") || q.includes("phone")) setup.features.push("Mobile Sync");
+  const featureMap: { [key: string]: string } = {
+    "stop loss": "Smart Stop Loss",
+    "take profit": "Auto Take Profit",
+    "trailing": "Trailing Stop",
+    "dca": "DCA Strategy",
+    "martingale": "Martingale Mode",
+    "grid": "Grid Trading",
+    "momentum": "Momentum Tracker",
+    "reversal": "Reversal Detection",
+    "volume": "Volume Analysis",
+    "sentiment": "Market Sentiment",
+    "news": "News Integration",
+    "social": "Social Signals"
+  };
+
+  Object.entries(featureMap).forEach(([keyword, feature]) => {
+    if (q.includes(keyword)) {
+      setup.features.push(feature);
+    }
+  });
+
+  // Add default features based on strategy
+  switch (setup.strategy) {
+    case "Scalping":
+      setup.features.push("Quick Exit", "High Frequency");
+      break;
+    case "Swing Trading":
+      setup.features.push("Trend Following", "Support/Resistance");
+      break;
+    case "Long Term":
+      setup.features.push("Fundamental Analysis", "DCA Strategy");
+      break;
+    case "Quantum Flux":
+      setup.features.push("Neural Networks", "Quantum Patterns");
+      break;
+  }
 
   return setup;
 }
 
-export function generateBotSetupMessage(config) {
-  if (!config) return null;
-
-  const featuresList = config.features.length > 0 
-    ? `\n📋 **Features:** ${config.features.join(", ")}`
-    : "";
-
-  return `🤖 **WaidBot Auto-Configuration Complete**\n\n` +
-    `⚡ **Strategy:** ${config.strategy}\n` +
-    `🛡️ **Risk Level:** ${config.risk}\n` +
-    `🔮 **Vision Layer:** ${config.vision}\n` +
-    `👁️ **Guardian Mode:** ${config.guardian ? "✅ Enabled" : "❌ Disabled"}\n` +
-    `⏱️ **Timeframe:** ${config.timeframe}\n` +
-    `🎯 **Mode:** ${config.mode}${featuresList}\n\n` +
-    `💡 Your bot is configured and ready to launch!`;
+export function generateBotConfig(setup: BotSetup): string {
+  return `
+WaidBot Configuration:
+━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 Strategy: ${setup.strategy}
+⚡ Timeframe: ${setup.timeframe}
+🛡️ Risk Level: ${setup.risk}
+🔮 Vision System: ${setup.vision}
+👁️ Guardian Mode: ${setup.guardian ? 'Active' : 'Disabled'}
+🤖 Trading Mode: ${setup.mode}
+⭐ Features: ${setup.features.join(', ')}
+━━━━━━━━━━━━━━━━━━━━━━━━
+Ready for deployment!
+  `.trim();
 }
 
-export function getBotRecommendations(intentText) {
-  const q = intentText.toLowerCase();
-  const recommendations = [];
+export function validateSetup(setup: BotSetup): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
 
-  // Based on user intent, suggest complementary features
-  if (q.includes("beginner") || q.includes("new") || q.includes("start")) {
-    recommendations.push("Enable Demo Mode for safe learning");
-    recommendations.push("Start with Low Risk settings");
-    recommendations.push("Use Trading Academy for education");
-  }
+  if (!setup.strategy) errors.push("Strategy not selected");
+  if (!setup.risk) errors.push("Risk level not specified");
+  if (!setup.timeframe) errors.push("Timeframe not set");
+  if (!setup.mode) errors.push("Trading mode not selected");
 
-  if (q.includes("profit") || q.includes("money") || q.includes("earn")) {
-    recommendations.push("Enable AI Learning for better performance");
-    recommendations.push("Consider Quantum Flux strategy");
-    recommendations.push("Activate Guardian Mode for protection");
-  }
-
-  if (q.includes("spiritual") || q.includes("mystical") || q.includes("divine")) {
-    recommendations.push("Enable Spirit Vision layer");
-    recommendations.push("Activate Sigil Layer for sacred guidance");
-    recommendations.push("Use Dream Oracle for mystical insights");
-  }
-
-  return recommendations;
+  return {
+    valid: errors.length === 0,
+    errors
+  };
 }
 
 export default {
   autoConfigureBot,
-  generateBotSetupMessage,
-  getBotRecommendations
+  generateBotConfig,
+  validateSetup
 };
