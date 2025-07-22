@@ -2895,9 +2895,9 @@ export function registerRoutes(app: Express): Promise<Server> {
       let analysis = await enhancedMarketAnalysisService.getLatestAnalysis();
       
       if (!analysis || await enhancedMarketAnalysisService.shouldGenerateNewAnalysis()) {
-        // Generate fresh analysis
-        const ethMonitor = await serviceRegistry.get('ethMonitor');
-        const ethData = await ethMonitor.fetchEthData();
+        // Generate fresh analysis using resilient data fetcher
+        const { resilientDataFetcher } = await import('./services/resilientDataFetcher.js');
+        const ethData = await resilientDataFetcher.fetchETHData();
         analysis = await enhancedMarketAnalysisService.generateComprehensiveAnalysis(ethData.price, {
           volume24h: ethData.volume,
           marketCap: ethData.marketCap,
@@ -2915,8 +2915,8 @@ export function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/market-analysis/generate", async (req, res) => {
     try {
       const { enhancedMarketAnalysisService } = await import('./services/enhancedMarketAnalysisService.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const ethData = await ethMonitor.fetchEthData();
+      const { resilientDataFetcher } = await import('./services/resilientDataFetcher.js');
+      const ethData = await resilientDataFetcher.fetchETHData();
       
       const { marketData } = req.body;
       const analysis = await enhancedMarketAnalysisService.generateComprehensiveAnalysis(ethData.price, {
@@ -3095,8 +3095,9 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Combined dashboard data endpoint
   app.get("/api/dashboard/enhanced-data", async (req, res) => {
     try {
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const ethData = await ethMonitor.fetchEthData();
+      // Use resilient data fetcher for improved reliability
+      const { resilientDataFetcher } = await import('./services/resilientDataFetcher.js');
+      const ethData = await resilientDataFetcher.fetchETHData();
       
       // Get all enhanced services data
       const { konsPowaPredictionService } = await import('./services/konsPowaPredictionService.js');
@@ -3112,7 +3113,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         } else {
           prediction = await konsPowaPredictionService.generateKonsPowaPrediction(ethData.price);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting prediction:', error);
         prediction = null;
       }
@@ -3128,7 +3129,7 @@ export function registerRoutes(app: Express): Promise<Server> {
             priceChange24h: ethData.priceChange24h
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting market analysis:', error);
         marketAnalysis = null;
       }
@@ -3148,7 +3149,7 @@ export function registerRoutes(app: Express): Promise<Server> {
           momentumScore: 60
         };
         strategies = await enhancedTradingStrategiesService.getStrategyRecommendations(marketData);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting strategies:', error);
         strategies = [];
       }
@@ -3160,9 +3161,57 @@ export function registerRoutes(app: Express): Promise<Server> {
         strategyRecommendations: strategies,
         lastUpdated: new Date().toISOString()
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching enhanced dashboard data:', error);
       res.status(500).json({ error: 'Failed to fetch enhanced dashboard data' });
+    }
+  });
+
+  // Real-time candlestick endpoints
+  app.get("/api/candlesticks/:symbol/:interval", async (req, res) => {
+    try {
+      const { realTimeCandlestickService } = await import('./services/realTimeCandlestickService.js');
+      const { symbol, interval } = req.params;
+      const limit = parseInt(req.query.limit as string) || 50;
+      
+      const result = await realTimeCandlestickService.getCandlesticks(symbol, interval, limit);
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error fetching candlesticks:', error);
+      res.status(500).json({ error: 'Failed to fetch candlesticks' });
+    }
+  });
+
+  app.get("/api/candlesticks/:symbol/:interval/latest", async (req, res) => {
+    try {
+      const { realTimeCandlestickService } = await import('./services/realTimeCandlestickService.js');
+      const { symbol, interval } = req.params;
+      
+      const result = await realTimeCandlestickService.getLatestCandlestick(symbol, interval);
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error fetching latest candlestick:', error);
+      res.status(500).json({ error: 'Failed to fetch latest candlestick' });
+    }
+  });
+
+  // Enhanced WebSocket status endpoint
+  app.get("/api/websocket/status", (req, res) => {
+    try {
+      const status = waidesKIWebSocketTracker.getConnectionStatus();
+      res.json({
+        binance: {
+          connected: status.isConnected,
+          symbol: 'ETHUSDT',
+          interval: '1m',
+          lastPrice: status.lastPrice,
+          lastUpdate: status.lastUpdate,
+          connectionAttempts: status.connectionAttempts
+        }
+      });
+    } catch (error: any) {
+      console.error('Error getting WebSocket status:', error);
+      res.status(500).json({ error: 'Failed to get WebSocket status' });
     }
   });
 
@@ -3172,7 +3221,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       const { waidesKIDiagnostics } = await import('./diagnostics/waidesKIDiagnostics.js');
       const diagnostics = await waidesKIDiagnostics.runCompleteDiagnostics();
       res.json(diagnostics);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Diagnostics error:', error);
       res.status(500).json({ 
         error: 'Failed to run diagnostics',
