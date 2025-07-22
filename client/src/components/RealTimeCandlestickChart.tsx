@@ -186,10 +186,10 @@ export default function RealTimeCandlestickChart({
             <div className="mt-6">
               <h4 className="text-sm font-medium text-slate-300 mb-3">Recent Candlesticks</h4>
               <div className="flex space-x-1 overflow-x-auto pb-2">
-                {candlesticks.slice(-20).map((candle, index) => {
+                {candlesticks.slice(-20).map((candle: Candlestick, index: number) => {
                   const isGreen = candle.close > candle.open;
                   const bodyHeight = Math.abs(candle.close - candle.open);
-                  const maxRange = Math.max(...candlesticks.slice(-20).map(c => c.high - c.low));
+                  const maxRange = Math.max(...candlesticks.slice(-20).map((c: Candlestick) => c.high - c.low));
                   const normalizedHeight = Math.max((bodyHeight / maxRange) * 40, 2);
                   
                   return (

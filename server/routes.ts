@@ -3215,6 +3215,59 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Real-Time Resolver endpoints
+  app.get("/api/realtime-resolver/status", async (req, res) => {
+    try {
+      const { realTimeResolver } = await import('./services/RealTimeResolver.js');
+      const status = realTimeResolver.getStatus();
+      res.json(status);
+    } catch (error: any) {
+      console.error('Error getting real-time resolver status:', error);
+      res.status(500).json({ error: 'Failed to get real-time resolver status' });
+    }
+  });
+
+  app.get("/api/realtime-resolver/market-data", async (req, res) => {
+    try {
+      const { realTimeResolver } = await import('./services/RealTimeResolver.js');
+      const marketData = realTimeResolver.getCurrentMarketData();
+      res.json(marketData || { error: 'No market data available' });
+    } catch (error: any) {
+      console.error('Error getting market data:', error);
+      res.status(500).json({ error: 'Failed to get market data' });
+    }
+  });
+
+  app.get("/api/realtime-resolver/bot-decision", async (req, res) => {
+    try {
+      const { realTimeResolver } = await import('./services/RealTimeResolver.js');
+      const decision = realTimeResolver.getLatestBotDecision();
+      res.json(decision || { error: 'No bot decision available' });
+    } catch (error: any) {
+      console.error('Error getting bot decision:', error);
+      res.status(500).json({ error: 'Failed to get bot decision' });
+    }
+  });
+
+  app.get("/api/realtime-resolver/history", async (req, res) => {
+    try {
+      const { realTimeResolver } = await import('./services/RealTimeResolver.js');
+      const limit = parseInt(req.query.limit as string) || 50;
+      const priceHistory = realTimeResolver.getPriceHistory(limit);
+      const decisionHistory = realTimeResolver.getDecisionHistory(limit);
+      
+      res.json({
+        priceHistory,
+        decisionHistory,
+        totalPriceUpdates: priceHistory.length,
+        totalDecisions: decisionHistory.length
+      });
+    } catch (error: any) {
+      console.error('Error getting history:', error);
+      res.status(500).json({ error: 'Failed to get history' });
+    }
+  });
+
   // WaidesKI Engine Diagnostics
   app.get("/api/waideski/diagnostics", async (req, res) => {
     try {
