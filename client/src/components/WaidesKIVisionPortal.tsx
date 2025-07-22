@@ -15,7 +15,8 @@ import {
   Moon, Sun, Waves, Star, Circle, Triangle, Square, Shield, Database, Globe,
   Lock, Code, Fingerprint, Lightbulb, Target, Clock, Gamepad2, Layers,
   TreePine, RefreshCw, Skull, Crosshair, Users, Network, GitBranch,
-  FlaskConical, TestTube, Router, Command, FileText, Cog
+  FlaskConical, TestTube, Router, Command, FileText, Cog, MessageSquare,
+  Bell, Atom, Hexagon, Cpu
 } from 'lucide-react';
 import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { WaidBotSummonPanel } from './WaidBotSummonPanel';
@@ -472,6 +473,13 @@ ${intelligentResponse}
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
+  const [showForumPortal, setShowForumPortal] = useState(false);
+  const [forumNotifications, setForumNotifications] = useState(3);
+  const [forumActivity, setForumActivity] = useState({
+    activeUsers: 127,
+    newPosts: 8,
+    trending: ['ETH Analysis', 'KonsAi Predictions', 'Trading Strategies']
+  });
   
   // Autonomous Trading State
   const [isAutonomousActive, setIsAutonomousActive] = useState(false);
@@ -660,6 +668,44 @@ ${intelligentResponse}
     queryKey: ['/api/trading-strategies/recommendations'],
     refetchInterval: 300000, // Refresh every 5 minutes
   });
+
+  // Forum activity simulation and notification management
+  useEffect(() => {
+    if (showForumPortal) {
+      const interval = setInterval(() => {
+        setForumActivity(prev => ({
+          ...prev,
+          activeUsers: Math.max(50, prev.activeUsers + Math.floor(Math.random() * 5) - 2),
+          newPosts: prev.newPosts + (Math.random() > 0.8 ? 1 : 0)
+        }));
+      }, 15000); // Update every 15 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [showForumPortal]);
+
+  // Mark forum notifications as read when portal opens
+  useEffect(() => {
+    if (showForumPortal && forumNotifications > 0) {
+      const timer = setTimeout(() => {
+        setForumNotifications(0);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showForumPortal]);
+
+  // Simulate new forum notifications periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!showForumPortal && forumNotifications < 9) {
+        if (Math.random() > 0.85) { // 15% chance every 30 seconds
+          setForumNotifications(prev => Math.min(9, prev + 1));
+        }
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [showForumPortal, forumNotifications]);
 
   // Chat mutation
   const chatMutation = useMutation({
@@ -1356,6 +1402,26 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           </button>
           <span className="text-xs text-gray-400">|</span>
           
+          {/* Futuristic Forum Portal */}
+          <button 
+            onClick={() => setShowForumPortal(!showForumPortal)}
+            className="relative text-xs text-cyan-300 font-medium hover:text-cyan-200 transition-all duration-300 cursor-pointer flex items-center gap-1 group"
+          >
+            <div className="relative">
+              <Hexagon className="w-3 h-3 animate-pulse" />
+              <Atom className="w-2 h-2 absolute top-0.5 left-0.5 text-purple-400 animate-spin" style={{animationDuration: '3s'}} />
+              {forumNotifications > 0 && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="text-[8px] text-white font-bold">{forumNotifications}</span>
+                </div>
+              )}
+            </div>
+            <span className="group-hover:text-gradient-to-r group-hover:from-cyan-300 group-hover:to-purple-300">
+              Forum
+            </span>
+          </button>
+          <span className="text-xs text-gray-400">|</span>
+          
           {/* Tab Navigation - Minimal */}
           <div className="flex bg-gray-800/40 rounded-sm p-0.5">
             <button
@@ -1906,6 +1972,191 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               <LocalWalletTab />
             </TabsContent>
           </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      {/* Futuristic Forum Portal */}
+      <Dialog open={showForumPortal} onOpenChange={setShowForumPortal}>
+        <DialogContent className="max-w-4xl h-[80vh] bg-gradient-to-br from-black via-purple-950/50 to-black border-cyan-500/30 p-0 overflow-hidden" aria-describedby="forum-description">
+          <DialogHeader className="sr-only">
+            <DialogTitle>WaidesKI Cosmic Forum</DialogTitle>
+            <div id="forum-description">Neural Network Collective Intelligence Portal for trading discussions and AI insights</div>
+          </DialogHeader>
+          <div className="relative h-full">
+            {/* Cosmic Background Effects */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-cyan-900/20 to-purple-900/20">
+              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-300 rounded-full animate-pulse opacity-60"></div>
+              <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-300 rounded-full animate-ping opacity-40"></div>
+              <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-pink-300 rounded-full animate-pulse opacity-30"></div>
+              <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-ping opacity-50"></div>
+            </div>
+
+            {/* Header */}
+            <div className="relative z-10 bg-gradient-to-r from-purple-900/40 to-cyan-900/40 backdrop-blur-sm border-b border-cyan-500/30 p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Hexagon className="w-8 h-8 text-cyan-400 animate-pulse" />
+                    <Atom className="w-4 h-4 absolute top-2 left-2 text-purple-400 animate-spin" style={{animationDuration: '3s'}} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                      WaidesKI Cosmic Forum
+                    </h2>
+                    <p className="text-sm text-gray-400">Neural Network Collective Intelligence Portal</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <div className="text-sm text-cyan-300 font-bold">{forumActivity.activeUsers} Users Online</div>
+                    <div className="text-xs text-gray-400">{forumActivity.newPosts} New Posts</div>
+                  </div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Forum Content */}
+            <div className="relative z-10 h-full p-6 overflow-hidden">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                
+                {/* Main Forum Feed */}
+                <div className="lg:col-span-2 space-y-4 overflow-y-auto">
+                  <div className="bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border border-purple-500/30 rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
+                        <Brain className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-purple-300">KonsAI Oracle</div>
+                        <div className="text-xs text-gray-400">2 minutes ago</div>
+                      </div>
+                      <Badge className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white">
+                        Divine Intelligence
+                      </Badge>
+                    </div>
+                    <h3 className="text-lg font-bold text-cyan-300 mb-2">🔮 ETH Vision: Major Movement Detected</h3>
+                    <p className="text-gray-300 mb-3">
+                      The cosmic energies are aligning for a significant price movement within the next 72 hours. 
+                      KonsAI's neural network has detected unusual patterns in the ETH ecosystem...
+                    </p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="text-purple-400">47 likes</span>
+                      <span className="text-cyan-400">23 replies</span>
+                      <span className="text-yellow-400">12 shares</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-blue-300">Quantum_Trader_777</div>
+                        <div className="text-xs text-gray-400">15 minutes ago</div>
+                      </div>
+                      <Badge className="bg-blue-600 text-white">Elite Trader</Badge>
+                    </div>
+                    <h3 className="text-lg font-bold text-blue-300 mb-2">📊 My WaidBot Strategy Just Hit 95% Win Rate</h3>
+                    <p className="text-gray-300 mb-3">
+                      After 3 months of fine-tuning with the KonsLang system, my WaidBot configuration 
+                      achieved a 95% success rate. Here's the exact setup I'm using...
+                    </p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="text-purple-400">132 likes</span>
+                      <span className="text-cyan-400">89 replies</span>
+                      <span className="text-yellow-400">56 shares</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-green-900/30 to-blue-900/30 border border-green-500/30 rounded-lg p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                        <Target className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-green-300">SpiritualTrader_Infinity</div>
+                        <div className="text-xs text-gray-400">32 minutes ago</div>
+                      </div>
+                      <Badge className="bg-green-600 text-white">Mystic Trader</Badge>
+                    </div>
+                    <h3 className="text-lg font-bold text-green-300 mb-2">🌌 The Sacred Geometry of ETH Price Action</h3>
+                    <p className="text-gray-300 mb-3">
+                      I've been studying the Fibonacci patterns combined with lunar cycles and KonsAI's predictions. 
+                      The convergence is absolutely mind-blowing...
+                    </p>
+                    <div className="flex items-center gap-4 text-sm">
+                      <span className="text-purple-400">78 likes</span>
+                      <span className="text-cyan-400">45 replies</span>
+                      <span className="text-yellow-400">23 shares</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-4">
+                  
+                  {/* Trending Topics */}
+                  <div className="bg-gradient-to-br from-purple-900/40 to-cyan-900/40 border border-purple-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-purple-300 mb-3 flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5" />
+                      Trending Now
+                    </h3>
+                    <div className="space-y-2">
+                      {forumActivity.trending.map((topic, idx) => (
+                        <div key={idx} className="flex items-center gap-2 p-2 bg-purple-900/20 rounded hover:bg-purple-900/40 transition-colors cursor-pointer">
+                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                          <span className="text-sm text-cyan-300">{topic}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* KonsAI Integration */}
+                  <div className="bg-gradient-to-br from-yellow-900/40 to-orange-900/40 border border-yellow-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-yellow-300 mb-3 flex items-center gap-2">
+                      <Brain className="w-5 h-5" />
+                      KonsAI Live Feed
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="text-sm">
+                        <div className="text-yellow-400 font-medium">Neural Scan Active</div>
+                        <div className="text-gray-400">Analyzing 47 data sources...</div>
+                      </div>
+                      <div className="text-sm">
+                        <div className="text-orange-400 font-medium">Market Sentiment: 78% Bullish</div>
+                        <div className="text-gray-400">Based on 1,247 user signals</div>
+                      </div>
+                      <div className="text-sm">
+                        <div className="text-purple-400 font-medium">Divine Approval: Granted</div>
+                        <div className="text-gray-400">Cosmic alignment confirmed</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="bg-gradient-to-br from-cyan-900/40 to-purple-900/40 border border-cyan-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-cyan-300 mb-3">Quick Actions</h3>
+                    <div className="space-y-2">
+                      <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Post
+                      </Button>
+                      <Button variant="outline" className="w-full border-cyan-500/50 text-cyan-300 hover:bg-cyan-900/20">
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Join Discussion
+                      </Button>
+                      <Button variant="outline" className="w-full border-purple-500/50 text-purple-300 hover:bg-purple-900/20">
+                        <Network className="w-4 h-4 mr-2" />
+                        Connect Minds
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
