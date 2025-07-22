@@ -373,12 +373,41 @@ ${intelligentResponse}
     setIsTyping(true);
 
     try {
-      // Determine if this is trading-related or general question
-      const tradingKeywords = ['trade', 'trading', 'buy', 'sell', 'strategy', 'bot', 'fund', 'account', 'eth', 'ethereum', 'price', 'market', 'analysis', 'prediction', 'kons powa', 'waidbot', 'smai', 'wallet'];
-      const isTrading = tradingKeywords.some(keyword => messageText.toLowerCase().includes(keyword));
+      // Use enhanced KonsAI Intelligence Engine for all questions
+      const response = await fetch('/api/konsai/enhanced-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: messageText,
+          mode: 'comprehensive',
+          complexity: 'adaptive'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const konsaiResponse: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          sender: 'waides',
+          message: data.response || 'I am here to help with your trading and investment needs.',
+          timestamp: new Date(),
+          source: 'enhanced_bot_memory',
+          confidence: 95
+        };
+        
+        setMessages(prev => [...prev, konsaiResponse]);
+        setIsTyping(false);
+      } else {
+        throw new Error('Enhanced chat service unavailable');
+      }
+    } catch (error) {
+      setIsTyping(false);
+      console.error('Enhanced chat error:', error);
       
-      if (isTrading) {
-        // Handle trading-related questions with recommendations
+      // Fallback to trading query handler if enhanced chat fails
+      try {
         const response = await handleTradingQuery(messageText);
         const konsaiResponse: ChatMessage = {
           id: (Date.now() + 1).toString(),
@@ -391,52 +420,19 @@ ${intelligentResponse}
         };
         
         setMessages(prev => [...prev, konsaiResponse]);
-        setIsTyping(false);
-      } else {
-        // Use KonsAi for general questions
-        const response = await fetch('/api/konsai/query', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: messageText,
-            context: 'chat',
-            user_id: 'waides-user'
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const konsaiResponse: ChatMessage = {
-            id: (Date.now() + 1).toString(),
-            sender: 'waides',
-            message: data.response,
-            timestamp: new Date(),
-            source: 'enhanced_bot_memory',
-            confidence: data.confidence || 85
-          };
-          
-          setMessages(prev => [...prev, konsaiResponse]);
-        } else {
-          throw new Error('KonsAi service unavailable');
-        }
-        setIsTyping(false);
+      } catch (fallbackError) {
+        // Final fallback response
+        const fallbackResponse: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          sender: 'waides',
+          message: "I understand your question. I can help with trading strategies, market analysis, wallet management, and intelligent navigation through the Waides KI system. What would you like to explore?",
+          timestamp: new Date(),
+          source: 'enhanced_bot_memory',
+          confidence: 85
+        };
+        
+        setMessages(prev => [...prev, fallbackResponse]);
       }
-    } catch (error) {
-      setIsTyping(false);
-      console.error('Error sending message:', error);
-      
-      // Fallback response
-      const fallbackResponse: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        sender: 'waides',
-        message: "I'm processing your request. Let me help you with your trading and investment needs. Would you like me to show you market analysis, trading strategies, or help with account setup?",
-        timestamp: new Date(),
-        source: 'error'
-      };
-      
-      setMessages(prev => [...prev, fallbackResponse]);
     }
   };
   const [isListening, setIsListening] = useState(false);
@@ -1160,27 +1156,39 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           }
           break;
         default: // 'auto' mode
-          // Check for complex reasoning requests and route to KonsAi if needed
-          const complexPatterns = [
-            'explain', 'analyze', 'philosophy', 'ethics', 'moral', 'wisdom', 
-            'meaning', 'purpose', 'consciousness', 'reality', 'truth'
-          ];
-          const isComplexQuestion = complexPatterns.some(pattern => message.includes(pattern));
-          
-          if (isComplexQuestion && aiPersonality === 'cosmic') {
-            // Route complex questions to KonsAi in cosmic mode
-            konsAiMutation.mutate(currentMessage);
-          } else {
-            // Always try Memory Engine first for instant responses with full wallet context
-            const smartResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
-            if (smartResponse) {
-              typeMessage(smartResponse.message, 'enhanced_bot_memory', smartResponse.confidence);
-              setIsProcessing(false);
-            } else {
-              // Always fallback to spiritual intelligence for any message
-              questionMutation.mutate(currentMessage);
+          // Use enhanced KonsAI Intelligence Engine for all questions with intelligent guidance
+          (async () => {
+            try {
+              const response = await fetch('/api/konsai/enhanced-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  message: currentMessage,
+                  mode: 'comprehensive',
+                  complexity: 'adaptive'
+                }),
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                typeMessage(data.response || 'I am here to help with your trading and investment needs.', 'enhanced_bot_memory', 95);
+                setIsProcessing(false);
+              } else {
+                throw new Error('Enhanced chat service unavailable');
+              }
+            } catch (error) {
+              console.error('Enhanced chat error:', error);
+              // Fallback to Memory Engine if API fails
+              const smartResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
+              if (smartResponse) {
+                typeMessage(smartResponse.message, 'enhanced_bot_memory', smartResponse.confidence);
+                setIsProcessing(false);
+              } else {
+                // Final fallback to spiritual intelligence
+                questionMutation.mutate(currentMessage);
+              }
             }
-          }
+          })()
           break;
       }
     }
