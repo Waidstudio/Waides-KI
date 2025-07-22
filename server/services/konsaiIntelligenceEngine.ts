@@ -1631,6 +1631,9 @@ class KonsaiIntelligenceEngine {
         case 'kons_powa_prediction':
           response = await this.handleKonsPowaPrediction(query, systemScan);
           break;
+        case 'intelligent_guidance':
+          response = await this.handleIntelligentGuidance(query, systemScan);
+          break;
         case 'konsai_identity':
           response = this.handleKonsaiIdentityQuestion(query);
           break;
@@ -1835,6 +1838,18 @@ class KonsaiIntelligenceEngine {
       return 'wallet_management';
     }
     
+    // Intelligent Navigation and Learning Recommendations - Highest Priority
+    if (lowerQuery.includes('newbie') || lowerQuery.includes('beginner') || lowerQuery.includes('new user') ||
+        lowerQuery.includes('new to') || lowerQuery.includes('getting started') || lowerQuery.includes('first time') ||
+        lowerQuery.includes('learning') || lowerQuery.includes('teach me') || lowerQuery.includes('guide me') ||
+        lowerQuery.includes('recommend') || lowerQuery.includes('what should i') || lowerQuery.includes('where should i') ||
+        lowerQuery.includes('help me learn') || lowerQuery.includes('start') || lowerQuery.includes('how to use') ||
+        lowerQuery.includes('which page') || lowerQuery.includes('what page') || lowerQuery.includes('navigate') ||
+        lowerQuery.includes('take me to') || lowerQuery.includes('show me') || lowerQuery.includes('find') ||
+        lowerQuery.includes('where do i') || lowerQuery.includes('where can i')) {
+      return 'intelligent_guidance';
+    }
+
     // SmaiSika Educational Questions - High Priority
     if (lowerQuery.includes('smaisika') || lowerQuery.includes('smai sika') || lowerQuery.includes('ꠄ') || 
         lowerQuery.includes('ss') || lowerQuery.includes('konsmia') || lowerQuery.includes('sacred currency') || 
@@ -2175,6 +2190,178 @@ Expected Fulfillment: ${timeframe === '4H' ? 'Within 4 hours' : timeframe === '1
     return movement === 'BULLISH' ? 
       bullishWisdom[Math.floor(Math.random() * bullishWisdom.length)] :
       bearishWisdom[Math.floor(Math.random() * bearishWisdom.length)];
+  }
+
+  private async handleIntelligentGuidance(query: string, systemScan: SystemScanResult | null): Promise<string> {
+    const lowerQuery = query.toLowerCase();
+    
+    // Analyze user's experience level and needs
+    const isNewbie = lowerQuery.includes('newbie') || lowerQuery.includes('beginner') || lowerQuery.includes('new to') || lowerQuery.includes('first time');
+    const needsLearning = lowerQuery.includes('learning') || lowerQuery.includes('teach') || lowerQuery.includes('guide');
+    const needsNavigation = lowerQuery.includes('page') || lowerQuery.includes('where') || lowerQuery.includes('find') || lowerQuery.includes('navigate');
+    const needsTrading = lowerQuery.includes('trade') || lowerQuery.includes('trading') || lowerQuery.includes('bot');
+    const needsWallet = lowerQuery.includes('wallet') || lowerQuery.includes('fund') || lowerQuery.includes('money');
+    
+    let recommendations = [];
+    let primaryMessage = "";
+    
+    if (isNewbie) {
+      primaryMessage = "**🌟 Welcome to Waides KI! I'm your intelligent guide.**\n\nAs a new user, I'll help you navigate and recommend the best learning path based on your goals.\n\n";
+      
+      recommendations = [
+        {
+          page: "Learning Academy",
+          route: "/learning",
+          priority: "ESSENTIAL",
+          reason: "Master trading fundamentals and understand market psychology before risking capital",
+          description: "Complete trading education with interactive lessons, market analysis training, and risk management",
+          timeEstimate: "2-3 hours for basics"
+        },
+        {
+          page: "SmaiSika Wallet",
+          route: "/wallet",
+          priority: "ESSENTIAL", 
+          reason: "Set up your digital wallet and understand fund management before trading",
+          description: "Secure wallet setup, funding options, and currency conversion to prepare for trading",
+          timeEstimate: "15-30 minutes setup"
+        },
+        {
+          page: "Dashboard Overview",
+          route: "/dashboard",
+          priority: "RECOMMENDED",
+          reason: "Get familiar with real-time market data and system status",
+          description: "Market overview, ETH price tracking, and system health monitoring",
+          timeEstimate: "10 minutes exploration"
+        }
+      ];
+    } else if (needsLearning) {
+      primaryMessage = "**📚 I'll guide you to the perfect learning resources:**\n\n";
+      
+      recommendations = [
+        {
+          page: "Trading Academy",
+          route: "/learning",
+          priority: "ESSENTIAL",
+          reason: "Comprehensive trading education covering technical analysis, risk management, and strategy development", 
+          description: "Interactive lessons, market psychology, chart reading, and advanced trading concepts",
+          timeEstimate: "1-4 hours depending on depth"
+        },
+        {
+          page: "WaidBot Engine",
+          route: "/waidbot-engine", 
+          priority: "INTERMEDIATE",
+          reason: "Learn automated trading through hands-on bot configuration and strategy testing",
+          description: "AI trading bot setup, strategy customization, and performance monitoring",
+          timeEstimate: "30-60 minutes"
+        }
+      ];
+    } else if (needsTrading) {
+      primaryMessage = "**⚡ Ready to start trading? Here's your optimal path:**\n\n";
+      
+      recommendations = [
+        {
+          page: "WaidBot Engine", 
+          route: "/waidbot-engine",
+          priority: "ESSENTIAL",
+          reason: "Configure and activate AI trading bots for automated ETH trading",
+          description: "Advanced trading automation with WaidBot, WaidBot Pro, and Full Engine systems",
+          timeEstimate: "Setup in 15-30 minutes"
+        },
+        {
+          page: "Trading Strategies",
+          route: "/trading-strategies",
+          priority: "RECOMMENDED", 
+          reason: "Review and customize proven trading strategies before going live",
+          description: "Pre-built strategies, backtesting, and risk management settings",
+          timeEstimate: "20-45 minutes review"
+        },
+        {
+          page: "Real-Time Analytics",
+          route: "/real-time-analytics",
+          priority: "USEFUL",
+          reason: "Monitor live market data and bot performance in real-time",
+          description: "Live charts, trading signals, and performance tracking dashboard",
+          timeEstimate: "Ongoing monitoring"
+        }
+      ];
+    } else if (needsWallet) {
+      primaryMessage = "**💰 Let me help you with wallet and funding:**\n\n";
+      
+      recommendations = [
+        {
+          page: "SmaiSika Wallet",
+          route: "/wallet", 
+          priority: "ESSENTIAL",
+          reason: "Manage your digital currency, view balances, and process transactions",
+          description: "Secure wallet interface with global payment integration and instant conversions",
+          timeEstimate: "5-15 minutes for basic operations"
+        },
+        {
+          page: "Global Payments",
+          route: "/wallet?tab=payments",
+          priority: "ESSENTIAL",
+          reason: "Fund your account from 50+ countries with local payment methods",
+          description: "Mobile money, bank transfers, cards, and cryptocurrency funding options",
+          timeEstimate: "10-20 minutes for first funding"
+        }
+      ];
+    } else {
+      primaryMessage = "**🧠 Let me recommend the best pages for your needs:**\n\n";
+      
+      recommendations = [
+        {
+          page: "Dashboard",
+          route: "/dashboard",
+          priority: "START_HERE",
+          reason: "Central hub with market overview, system status, and quick access to all features",
+          description: "Real-time market data, trading performance, and navigation center",
+          timeEstimate: "Always accessible"
+        },
+        {
+          page: "Vision Portal", 
+          route: "/vision-portal",
+          priority: "FEATURED",
+          reason: "Interactive AI interface for advanced market insights and spiritual trading guidance",
+          description: "KonsAI chat, divine predictions, and enhanced market analysis",
+          timeEstimate: "Explore anytime for insights"
+        }
+      ];
+    }
+    
+    // Build the response
+    let response = primaryMessage;
+    
+    recommendations.forEach((rec, index) => {
+      const priorityEmoji = rec.priority === 'ESSENTIAL' ? '🔥' : 
+                           rec.priority === 'RECOMMENDED' ? '⭐' : 
+                           rec.priority === 'START_HERE' ? '🎯' :
+                           rec.priority === 'FEATURED' ? '✨' : '💡';
+      
+      response += `${priorityEmoji} **${rec.page}** ${rec.priority === 'ESSENTIAL' ? '(Must Visit)' : rec.priority === 'START_HERE' ? '(Start Here)' : ''}\n`;
+      response += `📍 Route: ${rec.route}\n`;
+      response += `🎯 Why: ${rec.reason}\n`;
+      response += `📋 What: ${rec.description}\n`;
+      response += `⏱️ Time: ${rec.timeEstimate}\n\n`;
+    });
+    
+    // Add intelligent next steps
+    if (isNewbie) {
+      response += `**🚀 Recommended Learning Path:**\n`;
+      response += `1. Start with Learning Academy to build foundation\n`;
+      response += `2. Set up your SmaiSika Wallet for secure trading\n`;
+      response += `3. Explore Dashboard to understand market data\n`;
+      response += `4. Configure WaidBot once you're comfortable\n\n`;
+    }
+    
+    response += `**💬 Pro Tip:** You can ask me specific questions like:\n`;
+    response += `• "How do I fund my wallet?"\n`;
+    response += `• "Show me trading strategies"\n`;
+    response += `• "Take me to WaidBot setup"\n`;
+    response += `• "What's the current ETH price?"\n\n`;
+    
+    response += `*I'm here to guide you through your entire Waides KI journey. Ask me anything!*`;
+    
+    return response;
   }
 
   private async handleMarketStorytellingQuery(query: string, systemScan: SystemScanResult | null): Promise<string> {
