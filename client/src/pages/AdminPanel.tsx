@@ -40,9 +40,17 @@ import {
   Brain,
   Lock,
   BarChart,
+  BarChart3,
   Maximize2,
   Link,
   Unlock,
+  Bell,
+  Rocket,
+  Brush,
+  Cpu,
+  X,
+  Upload,
+  ImageIcon,
   Monitor,
   Server,
   Network,
@@ -129,6 +137,7 @@ interface AdminConfig {
     margin_requirements: number;
     portfolio_diversification: boolean;
     risk_management_ai: boolean;
+    emergency_stop: boolean;
   };
   wallet: {
     min_deposit: number;
@@ -144,6 +153,7 @@ interface AdminConfig {
     compliance_level: string;
     kyc_requirements: string[];
     aml_monitoring: boolean;
+    auto_conversion: boolean;
   };
   security: {
     session_timeout: number;
@@ -175,6 +185,8 @@ interface AdminConfig {
     custom_knowledge_base: boolean;
     api_integration_limit: number;
     quantum_processing: boolean;
+    hide_module_count: boolean;
+    query_filtering: boolean;
   };
   notifications: {
     email_enabled: boolean;
@@ -1784,7 +1796,7 @@ export default function AdminPanel() {
                       </div>
                       {uploadedFiles.logo && (
                         <div className="flex items-center space-x-2 text-sm text-green-400">
-                          <Image className="w-4 h-4" />
+                          <ImageIcon className="w-4 h-4" />
                           <span>Logo uploaded successfully</span>
                         </div>
                       )}
@@ -1826,7 +1838,7 @@ export default function AdminPanel() {
                       </div>
                       {uploadedFiles.favicon && (
                         <div className="flex items-center space-x-2 text-sm text-green-400">
-                          <Image className="w-4 h-4" />
+                          <ImageIcon className="w-4 h-4" />
                           <span>Favicon uploaded successfully</span>
                         </div>
                       )}

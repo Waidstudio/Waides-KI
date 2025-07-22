@@ -1,6 +1,10 @@
 // Component Analysis Script for Waides KI System
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class ComponentAuditor {
   constructor() {
@@ -136,8 +140,8 @@ class ComponentAuditor {
   }
 
   async findComponentUsage() {
-    const pagesDir = path.join(process.cwd(), 'client/src/pages');
-    const appFile = path.join(process.cwd(), 'client/src/App.tsx');
+    const pagesDir = path.resolve(path.dirname(__dirname), 'client/src/pages');
+    const appFile = path.resolve(path.dirname(__dirname), 'client/src/App.tsx');
     
     try {
       // Check App.tsx
@@ -175,7 +179,7 @@ class ComponentAuditor {
   async auditAll() {
     console.log('🔍 Starting Component Audit...\n');
     
-    const componentsDir = path.join(process.cwd(), 'client/src/components');
+    const componentsDir = path.resolve(path.dirname(__dirname), 'client/src/components');
     
     try {
       const files = fs.readdirSync(componentsDir, { withFileTypes: true });
@@ -227,7 +231,7 @@ class ComponentAuditor {
       });
 
       // UI Components count
-      const uiDir = path.join(componentsDir, 'ui');
+      const uiDir = path.resolve(componentsDir, 'ui');
       if (fs.existsSync(uiDir)) {
         const uiFiles = fs.readdirSync(uiDir).filter(file => 
           file.endsWith('.tsx') || file.endsWith('.jsx')
