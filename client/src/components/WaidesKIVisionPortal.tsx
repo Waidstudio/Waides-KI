@@ -119,39 +119,85 @@ export default function WaidesKIVisionPortal() {
     setKonsaiInput('');
   };
 
-  // Enhanced database-backed action handlers
+  // Enhanced intelligence-backed action handlers
   const handleKonsPowaPrediction = async () => {
     setIsProcessing(true);
     try {
-      await refetchKonsPowaPrediction();
-      const prediction = konsPowaPrediction;
-      
-      if (prediction) {
-        let message = `**🔮 Kons Powa ETH Prediction (Database)**\n\n`;
-        message += `**Price:** $${prediction.ethPrice}\n`;
-        message += `**Prediction:** ${prediction.prediction}\n`;
-        message += `**Confidence:** ${prediction.confidence}%\n`;
-        message += `**Strategy:** ${prediction.strategy}\n`;
-        message += `**Timeframe:** ${prediction.timeframe}\n`;
-        message += `**Kons Power Level:** ${prediction.konsPowerLevel}%\n`;
-        message += `**Divine Alignment:** ${prediction.divineAlignment}%\n`;
-        message += `**Spiritual Energy:** ${prediction.spiritualEnergy}%\n`;
-        message += `**Reasoning:** ${prediction.reasoning}\n`;
-        
-        if (prediction.targetPrice) {
-          message += `**Target Price:** $${prediction.targetPrice}\n`;
-        }
-        if (prediction.stopLoss) {
-          message += `**Stop Loss:** $${prediction.stopLoss}\n`;
-        }
-        
-        typeMessage(message, 'oracle', prediction.confidence);
-      } else {
-        typeMessage('Unable to retrieve Kons Powa prediction at this time. Please try again.', 'error', 0);
+      // Use KonsAI Intelligence Engine for Kons Powa predictions instead of just database
+      const response = await fetch('/api/konsai/enhanced-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: 'Generate a detailed Kons Powa ETH prediction with divine insights and strategic guidance',
+          mode: 'comprehensive',
+          complexity: 'advanced'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get Kons Powa intelligence response');
       }
+
+      const data = await response.json();
+      let intelligentResponse = data.response;
+
+      // If we have database prediction, enhance it with intelligence
+      try {
+        await refetchKonsPowaPrediction();
+        const prediction = konsPowaPrediction;
+        
+        if (prediction) {
+          intelligentResponse = `**🔮 Kons Powa Enhanced Intelligence Prediction**
+
+${intelligentResponse}
+
+**📊 Current Database Analysis:**
+• **Price:** $${prediction.ethPrice}
+• **Prediction:** ${prediction.prediction}
+• **Confidence:** ${prediction.confidence}%
+• **Strategy:** ${prediction.strategy}
+• **Timeframe:** ${prediction.timeframe}
+• **Kons Power Level:** ${prediction.konsPowerLevel}%
+• **Divine Alignment:** ${prediction.divineAlignment}%
+• **Spiritual Energy:** ${prediction.spiritualEnergy}%
+• **Reasoning:** ${prediction.reasoning}
+
+*Powered by KonsAI Intelligence Engine v2.0 + Database Analysis*`;
+        }
+      } catch (dbError) {
+        console.log('Database prediction unavailable, using pure intelligence response');
+      }
+
+      typeMessage(intelligentResponse, 'oracle', 95);
     } catch (error) {
-      console.error('Error fetching Kons Powa prediction:', error);
-      typeMessage('Error retrieving Kons Powa prediction. Please try again.', 'error', 0);
+      console.error('Error fetching Kons Powa intelligence prediction:', error);
+      
+      // Fallback to database-only if intelligence fails
+      try {
+        await refetchKonsPowaPrediction();
+        const prediction = konsPowaPrediction;
+        
+        if (prediction) {
+          let message = `**🔮 Kons Powa ETH Prediction (Database Fallback)**\n\n`;
+          message += `**Price:** $${prediction.ethPrice}\n`;
+          message += `**Prediction:** ${prediction.prediction}\n`;
+          message += `**Confidence:** ${prediction.confidence}%\n`;
+          message += `**Strategy:** ${prediction.strategy}\n`;
+          message += `**Timeframe:** ${prediction.timeframe}\n`;
+          message += `**Kons Power Level:** ${prediction.konsPowerLevel}%\n`;
+          message += `**Divine Alignment:** ${prediction.divineAlignment}%\n`;
+          message += `**Spiritual Energy:** ${prediction.spiritualEnergy}%\n`;
+          message += `**Reasoning:** ${prediction.reasoning}\n`;
+          
+          typeMessage(message, 'oracle', prediction.confidence);
+        } else {
+          typeMessage('Kons Powa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
+        }
+      } catch (fallbackError) {
+        typeMessage('Kons Powa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
+      }
     }
     setIsProcessing(false);
   };
