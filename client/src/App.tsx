@@ -18,7 +18,10 @@ import { Badge } from "@/components/ui/badge";
 import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { NotificationBell } from "@/components/NotificationBell";
 import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
@@ -143,19 +146,7 @@ function Router() {
             {/* Right side - Notifications and User Profile */}
             <div className="flex items-center space-x-4">
               {/* Notifications */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative text-slate-400 hover:text-slate-100 hover:bg-slate-700"
-              >
-                <Bell className="h-5 w-5" />
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0 bg-red-500"
-                >
-                  3
-                </Badge>
-              </Button>
+              <NotificationBell />
 
               {/* User Profile Dropdown */}
               <DropdownMenu>
@@ -218,6 +209,8 @@ function Router() {
       <main>
         <Switch>
           <Route path="/login" component={LoginPage} />
+          <Route path="/register" component={RegisterPage} />
+          <Route path="/forgot-password" component={ForgotPasswordPage} />
           
           {/* Public routes */}
           <Route path="/" component={WaidesKIVisionPortal} />

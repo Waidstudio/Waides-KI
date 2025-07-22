@@ -87,6 +87,16 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              
+              {/* Registration Link */}
+              <div className="text-center pb-2">
+                <p className="text-sm text-slate-400">
+                  Don't have an account?{' '}
+                  <a href="/register" className="text-blue-400 hover:text-blue-300 underline">
+                    Sign up here
+                  </a>
+                </p>
+              </div>
               {/* Error Alert */}
               {error && (
                 <Alert variant="destructive" className="bg-red-950 border-red-800">
@@ -138,16 +148,21 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Remember Me */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="rememberMe"
-                  checked={formData.rememberMe}
-                  onCheckedChange={(checked) => handleInputChange('rememberMe', checked as boolean)}
-                />
-                <Label htmlFor="rememberMe" className="text-sm text-slate-300">
-                  Remember me for 30 days
-                </Label>
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={formData.rememberMe}
+                    onCheckedChange={(checked) => handleInputChange('rememberMe', checked as boolean)}
+                  />
+                  <Label htmlFor="rememberMe" className="text-sm text-slate-300">
+                    Remember me
+                  </Label>
+                </div>
+                <a href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
+                  Forgot password?
+                </a>
               </div>
 
               {/* Submit Button */}

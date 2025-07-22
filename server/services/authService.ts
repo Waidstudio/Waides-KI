@@ -471,6 +471,55 @@ export class AuthService {
     }
   }
 
+  // Register new user
+  public async register(userData: {
+    username: string;
+    email: string;
+    password: string;
+    role?: AdminRole;
+  }): Promise<{ success: boolean; user?: AuthenticatedUser; message?: string }> {
+    try {
+      // Check if user already exists
+      const existingUser = await db
+        .select()
+        .from(adminUsers)
+        .where(eq(adminUsers.email, userData.email))
+        .limit(1);
+
+      if (existingUser.length > 0) {
+        return { success: false, message: 'User with this email already exists' };
+      }
+
+      // Hash password
+      const passwordHash = await this.hashPassword(userData.password);
+
+      // Create user
+      const [newUser] = await db
+        .insert(adminUsers)
+        .values({
+          username: userData.username,
+          email: userData.email,
+          passwordHash,
+          role: userData.role || AdminRoles.USER,
+          permissions: RolePermissions[userData.role as AdminRole] || RolePermissions[AdminRoles.USER],
+        })
+        .returning();
+
+      const authenticatedUser: AuthenticatedUser = {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role as AdminRole,
+        permissions: newUser.permissions || RolePermissions[newUser.role as AdminRole] || [],
+      };
+
+      return { success: true, user: authenticatedUser };
+    } catch (error) {
+      console.error('Error registering user:', error);
+      return { success: false, message: 'Failed to create account' };
+    }
+  }
+
   // Initialize default admin user
   public async initializeDefaultAdmin(): Promise<boolean> {
     try {

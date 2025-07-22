@@ -864,6 +864,7 @@ export type AdminLoginAttempt = typeof adminLoginAttempts.$inferSelect;
 export const AdminRoles = {
   SUPER_ADMIN: "super_admin",
   ADMIN: "admin",
+  USER: "user",
   VIEWER: "viewer",
 } as const;
 
@@ -892,6 +893,9 @@ export const RolePermissions: Record<AdminRole, AdminPermission[]> = {
     AdminPermissions.VIEW_LOGS,
     AdminPermissions.MANAGE_CONFIGURATION,
     AdminPermissions.MANAGE_TRADING_BOTS,
+    AdminPermissions.VIEW_FINANCIAL_DATA,
+  ],
+  [AdminRoles.USER]: [
     AdminPermissions.VIEW_FINANCIAL_DATA,
   ],
   [AdminRoles.VIEWER]: [

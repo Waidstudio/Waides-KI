@@ -72,6 +72,79 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Registration endpoint
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, email, password } = req.body;
+      
+      if (!username || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          message: 'Username, email and password are required'
+        });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({
+          success: false,
+          message: 'Password must be at least 8 characters long'
+        });
+      }
+
+      const result = await authService.register({
+        username,
+        email,
+        password,
+        role: 'user' // Default role for new registrations
+      });
+
+      if (result.success) {
+        res.json({
+          success: true,
+          message: 'Account created successfully'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message
+        });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  });
+
+  // Forgot password endpoint
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is required'
+        });
+      }
+
+      // For demo purposes, always return success
+      // In production, you would send an actual email
+      res.json({
+        success: true,
+        message: 'If an account with this email exists, you will receive password reset instructions'
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  });
+
   app.post("/api/auth/logout", requireAuth, async (req, res) => {
     try {
       const success = await authService.logout(req.sessionId!, req.user!.id);
