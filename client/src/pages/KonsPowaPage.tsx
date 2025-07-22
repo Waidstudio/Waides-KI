@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import KonsPowaTaskDashboard from "@/components/KonsPowaTaskDashboard";
+import KonsPowaAutoHealerDashboard from "@/components/KonsPowaAutoHealerDashboard";
 import { Brain, Zap, Activity, Settings } from "lucide-react";
 
 export default function KonsPowaPage() {
@@ -55,41 +56,7 @@ export default function KonsPowaPage() {
           </TabsContent>
 
           <TabsContent value="healing">
-            <Card className="bg-slate-900/50 border-slate-800">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold text-white flex items-center">
-                  <Zap className="w-5 h-5 mr-2 text-yellow-400" />
-                  Auto-Healing Systems
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-slate-800/30 rounded-lg">
-                    <h3 className="font-semibold text-white mb-2">System Health Monitor</h3>
-                    <p className="text-slate-300 text-sm mb-3">
-                      Continuously monitors system health and automatically fixes detected issues.
-                    </p>
-                    <div className="text-green-400 text-sm">✅ Active - All systems monitored</div>
-                  </div>
-                  
-                  <div className="p-4 bg-slate-800/30 rounded-lg">
-                    <h3 className="font-semibold text-white mb-2">Error Recovery</h3>
-                    <p className="text-slate-300 text-sm mb-3">
-                      Automatically catches and heals errors before users encounter them.
-                    </p>
-                    <div className="text-green-400 text-sm">✅ Active - Proactive error routing enabled</div>
-                  </div>
-                  
-                  <div className="p-4 bg-slate-800/30 rounded-lg">
-                    <h3 className="font-semibold text-white mb-2">Performance Optimization</h3>
-                    <p className="text-slate-300 text-sm mb-3">
-                      Optimizes system performance and resource usage automatically.
-                    </p>
-                    <div className="text-blue-400 text-sm">🔄 Monitoring - Idle cache cleanup scheduled</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <KonsPowaAutoHealerDashboard />
           </TabsContent>
 
           <TabsContent value="settings">

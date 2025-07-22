@@ -3280,6 +3280,63 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // KonsPowa Auto-Healer API Endpoints
+  app.get("/api/kons-powa/healer/stats", async (req, res) => {
+    try {
+      const { konsPowaHealer } = await import('./kons/konsPowaAutoHealer.js');
+      const stats = konsPowaHealer.getTaskStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error getting KonsPowa healer stats:', error);
+      res.status(500).json({ error: 'Failed to get healer stats' });
+    }
+  });
+
+  app.get("/api/kons-powa/healer/tasks", async (req, res) => {
+    try {
+      const { konsPowaHealer } = await import('./kons/konsPowaAutoHealer.js');
+      const tasks = konsPowaHealer.getAllTasks();
+      res.json(tasks);
+    } catch (error: any) {
+      console.error('Error getting KonsPowa healer tasks:', error);
+      res.status(500).json({ error: 'Failed to get healer tasks' });
+    }
+  });
+
+  app.post("/api/kons-powa/healer/tasks/:id/run", async (req, res) => {
+    try {
+      const { konsPowaHealer } = await import('./kons/konsPowaAutoHealer.js');
+      const taskId = parseInt(req.params.id);
+      const success = await konsPowaHealer.runTask(taskId);
+      res.json({ success, message: success ? 'Task completed successfully' : 'Task failed' });
+    } catch (error: any) {
+      console.error('Error running KonsPowa healer task:', error);
+      res.status(500).json({ error: 'Failed to run healer task' });
+    }
+  });
+
+  app.post("/api/kons-powa/healer/run-critical", async (req, res) => {
+    try {
+      const { konsPowaHealer } = await import('./kons/konsPowaAutoHealer.js');
+      await konsPowaHealer.runAllCriticalTasks();
+      res.json({ success: true, message: 'All critical tasks executed' });
+    } catch (error: any) {
+      console.error('Error running critical healer tasks:', error);
+      res.status(500).json({ error: 'Failed to run critical tasks' });
+    }
+  });
+
+  app.post("/api/kons-powa/healer/toggle-auto", async (req, res) => {
+    try {
+      const { konsPowaHealer } = await import('./kons/konsPowaAutoHealer.js');
+      const autoModeEnabled = konsPowaHealer.toggleAutoMode();
+      res.json({ autoModeEnabled, message: `Auto-healing ${autoModeEnabled ? 'enabled' : 'disabled'}` });
+    } catch (error: any) {
+      console.error('Error toggling auto-healer mode:', error);
+      res.status(500).json({ error: 'Failed to toggle auto mode' });
+    }
+  });
+
   app.get("/api/kons-powa/stats", async (req, res) => {
     try {
       const { getKonsTasks, getTasksByStatus, getCriticalTasks, getAutoHealTasks, getCompletionPercentage } = await import('./kons/konsPowaTaskEngine.js');
