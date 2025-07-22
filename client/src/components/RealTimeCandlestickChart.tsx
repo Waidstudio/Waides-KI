@@ -37,15 +37,37 @@ interface RealTimeCandlestickChartProps {
 
 export default function RealTimeCandlestickChart({ 
   symbol = "ETHUSDT", 
-  interval = "1m", 
+  interval: defaultInterval = "1m", 
   limit = 50
 }: RealTimeCandlestickChartProps) {
+  const [selectedInterval, setSelectedInterval] = useState(defaultInterval);
+  const [selectedSymbol, setSelectedSymbol] = useState(symbol);
+
+  // Available timeframes
+  const timeframes = [
+    { value: "1m", label: "1 Minute" },
+    { value: "5m", label: "5 Minutes" },
+    { value: "15m", label: "15 Minutes" },
+    { value: "30m", label: "30 Minutes" },
+    { value: "1h", label: "1 Hour" },
+    { value: "4h", label: "4 Hours" },
+    { value: "1d", label: "1 Day" }
+  ];
+
+  // Available symbols
+  const symbols = [
+    { value: "ETHUSDT", label: "ETH/USDT" },
+    { value: "BTCUSDT", label: "BTC/USDT" },
+    { value: "ADAUSDT", label: "ADA/USDT" },
+    { value: "DOTUSDT", label: "DOT/USDT" },
+    { value: "SOLUSDT", label: "SOL/USDT" }
+  ];
 
   // Fetch candlestick data
   const { data: candlestickData, isLoading: candlestickLoading, refetch: refetchCandlesticks } = useQuery({
-    queryKey: ['/api/candlesticks', symbol, interval, limit],
-    queryFn: () => fetch(`/api/candlesticks/${symbol}/${interval}?limit=${limit}`).then(res => res.json()),
-    refetchInterval: 5000 // Refresh every 5 seconds
+    queryKey: ['/api/candlesticks', selectedSymbol, selectedInterval, limit],
+    queryFn: () => fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}?limit=${limit}`).then(res => res.json()),
+    refetchInterval: selectedInterval === "1m" ? 5000 : selectedInterval === "5m" ? 15000 : 30000 // Refresh based on timeframe
   });
 
   // Fetch WebSocket status
@@ -57,9 +79,9 @@ export default function RealTimeCandlestickChart({
 
   // Get latest candlestick
   const { data: latestCandlestick } = useQuery({
-    queryKey: ['/api/candlesticks/latest', symbol, interval],
-    queryFn: () => fetch(`/api/candlesticks/${symbol}/${interval}/latest`).then(res => res.json()),
-    refetchInterval: 2000 // Update every 2 seconds
+    queryKey: ['/api/candlesticks/latest', selectedSymbol, selectedInterval],
+    queryFn: () => fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}/latest`).then(res => res.json()),
+    refetchInterval: selectedInterval === "1m" ? 2000 : selectedInterval === "5m" ? 10000 : 30000 // Update based on timeframe
   });
 
   const candlesticks = candlestickData?.candlesticks || [];
@@ -77,23 +99,64 @@ export default function RealTimeCandlestickChart({
       {/* Real-time Data Source Selector */}
       <Card className="bg-slate-900/50 border-slate-800">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-white flex items-center">
-              <BarChart3 className="w-5 h-5 mr-2 text-blue-400" />
-              Real-Time Candlestick Data
-            </CardTitle>
-            <div className="flex items-center space-x-3">
-              <Badge variant="outline" className="border-blue-500 text-blue-400">
-                Binance WebSocket
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-white flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-blue-400" />
+                Real-Time Candlestick Data
+              </CardTitle>
+              <div className="flex items-center space-x-3">
+                <Badge variant="outline" className="border-blue-500 text-blue-400">
+                  Binance WebSocket
+                </Badge>
+                <Button
+                  onClick={() => refetchCandlesticks()}
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-700 hover:bg-slate-800"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            
+            {/* Timeframe and Symbol Selectors */}
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-slate-400">Symbol:</span>
+                <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
+                  <SelectTrigger className="w-32 bg-slate-800 border-slate-700">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    {symbols.map(sym => (
+                      <SelectItem key={sym.value} value={sym.value} className="text-slate-200">
+                        {sym.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-slate-400">Timeframe:</span>
+                <Select value={selectedInterval} onValueChange={setSelectedInterval}>
+                  <SelectTrigger className="w-36 bg-slate-800 border-slate-700">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    {timeframes.map(tf => (
+                      <SelectItem key={tf.value} value={tf.value} className="text-slate-200">
+                        {tf.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Badge variant="outline" className="border-green-500 text-green-400">
+                {timeframes.find(tf => tf.value === selectedInterval)?.label || selectedInterval}
               </Badge>
-              <Button
-                onClick={() => refetchCandlesticks()}
-                variant="outline"
-                size="sm"
-                className="border-slate-700 hover:bg-slate-800"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
             </div>
           </div>
         </CardHeader>
@@ -130,7 +193,7 @@ export default function RealTimeCandlestickChart({
             <div className="text-sm">
               <div className="text-slate-400">Symbol/Interval</div>
               <div className="text-white font-medium">
-                {connectionStatus?.symbol || symbol} / {connectionStatus?.interval || interval}
+                {connectionStatus?.symbol || selectedSymbol} / {connectionStatus?.interval || selectedInterval}
               </div>
             </div>
 
