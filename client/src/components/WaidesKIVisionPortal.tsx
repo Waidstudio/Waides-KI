@@ -940,6 +940,43 @@ ${intelligentResponse}
     }
   });
 
+  // Enhanced Chat mutation using KonsAI Intelligence Engine
+  const enhancedChatMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/konsai/enhanced-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          mode: 'comprehensive',
+          complexity: 'adaptive'
+        }),
+      });
+      if (!response.ok) throw new Error('Enhanced chat service unavailable');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.response) {
+        typeMessage(data.response, 'enhanced_bot_memory', 95);
+      } else {
+        typeMessage('I am here to help with your trading and investment needs.', 'enhanced_bot_memory', 85);
+      }
+      setIsProcessing(false);
+    },
+    onError: (error) => {
+      console.error('Enhanced chat error:', error);
+      // Fallback to Memory Engine if API fails
+      const smartResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
+      if (smartResponse) {
+        typeMessage(smartResponse.message, 'enhanced_bot_memory', smartResponse.confidence);
+      } else {
+        // Final fallback to spiritual intelligence
+        questionMutation.mutate(currentMessage);
+      }
+      setIsProcessing(false);
+    }
+  });
+
   // WaidBot summon check mutation
   const summonCheckMutation = useMutation({
     mutationFn: async (message: string) => {
@@ -1058,22 +1095,6 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     // Enhanced intelligent routing logic
     const message = currentMessage.toLowerCase();
     
-    // First, check for page recommendations
-    const pageRecommendation = detectPageRecommendation(currentMessage, setBotState);
-    if (pageRecommendation) {
-      typeMessage(pageRecommendation, 'enhanced_bot_memory', 95);
-      setCurrentMessage('');
-      return;
-    }
-    
-    // Check for command triggers  
-    const commandResponse = detectCommandTrigger(currentMessage, setBotState);
-    if (commandResponse) {
-      typeMessage(commandResponse, 'enhanced_bot_memory', 95);
-      setCurrentMessage('');
-      return;
-    }
-    
     // Check for WaidBot summoning commands
     summonCheckMutation.mutate(currentMessage);
     
@@ -1157,38 +1178,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           break;
         default: // 'auto' mode
           // Use enhanced KonsAI Intelligence Engine for all questions with intelligent guidance
-          (async () => {
-            try {
-              const response = await fetch('/api/konsai/enhanced-chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  message: currentMessage,
-                  mode: 'comprehensive',
-                  complexity: 'adaptive'
-                }),
-              });
-
-              if (response.ok) {
-                const data = await response.json();
-                typeMessage(data.response || 'I am here to help with your trading and investment needs.', 'enhanced_bot_memory', 95);
-                setIsProcessing(false);
-              } else {
-                throw new Error('Enhanced chat service unavailable');
-              }
-            } catch (error) {
-              console.error('Enhanced chat error:', error);
-              // Fallback to Memory Engine if API fails
-              const smartResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
-              if (smartResponse) {
-                typeMessage(smartResponse.message, 'enhanced_bot_memory', smartResponse.confidence);
-                setIsProcessing(false);
-              } else {
-                // Final fallback to spiritual intelligence
-                questionMutation.mutate(currentMessage);
-              }
-            }
-          })()
+          enhancedChatMutation.mutate(currentMessage)
           break;
       }
     }
