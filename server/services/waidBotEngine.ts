@@ -3,38 +3,84 @@ import { DivineSignal } from './divineCommLayer';
 import { mlEngine } from './mlEngine';
 import { portfolioManager } from './portfolioManager';
 import { storage } from '../storage';
-import { divineKons PowaFluxStrategy } from './divineKons PowaFluxStrategy';
+import { ETHPrice, WaidDecision, DivineSignal as SimpleDivineSignal } from '../types/waidTypes';
+import { KonsLangSymbol, KonsLangAnalysis } from '../types/konslangTypes';
 
-export interface WaidDecision {
-  action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
-  reasoning: string;
+export interface MarketData {
+  price: number;
+  volume: number;
+  timestamp: Date;
+  priceChange24h: number;
+}
+
+export interface KonsPowaSignal {
+  strategy: string;
   confidence: number;
-  konsWisdom: string;
-  ethPosition: 'LONG' | 'NEUTRAL'; // WaidBot only: LONG positions during uptrends
-  tradingPair: 'ETH/USDT' | 'NONE';
-  quantity: number;
-  urgency: 'IMMEDIATE' | 'WITHIN_HOUR' | 'WHEN_READY' | 'PATIENCE';
-  mlPrediction?: any;
-  portfolioRisk?: string;
-  executionStatus?: 'PENDING' | 'EXECUTED' | 'FAILED' | 'CANCELLED';
-  trendDirection: 'UPWARD' | 'DOWNWARD' | 'SIDEWAYS'; // WaidBot focuses on UPWARD trends only
-  botType: 'WAIDBOT' | 'WAIDBOT_PRO';
-  autoTradingEnabled: boolean;
+  size?: string;
+  timeframe?: string;
 }
 
-export interface KonsLangAnalysis {
-  marketMood: 'EUPHORIC' | 'FEARFUL' | 'GREEDY' | 'CONFUSED' | 'BALANCED';
-  ethVibration: 'ASCENDING' | 'DESCENDING' | 'OSCILLATING' | 'DORMANT';
-  divineAlignment: number; // 0-100
-  tradingWindow: 'SACRED' | 'NORMAL' | 'FORBIDDEN';
-  konsMessage: string;
-}
+// Mock Divine Kons Powa Flux Strategy for now
+const divineKonsPowaFluxStrategy = {
+  convertEthDataToMarketData: (ethData: any, historicalData: any[]): MarketData => {
+    return {
+      price: ethData.price || 3000,
+      volume: ethData.volume || 1000000,
+      timestamp: new Date(ethData.timestamp || Date.now()),
+      priceChange24h: ethData.priceChange24h || 0
+    };
+  },
+  
+  generateSignal: (marketData: MarketData): KonsPowaSignal => {
+    const priceChange = marketData.priceChange24h;
+    
+    if (priceChange > 5) {
+      return {
+        strategy: 'QUANTUM_ENTANGLEMENT_BUY',
+        confidence: 0.8,
+        size: 'full_position',
+        timeframe: '5m'
+      };
+    } else if (priceChange > 2) {
+      return {
+        strategy: 'HYPER_MOMENTUM_ACCUMULATION',
+        confidence: 0.6,
+        size: 'half_position',
+        timeframe: '15m'
+      };
+    } else if (priceChange < -5) {
+      return {
+        strategy: 'DEFENSIVE_LIQUIDATION',
+        confidence: 0.9,
+        size: 'full_position',
+        timeframe: '5m'
+      };
+    } else if (priceChange < -2) {
+      return {
+        strategy: 'PROTECTIVE_SELLING',
+        confidence: 0.7,
+        size: 'half_position',
+        timeframe: '15m'
+      };
+    } else {
+      return {
+        strategy: 'QUANTUM_SUPERPOSITION',
+        confidence: 0.5,
+        timeframe: '1h'
+      };
+    }
+  },
+  
+  updateKonsPowaState: (data: { pnl: number }) => {
+    console.log(`Kons Powa state updated with PnL: ${data.pnl.toFixed(2)}`);
+  }
+};
 
 export class WaidBotEngine {
   private lastDecision: WaidDecision | null = null;
   private decisionHistory: WaidDecision[] = [];
-  private autoTradingEnabled: boolean = false;
-  private botType: 'WAIDBOT' = 'WAIDBOT'; // Basic bot for long-only ETH trading
+  private tradingEnabled: boolean = false;
+  private botType: 'WAIDBOT' = 'WAIDBOT';
   
   constructor() {
     this.initializeKonsLang();
@@ -45,9 +91,8 @@ export class WaidBotEngine {
   }
 
   public async analyzeWithKonsLang(
-    ethData: EthPriceData, 
-    divineSignal: DivineSignal,
-    recentCandlesticks: any[]
+    ethData: ETHPrice, 
+    divineSignal: DivineSignal
   ): Promise<KonsLangAnalysis> {
     
     // KonsLang Market Mood Analysis
@@ -61,19 +106,13 @@ export class WaidBotEngine {
     else if (purity < 50 && Math.abs(priceChange) < 1) marketMood = 'CONFUSED';
     else marketMood = 'BALANCED';
 
-    // ETH Vibration Analysis using candlestick patterns
+    // ETH Vibration Analysis
     let ethVibration: KonsLangAnalysis['ethVibration'] = 'DORMANT';
-    if (recentCandlesticks.length >= 3) {
-      const recent = recentCandlesticks.slice(-3);
-      const upCandles = recent.filter(c => c.close > c.open).length;
-      const downCandles = recent.filter(c => c.close < c.open).length;
-      
-      if (upCandles >= 2) ethVibration = 'ASCENDING';
-      else if (downCandles >= 2) ethVibration = 'DESCENDING';
-      else ethVibration = 'OSCILLATING';
-    }
+    if (priceChange > 2) ethVibration = 'ASCENDING';
+    else if (priceChange < -2) ethVibration = 'DESCENDING';
+    else ethVibration = 'OSCILLATING';
 
-    // Divine Alignment (combination of multiple factors)
+    // Divine Alignment
     const alignment = Math.round(
       (purity * 0.4) + 
       (divineSignal.breathLock ? 30 : 0) + 
@@ -104,31 +143,23 @@ export class WaidBotEngine {
   }
 
   public async makeWaidDecision(
-    ethData: EthPriceData,
+    ethData: ETHPrice,
     divineSignal: DivineSignal,
     konsAnalysis: KonsLangAnalysis
   ): Promise<WaidDecision> {
     
-    let decision: WaidDecision;
-    
     // Get historical data for kons powa analysis
     const historicalData = await storage.getEthDataHistory(20);
     
-    // Convert to kons powa market data format
-    const ethDataWithId = { 
-      ...ethData, 
-      id: 1,
-      volume: ethData.volume || 0,
-      marketCap: ethData.marketCap || 0,
-      priceChange24h: ethData.priceChange24h || 0,
-      timestamp: new Date(ethData.timestamp)
-    }; // Add missing properties for compatibility
-    const marketData = divineKons PowaFluxStrategy.convertEthDataToMarketData(ethDataWithId, historicalData);
+    // Convert to market data format
+    const marketData = divineKonsPowaFluxStrategy.convertEthDataToMarketData(ethData, historicalData);
     
-    // Generate kons powa signal using Divine Kons Powa Flux Strategy
-    const kons powaSignal = divineKons PowaFluxStrategy.generateSignal(marketData);
+    // Generate kons powa signal
+    const konsPowaSignal = divineKonsPowaFluxStrategy.generateSignal(marketData);
     
-    // KonsLang Decision Matrix with Kons Powa Enhancement
+    let decision: WaidDecision;
+    
+    // Decision Matrix
     if (konsAnalysis.tradingWindow === 'FORBIDDEN') {
       decision = {
         action: 'OBSERVE',
@@ -139,81 +170,88 @@ export class WaidBotEngine {
         tradingPair: 'NONE',
         quantity: 0,
         urgency: 'PATIENCE',
-        nextGenStrategy: 'QUANTUM_SUPERPOSITION'
+        trendDirection: 'SIDEWAYS',
+        botType: 'WAIDBOT',
+        autoTradingEnabled: this.tradingEnabled
       };
     }
-    // Divine Kons Powa Flux Strategy Decision Matrix
-    else if (kons powaSignal.strategy === 'QUANTUM_ENTANGLEMENT_BUY') {
+    else if (konsPowaSignal.strategy === 'QUANTUM_ENTANGLEMENT_BUY') {
       decision = {
         action: 'BUY_ETH',
-        reasoning: `Divine Kons Powa Flux: Singularity-level alignment detected - ${kons powaSignal.confidence * 100}% kons powa certainty. Maximum ETH accumulation at perfect entry point`,
-        confidence: kons powaSignal.confidence * 100,
+        reasoning: `Divine Kons Powa Flux: Singularity-level alignment detected - ${(konsPowaSignal.confidence * 100).toFixed(1)}% confidence`,
+        confidence: konsPowaSignal.confidence * 100,
         konsWisdom: 'Kons Powa entanglement achieved - ride the singularity wave with full conviction',
         ethPosition: 'LONG',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
+        quantity: this.calculateKonsPowaPosition(konsPowaSignal.size, konsPowaSignal.confidence),
         urgency: 'IMMEDIATE',
-        microMovementCapture: true,
-        nextGenStrategy: kons powaSignal.strategy
+        trendDirection: 'UPWARD',
+        botType: 'WAIDBOT',
+        autoTradingEnabled: this.tradingEnabled
       };
     }
-    else if (kons powaSignal.strategy === 'HYPER_MOMENTUM_ACCUMULATION') {
+    else if (konsPowaSignal.strategy === 'HYPER_MOMENTUM_ACCUMULATION') {
       decision = {
         action: 'BUY_ETH',
-        reasoning: `Divine Kons Powa Flux: Strong momentum alignment - ${(kons powaSignal.confidence * 100).toFixed(1)}% kons powa confidence. Strategic ETH accumulation`,
-        confidence: kons powaSignal.confidence * 100,
-        konsWisdom: 'Momentum flows in our favor - accumulate with kons powa precision',
+        reasoning: `Divine Kons Powa Flux: Strong momentum alignment - ${(konsPowaSignal.confidence * 100).toFixed(1)}% confidence`,
+        confidence: konsPowaSignal.confidence * 100,
+        konsWisdom: 'Momentum flows in our favor - accumulate with precision',
         ethPosition: 'LONG',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
-        urgency: kons powaSignal.timeframe === '5m' ? 'WITHIN_HOUR' : 'IMMEDIATE',
-        microMovementCapture: true,
-        nextGenStrategy: kons powaSignal.strategy
+        quantity: this.calculateKonsPowaPosition(konsPowaSignal.size, konsPowaSignal.confidence),
+        urgency: konsPowaSignal.timeframe === '5m' ? 'WITHIN_HOUR' : 'IMMEDIATE',
+        trendDirection: 'UPWARD',
+        botType: 'WAIDBOT',
+        autoTradingEnabled: this.tradingEnabled
       };
     }
-    else if (kons powaSignal.strategy === 'DEFENSIVE_LIQUIDATION') {
+    else if (konsPowaSignal.strategy === 'DEFENSIVE_LIQUIDATION') {
       decision = {
         action: 'SELL_ETH',
-        reasoning: `Divine Kons Powa Flux: Critical defensive signal - ${(kons powaSignal.confidence * 100).toFixed(1)}% kons powa certainty. Immediate protective liquidation required`,
-        confidence: kons powaSignal.confidence * 100,
-        konsWisdom: 'Kons Powa collapse imminent - preserve capital through immediate liquidation',
+        reasoning: `Divine Kons Powa Flux: Critical defensive signal - ${(konsPowaSignal.confidence * 100).toFixed(1)}% confidence`,
+        confidence: konsPowaSignal.confidence * 100,
+        konsWisdom: 'Preserve capital through immediate liquidation',
         ethPosition: 'NEUTRAL',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
+        quantity: this.calculateKonsPowaPosition(konsPowaSignal.size, konsPowaSignal.confidence),
         urgency: 'IMMEDIATE',
-        microMovementCapture: true,
-        nextGenStrategy: kons powaSignal.strategy
+        trendDirection: 'DOWNWARD',
+        botType: 'WAIDBOT',
+        autoTradingEnabled: this.tradingEnabled
       };
     }
-    else if (kons powaSignal.strategy === 'PROTECTIVE_SELLING') {
+    else if (konsPowaSignal.strategy === 'PROTECTIVE_SELLING') {
       decision = {
         action: 'SELL_ETH',
-        reasoning: `Divine Kons Powa Flux: Moderate protective signal - ${(kons powaSignal.confidence * 100).toFixed(1)}% kons powa confidence. Strategic position reduction`,
-        confidence: kons powaSignal.confidence * 100,
-        konsWisdom: 'Kons Powa waves suggest defensive positioning - protect accumulated gains',
+        reasoning: `Divine Kons Powa Flux: Moderate protective signal - ${(konsPowaSignal.confidence * 100).toFixed(1)}% confidence`,
+        confidence: konsPowaSignal.confidence * 100,
+        konsWisdom: 'Protect accumulated gains through strategic reduction',
         ethPosition: 'NEUTRAL',
         tradingPair: 'ETH/USDT',
-        quantity: this.calculateKons PowaPosition(kons powaSignal.size, kons powaSignal.confidence),
-        urgency: kons powaSignal.timeframe === '15m' ? 'WITHIN_HOUR' : 'WHEN_READY',
-        microMovementCapture: false,
-        nextGenStrategy: kons powaSignal.strategy
+        quantity: this.calculateKonsPowaPosition(konsPowaSignal.size, konsPowaSignal.confidence),
+        urgency: konsPowaSignal.timeframe === '15m' ? 'WITHIN_HOUR' : 'WHEN_READY',
+        trendDirection: 'DOWNWARD',
+        botType: 'WAIDBOT',
+        autoTradingEnabled: this.tradingEnabled
       };
     }
     else {
       decision = {
         action: 'HOLD',
-        reasoning: `Divine Kons Powa Flux: Kons Powa superposition state - ${(kons powaSignal.confidence * 100).toFixed(1)}% confidence. Awaiting kons powa collapse into actionable signal`,
-        confidence: kons powaSignal.confidence * 100,
-        konsWisdom: 'Kons Powa patience preserves capital while awaiting perfect alignment',
+        reasoning: `Divine Kons Powa Flux: Superposition state - ${(konsPowaSignal.confidence * 100).toFixed(1)}% confidence`,
+        confidence: konsPowaSignal.confidence * 100,
+        konsWisdom: 'Patience preserves capital while awaiting perfect alignment',
         ethPosition: 'NEUTRAL',
         tradingPair: 'NONE',
         quantity: 0,
         urgency: 'WHEN_READY',
-        nextGenStrategy: 'QUANTUM_SUPERPOSITION'
+        trendDirection: 'SIDEWAYS',
+        botType: 'WAIDBOT',
+        autoTradingEnabled: this.tradingEnabled
       };
     }
 
-    // Add BTC/SOL confirmation signals for analysis only (not for trading)
+    // Add BTC/SOL confirmation signals
     const btcConfirmation = await this.generateBTCConfirmation();
     const solConfirmation = await this.generateSOLConfirmation();
     
@@ -230,30 +268,17 @@ export class WaidBotEngine {
     return decision;
   }
 
-  private calculatePosition(alignment: number, direction: 'LONG' | 'NEUTRAL'): number {
-    // Position size based on divine alignment for ETH-only trading
-    const baseSize = 100; // Base USDT amount
-    const multiplier = alignment / 100;
-    
-    if (direction === 'NEUTRAL') {
-      return Math.round(baseSize * multiplier * 0.3); // Conservative selling for protection
-    }
-    
-    return Math.round(baseSize * multiplier); // Full position for ETH accumulation
-  }
-
-  private calculateKons PowaPosition(size: string | undefined, confidence: number): number {
-    // Kons Powa position calculation based on Divine Kons Powa Flux Strategy
-    const baseSize = 200; // Base USDT amount for kons powa trading
-    const kons powaMultiplier = confidence;
+  private calculateKonsPowaPosition(size: string | undefined, confidence: number): number {
+    const baseSize = 200;
+    const multiplier = confidence;
     
     switch (size) {
       case 'full_position':
-        return Math.floor(baseSize * kons powaMultiplier * 2); // Maximum position
+        return Math.floor(baseSize * multiplier * 2);
       case 'half_position':
-        return Math.floor(baseSize * kons powaMultiplier); // Standard position
+        return Math.floor(baseSize * multiplier);
       default:
-        return Math.floor(baseSize * kons powaMultiplier * 0.5); // Conservative position
+        return Math.floor(baseSize * multiplier * 0.5);
     }
   }
 
@@ -265,28 +290,23 @@ export class WaidBotEngine {
     const messages = {
       'EUPHORIC': [
         'The market dances with unbridled joy - but joy can blind wisdom',
-        'Euphoria fills the air, yet the wise trader remains centered',
-        'In great excitement, find the calm eye of the storm'
+        'Euphoria fills the air, yet the wise trader remains centered'
       ],
       'FEARFUL': [
         'Fear clouds judgment, but also creates opportunity for the prepared',
-        'In darkness, the patient soul finds hidden treasures',
-        'Fear sells what wisdom would hold'
+        'In darkness, the patient soul finds hidden treasures'
       ],
       'GREEDY': [
         'Greed whispers sweet promises of endless gains',
-        'The greedy hand often drops what it tries to grasp',
-        'In greed, find moderation; in moderation, find profit'
+        'The greedy hand often drops what it tries to grasp'
       ],
       'CONFUSED': [
         'Confusion is the market speaking in riddles',
-        'When the path is unclear, stillness reveals direction',
-        'In uncertainty, patience becomes profit'
+        'When the path is unclear, stillness reveals direction'
       ],
       'BALANCED': [
         'Balance is the highest form of market wisdom',
-        'In equilibrium, all possibilities exist simultaneously',
-        'The balanced trader moves with market rhythms'
+        'In equilibrium, all possibilities exist simultaneously'
       ]
     };
 
@@ -327,12 +347,11 @@ export class WaidBotEngine {
       return { success: true, message: `Decision executed: ${decision.action}` };
     }
 
-    // Here you would integrate with actual exchange APIs
-    // Simulate trade execution and calculate PnL for kons powa learning
-    const simulatedPnL = Math.random() > 0.3 ? Math.random() * 100 : -Math.random() * 50; // 70% win rate simulation
+    // Simulate trade execution
+    const simulatedPnL = Math.random() > 0.3 ? Math.random() * 100 : -Math.random() * 50;
     
-    // Update Divine Kons Powa Flux Strategy based on trade outcome
-    divineKons PowaFluxStrategy.updateKons PowaState({ pnl: simulatedPnL });
+    // Update strategy state
+    divineKonsPowaFluxStrategy.updateKonsPowaState({ pnl: simulatedPnL });
     
     console.log(`🚀 WaidBot executing: ${decision.action} ${decision.quantity} USDT on ${decision.tradingPair}`);
     console.log(`⚛️ Kons Powa state adapted with PnL: ${simulatedPnL.toFixed(2)}`);
@@ -349,14 +368,11 @@ export class WaidBotEngine {
     supportLevel: number;
   }> {
     try {
-      // Fetch BTC data for confirmation signals only (not for trading)
       const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true');
       const btcData = await response.json();
       
       const priceChange = btcData.bitcoin.usd_24h_change || 0;
-      const volume = btcData.bitcoin.usd_24h_vol || 0;
       
-      // Analyze BTC trend for ETH confirmation
       let trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
       if (priceChange > 3) trend = 'BULLISH';
       else if (priceChange < -3) trend = 'BEARISH';
@@ -376,14 +392,12 @@ export class WaidBotEngine {
     momentum: number;
   }> {
     try {
-      // Fetch SOL data for confirmation signals only (not for trading)
       const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true');
       const solData = await response.json();
       
       const priceChange = solData.solana.usd_24h_change || 0;
       const volume = solData.solana.usd_24h_vol || 0;
       
-      // Analyze SOL trend for ETH confirmation
       let trend: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
       if (priceChange > 4) trend = 'BULLISH';
       else if (priceChange < -4) trend = 'BEARISH';
@@ -396,4 +410,61 @@ export class WaidBotEngine {
       return { trend: 'NEUTRAL', strength: 50, momentum: 25 };
     }
   }
+}
+
+// Export functions for the runner
+const waidBotEngine = new WaidBotEngine();
+
+export function makeWaidDecision(konsAnalysis: KonsLangSymbol[], ethData: ETHPrice): Promise<WaidDecision> {
+  // Convert KonsLangSymbol[] to KonsLangAnalysis for compatibility
+  const mockKonsAnalysis: KonsLangAnalysis = {
+    marketMood: 'BALANCED',
+    ethVibration: 'OSCILLATING',
+    divineAlignment: 50,
+    tradingWindow: 'NORMAL',
+    konsMessage: 'Market in balance'
+  };
+  
+  const mockDivineSignal: DivineSignal = {
+    action: 'OBSERVE',
+    timeframe: '1h',
+    reason: 'Market analysis in progress',
+    moralPulse: 'CLEAN',
+    strategy: 'WAIT',
+    signalCode: 'MOCK001',
+    receivedAt: new Date().toISOString(),
+    konsTitle: 'TimeKeeper',
+    energeticPurity: 50,
+    konsMirror: 'PURE WAVE',
+    breathLock: false,
+    ethWhisperMode: true,
+    autoCancelEvil: false,
+    smaiPredict: {
+      nextHourDirection: 'SIDEWAYS',
+      confidence: 50,
+      predictedPriceRange: { min: 2900, max: 3100 }
+    }
+  };
+  
+  return waidBotEngine.makeWaidDecision(ethData, mockDivineSignal, mockKonsAnalysis);
+}
+
+export function executeDecision(decision: WaidDecision): Promise<{ success: boolean; message: string; outcome?: string }> {
+  return waidBotEngine.executeDecision(decision).then(result => ({
+    ...result,
+    outcome: result.success ? 'SUCCESS' : 'FAILED'
+  }));
+}
+
+export function analyzeWithKonsLang(ethData: ETHPrice, divineSignal: DivineSignal): KonsLangSymbol[] {
+  // Convert to legacy format for compatibility
+  return [
+    {
+      symbol: '⚡',
+      meaning: 'Market Energy',
+      power: ethData.priceChange24h || 0,
+      alignment: ethData.priceChange24h > 0 ? 'POSITIVE' : 'NEGATIVE',
+      timestamp: Date.now()
+    }
+  ];
 }

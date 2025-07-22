@@ -3,7 +3,7 @@
 import { makeWaidDecision, executeDecision, analyzeWithKonsLang } from '../services/waidBotEngine';
 import { fetchETHMarketData, fetchDivineSignal } from '../services/marketSources';
 import { logWaidEvent } from '../utils/logger';
-import { storeDecisionHistory } from '../utils/waidMemory';
+// import { storeDecisionHistory } from '../utils/waidMemory';
 import { KonsLangSymbol } from '../types/konslangTypes';
 import { ETHPrice, WaidDecision } from '../types/waidTypes';
 
@@ -22,15 +22,15 @@ export async function runWaidBotCycle() {
     const konsLangSymbols: KonsLangSymbol[] = analyzeWithKonsLang(ethData, divineSignal);
 
     // Step 3: Let WaidBot think
-    const decision: WaidDecision = makeWaidDecision(konsLangSymbols, ethData);
+    const decision: WaidDecision = await makeWaidDecision(konsLangSymbols, ethData);
 
     // Step 4: Store memory of decision
-    storeDecisionHistory(decision);
+    // storeDecisionHistory(decision);
 
     // Step 5: Optional Execution
     if (AUTO_TRADING_ENABLED && decision.action !== 'HOLD') {
-      const result = executeDecision(decision);
-      logWaidEvent(`✅ Action Executed: ${decision.action} | Result: ${result.outcome}`);
+      const result = await executeDecision(decision);
+      logWaidEvent(`✅ Action Executed: ${decision.action} | Result: ${result.success ? 'SUCCESS' : 'FAILED'}`);
     } else {
       logWaidEvent(`🧘 No action taken. Decision: ${decision.action}`);
     }
