@@ -5,8 +5,8 @@
  * connected to the KonsAi engine. Provides automated testing, debugging, and live issue tracking.
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 class KonsKID {
   constructor() {
@@ -618,5 +618,11 @@ class KonsKID {
   }
 }
 
-// Export the KonsKID class
-module.exports = KonsKID;
+// Export the KonsKID class  
+export default KonsKID;
+
+// Named export for kons_kid function
+export function kons_kid(userMessage, marketData, previousState = {}) {
+  const kid = new KonsKID();
+  return kid.processQuery(userMessage, marketData, previousState);
+}

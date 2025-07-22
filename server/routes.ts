@@ -3142,5 +3142,20 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // WaidesKI Engine Diagnostics
+  app.get("/api/waideski/diagnostics", async (req, res) => {
+    try {
+      const { waidesKIDiagnostics } = await import('./diagnostics/waidesKIDiagnostics.js');
+      const diagnostics = await waidesKIDiagnostics.runCompleteDiagnostics();
+      res.json(diagnostics);
+    } catch (error) {
+      console.error('Diagnostics error:', error);
+      res.status(500).json({ 
+        error: 'Failed to run diagnostics',
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   return Promise.resolve(server);
 }
