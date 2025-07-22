@@ -1640,32 +1640,60 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       {/* Static Background - No Animations */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-900/10 via-black to-blue-900/10"></div>
 
-      {/* Compact Top Status Bar */}
-      <div className="relative z-10 flex items-center justify-center px-2 py-1 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
-          <button 
-            onClick={() => setLocation('/wallet')}
-            className="text-sm text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-2"
-          >
-            <Wallet className="w-4 h-4" />
-            ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}
-          </button>
+      {/* Complete Top Navigation Bar */}
+      <div className="relative z-10 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
+        <div className="flex items-center justify-between px-3 py-2">
+          {/* Left: Time */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
+          </div>
           
-          <button 
-            onClick={() => setLocation('/forum')}
-            className="text-sm text-cyan-300 font-medium hover:text-cyan-200 transition-colors cursor-pointer flex items-center gap-2"
-          >
-            <Users className="w-4 h-4" />
-            Forum
-            {forumNotifications > 0 && (
-              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                <span className="text-xs text-white font-bold">{forumNotifications}</span>
-              </div>
-            )}
-          </button>
+          {/* Center: Main Navigation */}
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setLocation('/wallet')}
+              className="text-sm text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <Wallet className="w-4 h-4" />
+              <span className="hidden sm:inline">SmaiSika</span>
+              ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}
+            </button>
+            
+            <button 
+              onClick={() => setActiveTab('core')}
+              className={`text-sm font-medium hover:text-purple-200 transition-colors cursor-pointer flex items-center gap-2 ${
+                activeTab === 'core' ? 'text-purple-300' : 'text-purple-400'
+              }`}
+            >
+              <Heart className="w-4 h-4" />
+              <span className="hidden sm:inline">Heart of Waides Ki</span>
+            </button>
+            
+            <button 
+              onClick={() => setActiveTab('konsai')}
+              className={`text-sm font-medium hover:text-emerald-200 transition-colors cursor-pointer flex items-center gap-2 ${
+                activeTab === 'konsai' ? 'text-emerald-300' : 'text-emerald-400'
+              }`}
+            >
+              <Eye className="w-4 h-4" />
+              <span className="hidden sm:inline">KonsAI Chat</span>
+            </button>
+            
+            <button 
+              onClick={() => setLocation('/forum')}
+              className="text-sm text-cyan-300 font-medium hover:text-cyan-200 transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Forum</span>
+              {forumNotifications > 0 && (
+                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">{forumNotifications}</span>
+                </div>
+              )}
+            </button>
+          </div>
           
-          {/* Compact Tab Navigation */}
+          {/* Right: Tab Navigation */}
           <div className="flex bg-gray-800/60 rounded-md p-0.5">
             <button
               onClick={() => setActiveTab('chat')}
@@ -1690,7 +1718,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             >
               <div className="flex items-center gap-1">
                 <Heart className="w-3 h-3" />
-                <span>Core Engine</span>
+                <span>Core</span>
               </div>
             </button>
             <button
@@ -1703,7 +1731,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             >
               <div className="flex items-center gap-1">
                 <Eye className="w-2.5 h-2.5" />
-                <span>Konsai</span>
+                <span>KonsAI</span>
               </div>
             </button>
           </div>
