@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import type { AdminSystemHealth, AdminConfigData } from '@/types/componentTypes';
 import { 
   Shield, BarChart3, Users, DollarSign, Brain, Settings, 
   TrendingUp, Bell, Database, Activity, Zap, Rocket, 

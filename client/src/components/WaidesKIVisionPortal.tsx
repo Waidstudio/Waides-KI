@@ -22,28 +22,18 @@ import { WaidBotSummonPanel } from './WaidBotSummonPanel';
 import KonsaiChat from './KonsaiChat';
 
 import { useLocation } from 'wouter';
-import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine.js';
+import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
-
-interface ChatMessage {
-  id: string;
-  sender: 'user' | 'waides';
-  message: string;
-  timestamp: Date;
-  personality?: string;
-  source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error';
-  confidence?: number;
-  konslangProcessing?: string;
-  reasoning?: any[];
-}
-
-interface OracleResponse {
-  answer: string;
-  source: 'incite' | 'chatgpt' | 'konslang' | 'combined';
-  confidence: number;
-  konslangProcessing?: string;
-}
+import type { 
+  ChatMessage, 
+  OracleResponse, 
+  KonsPowaPrediction, 
+  MarketAnalysisData,
+  EnhancedDashboardData,
+  VisionSettings,
+  WaidesSettings
+} from '@/types/componentTypes';
 
 interface OracleStatus {
   api_status: {
@@ -1102,9 +1092,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           break;
         case 'spiritual':
           // Use local Memory Engine for instant responses with plugin support and wallet context
-          const memoryResponse = getSmartAnswer(currentMessage, setBotState, walletContext);
+          const memoryResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
           if (memoryResponse) {
-            typeMessage(memoryResponse, 'enhanced_bot_memory', 95);
+            typeMessage(memoryResponse.message, 'enhanced_bot_memory', memoryResponse.confidence);
             setIsProcessing(false);
           } else {
             // Fallback to server-side spiritual intelligence
@@ -1136,9 +1126,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             konsAiMutation.mutate(currentMessage);
           } else {
             // Always try Memory Engine first for instant responses with full wallet context
-            const smartResponse = getSmartAnswer(currentMessage, setBotState, walletContext);
+            const smartResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
             if (smartResponse) {
-              typeMessage(smartResponse, 'enhanced_bot_memory', 95);
+              typeMessage(smartResponse.message, 'enhanced_bot_memory', smartResponse.confidence);
               setIsProcessing(false);
             } else {
               // Always fallback to spiritual intelligence for any message

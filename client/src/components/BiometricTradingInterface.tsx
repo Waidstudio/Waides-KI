@@ -1,434 +1,444 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, Shield, Lock, Unlock, Activity, Brain, Heart, TrendingUp, TrendingDown, DollarSign, Zap, Star, Fingerprint } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { 
+  Heart, 
+  Brain, 
+  Eye, 
+  AlertTriangle, 
+  CheckCircle, 
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  Shield,
+  Zap
+} from 'lucide-react';
+import type { BiometricData } from '@/types/componentTypes';
 
-interface WalletData {
-  balance: number;
-  lockedAmount: number;
-  available: number;
-  tradeEnergy: number;
-  karmaScore: number;
-  spiritualLevel: number;
-  divineApproval: number;
+interface BiometricConfig {
+  enabled: boolean;
+  heartRateThreshold: number;
+  stressThreshold: number;
+  focusThreshold: number;
+  autoTradingEnabled: boolean;
+  riskTolerance: number;
 }
 
-interface TradeHistory {
-  id: number;
-  type: string;
-  amount: string;
-  symbol: string;
-  status: string;
-  profit: string;
-  createdAt: string;
-}
+export default function BiometricTradingInterface() {
+  const [isConnected, setIsConnected] = useState(false);
+  const [biometricConfig, setBiometricConfig] = useState<BiometricConfig>({
+    enabled: false,
+    heartRateThreshold: 100,
+    stressThreshold: 70,
+    focusThreshold: 60,
+    autoTradingEnabled: false,
+    riskTolerance: 50
+  });
 
-interface BiometricStatus {
-  hasSetup: boolean;
-  lastAuth: string | null;
-  securityLevel: string;
-}
-
-const BiometricTradingInterface: React.FC = () => {
-  const [selectedAmount, setSelectedAmount] = useState<number>(0);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const [biometricChallenge, setBiometricChallenge] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch wallet data with background updates
-  const { data: wallet, isLoading: walletLoading } = useQuery<WalletData>({
-    queryKey: ['/api/smai-wallet'],
-    refetchInterval: 60000, // Background refresh every 60 seconds
-    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
-    staleTime: 30000, // Data stays fresh for 30 seconds
-    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
-    retry: 1
+  // Fetch current biometric data
+  const { data: biometricData, isLoading: isBiometricLoading } = useQuery({
+    queryKey: ['/api/biometric/current'],
+    refetchInterval: biometricConfig.enabled ? 2000 : false, // Real-time updates when enabled
+    enabled: biometricConfig.enabled,
   });
 
-  // Fetch trading history with background updates
-  const { data: tradeHistory } = useQuery<{ trades: TradeHistory[] }>({
-    queryKey: ['/api/smai-trade/history'],
-    refetchInterval: 120000, // Background refresh every 2 minutes
-    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
-    staleTime: 60000, // Data stays fresh for 1 minute
-    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
-    retry: 1
+  // Fetch biometric history
+  const { data: biometricHistory = [], isLoading: isHistoryLoading } = useQuery({
+    queryKey: ['/api/biometric/history'],
+    refetchInterval: 10000,
+    enabled: biometricConfig.enabled,
   });
 
-  // Fetch biometric status with background updates
-  const { data: biometricStatus } = useQuery<BiometricStatus>({
-    queryKey: ['/api/biometric/status'],
-    refetchInterval: 300000, // Background refresh every 5 minutes
-    refetchIntervalInBackground: true, // Continue refreshing when tab is not active
-    staleTime: 240000, // Data stays fresh for 4 minutes
-    refetchOnWindowFocus: false, // Don't refetch when user switches tabs
-    retry: 1
+  // Fetch trading recommendations based on biometric data
+  const { data: tradingRecommendations, isLoading: isRecommendationsLoading } = useQuery({
+    queryKey: ['/api/biometric/trading-recommendations'],
+    refetchInterval: 5000,
+    enabled: biometricConfig.enabled && biometricConfig.autoTradingEnabled,
   });
 
-  // Lock funds mutation
-  const lockFundsMutation = useMutation({
-    mutationFn: async (amount: number) => {
-      const response = await fetch('/api/smai-wallet/lock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount })
-      });
-      if (!response.ok) throw new Error('Failed to lock funds');
+  // Start biometric monitoring mutation
+  const startMonitoringMutation = useMutation({
+    mutationFn: async (config: BiometricConfig) => {
+      const response = await apiRequest('POST', '/api/biometric/start-monitoring', config);
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/smai-wallet'] });
-      toast({ title: "Funds Locked", description: "Funds secured for moral trading" });
+      setIsConnected(true);
+      toast({
+        title: "Biometric Monitoring Started",
+        description: "Successfully connected to biometric sensors",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/biometric'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Connection Failed",
+        description: error instanceof Error ? error.message : "Failed to connect to biometric sensors",
+        variant: "destructive",
+      });
     }
   });
 
-  // Execute trade mutation
-  const executeTradeMutation = useMutation({
-    mutationFn: async (tradeData: { amount: number; type: string }) => {
-      const response = await fetch('/api/smai-trade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tradeData)
-      });
-      if (!response.ok) throw new Error('Failed to execute trade');
+  // Stop monitoring mutation
+  const stopMonitoringMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/biometric/stop-monitoring');
       return response.json();
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/smai-wallet'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/smai-trade/history'] });
-      toast({ 
-        title: data.success ? "Trade Successful" : "Trade Failed", 
-        description: data.message 
+    onSuccess: () => {
+      setIsConnected(false);
+      setBiometricConfig(prev => ({ ...prev, enabled: false }));
+      toast({
+        title: "Monitoring Stopped",
+        description: "Biometric monitoring has been disabled",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Stop Failed",
+        description: error instanceof Error ? error.message : "Failed to stop monitoring",
+        variant: "destructive",
       });
     }
   });
 
-  // Biometric authentication
-  const authenticateBiometric = async () => {
-    setIsAuthenticating(true);
-    try {
-      // Generate challenge
-      const challengeResponse = await fetch('/api/biometric/challenge');
-      const { challenge } = await challengeResponse.json();
-      setBiometricChallenge(challenge);
+  const handleConfigChange = (field: keyof BiometricConfig, value: boolean | number) => {
+    setBiometricConfig(prev => ({ ...prev, [field]: value }));
+  };
 
-      // Request biometric authentication
-      if (navigator.credentials && 'get' in navigator.credentials) {
-        const credential = await navigator.credentials.get({
-          publicKey: {
-            challenge: new TextEncoder().encode(challenge),
-            allowCredentials: [],
-            timeout: 60000,
-            userVerification: 'required'
-          }
-        });
+  const handleStartMonitoring = () => {
+    startMonitoringMutation.mutate(biometricConfig);
+  };
 
-        if (credential) {
-          const authResponse = await fetch('/api/biometric/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ credential, challenge })
-          });
+  const handleStopMonitoring = () => {
+    stopMonitoringMutation.mutate();
+  };
 
-          const result = await authResponse.json();
-          if (result.success) {
-            toast({ title: "Biometric Authentication", description: "Successfully authenticated" });
-            return true;
-          }
-        }
-      }
-      
-      toast({ title: "Authentication Failed", description: "Biometric verification failed" });
-      return false;
-    } catch (error) {
-      toast({ title: "Authentication Error", description: "Failed to authenticate" });
-      return false;
-    } finally {
-      setIsAuthenticating(false);
+  const getEmotionalStateColor = (state: string) => {
+    switch (state) {
+      case 'calm':
+        return 'text-green-400';
+      case 'focused':
+        return 'text-blue-400';
+      case 'excited':
+        return 'text-yellow-400';
+      case 'stressed':
+        return 'text-red-400';
+      default:
+        return 'text-gray-400';
     }
   };
 
-  const handleLockFunds = async () => {
-    if (selectedAmount <= 0) {
-      toast({ title: "Invalid Amount", description: "Please enter a valid amount" });
-      return;
-    }
-
-    if (!wallet || selectedAmount > wallet.available) {
-      toast({ title: "Insufficient Funds", description: "Not enough available balance" });
-      return;
-    }
-
-    const authenticated = await authenticateBiometric();
-    if (authenticated) {
-      lockFundsMutation.mutate(selectedAmount);
+  const getRecommendationColor = (action: string) => {
+    switch (action) {
+      case 'trade':
+        return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case 'wait':
+        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+      case 'stop':
+        return 'bg-red-500/20 text-red-300 border-red-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
     }
   };
 
-  const handleExecuteTrade = async (type: string) => {
-    if (!wallet || wallet.lockedAmount <= 0) {
-      toast({ title: "No Locked Funds", description: "Lock funds first to trade" });
-      return;
-    }
-
-    const authenticated = await authenticateBiometric();
-    if (authenticated) {
-      executeTradeMutation.mutate({ amount: wallet.lockedAmount, type });
+  const getRecommendationIcon = (action: string) => {
+    switch (action) {
+      case 'trade':
+        return <TrendingUp className="w-4 h-4" />;
+      case 'wait':
+        return <Eye className="w-4 h-4" />;
+      case 'stop':
+        return <Shield className="w-4 h-4" />;
+      default:
+        return <Activity className="w-4 h-4" />;
     }
   };
-
-  // Show content with default values immediately, update in background
-  const isInitialLoading = walletLoading && !wallet;
-  
-  if (isInitialLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading SmaiSika Moral Trading Platform...</div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            SmaiSika Moral Trading Platform
-          </h1>
-          <p className="text-blue-200 text-lg">Self-Driving Biometric Trading with AI Memory Integration</p>
-          
-          {/* Biometric Status */}
-          <div className="flex justify-center items-center space-x-4">
-            <Badge variant={biometricStatus?.hasSetup ? "default" : "destructive"} className="px-4 py-2">
-              <Fingerprint className="w-4 h-4 mr-2" />
-              {biometricStatus?.hasSetup ? "Biometric Enabled" : "Setup Required"}
-            </Badge>
-            <Badge variant="outline" className="px-4 py-2 text-blue-200 border-blue-300">
-              <Shield className="w-4 h-4 mr-2" />
-              Security: {biometricStatus?.securityLevel || 'Unknown'}
-            </Badge>
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-white">Biometric Trading Interface</h2>
+        <div className="flex items-center gap-2">
+          <Badge variant={isConnected ? "default" : "outline"} className={isConnected ? "bg-green-600" : "text-gray-400"}>
+            {isConnected ? "Connected" : "Disconnected"}
+          </Badge>
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" style={{ display: isConnected ? 'block' : 'none' }} />
+        </div>
+      </div>
+
+      {/* Configuration Panel */}
+      <Card className="bg-gray-800/50 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Brain className="w-5 h-5" />
+            Biometric Configuration
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="enabled" className="text-gray-300">Enable Monitoring</Label>
+              <Switch
+                id="enabled"
+                checked={biometricConfig.enabled}
+                onCheckedChange={(checked) => handleConfigChange('enabled', checked)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="autoTrading" className="text-gray-300">Auto Trading</Label>
+              <Switch
+                id="autoTrading"
+                checked={biometricConfig.autoTradingEnabled}
+                onCheckedChange={(checked) => handleConfigChange('autoTradingEnabled', checked)}
+                disabled={!biometricConfig.enabled}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Main Trading Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Wallet Overview */}
-          <Card className="bg-black/40 border-purple-500/30 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-purple-300 flex items-center">
-                <DollarSign className="w-5 h-5 mr-2" />
-                SmaiSika Wallet
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-purple-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-purple-300">Total Balance</div>
-                  <div className="text-xl font-bold text-white">ꠄ{wallet?.balance.toFixed(2) || '0.00'}</div>
-                </div>
-                <div className="bg-blue-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-blue-300">Available</div>
-                  <div className="text-xl font-bold text-white">ꠄ{wallet?.available.toFixed(2) || '0.00'}</div>
-                </div>
-                <div className="bg-orange-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-orange-300">Locked</div>
-                  <div className="text-xl font-bold text-white">ꠄ{wallet?.lockedAmount.toFixed(2) || '0.00'}</div>
-                </div>
-                <div className="bg-green-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-green-300">Karma Score</div>
-                  <div className="text-xl font-bold text-white">{wallet?.karmaScore || 100}</div>
-                </div>
-              </div>
-              
-              {/* Spiritual Metrics */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-purple-300 flex items-center">
-                    <Zap className="w-4 h-4 mr-1" />
-                    Trade Energy
-                  </span>
-                  <span className="text-white font-semibold">{wallet?.tradeEnergy || 100}%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-blue-300 flex items-center">
-                    <Star className="w-4 h-4 mr-1" />
-                    Spiritual Level
-                  </span>
-                  <span className="text-white font-semibold">{wallet?.spiritualLevel || 1}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-yellow-300 flex items-center">
-                    <Heart className="w-4 h-4 mr-1" />
-                    Divine Approval
-                  </span>
-                  <span className="text-white font-semibold">{wallet?.divineApproval || 75}%</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <Label className="text-gray-300">Heart Rate Threshold</Label>
+              <div className="text-sm text-gray-400 mb-2">{biometricConfig.heartRateThreshold} BPM</div>
+              <input
+                type="range"
+                min="60"
+                max="150"
+                value={biometricConfig.heartRateThreshold}
+                onChange={(e) => handleConfigChange('heartRateThreshold', parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <Label className="text-gray-300">Stress Threshold</Label>
+              <div className="text-sm text-gray-400 mb-2">{biometricConfig.stressThreshold}%</div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={biometricConfig.stressThreshold}
+                onChange={(e) => handleConfigChange('stressThreshold', parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <Label className="text-gray-300">Focus Threshold</Label>
+              <div className="text-sm text-gray-400 mb-2">{biometricConfig.focusThreshold}%</div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={biometricConfig.focusThreshold}
+                onChange={(e) => handleConfigChange('focusThreshold', parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <Label className="text-gray-300">Risk Tolerance</Label>
+              <div className="text-sm text-gray-400 mb-2">{biometricConfig.riskTolerance}%</div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={biometricConfig.riskTolerance}
+                onChange={(e) => handleConfigChange('riskTolerance', parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
 
-          {/* Trading Controls */}
-          <Card className="bg-black/40 border-blue-500/30 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-blue-300 flex items-center">
-                <Activity className="w-5 h-5 mr-2" />
-                Moral Trading Controls
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              
-              {/* Lock Funds Section */}
-              <div className="space-y-3">
-                <div className="text-sm text-blue-300">Lock Funds for Trading</div>
-                <Input
-                  type="number"
-                  placeholder="Amount to lock"
-                  value={selectedAmount || ''}
-                  onChange={(e) => setSelectedAmount(parseFloat(e.target.value) || 0)}
-                  className="bg-blue-900/30 border-blue-500/50 text-white"
-                />
-                <Button 
-                  onClick={handleLockFunds}
-                  disabled={lockFundsMutation.isPending || selectedAmount <= 0}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  {lockFundsMutation.isPending ? 'Locking...' : 'Lock Funds'}
-                </Button>
-              </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleStartMonitoring}
+              disabled={startMonitoringMutation.isPending || isConnected}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {startMonitoringMutation.isPending ? 'Connecting...' : 'Start Monitoring'}
+            </Button>
+            <Button
+              onClick={handleStopMonitoring}
+              disabled={stopMonitoringMutation.isPending || !isConnected}
+              variant="outline"
+              className="border-red-500/50 text-red-400 hover:bg-red-500/20"
+            >
+              {stopMonitoringMutation.isPending ? 'Stopping...' : 'Stop Monitoring'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-              {/* Trading Actions */}
-              {wallet && wallet.lockedAmount > 0 && (
-                <div className="space-y-3 border-t border-purple-500/30 pt-4">
-                  <div className="text-sm text-purple-300">Execute Trades</div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button 
-                      onClick={() => handleExecuteTrade('BUY')}
-                      disabled={executeTradeMutation.isPending}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                    >
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      Buy ETH
-                    </Button>
-                    <Button 
-                      onClick={() => handleExecuteTrade('SELL')}
-                      disabled={executeTradeMutation.isPending}
-                      className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700"
-                    >
-                      <TrendingDown className="w-4 h-4 mr-2" />
-                      Sell ETH
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Unlock Funds */}
-              {wallet && wallet.lockedAmount > 0 && (
-                <Button 
-                  onClick={() => {
-                    fetch('/api/smai-wallet/unlock', { method: 'POST' })
-                      .then(() => queryClient.invalidateQueries({ queryKey: ['/api/smai-wallet'] }));
-                  }}
-                  variant="outline"
-                  className="w-full border-orange-500/50 text-orange-300 hover:bg-orange-900/30"
-                >
-                  <Unlock className="w-4 h-4 mr-2" />
-                  Unlock All Funds
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* AI Memory & Status */}
-          <Card className="bg-black/40 border-green-500/30 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-green-300 flex items-center">
-                <Brain className="w-5 h-5 mr-2" />
-                AI Memory Integration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="bg-green-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-green-300">Memory Status</div>
-                  <div className="text-white font-semibold">Active & Learning</div>
-                </div>
-                <div className="bg-yellow-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-yellow-300">Trading Behavior</div>
-                  <div className="text-white font-semibold">Moral & Ethical</div>
-                </div>
-                <div className="bg-purple-900/50 p-3 rounded-lg">
-                  <div className="text-sm text-purple-300">Risk Assessment</div>
-                  <div className="text-white font-semibold">Conservative</div>
-                </div>
-              </div>
-
-              {/* Biometric Security */}
-              <div className="border-t border-green-500/30 pt-4">
-                <div className="text-sm text-green-300 mb-2">Biometric Security</div>
-                <div className="flex items-center justify-between p-2 bg-green-900/30 rounded">
-                  <span className="text-white text-sm">Authentication Required</span>
-                  <Eye className={`w-5 h-5 ${isAuthenticating ? 'text-yellow-400 animate-pulse' : 'text-green-400'}`} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Trading History */}
-        <Card className="bg-black/40 border-purple-500/30 backdrop-blur-sm">
+      {/* Real-time Biometric Data */}
+      {isConnected && (
+        <Card className="bg-gray-800/50 border-gray-700">
           <CardHeader>
-            <CardTitle className="text-purple-300">Recent Trading History</CardTitle>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Activity className="w-5 h-5" />
+              Real-time Biometric Data
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {tradeHistory?.trades?.slice(0, 5).map((trade) => (
-                <div key={trade.id} className="flex items-center justify-between p-3 bg-purple-900/30 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <Badge variant={trade.status === 'completed' ? 'default' : 'destructive'}>
-                      {trade.type}
-                    </Badge>
-                    <span className="text-white">ꠄ{parseFloat(trade.amount).toFixed(2)}</span>
-                    <span className="text-gray-400">{trade.symbol}</span>
+            {isBiometricLoading ? (
+              <div className="text-gray-400">Loading biometric data...</div>
+            ) : biometricData ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
+                  <Heart className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-white">{biometricData.heartRate}</div>
+                  <div className="text-sm text-gray-300">BPM</div>
+                  <Progress 
+                    value={(biometricData.heartRate / 150) * 100} 
+                    className="mt-2"
+                  />
+                </div>
+                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
+                  <AlertTriangle className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-white">{biometricData.stressLevel}%</div>
+                  <div className="text-sm text-gray-300">Stress</div>
+                  <Progress 
+                    value={biometricData.stressLevel} 
+                    className="mt-2"
+                  />
+                </div>
+                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
+                  <Brain className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-white">{biometricData.focusLevel}%</div>
+                  <div className="text-sm text-gray-300">Focus</div>
+                  <Progress 
+                    value={biometricData.focusLevel} 
+                    className="mt-2"
+                  />
+                </div>
+                <div className="text-center p-4 bg-gray-700/50 rounded-lg">
+                  <Zap className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                  <div className={`text-2xl font-bold ${getEmotionalStateColor(biometricData.emotionalState)}`}>
+                    {biometricData.emotionalState.toUpperCase()}
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={`font-semibold ${parseFloat(trade.profit) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {parseFloat(trade.profit) >= 0 ? '+' : ''}ꠄ{parseFloat(trade.profit).toFixed(2)}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      {new Date(trade.createdAt).toLocaleDateString()}
-                    </span>
+                  <div className="text-sm text-gray-300">State</div>
+                  <Badge className={`mt-2 ${getRecommendationColor(biometricData.recommendedAction)}`}>
+                    {getRecommendationIcon(biometricData.recommendedAction)}
+                    {biometricData.recommendedAction.toUpperCase()}
+                  </Badge>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-400 text-center py-8">No biometric data available</div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Trading Recommendations */}
+      {isConnected && biometricConfig.autoTradingEnabled && (
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Biometric Trading Recommendations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isRecommendationsLoading ? (
+              <div className="text-gray-400">Analyzing biometric data for trading signals...</div>
+            ) : tradingRecommendations ? (
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-white">Current Recommendation</h3>
+                    <Badge className={getRecommendationColor(tradingRecommendations.action)}>
+                      {getRecommendationIcon(tradingRecommendations.action)}
+                      {tradingRecommendations.action.toUpperCase()}
+                    </Badge>
+                  </div>
+                  <p className="text-gray-300 text-sm">{tradingRecommendations.reasoning}</p>
+                  <div className="mt-3 text-xs text-gray-400">
+                    Confidence: {tradingRecommendations.confidence}% | 
+                    Risk Level: {tradingRecommendations.riskLevel} | 
+                    Updated: {new Date(tradingRecommendations.timestamp).toLocaleTimeString()}
                   </div>
                 </div>
-              )) || (
-                <div className="text-center text-gray-400 py-8">
-                  No trading history yet. Start your first trade above.
+                
+                {tradingRecommendations.suggestedActions && (
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-white">Suggested Actions:</h4>
+                    {tradingRecommendations.suggestedActions.map((action: any, index: number) => (
+                      <div key={index} className="p-3 bg-gray-700/30 rounded-lg text-sm">
+                        <div className="text-white font-medium">{action.type}</div>
+                        <div className="text-gray-300">{action.description}</div>
+                        {action.parameters && (
+                          <div className="text-gray-400 text-xs mt-1">
+                            Parameters: {JSON.stringify(action.parameters)}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-gray-400 text-center py-8">No trading recommendations available</div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Biometric History Chart */}
+      {isConnected && biometricHistory.length > 0 && (
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Activity className="w-5 h-5" />
+              Biometric History
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {isHistoryLoading ? (
+                <div className="text-gray-400">Loading history...</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {biometricHistory.slice(-10).map((data: BiometricData, index: number) => (
+                    <div key={index} className="p-3 bg-gray-700/30 rounded-lg">
+                      <div className="text-xs text-gray-400 mb-2">
+                        {new Date(data.timestamp).toLocaleTimeString()}
+                      </div>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Heart Rate:</span>
+                          <span className="text-white">{data.heartRate} BPM</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Stress:</span>
+                          <span className="text-white">{data.stressLevel}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">Focus:</span>
+                          <span className="text-white">{data.focusLevel}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-300">State:</span>
+                          <span className={getEmotionalStateColor(data.emotionalState)}>
+                            {data.emotionalState}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
-
-        {/* System Alerts */}
-        <Alert className="bg-blue-900/30 border-blue-500/50">
-          <Shield className="h-4 w-4" />
-          <AlertDescription className="text-blue-200">
-            SmaiSika Moral Trading Platform is active. All trades require biometric authentication and are monitored by AI memory systems for ethical compliance.
-          </AlertDescription>
-        </Alert>
-      </div>
+      )}
     </div>
   );
-};
-
-export default BiometricTradingInterface;
+}
