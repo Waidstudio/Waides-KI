@@ -305,4 +305,4 @@ export class KonsaiKons PowaSingularityStrategy {
   }
 }
 
-export const konsaiKons PowaSingularityStrategy = new KonsaiKons PowaSingularityStrategy();
+export const konsaiKonsPowaStrategy = new KonsaiKonsPowaStrategy();

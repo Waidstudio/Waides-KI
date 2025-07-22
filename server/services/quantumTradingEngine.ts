@@ -2,10 +2,10 @@ import { storage } from '../storage';
 
 // Next-Generation Kons Powa Trading Engine - Beyond Human Imagination
 // Implements trading strategies from the next 500 years
-export interface Kons PowaSignal {
+export interface KonsPowaSignal {
   action: 'BUY_ETH' | 'SELL_ETH' | 'BUY_ETH3L' | 'SELL_ETH3L' | 'BUY_ETH3S' | 'SELL_ETH3S' | 'QUANTUM_HOLD' | 'MULTI_DIMENSIONAL_TRADE';
   confidence: number; // Always 99%+ for kons powa predictions
-  kons powaStrategy: 'TEMPORAL_ARBITRAGE' | 'MICRO_OSCILLATION_CAPTURE' | 'PROBABILITY_WAVE_COLLAPSE' | 'DIMENSIONAL_MOMENTUM' | 'ZERO_LOSS_GUARANTEE';
+  konsPowaStrategy: 'TEMPORAL_ARBITRAGE' | 'MICRO_OSCILLATION_CAPTURE' | 'PROBABILITY_WAVE_COLLAPSE' | 'DIMENSIONAL_MOMENTUM' | 'ZERO_LOSS_GUARANTEE';
   timeframeCapture: 'NANOSECOND' | 'MICROSECOND' | 'MILLISECOND' | 'SECOND' | 'MINUTE';
   predictedOutcome: 'GUARANTEED_PROFIT' | 'RISK_FREE_GAIN' | 'QUANTUM_CERTAINTY';
   nextGenFeatures: string[];
@@ -13,30 +13,30 @@ export interface Kons PowaSignal {
   profitProbability: 100; // Always 100% success rate
 }
 
-export interface Kons PowaMarketState {
+export interface KonsPowaMarketState {
   currentPrice: number;
   microTrends: number[];
-  kons powaProbabilities: Map<string, number>;
+  konsPowaProbabilities: Map<string, number>;
   temporalPatterns: any[];
   multidimensionalSignals: any[];
   riskFreeOpportunities: any[];
 }
 
-export class Kons PowaTradingEngine {
-  private kons powaAlgorithms: Map<string, Function> = new Map();
+export class KonsPowaTradingEngine {
+  private konsPowaAlgorithms: Map<string, Function> = new Map();
   private temporalCache: Map<string, any> = new Map();
   private microMovementCapture: boolean = true;
-  private kons powaAccuracy: number = 100; // 100% accuracy guaranteed
+  private konsPowaAccuracy: number = 100; // 100% accuracy guaranteed
   
   constructor() {
-    this.initializeKons PowaAlgorithms();
+    this.initializeKonsPowaAlgorithms();
     this.enableMicroMovementCapture();
     console.log('🚀 Kons Powa Trading Engine Initialized - Next 500 Years Technology Active');
   }
 
-  private initializeKons PowaAlgorithms(): void {
+  private initializeKonsPowaAlgorithms(): void {
     // Temporal Arbitrage Algorithm - Predicts price movements before they happen
-    this.kons powaAlgorithms.set('TEMPORAL_ARBITRAGE', (price: number) => {
+    this.konsPowaAlgorithms.set('TEMPORAL_ARBITRAGE', (price: number) => {
       const futurePrice = price * (1 + Math.sin(Date.now() / 1000) * 0.001);
       return {
         futureValue: futurePrice,
