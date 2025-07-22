@@ -20,7 +20,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
-import StableLanding from "@/components/ui/StableLanding";
+import StaticLanding from "@/components/ui/StaticLanding";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -108,15 +108,15 @@ function Router() {
       {/* Stable Navigation */}
       <StableNavigation />
 
-      {/* Main Content Area */}
-      <main>
+      {/* Main Content Area - Add top padding for fixed nav */}
+      <main className="pt-16">
         <Switch>
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           
-          {/* Stable Landing Page */}
-          <Route path="/" component={StableLanding} />
+          {/* Static Landing Page */}
+          <Route path="/" component={StaticLanding} />
           
           {/* Vision Portal - moved to /portal */}
           <Route path="/portal" component={WaidesKIVisionPortal} />

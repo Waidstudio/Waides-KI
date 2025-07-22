@@ -53,11 +53,11 @@ const StableLanding = () => {
     { label: 'Uptime', value: '99.9%', change: '100%' }
   ];
 
-  // Rotate features every 4 seconds
+  // Rotate features every 6 seconds to prevent jarring movement
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentFeature((prev) => (prev + 1) % features.length);
-    }, 4000);
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
@@ -65,36 +65,41 @@ const StableLanding = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        {/* Background Animation */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-cyan-600/10 to-purple-600/10 animate-pulse" />
+        {/* Static Background - No Animation */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-cyan-600/10 to-purple-600/10" />
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-          <div className="text-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+          <div className="text-center space-y-8">
             {/* Status Badge */}
-            <Badge variant="outline" className="mb-6 bg-green-500/20 text-green-400 border-green-500/30">
-              <Activity className="w-3 h-3 mr-2 animate-pulse" />
-              System Operational - 99.9% Uptime
-            </Badge>
+            <div className="flex justify-center mb-6">
+              <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
+                System Operational - 99.9% Uptime
+              </Badge>
+            </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                Waides KI
-              </span>
-              <br />
-              <span className="text-white text-3xl sm:text-4xl md:text-5xl">
+            <div className="space-y-4 mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight">
+                <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                  Waides KI
+                </span>
+              </h1>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
                 Autonomous Trading Intelligence
-              </span>
-            </h1>
+              </h2>
+            </div>
 
             {/* Subtitle */}
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Experience the future of trading with AI-powered decision making, 
-              real-time analytics, and sacred wealth management principles
-            </p>
+            <div className="mb-8">
+              <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Experience the future of trading with AI-powered decision making, 
+                real-time analytics, and sacred wealth management principles
+              </p>
+            </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <Link href="/portal">
                 <Button size="lg" className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white px-8 py-3">
                   <Play className="w-5 h-5 mr-2" />
@@ -110,7 +115,7 @@ const StableLanding = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {quickStats.map((stat, index) => (
                 <Card key={index} className="bg-slate-800/40 border-purple-500/30 backdrop-blur-sm">
                   <CardContent className="p-4 text-center">
