@@ -10,7 +10,7 @@ import {
   Menu,
   X,
   Brain,
-  Sparkles
+  Activity
 } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
@@ -37,14 +37,14 @@ const StableNavigation = () => {
             <Link href="/">
               <div className="flex items-center space-x-3 cursor-pointer">
                 <div className="relative">
-                  <Brain className="h-6 w-6 text-purple-400" />
-                  <Sparkles className="h-3 w-3 text-cyan-400 absolute -top-1 -right-1 animate-pulse" />
+                  <Brain className="h-6 w-6 text-blue-400" />
+                  <TrendingUp className="h-3 w-3 text-emerald-400 absolute -top-1 -right-1" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                  <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
                     Waides KI
                   </h1>
-                  <p className="text-xs text-gray-400 hidden sm:block -mt-1">Sacred AI Trading</p>
+                  <p className="text-xs text-gray-400 hidden sm:block -mt-1">AI Trading Platform</p>
                 </div>
               </div>
             </Link>
@@ -62,7 +62,7 @@ const StableNavigation = () => {
                     className={`
                       flex items-center space-x-2 px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer
                       ${isActive 
-                        ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30' 
+                        ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
                         : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
                       }
                     `}
@@ -75,8 +75,8 @@ const StableNavigation = () => {
             })}
             
             {/* Status Badge */}
-            <Badge variant="outline" className="ml-2 bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse mr-1" />
+            <Badge variant="outline" className="ml-2 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+              <Activity className="w-3 h-3 mr-1" />
               Live
             </Badge>
           </div>
@@ -108,7 +108,7 @@ const StableNavigation = () => {
                       className={`
                         flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer
                         ${isActive 
-                          ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30' 
+                          ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
                           : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
                         }
                       `}
