@@ -4,7 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "./lib/utils";
-import { Bell, User, Settings } from "lucide-react";
+import { Bell, User, Settings, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import LoginPage from "@/pages/LoginPage";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
@@ -56,6 +60,7 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   const [location] = useLocation();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const navItems = [
     { path: "/", label: "Vision Portal" },
@@ -160,7 +165,9 @@ function Router() {
                     className="text-slate-400 hover:text-slate-100 hover:bg-slate-700"
                   >
                     <User className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">Profile</span>
+                    <span className="hidden sm:inline">
+                      {isAuthenticated ? user?.username || 'Profile' : 'Profile'}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end">
@@ -184,10 +191,22 @@ function Router() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-400 cursor-pointer">
-                    <span className="mr-2">🚪</span>
-                    <span>Sign Out</span>
-                  </DropdownMenuItem>
+                  {isAuthenticated ? (
+                    <DropdownMenuItem 
+                      onClick={() => logout()} 
+                      className="text-red-400 cursor-pointer"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link href="/login" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Sign In</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -197,21 +216,89 @@ function Router() {
 
       <main>
         <Switch>
+          <Route path="/login" component={LoginPage} />
+          
+          {/* Public routes */}
           <Route path="/" component={WaidesKIVisionPortal} />
           <Route path="/wallet" component={SmaiSikaWalletPage} />
-          <Route path="/biometric-trading" component={BiometricTradingInterface} />
-          <Route path="/profile" component={ProfilePage} />
           <Route path="/dashboard" component={Dashboard} />
-          <Route path="/live-data" component={LiveDataPage} />
-          <Route path="/waidbot-engine" component={WaidbotEnginePage} />
-          <Route path="/market-storytelling" component={InteractiveMarketTrendStorytellingEngine} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
-          <Route path="/strategy-autogen" component={StrategyAutogenPage} />
-          <Route path="/voice-command" component={VoiceCommandPage} />
-          <Route path="/enhanced-waidbot" component={EnhancedWaidBotPage} />
-
+          <Route path="/live-data" component={LiveDataPage} />
           <Route path="/learning" component={LearningPage} />
+          
+          {/* Trading protected routes */}
+          <Route path="/waidbot-engine">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <WaidbotEnginePage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/strategy-autogen">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <StrategyAutogenPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/enhanced-waidbot">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <EnhancedWaidBotPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          
+          {/* Admin protected routes */}
+          <Route path="/admin">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <AdminPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/admin-panel">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <AdminPanelNew />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/config">
+            {() => (
+              <ProtectedRoute requiredPermission="update_config">
+                <AdminConfigPanel />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/expanded-config">
+            {() => (
+              <ProtectedRoute requiredRole="super_admin">
+                <ExpandedAdminConfigPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/payment-admin">
+            {() => (
+              <ProtectedRoute requiredPermission="manage_financial">
+                <PaymentGatewayAdminPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/sms-config">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <SMSConfigPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          
+          {/* Advanced system routes */}
+          <Route path="/market-storytelling" component={InteractiveMarketTrendStorytellingEngine} />
+          <Route path="/voice-command" component={VoiceCommandPage} />
+          <Route path="/biometric-trading" component={BiometricTradingInterface} />
+          <Route path="/profile" component={ProfilePage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
           <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
           <Route path="/reincarnation" component={ReincarnationLoop} />
@@ -225,12 +312,6 @@ function Router() {
           <Route path="/meta-guardian" component={MetaGuardianNetwork} />
           <Route path="/full-engine" component={WaidesFullEngine} />
           <Route path="/gateway" component={GatewayPage} />
-          <Route path="/sms-config" component={SMSConfigPage} />
-          <Route path="/payment-admin" component={PaymentGatewayAdminPage} />
-          <Route path="/admin" component={AdminPage} />
-          <Route path="/admin-panel" component={AdminPanelNew} />
-          <Route path="/expanded-config" component={ExpandedAdminConfigPage} />
-          <Route path="/config" component={AdminConfigPanel} />
           <Route path="/api-docs" component={APIDocsPage} />
           <Route component={NotFound} />
         </Switch>
@@ -242,14 +323,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SmaiWalletProvider>
-        <TooltipProvider>
-          <div className="dark min-h-screen waides-bg">
-            <Toaster />
-            <Router />
-          </div>
-        </TooltipProvider>
-      </SmaiWalletProvider>
+      <AuthProvider>
+        <SmaiWalletProvider>
+          <TooltipProvider>
+            <div className="dark min-h-screen waides-bg">
+              <Toaster />
+              <Router />
+            </div>
+          </TooltipProvider>
+        </SmaiWalletProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
