@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
 import { useToast } from '@/hooks/use-toast';
+import { AdminStatus, AdminConfig, MemoryAnalysis, StrategyAnalysis, CommandResponse } from '@/types/admin';
 
 export default function AdminPage() {
   const [commandInput, setCommandInput] = useState('');
@@ -19,27 +19,27 @@ export default function AdminPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: adminStatus } = useQuery({
+  const { data: adminStatus } = useQuery<AdminStatus>({
     queryKey: ['/api/waides-ki/admin/status'],
     refetchInterval: 10000,
   });
 
-  const { data: adminConfig } = useQuery({
+  const { data: adminConfig } = useQuery<AdminConfig>({
     queryKey: ['/api/waides-ki/admin/config'],
     refetchInterval: 30000,
   });
 
-  const { data: memoryAnalysis } = useQuery({
+  const { data: memoryAnalysis } = useQuery<MemoryAnalysis>({
     queryKey: ['/api/waides-ki/admin/memory'],
     refetchInterval: 30000,
   });
 
-  const { data: strategyAnalysis } = useQuery({
+  const { data: strategyAnalysis } = useQuery<StrategyAnalysis>({
     queryKey: ['/api/waides-ki/admin/strategies'],
     refetchInterval: 30000,
   });
 
-  const executeCommandMutation = useMutation({
+  const executeCommandMutation = useMutation<CommandResponse, Error, string>({
     mutationFn: async (command: string) => {
       const response = await fetch('/api/waides-ki/admin-command', {
         method: 'POST',
@@ -65,7 +65,7 @@ export default function AdminPage() {
     },
   });
 
-  const updateConfigMutation = useMutation({
+  const updateConfigMutation = useMutation<CommandResponse, Error, any>({
     mutationFn: async (config: any) => {
       const response = await fetch('/api/waides-ki/admin/config', {
         method: 'POST',
@@ -85,7 +85,7 @@ export default function AdminPage() {
     },
   });
 
-  const emergencyStopMutation = useMutation({
+  const emergencyStopMutation = useMutation<CommandResponse, Error, void>({
     mutationFn: async () => {
       const response = await fetch('/api/waides-ki/admin/emergency-stop', {
         method: 'POST',
