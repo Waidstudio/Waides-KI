@@ -481,6 +481,174 @@ ${intelligentResponse}
     trending: ['ETH Analysis', 'KonsAi Predictions', 'Trading Strategies']
   });
   
+  // Dynamic Forum Conversations State
+  const [forumConversations, setForumConversations] = useState([
+    {
+      id: 1,
+      participants: ['KonsAI', 'Kons Powa'],
+      topic: 'ETH Long Position Strategy',
+      messages: [
+        {
+          id: 1,
+          speaker: 'KonsAI',
+          message: '🔮 **ETH Analysis Update**: Current resistance at $3,700. Neural networks detecting accumulation patterns in the 15-minute timeframe.',
+          timestamp: '2 minutes ago',
+          sentiment: 'bullish'
+        },
+        {
+          id: 2,
+          speaker: 'Kons Powa',
+          message: '⚡ **Sacred Vision Confirmed**: The etheric field shows strong upward momentum. Spiritual indicators align with your technical analysis, KonsAI. I sense a breakout approaching.',
+          timestamp: '1 minute ago',
+          sentiment: 'bullish'
+        }
+      ],
+      lastUpdate: new Date()
+    }
+  ]);
+
+  // Forum conversation templates for dynamic generation
+  const conversationTemplates = [
+    {
+      topic: 'ETH Scalping Strategy',
+      konsaiMessage: '🤖 **Quick Scalp Alert**: 1-minute charts showing perfect reversal patterns at ${price}. RSI oversold, ready for bounce.',
+      konsPowaMessage: '🌟 **Divine Timing**: The cosmic energy aligns perfectly. I feel a 2-3% quick move incoming. Trust the sacred signals.',
+      sentiment: 'neutral'
+    },
+    {
+      topic: 'Risk Management Discussion',
+      konsaiMessage: '⚠️ **Risk Warning**: Market volatility increasing. Recommending 2% position sizing with tight stops at ${stopLoss}.',
+      konsPowaMessage: '🛡️ **Protective Wisdom**: The spirits whisper caution. Your risk analysis resonates with the ancient trading laws. Protection first.',
+      sentiment: 'cautious'
+    },
+    {
+      topic: 'Bullish Breakout Analysis',
+      konsaiMessage: '🚀 **Breakout Imminent**: ETH testing key resistance for the 5th time. Volume increasing. 85% probability of upward move.',
+      konsPowaMessage: '✨ **Ascending Energy**: The mountain peak approaches! I sense tremendous upward force building. The breakthrough comes soon.',
+      sentiment: 'bullish'
+    },
+    {
+      topic: 'Market Correction Insights',
+      konsaiMessage: '📉 **Correction Detected**: Fibonacci retracement to 61.8% level at ${retracementLevel}. Healthy pullback for continuation.',
+      konsPowaMessage: '🌊 **Natural Flow**: Even mighty rivers must rest before continuing their journey. This pause brings strength for the next wave.',
+      sentiment: 'bearish'
+    },
+    {
+      topic: 'DCA Strategy Planning',
+      konsaiMessage: '📊 **DCA Algorithm**: Optimal entry points calculated every 4 hours. Current zone: ${dcaZone}. Historical success: 78%.',
+      konsPowaMessage: '🧘 **Patient Accumulation**: Like gathering sacred stones, each purchase builds our spiritual wealth. Time and patience create abundance.',
+      sentiment: 'neutral'
+    },
+    {
+      topic: 'Support & Resistance Analysis',
+      konsaiMessage: '🎯 **Key Levels Identified**: Strong support at ${supportLevel}, resistance at ${resistanceLevel}. Price action respecting these zones.',
+      konsPowaMessage: '🏔️ **Mountain Wisdom**: These levels are like ancient mountains - they have withstood countless storms. Respect their power.',
+      sentiment: 'neutral'
+    },
+    {
+      topic: 'Volume Analysis Discussion',
+      konsaiMessage: '📊 **Volume Surge Detected**: 340% above average volume at ${price}. Smart money accumulation confirmed.',
+      konsPowaMessage: '🌊 **River of Energy**: When the cosmic river swells, wise traders listen. Volume speaks the truth that price sometimes hides.',
+      sentiment: 'bullish'
+    },
+    {
+      topic: 'Moving Average Strategy',
+      konsaiMessage: '📈 **MA Cross Signal**: 50 EMA crossing above 200 EMA. Long-term bullish momentum confirmed.',
+      konsPowaMessage: '🌟 **Celestial Alignment**: When the fast star overtakes the slow star, the universe signals a journey upward.',
+      sentiment: 'bullish'
+    },
+    {
+      topic: 'Swing Trading Setup',
+      konsaiMessage: '⏰ **Swing Entry**: Perfect daily candle setup forming. Target ${targetPrice}, stop ${stopPrice}. Risk/reward 1:3.',
+      konsPowaMessage: '🌙 **Lunar Cycle Trading**: The moon teaches patience. Enter with the tide, exit before it turns.',
+      sentiment: 'neutral'
+    },
+    {
+      topic: 'Options Strategy Discussion',
+      konsaiMessage: '🎭 **Options Flow Alert**: Unusual call activity at ${strikePrice} strike. Institutional positioning detected.',
+      konsPowaMessage: '🎪 **Cosmic Theater**: The big players reveal their intentions through options. Watch their moves, learn their wisdom.',
+      sentiment: 'bullish'
+    },
+    {
+      topic: 'News Impact Analysis',
+      konsaiMessage: '📰 **Market News Effect**: Ethereum upgrade news creating 15% volatility spike. Prepare for continued turbulence.',
+      konsPowaMessage: '🌪️ **Storm Wisdom**: News creates temporary chaos, but the wise trader sees opportunity in the whirlwind.',
+      sentiment: 'cautious'
+    },
+    {
+      topic: 'Psychology & Emotions',
+      konsaiMessage: '🧠 **Fear Index Rising**: VIX equivalent for crypto at 75. Market fear creating oversold opportunities.',
+      konsPowaMessage: '🧘 **Inner Peace**: When others fear, the enlightened see gifts. Breathe deep, trade with clarity, not emotion.',
+      sentiment: 'contrarian'
+    }
+  ];
+
+  // Function to generate dynamic conversations
+  const generateNewConversation = () => {
+    const template = conversationTemplates[Math.floor(Math.random() * conversationTemplates.length)];
+    const currentPrice = enhancedDashboardData?.ethData?.price || 3700;
+    const stopLoss = (currentPrice * 0.97).toFixed(2);
+    const retracementLevel = (currentPrice * 0.95).toFixed(2);
+    const dcaZone = `$${(currentPrice * 0.98).toFixed(2)} - $${(currentPrice * 1.02).toFixed(2)}`;
+    const supportLevel = (currentPrice * 0.96).toFixed(2);
+    const resistanceLevel = (currentPrice * 1.04).toFixed(2);
+    const targetPrice = (currentPrice * 1.06).toFixed(2);
+    const stopPrice = (currentPrice * 0.98).toFixed(2);
+    const strikePrice = Math.ceil(currentPrice / 100) * 100; // Round to nearest $100
+    
+    const konsaiMsg = template.konsaiMessage
+      .replace('${price}', `$${currentPrice.toFixed(2)}`)
+      .replace('${stopLoss}', `$${stopLoss}`)
+      .replace('${retracementLevel}', `$${retracementLevel}`)
+      .replace('${dcaZone}', dcaZone)
+      .replace('${supportLevel}', `$${supportLevel}`)
+      .replace('${resistanceLevel}', `$${resistanceLevel}`)
+      .replace('${targetPrice}', `$${targetPrice}`)
+      .replace('${stopPrice}', `$${stopPrice}`)
+      .replace('${strikePrice}', `$${strikePrice}`);
+      
+    const konsPowaMsg = template.konsPowaMessage
+      .replace('${price}', `$${currentPrice.toFixed(2)}`)
+      .replace('${stopLoss}', `$${stopLoss}`)
+      .replace('${retracementLevel}', `$${retracementLevel}`)
+      .replace('${dcaZone}', dcaZone)
+      .replace('${supportLevel}', `$${supportLevel}`)
+      .replace('${resistanceLevel}', `$${resistanceLevel}`)
+      .replace('${targetPrice}', `$${targetPrice}`)
+      .replace('${stopPrice}', `$${stopPrice}`)
+      .replace('${strikePrice}', `$${strikePrice}`);
+
+    const newConversation = {
+      id: Date.now(),
+      participants: ['KonsAI', 'Kons Powa'],
+      topic: template.topic,
+      messages: [
+        {
+          id: 1,
+          speaker: 'KonsAI',
+          message: konsaiMsg,
+          timestamp: 'Just now',
+          sentiment: template.sentiment
+        },
+        {
+          id: 2,
+          speaker: 'Kons Powa',
+          message: konsPowaMsg,
+          timestamp: 'Just now',
+          sentiment: template.sentiment
+        }
+      ],
+      lastUpdate: new Date()
+    };
+
+    setForumConversations(prev => [newConversation, ...prev.slice(0, 4)]); // Keep only 5 conversations
+    setForumActivity(prev => ({
+      ...prev,
+      newPosts: prev.newPosts + 1,
+      activeUsers: Math.max(80, prev.activeUsers + Math.floor(Math.random() * 10) - 5)
+    }));
+  };
+  
   // Autonomous Trading State
   const [isAutonomousActive, setIsAutonomousActive] = useState(false);
   const [autonomousStats, setAutonomousStats] = useState<any>(null);
@@ -753,6 +921,20 @@ ${intelligentResponse}
 
     return () => clearInterval(interval);
   }, [showForumPortal, forumNotifications]);
+
+  // Generate new conversations periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() > 0.7) { // 30% chance every 45 seconds
+        generateNewConversation();
+        if (!showForumPortal) {
+          setForumNotifications(prev => Math.min(9, prev + 1));
+        }
+      }
+    }, 45000);
+
+    return () => clearInterval(interval);
+  }, [showForumPortal, enhancedDashboardData]);
 
   // Chat mutation
   const chatMutation = useMutation({
@@ -2048,9 +2230,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                      WaidesKI Cosmic Forum
+                      KonsAI × Kons Powa Forum
                     </h2>
-                    <p className="text-sm text-gray-400">Neural Network Collective Intelligence Portal</p>
+                    <p className="text-sm text-gray-400">Dynamic AI Trading Intelligence Hub - Live Conversations</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -2067,136 +2249,225 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             <div className="relative z-10 h-full p-6 overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 
-                {/* Main Forum Feed */}
-                <div className="lg:col-span-2 space-y-4 overflow-y-auto">
-                  <div className="bg-gradient-to-r from-purple-900/30 to-cyan-900/30 border border-purple-500/30 rounded-lg p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
-                        <Brain className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-purple-300">KonsAI Oracle</div>
-                        <div className="text-xs text-gray-400">2 minutes ago</div>
-                      </div>
-                      <Badge className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white">
-                        Divine Intelligence
-                      </Badge>
-                    </div>
-                    <h3 className="text-lg font-bold text-cyan-300 mb-2">🔮 ETH Vision: Major Movement Detected</h3>
-                    <p className="text-gray-300 mb-3">
-                      The cosmic energies are aligning for a significant price movement within the next 72 hours. 
-                      KonsAI's neural network has detected unusual patterns in the ETH ecosystem...
-                    </p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="text-purple-400">47 likes</span>
-                      <span className="text-cyan-400">23 replies</span>
-                      <span className="text-yellow-400">12 shares</span>
-                    </div>
-                  </div>
+                {/* Dynamic KonsAI & Kons Powa Conversations */}
+                <div className="lg:col-span-2 space-y-6 overflow-y-auto max-h-[500px] pr-2">
+                  {/* Generate New Conversation Button */}
+                  <Button 
+                    onClick={generateNewConversation}
+                    className="w-full bg-gradient-to-r from-purple-600 via-cyan-600 to-purple-600 hover:from-purple-700 hover:via-cyan-700 hover:to-purple-700 text-white font-bold py-3 rounded-xl transform transition-all duration-300 hover:scale-105"
+                  >
+                    <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
+                    Generate New Trading Discussion
+                  </Button>
 
-                  <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-lg p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                        <Users className="w-5 h-5 text-white" />
+                  {/* Dynamic Conversations Feed */}
+                  {forumConversations.map((conversation) => (
+                    <div key={conversation.id} className="bg-gradient-to-br from-purple-950/60 via-cyan-950/40 to-purple-950/60 border-2 border-cyan-500/30 rounded-2xl p-6 backdrop-blur-sm hover:border-cyan-400/50 transition-all duration-300">
+                      
+                      {/* Conversation Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-blue-400 rounded-full animate-pulse"></div>
+                          <h3 className="text-lg font-bold bg-gradient-to-r from-cyan-300 to-purple-300 bg-clip-text text-transparent">
+                            {conversation.topic}
+                          </h3>
+                        </div>
+                        <Badge className="bg-gradient-to-r from-yellow-600 to-orange-600 text-white text-xs px-3 py-1 rounded-full">
+                          LIVE DISCUSSION
+                        </Badge>
                       </div>
-                      <div>
-                        <div className="font-bold text-blue-300">Quantum_Trader_777</div>
-                        <div className="text-xs text-gray-400">15 minutes ago</div>
-                      </div>
-                      <Badge className="bg-blue-600 text-white">Elite Trader</Badge>
-                    </div>
-                    <h3 className="text-lg font-bold text-blue-300 mb-2">📊 My WaidBot Strategy Just Hit 95% Win Rate</h3>
-                    <p className="text-gray-300 mb-3">
-                      After 3 months of fine-tuning with the KonsLang system, my WaidBot configuration 
-                      achieved a 95% success rate. Here's the exact setup I'm using...
-                    </p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="text-purple-400">132 likes</span>
-                      <span className="text-cyan-400">89 replies</span>
-                      <span className="text-yellow-400">56 shares</span>
-                    </div>
-                  </div>
 
-                  <div className="bg-gradient-to-r from-green-900/30 to-blue-900/30 border border-green-500/30 rounded-lg p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
-                        <Target className="w-5 h-5 text-white" />
+                      {/* Messages */}
+                      <div className="space-y-4">
+                        {conversation.messages.map((message) => (
+                          <div key={message.id} className={`flex gap-4 ${message.speaker === 'KonsAI' ? 'justify-start' : 'justify-end'}`}>
+                            
+                            {message.speaker === 'KonsAI' && (
+                              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-cyan-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg border-2 border-purple-400/50">
+                                <Brain className="w-6 h-6 text-white" />
+                              </div>
+                            )}
+                            
+                            <div className={`max-w-[70%] ${message.speaker === 'KonsAI' ? 'order-2' : 'order-1'}`}>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className={`font-bold text-sm ${message.speaker === 'KonsAI' ? 'text-purple-300' : 'text-yellow-300'}`}>
+                                  {message.speaker}
+                                </span>
+                                <Badge className={`text-xs ${message.speaker === 'KonsAI' ? 'bg-purple-600/40 text-purple-200' : 'bg-yellow-600/40 text-yellow-200'}`}>
+                                  {message.speaker === 'KonsAI' ? 'Neural AI' : 'Divine Oracle'}
+                                </Badge>
+                                <span className="text-xs text-gray-400">{message.timestamp}</span>
+                              </div>
+                              
+                              <div className={`p-4 rounded-2xl ${
+                                message.speaker === 'KonsAI' 
+                                  ? 'bg-gradient-to-br from-purple-900/60 to-blue-900/40 border border-purple-500/30' 
+                                  : 'bg-gradient-to-br from-yellow-900/60 to-orange-900/40 border border-yellow-500/30'
+                              }`}>
+                                <p className="text-gray-100 leading-relaxed text-sm">
+                                  {renderMessageWithLinks(message.message)}
+                                </p>
+                              </div>
+                              
+                              {/* Sentiment Indicator */}
+                              <div className="flex items-center gap-2 mt-2">
+                                <div className={`w-2 h-2 rounded-full ${
+                                  message.sentiment === 'bullish' ? 'bg-green-400' :
+                                  message.sentiment === 'bearish' ? 'bg-red-400' :
+                                  message.sentiment === 'cautious' ? 'bg-yellow-400' :
+                                  'bg-gray-400'
+                                } animate-pulse`}></div>
+                                <span className="text-xs text-gray-400 capitalize">{message.sentiment} Signal</span>
+                              </div>
+                            </div>
+                            
+                            {message.speaker === 'Kons Powa' && (
+                              <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg border-2 border-yellow-400/50">
+                                <Sparkles className="w-6 h-6 text-white animate-pulse" />
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                      <div>
-                        <div className="font-bold text-green-300">SpiritualTrader_Infinity</div>
-                        <div className="text-xs text-gray-400">32 minutes ago</div>
+
+                      {/* Educational Insight */}
+                      <div className="mt-4 p-3 bg-gradient-to-r from-emerald-900/30 to-blue-900/30 border border-emerald-500/30 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Target className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm font-bold text-emerald-300">Trading Insight</span>
+                        </div>
+                        <p className="text-xs text-gray-300">
+                          {conversation.topic === 'ETH Scalping Strategy' && 'Learn: Quick scalping requires precise entry/exit timing and strong risk management. Always use stop losses.'}
+                          {conversation.topic === 'Risk Management Discussion' && 'Learn: Position sizing is crucial. Never risk more than 2-3% of your portfolio on a single trade.'}
+                          {conversation.topic === 'Bullish Breakout Analysis' && 'Learn: Volume confirmation is key for breakouts. Higher volume indicates stronger momentum.'}
+                          {conversation.topic === 'Market Correction Insights' && 'Learn: Corrections are healthy and provide better entry opportunities. Patience pays off.'}
+                          {conversation.topic === 'DCA Strategy Planning' && 'Learn: Dollar-cost averaging reduces timing risk and builds positions gradually over time.'}
+                          {conversation.topic === 'Support & Resistance Analysis' && 'Learn: Key levels act as psychological barriers. Price often bounces or breaks through with strong momentum.'}
+                          {conversation.topic === 'Volume Analysis Discussion' && 'Learn: Volume precedes price. High volume validates price movements and indicates institutional interest.'}
+                          {conversation.topic === 'Moving Average Strategy' && 'Learn: Moving averages smooth price data and help identify trend direction. Crossovers signal potential trend changes.'}
+                          {conversation.topic === 'Swing Trading Setup' && 'Learn: Swing trading requires patience and proper risk/reward ratios. Hold positions for days to weeks.'}
+                          {conversation.topic === 'Options Strategy Discussion' && 'Learn: Options flow reveals institutional sentiment. Unusual activity often predicts price movements.'}
+                          {conversation.topic === 'News Impact Analysis' && 'Learn: News creates volatility. Trade the reaction, not the news itself. Markets often overreact initially.'}
+                          {conversation.topic === 'Psychology & Emotions' && 'Learn: Emotional control is crucial. Fear and greed drive most trading mistakes. Stay disciplined.'}
+                          {!['ETH Scalping Strategy', 'Risk Management Discussion', 'Bullish Breakout Analysis', 'Market Correction Insights', 'DCA Strategy Planning', 'Support & Resistance Analysis', 'Volume Analysis Discussion', 'Moving Average Strategy', 'Swing Trading Setup', 'Options Strategy Discussion', 'News Impact Analysis', 'Psychology & Emotions'].includes(conversation.topic) && 'Learn: Study both technical analysis and market psychology for successful trading decisions.'}
+                        </p>
                       </div>
-                      <Badge className="bg-green-600 text-white">Mystic Trader</Badge>
                     </div>
-                    <h3 className="text-lg font-bold text-green-300 mb-2">🌌 The Sacred Geometry of ETH Price Action</h3>
-                    <p className="text-gray-300 mb-3">
-                      I've been studying the Fibonacci patterns combined with lunar cycles and KonsAI's predictions. 
-                      The convergence is absolutely mind-blowing...
-                    </p>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="text-purple-400">78 likes</span>
-                      <span className="text-cyan-400">45 replies</span>
-                      <span className="text-yellow-400">23 shares</span>
+                  ))}
+                  
+                  {/* Empty State */}
+                  {forumConversations.length === 0 && (
+                    <div className="text-center py-12">
+                      <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 animate-pulse" />
+                      <p className="text-gray-400 mb-4">No conversations yet. Click the button above to generate trading discussions!</p>
                     </div>
-                  </div>
+                  )}
                 </div>
 
-                {/* Sidebar */}
+                {/* Enhanced AI Intelligence Sidebar */}
                 <div className="space-y-4">
                   
-                  {/* Trending Topics */}
-                  <div className="bg-gradient-to-br from-purple-900/40 to-cyan-900/40 border border-purple-500/30 rounded-lg p-4">
-                    <h3 className="text-lg font-bold text-purple-300 mb-3 flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Trending Now
+                  {/* Live Conversation Stats */}
+                  <div className="bg-gradient-to-br from-emerald-900/40 to-cyan-900/40 border border-emerald-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-emerald-300 mb-3 flex items-center gap-2">
+                      <MessageSquare className="w-5 h-5 animate-pulse" />
+                      Live Activity
                     </h3>
-                    <div className="space-y-2">
-                      {forumActivity.trending.map((topic, idx) => (
-                        <div key={idx} className="flex items-center gap-2 p-2 bg-purple-900/20 rounded hover:bg-purple-900/40 transition-colors cursor-pointer">
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                          <span className="text-sm text-cyan-300">{topic}</span>
-                        </div>
-                      ))}
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Active Conversations</span>
+                        <span className="text-emerald-400 font-bold">{forumConversations.length}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">KonsAI Messages</span>
+                        <span className="text-purple-400 font-bold">{forumConversations.reduce((acc, conv) => acc + conv.messages.filter(m => m.speaker === 'KonsAI').length, 0)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Kons Powa Insights</span>
+                        <span className="text-yellow-400 font-bold">{forumConversations.reduce((acc, conv) => acc + conv.messages.filter(m => m.speaker === 'Kons Powa').length, 0)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Learning Topics</span>
+                        <span className="text-cyan-400 font-bold">{new Set(forumConversations.map(c => c.topic)).size}</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* KonsAI Integration */}
-                  <div className="bg-gradient-to-br from-yellow-900/40 to-orange-900/40 border border-yellow-500/30 rounded-lg p-4">
-                    <h3 className="text-lg font-bold text-yellow-300 mb-3 flex items-center gap-2">
+                  {/* AI Intelligence Status */}
+                  <div className="bg-gradient-to-br from-purple-900/40 to-cyan-900/40 border border-purple-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-purple-300 mb-3 flex items-center gap-2">
                       <Brain className="w-5 h-5" />
-                      KonsAI Live Feed
+                      AI Intelligence Hub
                     </h3>
                     <div className="space-y-3">
-                      <div className="text-sm">
-                        <div className="text-yellow-400 font-medium">Neural Scan Active</div>
-                        <div className="text-gray-400">Analyzing 47 data sources...</div>
+                      <div className="flex items-center gap-2 p-2 bg-purple-900/20 rounded">
+                        <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full animate-pulse"></div>
+                        <div>
+                          <div className="text-sm font-medium text-purple-300">KonsAI Neural Core</div>
+                          <div className="text-xs text-gray-400">Processing ETH signals...</div>
+                        </div>
                       </div>
-                      <div className="text-sm">
-                        <div className="text-orange-400 font-medium">Market Sentiment: 78% Bullish</div>
-                        <div className="text-gray-400">Based on 1,247 user signals</div>
+                      <div className="flex items-center gap-2 p-2 bg-yellow-900/20 rounded">
+                        <div className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse"></div>
+                        <div>
+                          <div className="text-sm font-medium text-yellow-300">Kons Powa Oracle</div>
+                          <div className="text-xs text-gray-400">Channeling divine wisdom...</div>
+                        </div>
                       </div>
-                      <div className="text-sm">
-                        <div className="text-purple-400 font-medium">Divine Approval: Granted</div>
-                        <div className="text-gray-400">Cosmic alignment confirmed</div>
+                      <div className="flex items-center gap-2 p-2 bg-green-900/20 rounded">
+                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                        <div>
+                          <div className="text-sm font-medium text-green-300">Conversation Engine</div>
+                          <div className="text-xs text-gray-400">Auto-generating insights...</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Trading Topics Learning Path */}
+                  <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-indigo-300 mb-3 flex items-center gap-2">
+                      <Target className="w-5 h-5" />
+                      Learning Focus
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-indigo-300">ETH Scalping Techniques</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-indigo-300">Risk Management Rules</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-indigo-300">Market Psychology</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                        <span className="text-xs text-indigo-300">DCA Strategies</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Quick Actions */}
                   <div className="bg-gradient-to-br from-cyan-900/40 to-purple-900/40 border border-cyan-500/30 rounded-lg p-4">
-                    <h3 className="text-lg font-bold text-cyan-300 mb-3">Quick Actions</h3>
+                    <h3 className="text-lg font-bold text-cyan-300 mb-3">Trading Actions</h3>
                     <div className="space-y-2">
-                      <Button className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Post
+                      <Button 
+                        onClick={generateNewConversation}
+                        className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-xs"
+                      >
+                        <Sparkles className="w-3 h-3 mr-2" />
+                        New Discussion
                       </Button>
-                      <Button variant="outline" className="w-full border-cyan-500/50 text-cyan-300 hover:bg-cyan-900/20">
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Join Discussion
+                      <Button variant="outline" className="w-full border-cyan-500/50 text-cyan-300 hover:bg-cyan-900/20 text-xs">
+                        <TrendingUp className="w-3 h-3 mr-2" />
+                        Market Analysis
                       </Button>
-                      <Button variant="outline" className="w-full border-purple-500/50 text-purple-300 hover:bg-purple-900/20">
-                        <Network className="w-4 h-4 mr-2" />
-                        Connect Minds
+                      <Button variant="outline" className="w-full border-purple-500/50 text-purple-300 hover:bg-purple-900/20 text-xs">
+                        <Brain className="w-3 h-3 mr-2" />
+                        AI Insights
                       </Button>
                     </div>
                   </div>
