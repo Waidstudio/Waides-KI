@@ -510,6 +510,53 @@ ${intelligentResponse}
     setLocation(route);
   };
 
+  // Function to render message with clickable links
+  const renderMessageWithLinks = (text: string) => {
+    // Regex to match markdown links [text](url)
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = linkRegex.exec(text)) !== null) {
+      // Add text before the link
+      if (match.index > lastIndex) {
+        parts.push(text.slice(lastIndex, match.index));
+      }
+      
+      // Add the clickable link
+      const linkText = match[1];
+      const linkUrl = match[2];
+      
+      parts.push(
+        <button
+          key={match.index}
+          onClick={() => {
+            console.log('Navigating to:', linkUrl);
+            setLocation(linkUrl);
+          }}
+          className="text-blue-400 hover:text-blue-300 underline hover:no-underline transition-colors duration-200 font-medium"
+        >
+          {linkText}
+        </button>
+      );
+      
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Add remaining text after the last link
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+    
+    // If no links found, return original text
+    if (parts.length === 0) {
+      return text;
+    }
+    
+    return parts;
+  };
+
   // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => {
@@ -1637,7 +1684,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                     </span>
                   </div>
                 )}
-                <p className="whitespace-pre-wrap leading-relaxed">{message.message}</p>
+                <div className="whitespace-pre-wrap leading-relaxed">{renderMessageWithLinks(message.message)}</div>
                 
                 {/* Display reasoning steps for reasoning mode */}
                 {message.reasoning && message.reasoning.length > 0 && (
@@ -1790,10 +1837,10 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   <span className="text-xs text-purple-300 font-medium">Waides KI is thinking...</span>
                   {showAudioIcon && <Volume2 className="w-4 h-4 text-purple-400 animate-pulse" />}
                 </div>
-                <p className="whitespace-pre-wrap leading-relaxed">
-                  {currentTypingMessage}
+                <div className="whitespace-pre-wrap leading-relaxed">
+                  {renderMessageWithLinks(currentTypingMessage)}
                   <span className="animate-pulse">|</span>
-                </p>
+                </div>
               </div>
             </div>
           )}
