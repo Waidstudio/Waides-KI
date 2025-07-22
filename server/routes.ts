@@ -541,43 +541,158 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Wallet balance endpoint (legacy support)
+  // Enhanced wallet balance endpoint with detailed breakdown
   app.get("/api/wallet/balance", (req, res) => {
     res.json({
       balance: 10000,
       currency: "USDT",
-      available: 9500,
-      reserved: 500,
+      available: 8500,
+      locked: 1500,
+      pending: 250,
       last_updated: new Date().toISOString()
     });
   });
 
-  // Wallet transactions endpoint
+  // Wallet portfolio data
+  app.get("/api/wallet/portfolio", (req, res) => {
+    res.json({
+      totalValue: 10000,
+      currency: "USD",
+      allocation: [
+        {
+          asset: "USDT",
+          amount: 5000,
+          value: 5000,
+          percentage: 50,
+          change24h: 0.1
+        },
+        {
+          asset: "ETH",
+          amount: 1.5,
+          value: 3708,
+          percentage: 37,
+          change24h: 2.3
+        },
+        {
+          asset: "BTC",
+          amount: 0.05,
+          value: 1292,
+          percentage: 13,
+          change24h: 1.8
+        }
+      ],
+      performance: {
+        day: 2.1,
+        week: 8.5,
+        month: 15.2,
+        year: 45.7
+      }
+    });
+  });
+
+  // Security settings
+  app.get("/api/wallet/security", (req, res) => {
+    res.json({
+      twoFactorEnabled: true,
+      biometricEnabled: false,
+      whitelistEnabled: true,
+      dailyLimits: {
+        withdrawal: 50000,
+        transfer: 25000
+      },
+      sessionTimeout: 30
+    });
+  });
+
+  // Transfer funds
+  app.post("/api/wallet/transfer", (req, res) => {
+    const { amount, currency, recipient, type } = req.body;
+    
+    if (!amount || !currency || !recipient) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    
+    if (amount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
+    
+    // Simulate transfer processing
+    const transferId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    res.json({
+      success: true,
+      transferId,
+      status: "pending",
+      message: "Transfer initiated successfully",
+      estimatedCompletion: new Date(Date.now() + 300000).toISOString() // 5 minutes
+    });
+  });
+
+  // Enhanced wallet transactions endpoint
   app.get("/api/wallet/transactions", (req, res) => {
     res.json([
       {
         id: '1',
         type: 'deposit',
-        amount: '₦50,000.00',
-        date: '2025-06-24',
+        amount: 5000,
+        currency: 'USDT',
+        timestamp: '2025-01-20T08:30:00Z',
         status: 'completed',
-        description: 'Wallet funding via Paystack'
+        description: 'Bank transfer deposit',
+        fee: 2.50,
+        gateway: 'Bank Transfer'
       },
       {
         id: '2',
-        type: 'conversion',
-        amount: '₦10,000 → ꠄ20.00',
-        date: '2025-06-25',
+        type: 'trade',
+        amount: 1500,
+        currency: 'USDT',
+        timestamp: '2025-01-21T14:15:00Z',
         status: 'completed',
-        description: 'Local to SmaiSika conversion'
+        description: 'ETH trading profit',
+        fee: 0.75
       },
       {
         id: '3',
-        type: 'trade',
-        amount: 'ꠄ5.00',
-        date: '2025-06-26',
+        type: 'withdrawal',
+        amount: 1000,
+        currency: 'USDT',
+        timestamp: '2025-01-21T16:45:00Z',
+        status: 'pending',
+        description: 'Withdrawal to external wallet',
+        fee: 5.00,
+        txHash: '0xabc123...'
+      },
+      {
+        id: '4',
+        type: 'transfer',
+        amount: 500,
+        currency: 'USDT',
+        timestamp: '2025-01-22T09:20:00Z',
         status: 'completed',
-        description: 'ETH trading operation'
+        description: 'Internal transfer',
+        fee: 1.00
+      },
+      {
+        id: '5',
+        type: 'deposit',
+        amount: 3000,
+        currency: 'USDT',
+        timestamp: '2025-01-22T11:30:00Z',
+        status: 'completed',
+        description: 'Crypto deposit - BTC converted',
+        fee: 15.00,
+        gateway: 'Crypto Gateway'
+      },
+      {
+        id: '6',
+        type: 'fee',
+        amount: 25,
+        currency: 'USDT',
+        timestamp: '2025-01-22T12:00:00Z',
+        status: 'completed',
+        description: 'Monthly maintenance fee',
+        fee: 0
       }
     ]);
   });

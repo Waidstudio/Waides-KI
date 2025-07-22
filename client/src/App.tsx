@@ -21,6 +21,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
+import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -121,7 +122,7 @@ function Router() {
           {/* Vision Portal - moved to /portal */}
           <Route path="/portal" component={WaidesKIVisionPortal} />
           <Route path="/trading" component={WaidesKIVisionPortal} />
-          <Route path="/wallet" component={SmaiSikaWalletPage} />
+          <Route path="/wallet" component={ProfessionalWalletPage} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/forum" component={ForumPage} />
           <Route path="/waidbot" component={WaidBotPage} />
