@@ -8,6 +8,11 @@ export async function fetchETHMarketData(): Promise<ETHPrice> {
     
     const ethData = data.ethereum;
     
+    // Validate that ethData exists and has required properties
+    if (!ethData || typeof ethData.usd !== 'number') {
+      throw new Error('Invalid ETH data structure from API');
+    }
+    
     return {
       price: ethData.usd,
       priceChange24h: ethData.usd_24h_change || 0,

@@ -2965,6 +2965,12 @@ export function registerRoutes(app: Express): Promise<Server> {
     try {
       const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
       const strategyId = parseInt(req.params.id);
+      
+      // Validate strategyId to prevent NaN database errors
+      if (isNaN(strategyId) || strategyId <= 0) {
+        return res.status(400).json({ error: 'Invalid strategy ID. Must be a positive integer.' });
+      }
+      
       const strategy = await enhancedTradingStrategiesService.getStrategyById(strategyId);
       
       if (!strategy) {
@@ -2982,6 +2988,12 @@ export function registerRoutes(app: Express): Promise<Server> {
     try {
       const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
       const strategyId = parseInt(req.params.id);
+      
+      // Validate strategyId to prevent NaN database errors
+      if (isNaN(strategyId) || strategyId <= 0) {
+        return res.status(400).json({ error: 'Invalid strategy ID. Must be a positive integer.' });
+      }
+      
       const performance = await enhancedTradingStrategiesService.evaluateStrategyPerformance(strategyId);
       res.json(performance);
     } catch (error) {
@@ -2994,6 +3006,12 @@ export function registerRoutes(app: Express): Promise<Server> {
     try {
       const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
       const strategyId = parseInt(req.params.id);
+      
+      // Validate strategyId to prevent NaN database errors
+      if (isNaN(strategyId) || strategyId <= 0) {
+        return res.status(400).json({ error: 'Invalid strategy ID. Must be a positive integer.' });
+      }
+      
       const { marketConditions } = req.body;
       
       // Get current market data if not provided
@@ -3054,6 +3072,12 @@ export function registerRoutes(app: Express): Promise<Server> {
     try {
       const { enhancedTradingStrategiesService } = await import('./services/enhancedTradingStrategiesService.js');
       const strategyId = parseInt(req.params.id);
+      
+      // Validate strategyId to prevent NaN database errors
+      if (isNaN(strategyId) || strategyId <= 0) {
+        return res.status(400).json({ error: 'Invalid strategy ID. Must be a positive integer.' });
+      }
+      
       const tradeData = req.body;
       
       const trade = await enhancedTradingStrategiesService.recordTrade(strategyId, tradeData);
