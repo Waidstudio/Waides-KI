@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { runWaidBotCycle } from "./runners/waidBotEngineRunner";
 
 const app = express();
 app.use(express.json());
@@ -59,6 +60,10 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
+  // ⏱️ WaidBot auto-cycle: every 1 minute
+  setInterval(() => {
+    runWaidBotCycle();
+  }, 60 * 1000); // You can change this to 15 * 1000 for every 15s
   const port = 5000;
   server.listen({
     port,
