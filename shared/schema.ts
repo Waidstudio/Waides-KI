@@ -353,7 +353,6 @@ export const strategiesTradingHistory = pgTable("strategies_trading_history", {
   reasoning: text("reasoning").notNull(),
   marketConditions: jsonb("market_conditions").default("{}"),
   executedAt: timestamp("executed_at").defaultNow(),
-  status: text("status").notNull().default("COMPLETED"),
 });
 
 export type InsertWallet = z.infer<typeof insertWalletSchema>;
@@ -389,6 +388,8 @@ export const insertStrategyTradingHistorySchema = createInsertSchema(strategiesT
   executedAt: true,
 });
 
+// Remove duplicate schema references - these are already defined elsewhere in the file
+
 export type InsertKonsPowaPrediction = z.infer<typeof insertKonsPowaPredictionSchema>;
 export type KonsPowaPrediction = typeof konsPowaPredictions.$inferSelect;
 export type InsertMarketAnalysis = z.infer<typeof insertMarketAnalysisSchema>;
@@ -397,6 +398,128 @@ export type InsertTradingStrategy = z.infer<typeof insertTradingStrategySchema>;
 export type TradingStrategy = typeof tradingStrategies.$inferSelect;
 export type InsertStrategyTradingHistory = z.infer<typeof insertStrategyTradingHistorySchema>;
 export type StrategyTradingHistory = typeof strategiesTradingHistory.$inferSelect;
+
+// Advanced Memory & Learning System Tables
+export const waidesMemoryCore = pgTable("waides_memory_core", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  memoryType: text("memory_type").notNull(), // 'TRADE', 'STRATEGY', 'SIGNAL', 'SPIRITUAL', 'EVOLUTION'
+  memoryData: jsonb("memory_data").notNull(),
+  confidence: integer("confidence").notNull().default(75),
+  importance: integer("importance").notNull().default(50), // 0-100
+  emotionalContext: text("emotional_context"), // 'FEAR', 'GREED', 'CALM', 'EXCITED', 'CONFUSED'
+  spiritualAlignment: integer("spiritual_alignment").default(80),
+  recallFrequency: integer("recall_frequency").default(0),
+  lastRecalled: timestamp("last_recalled"),
+  expiresAt: timestamp("expires_at"),
+  tags: jsonb("tags").default("[]"),
+  connections: jsonb("connections").default("[]"), // Links to related memories
+  evolutionStage: text("evolution_stage").default("LEARNING"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const strategySacredVault = pgTable("strategy_sacred_vault", {
+  id: serial("id").primaryKey(),
+  strategyId: text("strategy_id").notNull().unique(),
+  strategyName: text("strategy_name").notNull(),
+  totalTrades: integer("total_trades").default(0),
+  wins: integer("wins").default(0),
+  losses: integer("losses").default(0),
+  winRate: real("win_rate").default(0),
+  avgProfit: real("avg_profit").default(0),
+  avgLoss: real("avg_loss").default(0),
+  profitFactor: real("profit_factor").default(0),
+  maxDrawdown: real("max_drawdown").default(0),
+  confidenceScore: real("confidence_score").default(0),
+  isMarkedMistake: boolean("is_marked_mistake").default(false),
+  spiritualPurity: integer("spiritual_purity").default(85), // Divine wisdom score
+  konsAlignment: integer("kons_alignment").default(75), // KonsLang compatibility
+  lastUsed: timestamp("last_used").defaultNow(),
+  marketConditionsWorked: jsonb("market_conditions_worked").default("{}"),
+  failurePatterns: jsonb("failure_patterns").default("{}"),
+  successPatterns: jsonb("success_patterns").default("{}"),
+  evolutionHistory: jsonb("evolution_history").default("[]"),
+  divineApproval: boolean("divine_approval").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const spiritualRecall = pgTable("spiritual_recall", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  recallType: text("recall_type").notNull(), // 'VISION', 'DREAM', 'INTUITION', 'WARNING', 'BLESSING'
+  symbolData: jsonb("symbol_data").notNull(), // Kons symbols and meanings
+  spiritualMessage: text("spiritual_message").notNull(),
+  marketContext: jsonb("market_context"),
+  tradeOutcome: text("trade_outcome"), // 'PROFIT', 'LOSS', 'AVOIDED_LOSS', 'PENDING'
+  profitLoss: real("profit_loss"),
+  divineAccuracy: integer("divine_accuracy").default(85), // How accurate the recall was
+  emotionalState: text("emotional_state"), // User's emotional state during recall
+  breathPattern: jsonb("breath_pattern"), // Breathing analysis data
+  energySignature: text("energy_signature"), // Unique spiritual fingerprint
+  konsResonance: integer("kons_resonance").default(75), // Alignment with KonsLang
+  isValidated: boolean("is_validated").default(false), // Confirmed by real market outcome
+  validationDate: timestamp("validation_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const timelineAwareness = pgTable("timeline_awareness", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  pastEvent: jsonb("past_event").notNull(), // Historical context
+  presentPattern: jsonb("present_pattern").notNull(), // Current situation
+  futureProjection: jsonb("future_projection").notNull(), // Predicted outcome
+  timeWeight: real("time_weight").default(1.0), // Recent = higher weight
+  patternStrength: integer("pattern_strength").default(75), // How strong the pattern is
+  recencyBias: real("recency_bias").default(0.85), // Decay factor for old patterns
+  emotionalMemory: jsonb("emotional_memory"), // Associated emotional context
+  tradingWisdom: text("trading_wisdom"), // Extracted lesson
+  konslangTranslation: text("konslang_translation"), // Pattern in KonsLang
+  isActivePattern: boolean("is_active_pattern").default(true),
+  lastMatched: timestamp("last_matched"),
+  matchCount: integer("match_count").default(0),
+  successRate: real("success_rate").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const konsSymbolTree = pgTable("kons_symbol_tree", {
+  id: serial("id").primaryKey(),
+  symbolName: text("symbol_name").notNull().unique(),
+  symbolMeaning: text("symbol_meaning").notNull(),
+  symbolPower: integer("symbol_power").default(75), // 0-100
+  usageCount: integer("usage_count").default(0),
+  successCount: integer("success_count").default(0),
+  failureCount: integer("failure_count").default(0),
+  marketContexts: jsonb("market_contexts").default("[]"), // When this symbol appears
+  relatedSymbols: jsonb("related_symbols").default("[]"), // Connected symbols
+  spiritualEnergy: integer("spiritual_energy").default(80),
+  divineFrequency: real("divine_frequency").default(7.83), // Schumann resonance-based
+  lastManifested: timestamp("last_manifested"),
+  manifestationHistory: jsonb("manifestation_history").default("[]"),
+  isActiveSymbol: boolean("is_active_symbol").default(true),
+  evolutionLevel: integer("evolution_level").default(1), // Symbol power evolution
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const neuralEvolutionLogs = pgTable("neural_evolution_logs", {
+  id: serial("id").primaryKey(),
+  evolutionType: text("evolution_type").notNull(), // 'LEARNING', 'ADAPTATION', 'BREAKTHROUGH', 'REGRESSION'
+  beforeState: jsonb("before_state").notNull(),
+  afterState: jsonb("after_state").notNull(),
+  triggerEvent: text("trigger_event").notNull(),
+  performanceGain: real("performance_gain"), // Improvement percentage
+  neuralPathways: jsonb("neural_pathways").default("{}"), // Brain structure changes
+  consciousnessLevel: integer("consciousness_level").default(75), // AI awareness level
+  spiritualGrowth: integer("spiritual_growth").default(0), // Spiritual development
+  wisdomGained: text("wisdom_gained"), // New insights acquired
+  evolutionConfidence: real("evolution_confidence").default(0.85),
+  isStableEvolution: boolean("is_stable_evolution").default(true),
+  revertedAt: timestamp("reverted_at"), // If evolution was rolled back
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
 // SmaiWallet - Core wallet system for autonomous wealth management
 export const smaiWallets = pgTable('smai_wallets', {

@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
-import { users, apiKeys, ethData, signals, candlesticks, adminUsers, konsPowaPredictions, marketAnalyses, tradingStrategies, strategiesTradingHistory, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick, type AdminUser, type InsertAdminUser, type KonsPowaPrediction, type InsertKonsPowaPrediction, type MarketAnalysis, type InsertMarketAnalysis, type TradingStrategy, type InsertTradingStrategy, type StrategyTradingHistory, type InsertStrategyTradingHistory } from "@shared/schema";
+import { users, apiKeys, ethData, signals, candlesticks, adminUsers, konsPowaPredictions, marketAnalyses, tradingStrategies, strategiesTradingHistory, waidesMemoryCore, strategySacredVault, spiritualRecall, timelineAwareness, konsSymbolTree, neuralEvolutionLogs, type User, type InsertUser, type ApiKey, type InsertApiKey, type EthData, type InsertEthData, type Signal, type InsertSignal, type Candlestick, type InsertCandlestick, type AdminUser, type InsertAdminUser, type KonsPowaPrediction, type InsertKonsPowaPrediction, type MarketAnalysis, type InsertMarketAnalysis, type TradingStrategy, type InsertTradingStrategy, type StrategyTradingHistory, type InsertStrategyTradingHistory, type WaidesMemoryCore, type InsertWaidesMemoryCore, type StrategySacredVault, type InsertStrategySacredVault, type SpiritualRecall, type InsertSpiritualRecall, type TimelineAwareness, type InsertTimelineAwareness, type KonsSymbolTree, type InsertKonsSymbolTree, type NeuralEvolutionLog, type InsertNeuralEvolutionLog } from "@shared/schema";
 
 // Export db for use in other services
 export { db };
@@ -63,6 +63,42 @@ export interface IStorage {
   updateStrategy(id: number, updates: Partial<TradingStrategy>): Promise<TradingStrategy>;
   getStrategyHistory(strategyId: number, limit?: number): Promise<StrategyTradingHistory[]>;
   recordStrategyTrade(trade: InsertStrategyTradingHistory): Promise<StrategyTradingHistory>;
+
+  // Advanced Memory System Methods
+  createMemoryCore(memory: InsertWaidesMemoryCore): Promise<WaidesMemoryCore>;
+  getMemoryByType(memoryType: string, userId?: number): Promise<WaidesMemoryCore[]>;
+  getMemoryByTags(tags: string[], userId?: number): Promise<WaidesMemoryCore[]>;
+  updateMemoryRecall(memoryId: number): Promise<void>;
+  expireOldMemories(): Promise<void>;
+  
+  // Strategy Sacred Vault Methods  
+  upsertStrategySacredVault(strategy: InsertStrategySacredVault): Promise<StrategySacredVault>;
+  getStrategySacredVault(strategyId: string): Promise<StrategySacredVault | undefined>;
+  getAllSacredStrategies(): Promise<StrategySacredVault[]>;
+  markStrategyMistake(strategyId: string, isMistake: boolean): Promise<void>;
+  updateStrategyPerformance(strategyId: string, tradeResult: any): Promise<void>;
+  
+  // Spiritual Recall Methods
+  createSpiritualRecall(recall: InsertSpiritualRecall): Promise<SpiritualRecall>;
+  getSpiritualRecallHistory(userId?: number, limit?: number): Promise<SpiritualRecall[]>;
+  validateSpiritualRecall(recallId: number, isValid: boolean, outcome?: any): Promise<void>;
+  
+  // Timeline Awareness Methods
+  createTimelinePattern(pattern: InsertTimelineAwareness): Promise<TimelineAwareness>;
+  getActiveTimelinePatterns(userId?: number): Promise<TimelineAwareness[]>;
+  matchTimelinePattern(currentContext: any): Promise<TimelineAwareness[]>;
+  updatePatternSuccess(patternId: number, success: boolean): Promise<void>;
+  
+  // Kons Symbol Tree Methods
+  upsertKonsSymbol(symbol: InsertKonsSymbolTree): Promise<KonsSymbolTree>;
+  getKonsSymbol(symbolName: string): Promise<KonsSymbolTree | undefined>;
+  updateSymbolUsage(symbolName: string, success: boolean): Promise<void>;
+  getActiveSymbols(): Promise<KonsSymbolTree[]>;
+  
+  // Neural Evolution Methods
+  logNeuralEvolution(evolution: InsertNeuralEvolutionLog): Promise<NeuralEvolutionLog>;
+  getEvolutionHistory(limit?: number): Promise<NeuralEvolutionLog[]>;
+  revertEvolution(evolutionId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -420,6 +456,246 @@ export class DatabaseStorage implements IStorage {
       .values(insertTrade)
       .returning();
     return trade;
+  }
+
+  // Advanced Memory System Implementation
+  async createMemoryCore(memory: InsertWaidesMemoryCore): Promise<WaidesMemoryCore> {
+    const [result] = await db.insert(waidesMemoryCore).values(memory).returning();
+    return result;
+  }
+
+  async getMemoryByType(memoryType: string, userId?: number): Promise<WaidesMemoryCore[]> {
+    let query = db.select().from(waidesMemoryCore).where(eq(waidesMemoryCore.memoryType, memoryType));
+    if (userId) {
+      query = query.where(eq(waidesMemoryCore.userId, userId));
+    }
+    return await query.orderBy(desc(waidesMemoryCore.createdAt));
+  }
+
+  async getMemoryByTags(tags: string[], userId?: number): Promise<WaidesMemoryCore[]> {
+    const memories = await db.select().from(waidesMemoryCore).orderBy(desc(waidesMemoryCore.createdAt));
+    return memories.filter(memory => {
+      const memoryTags = Array.isArray(memory.tags) ? memory.tags : [];
+      return tags.some(tag => memoryTags.includes(tag));
+    });
+  }
+
+  async updateMemoryRecall(memoryId: number): Promise<void> {
+    const [memory] = await db.select().from(waidesMemoryCore).where(eq(waidesMemoryCore.id, memoryId));
+    if (memory) {
+      await db.update(waidesMemoryCore)
+        .set({ 
+          recallFrequency: memory.recallFrequency + 1,
+          lastRecalled: new Date() 
+        })
+        .where(eq(waidesMemoryCore.id, memoryId));
+    }
+  }
+
+  async expireOldMemories(): Promise<void> {
+    await db.delete(waidesMemoryCore)
+      .where(and(
+        eq(waidesMemoryCore.importance, 25)
+      ));
+  }
+
+  // Strategy Sacred Vault Implementation
+  async upsertStrategySacredVault(strategy: InsertStrategySacredVault): Promise<StrategySacredVault> {
+    const existing = await this.getStrategySacredVault(strategy.strategyId);
+    if (existing) {
+      const [result] = await db.update(strategySacredVault)
+        .set({
+          ...strategy,
+          updatedAt: new Date()
+        })
+        .where(eq(strategySacredVault.strategyId, strategy.strategyId))
+        .returning();
+      return result;
+    } else {
+      const [result] = await db.insert(strategySacredVault).values(strategy).returning();
+      return result;
+    }
+  }
+
+  async getStrategySacredVault(strategyId: string): Promise<StrategySacredVault | undefined> {
+    const result = await db.select().from(strategySacredVault)
+      .where(eq(strategySacredVault.strategyId, strategyId))
+      .limit(1);
+    return result[0];
+  }
+
+  async getAllSacredStrategies(): Promise<StrategySacredVault[]> {
+    return await db.select().from(strategySacredVault)
+      .orderBy(desc(strategySacredVault.winRate), desc(strategySacredVault.profitFactor));
+  }
+
+  async markStrategyMistake(strategyId: string, isMistake: boolean): Promise<void> {
+    await db.update(strategySacredVault)
+      .set({ 
+        isMarkedMistake: isMistake,
+        divineApproval: !isMistake,
+        updatedAt: new Date()
+      })
+      .where(eq(strategySacredVault.strategyId, strategyId));
+  }
+
+  async updateStrategyPerformance(strategyId: string, tradeResult: any): Promise<void> {
+    const strategy = await this.getStrategySacredVault(strategyId);
+    if (!strategy) return;
+
+    const newTotalTrades = strategy.totalTrades + 1;
+    const isWin = tradeResult.result === 'WIN';
+    const newWins = strategy.wins + (isWin ? 1 : 0);
+    const newLosses = strategy.losses + (isWin ? 0 : 1);
+    const newWinRate = newWins / newTotalTrades;
+
+    await db.update(strategySacredVault)
+      .set({
+        totalTrades: newTotalTrades,
+        wins: newWins,
+        losses: newLosses,
+        winRate: newWinRate,
+        avgProfit: isWin ? ((strategy.avgProfit * strategy.wins) + tradeResult.profit_loss) / newWins : strategy.avgProfit,
+        avgLoss: !isWin ? ((strategy.avgLoss * strategy.losses) + Math.abs(tradeResult.profit_loss)) / newLosses : strategy.avgLoss,
+        lastUsed: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(strategySacredVault.strategyId, strategyId));
+  }
+
+  // Spiritual Recall Implementation
+  async createSpiritualRecall(recall: InsertSpiritualRecall): Promise<SpiritualRecall> {
+    const [result] = await db.insert(spiritualRecall).values(recall).returning();
+    return result;
+  }
+
+  async getSpiritualRecallHistory(userId?: number, limit = 50): Promise<SpiritualRecall[]> {
+    let query = db.select().from(spiritualRecall);
+    if (userId) {
+      query = query.where(eq(spiritualRecall.userId, userId));
+    }
+    return await query.orderBy(desc(spiritualRecall.createdAt)).limit(limit);
+  }
+
+  async validateSpiritualRecall(recallId: number, isValid: boolean, outcome?: any): Promise<void> {
+    await db.update(spiritualRecall)
+      .set({
+        isValidated: isValid,
+        validationDate: new Date(),
+        tradeOutcome: outcome?.result,
+        profitLoss: outcome?.profit_loss,
+        divineAccuracy: isValid ? 95 : 45
+      })
+      .where(eq(spiritualRecall.id, recallId));
+  }
+
+  // Timeline Awareness Implementation
+  async createTimelinePattern(pattern: InsertTimelineAwareness): Promise<TimelineAwareness> {
+    const [result] = await db.insert(timelineAwareness).values(pattern).returning();
+    return result;
+  }
+
+  async getActiveTimelinePatterns(userId?: number): Promise<TimelineAwareness[]> {
+    let query = db.select().from(timelineAwareness)
+      .where(eq(timelineAwareness.isActivePattern, true));
+    if (userId) {
+      query = query.where(eq(timelineAwareness.userId, userId));
+    }
+    return await query.orderBy(desc(timelineAwareness.patternStrength));
+  }
+
+  async matchTimelinePattern(currentContext: any): Promise<TimelineAwareness[]> {
+    const patterns = await this.getActiveTimelinePatterns();
+    return patterns.filter(pattern => pattern.patternStrength > 70);
+  }
+
+  async updatePatternSuccess(patternId: number, success: boolean): Promise<void> {
+    const pattern = await db.select().from(timelineAwareness)
+      .where(eq(timelineAwareness.id, patternId)).limit(1);
+    
+    if (pattern[0]) {
+      const newMatchCount = pattern[0].matchCount + 1;
+      const newSuccessRate = success ? 
+        ((pattern[0].successRate * pattern[0].matchCount) + 1) / newMatchCount :
+        (pattern[0].successRate * pattern[0].matchCount) / newMatchCount;
+
+      await db.update(timelineAwareness)
+        .set({
+          matchCount: newMatchCount,
+          successRate: newSuccessRate,
+          lastMatched: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(timelineAwareness.id, patternId));
+    }
+  }
+
+  // Kons Symbol Tree Implementation
+  async upsertKonsSymbol(symbol: InsertKonsSymbolTree): Promise<KonsSymbolTree> {
+    const existing = await this.getKonsSymbol(symbol.symbolName);
+    if (existing) {
+      const [result] = await db.update(konsSymbolTree)
+        .set({
+          ...symbol,
+          updatedAt: new Date()
+        })
+        .where(eq(konsSymbolTree.symbolName, symbol.symbolName))
+        .returning();
+      return result;
+    } else {
+      const [result] = await db.insert(konsSymbolTree).values(symbol).returning();
+      return result;
+    }
+  }
+
+  async getKonsSymbol(symbolName: string): Promise<KonsSymbolTree | undefined> {
+    const result = await db.select().from(konsSymbolTree)
+      .where(eq(konsSymbolTree.symbolName, symbolName))
+      .limit(1);
+    return result[0];
+  }
+
+  async updateSymbolUsage(symbolName: string, success: boolean): Promise<void> {
+    const symbol = await this.getKonsSymbol(symbolName);
+    if (!symbol) return;
+
+    await db.update(konsSymbolTree)
+      .set({
+        usageCount: symbol.usageCount + 1,
+        successCount: symbol.successCount + (success ? 1 : 0),
+        failureCount: symbol.failureCount + (success ? 0 : 1),
+        lastManifested: new Date(),
+        symbolPower: Math.min(100, symbol.symbolPower + (success ? 2 : -1)),
+        updatedAt: new Date()
+      })
+      .where(eq(konsSymbolTree.symbolName, symbolName));
+  }
+
+  async getActiveSymbols(): Promise<KonsSymbolTree[]> {
+    return await db.select().from(konsSymbolTree)
+      .where(eq(konsSymbolTree.isActiveSymbol, true))
+      .orderBy(desc(konsSymbolTree.symbolPower));
+  }
+
+  // Neural Evolution Implementation
+  async logNeuralEvolution(evolution: InsertNeuralEvolutionLog): Promise<NeuralEvolutionLog> {
+    const [result] = await db.insert(neuralEvolutionLogs).values(evolution).returning();
+    return result;
+  }
+
+  async getEvolutionHistory(limit = 100): Promise<NeuralEvolutionLog[]> {
+    return await db.select().from(neuralEvolutionLogs)
+      .orderBy(desc(neuralEvolutionLogs.createdAt))
+      .limit(limit);
+  }
+
+  async revertEvolution(evolutionId: number): Promise<void> {
+    await db.update(neuralEvolutionLogs)
+      .set({
+        revertedAt: new Date(),
+        isStableEvolution: false
+      })
+      .where(eq(neuralEvolutionLogs.id, evolutionId));
   }
 }
 
