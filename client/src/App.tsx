@@ -123,6 +123,7 @@ function Router() {
           <Route path="/portal" component={WaidesKIVisionPortal} />
           <Route path="/trading" component={WaidesKIVisionPortal} />
           <Route path="/wallet" component={ProfessionalWalletPage} />
+          <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/forum" component={ForumPage} />
           <Route path="/waidbot" component={WaidBotPage} />
