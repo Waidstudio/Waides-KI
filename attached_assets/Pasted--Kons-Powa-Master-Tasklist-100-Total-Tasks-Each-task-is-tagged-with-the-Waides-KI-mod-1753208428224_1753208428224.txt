@@ -1,0 +1,162 @@
+
+## 🔧 **Kons Powa Master Tasklist (100 Total Tasks)**
+
+> Each task is tagged with the Waides KI module it affects and powered by Kons Powa inside Konsos. These will make the app “self-aware,” always fast, never broken.
+
+---
+
+### 🧠 A. **Frontend UI Fixes & Dynamic Healing (15 Tasks)**
+
+*(Tag: `waides_ki/frontend/fix`)*
+
+1. ✅ Auto-detect & repair broken click events (`onclick`)
+2. ✅ Dynamic loader overlay for unresponsive sections
+3. ✅ Notification bell (🔔) real-time fetch + error fallback
+4. ✅ Fix missing or stale components via shadow clone re-render
+5. ✅ Self-checker every 10 seconds to scan for broken DOM elements
+6. ✅ Add retry logic for buttons with failed APIs
+7. ✅ Alert UI if any data call fails more than 2x
+8. ✅ Hot reload if long pause on user interaction
+9. ✅ Auto-refresh price fields (`₦0.00`) from ETH/BTC feeds
+10. ✅ Kons Powa Eye: log broken frontend zones for backend fix later
+11. ✅ Reactive CSS scan to restore styles if broken
+12. ✅ Inject missing props if error from state
+13. ✅ Dynamic fallback if `React.Children.map` fails
+14. ✅ Auto bind missing route links (like `/Konsai`, `/WaidBot`)
+15. ✅ Offline UI mode with last cached bot messages
+
+---
+
+### ⚙️ B. **Backend API Resilience Engine (15 Tasks)**
+
+*(Tag: `waides_ki/backend/heal`)*
+16\. ✅ Self-repair any failed `/api/waideski/*` route
+17\. ✅ Reconnect ETH/price endpoints every 20 sec
+18\. ✅ Log failed routes and send to Kons Powa backend dashboard
+19\. ✅ KonsLog: Track daily health of all APIs
+20\. ✅ Queue & retry failed trading insight requests
+21\. ✅ Mirror backups for all Waides bot functions
+22\. ✅ Auto fallback to static message if GPT/AI route fails
+23\. ✅ Auto-create missing bot logs on new WaidBot sessions
+24\. ✅ Integrate response caching for repeat bot queries
+25\. ✅ Kons Powa triggers background API testing when idle
+26\. ✅ Auto-clean outdated session tokens
+27\. ✅ Use backup AI for market analysis if main fails
+28\. ✅ Alert you via bell icon if 3+ APIs fail
+29\. ✅ Rollback bad deploys (version checkpoint)
+30\. ✅ Rate limiter bypass for admin/dev accounts
+
+---
+
+### 🧬 C. **Self-Evolving Core with KonsAI Sync (10 Tasks)**
+
+*(Tag: `waides_ki/kons_powa/sync`)*
+31\. ✅ Kons Powa syncs with KonsAi daily for intelligence updates
+32\. ✅ KonsAi teaches Waides KI new market prediction models
+33\. ✅ Sync with external crypto feeds (CoinGecko, DEXTools)
+34\. ✅ Auto-inject ETH & BTC signals into bot conversations
+35\. ✅ Real-time sync with KonsLang Symbol Tree
+36\. ✅ Kons Powa learns user click behavior to optimize UI paths
+37\. ✅ Periodic wisdom update from Konsos core
+38\. ✅ If user asks unknown question → forward to KonsAi
+39\. ✅ All predictions re-evaluated every 12 hours
+40\. ✅ Build daily SmaiInsight logs for future feature training
+
+---
+
+### 🔔 D. **Notification System Overhaul (10 Tasks)**
+
+*(Tag: `waides_ki/notifications/fix`)*
+41\. ✅ Fix bell icon to always show correct unread count
+42\. ✅ Push new prediction alerts from Kons Powa
+43\. ✅ Error logs and recovery status appear as notifications
+44\. ✅ Daily SmaiBrief from Waides KI bot appears in notification
+45\. ✅ Allow Kons Powa to post internal system alerts
+46\. ✅ Push bot updates (ETH changes, Waides Pro, news)
+47\. ✅ Alert if any symbol node in KonsLang breaks
+48\. ✅ Notify you when user feedback is dropped
+49\. ✅ Let bots leave warnings if misuse occurs
+50\. ✅ Group similar alerts into threads by source (API/Bot/UI)
+
+---
+
+### 🧠 E. **KI Chat Self-Improvement (10 Tasks)**
+
+*(Tag: `waides_ki/waidbot/learn`)*
+51\. ✅ Auto-learn most common questions asked
+52\. ✅ Cache and summarize common responses
+53\. ✅ Inject Market Summary every 24 hrs
+54\. ✅ Let bot choose between AI personas based on tone
+55\. ✅ Save past 20 convos for each user ID
+56\. ✅ Store failed responses for re-analysis
+57\. ✅ Adaptive typing: slow down when user reads
+58\. ✅ Add moods: 🔮 Spiritual, 📊 Trading, 🧘 Universal
+59\. ✅ Kons Powa gives bot new phrases weekly
+60\. ✅ Auto-correct bot hallucinations on second response
+
+---
+
+### ⚡ F. **Auto-Update Layer for Offline Dev (10 Tasks)**
+
+*(Tag: `waides_ki/kons_powa/auto_update`)*
+61\. ✅ Kons Powa enters developer mode if no one logs in 48 hrs
+62\. ✅ Reads last feature requests and auto-adds new routes
+63\. ✅ Injects 3 new bot responses based on user queries
+64\. ✅ Fixes broken routes and updates bot docs
+65\. ✅ Creates next roadmap in console if idle
+66\. ✅ Auto-backup app to file system or cloud bucket
+67\. ✅ Auto-push updates to GitHub mirror
+68\. ✅ Kons Powa scans error logs and generates fix tasks
+69\. ✅ Suggests improvements directly in Dev Mode UI
+70\. ✅ Sends “Kons Powa Update Complete” to Admin Bell
+
+---
+
+### 🛰️ G. **KonsLang Compiler Hooks (10 Tasks)**
+
+*(Tag: `waides_ki/lang_hooks`)*
+71\. ✅ If symbol is broken, disable usage until fixed
+72\. ✅ Auto-sync grammar tree with Kons Powa
+73\. ✅ Logs all new syntax patterns in KI chat
+74\. ✅ Bot explains new symbols in chat
+75\. ✅ Adds new expression examples for each function
+76\. ✅ Creates draft docs for any new operator
+77\. ✅ Warn if symbol conflicts with older command
+78\. ✅ Repair mode: suggest alternate symbols
+79\. ✅ Adds console logs when unknown symbol is triggered
+80\. ✅ Injects learning hook into `waides_ki/lang/route`
+
+---
+
+### 🔐 H. **Security & Anti-Bug Shield (10 Tasks)**
+
+*(Tag: `waides_ki/security/monitor`)*
+81\. ✅ Anti-spam for repeated broken requests
+82\. ✅ Hide private APIs from bot access
+83\. ✅ Scan all user input for injection attempts
+84\. ✅ Block corrupted file uploads
+85\. ✅ Log unknown traffic to `waides_ki/shield.log`
+86\. ✅ Auto-lock route if 3 failures in 1 minute
+87\. ✅ Add secret debugging port in Dev Mode
+88\. ✅ Encrypt stored chat logs
+89\. ✅ Notify Admin on config changes
+90\. ✅ Self-heal corrupted memory cache
+
+---
+
+### 🌐 I. **Live Deployment Hooks (10 Tasks)**
+
+*(Tag: `waides_ki/deploy/hooks`)*
+91\. ✅ Enable cron-like scheduler for background Kons Powa ops
+92\. ✅ Auto-ping endpoints every 15 min to keep alive
+93\. ✅ Save all logs to local or cloud storage
+94\. ✅ Use Kons Powa heartbeat to restart crashed APIs
+95\. ✅ Mirror codebase changes to GitHub automatically
+96\. ✅ Compress media and asset files for performance
+97\. ✅ Lazy load non-critical components
+98\. ✅ Create hot-patch injector for urgent updates
+99\. ✅ Periodic console status and memory usage dump
+100\. ✅ Keep Waides KI alive using background threads & task queues
+
+---
+

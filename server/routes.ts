@@ -3268,6 +3268,94 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // KonsPowa Task Engine endpoints
+  app.get("/api/kons-powa/tasks", async (req, res) => {
+    try {
+      const { getKonsTasks } = await import('./kons/konsPowaTaskEngine.js');
+      const tasks = getKonsTasks();
+      res.json(tasks);
+    } catch (error: any) {
+      console.error('Error getting KonsPowa tasks:', error);
+      res.status(500).json({ error: 'Failed to get KonsPowa tasks' });
+    }
+  });
+
+  app.get("/api/kons-powa/stats", async (req, res) => {
+    try {
+      const { getKonsTasks, getTasksByStatus, getCriticalTasks, getAutoHealTasks, getCompletionPercentage } = await import('./kons/konsPowaTaskEngine.js');
+      
+      const allTasks = getKonsTasks();
+      const stats = {
+        total: allTasks.length,
+        completed: getTasksByStatus('completed').length,
+        pending: getTasksByStatus('pending').length,
+        inProgress: getTasksByStatus('in-progress').length,
+        failed: getTasksByStatus('failed').length,
+        critical: getCriticalTasks().length,
+        autoHeal: getAutoHealTasks().length,
+        completionPercentage: getCompletionPercentage()
+      };
+      
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error getting KonsPowa stats:', error);
+      res.status(500).json({ error: 'Failed to get KonsPowa stats' });
+    }
+  });
+
+  app.get("/api/kons-powa/next-priority", async (req, res) => {
+    try {
+      const { getNextPriorityTask } = await import('./kons/konsPowaTaskEngine.js');
+      const nextTask = getNextPriorityTask();
+      res.json(nextTask);
+    } catch (error: any) {
+      console.error('Error getting next priority task:', error);
+      res.status(500).json({ error: 'Failed to get next priority task' });
+    }
+  });
+
+  app.post("/api/kons-powa/tasks/:id/run", async (req, res) => {
+    try {
+      const taskId = parseInt(req.params.id);
+      const { updateTaskStatus } = await import('./kons/konsPowaTaskEngine.js');
+      
+      // Update status to in-progress
+      updateTaskStatus(taskId, 'in-progress');
+      
+      // Simulate task execution (replace with actual task logic)
+      setTimeout(async () => {
+        // Randomly succeed or complete for demo
+        const success = Math.random() > 0.1; // 90% success rate
+        updateTaskStatus(taskId, success ? 'completed' : 'failed');
+      }, 2000 + Math.random() * 3000); // 2-5 seconds execution time
+      
+      res.json({ success: true, message: `Task ${taskId} started` });
+    } catch (error: any) {
+      console.error('Error running task:', error);
+      res.status(500).json({ error: 'Failed to run task' });
+    }
+  });
+
+  app.post("/api/kons-powa/auto-mode", async (req, res) => {
+    try {
+      const { enabled } = req.body;
+      
+      if (enabled) {
+        // Start auto mode - implement continuous task execution
+        console.log('🚀 KonsPowa Auto Mode: ACTIVATED');
+        // This would start a background process to automatically execute tasks
+      } else {
+        console.log('⏸️ KonsPowa Auto Mode: DEACTIVATED');
+        // Stop auto mode
+      }
+      
+      res.json({ success: true, autoMode: enabled });
+    } catch (error: any) {
+      console.error('Error toggling auto mode:', error);
+      res.status(500).json({ error: 'Failed to toggle auto mode' });
+    }
+  });
+
   // WaidesKI Engine Diagnostics
   app.get("/api/waideski/diagnostics", async (req, res) => {
     try {

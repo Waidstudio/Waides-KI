@@ -52,6 +52,7 @@ import VoiceCommandPage from "@/pages/VoiceCommandPage";
 import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 import SMSConfigPage from "@/pages/SMSConfigPage";
 import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
+import KonsPowaPage from "@/pages/KonsPowaPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
@@ -72,7 +73,7 @@ function Router() {
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
     { path: "/voice-command", label: "Voice Command" },
-
+    { path: "/kons-powa", label: "KonsPowa Engine" },
     { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
     { path: "/dream-vision", label: "Dream Vision" },
@@ -297,6 +298,13 @@ function Router() {
           {/* Advanced system routes */}
           <Route path="/market-storytelling" component={InteractiveMarketTrendStorytellingEngine} />
           <Route path="/voice-command" component={VoiceCommandPage} />
+          <Route path="/kons-powa">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <KonsPowaPage />
+              </ProtectedRoute>
+            )}
+          </Route>
           <Route path="/biometric-trading" component={BiometricTradingInterface} />
           <Route path="/profile" component={ProfilePage} />
           <Route path="/ml-lifecycle" component={MLLifecycleManager} />
