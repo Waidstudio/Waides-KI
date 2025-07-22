@@ -19,9 +19,8 @@ import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
-import SacredNavigation from "@/components/ui/SacredNavigation";
-import SacredLanding from "@/components/ui/SacredLanding";
-import { SacredPageTransition, CosmicBackground } from "@/components/ui/SacredMotion";
+import StableNavigation from "@/components/ui/StableNavigation";
+import StableLanding from "@/components/ui/StableLanding";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -105,25 +104,19 @@ function Router() {
   ];
 
   return (
-    <CosmicBackground className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      {/* Sacred Navigation */}
-      <SacredNavigation />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      {/* Stable Navigation */}
+      <StableNavigation />
 
-      {/* Sacred Main Content Area */}
-      <main className="pt-20">
+      {/* Main Content Area */}
+      <main>
         <Switch>
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           
-          {/* Sacred Landing Page */}
-          <Route path="/">
-            {() => (
-              <SacredPageTransition>
-                <SacredLanding />
-              </SacredPageTransition>
-            )}
-          </Route>
+          {/* Stable Landing Page */}
+          <Route path="/" component={StableLanding} />
           
           {/* Vision Portal - moved to /portal */}
           <Route path="/portal" component={WaidesKIVisionPortal} />
@@ -232,7 +225,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
-    </CosmicBackground>
+    </div>
   );
 }
 
