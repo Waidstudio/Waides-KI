@@ -20,7 +20,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
-import StaticLanding from "@/components/ui/StaticLanding";
+import ProfessionalLanding from "@/components/ProfessionalLanding";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -115,8 +115,8 @@ function Router() {
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           
-          {/* Static Landing Page */}
-          <Route path="/" component={StaticLanding} />
+          {/* Professional Landing Page */}
+          <Route path="/" component={ProfessionalLanding} />
           
           {/* Vision Portal - moved to /portal */}
           <Route path="/portal" component={WaidesKIVisionPortal} />
