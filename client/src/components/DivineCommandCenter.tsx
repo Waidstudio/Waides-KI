@@ -22,8 +22,7 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Star,
-  Activity
+  Star
 } from 'lucide-react';
 import type { DivineCommandData } from '@/types/componentTypes';
 
@@ -64,7 +63,7 @@ export default function DivineCommandCenter() {
   });
 
   // Fetch system status for divine operations
-  const { data: divineSystemStatus = {}, isLoading: isStatusLoading } = useQuery({
+  const { data: divineSystemStatus, isLoading: isStatusLoading } = useQuery({
     queryKey: ['/api/divine-commands/system-status'],
     refetchInterval: 5000,
   });

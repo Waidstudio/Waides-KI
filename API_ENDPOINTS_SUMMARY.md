@@ -1,47 +1,198 @@
-# API Endpoints Summary - All Working ✅
+# Profile Settings API Endpoints Summary
 
-## 🔗 **Backend Connectivity Status: 100%**
+## 🔧 Complete Backend Integration
 
-### 💰 **Wallet Endpoints**
-- GET `/api/wallet/balance` ✅ - Balance: $10,000 USDT
-- GET `/api/wallet/transactions` ✅ - Transaction history
-- GET `/api/wallet/payment-methods` ✅ - Payment options
-- GET `/api/wallet/african-providers` ✅ - Regional providers
-- GET `/api/wallet/countries` ✅ - Country list
+All the profile settings you mentioned are now fully connected to the backend with comprehensive API endpoints:
 
-### 📊 **Dashboard & Market Data**
-- GET `/api/dashboard/enhanced-data` ✅ - ETH: $3,705.41
-- GET `/api/market-analysis/current` ✅ - Market analysis
-- GET `/api/kons-powa/prediction/current` ✅ - Predictions
-- GET `/api/kons-powa/stats` ✅ - 106 total tasks
+## 📱 Main Settings Management
 
-### 🤖 **AI & Chat Systems**
-- GET `/api/konsai/chat` ✅ - KonsAI intelligence
-- GET `/api/divine-reading` ✅ - Oracle readings
-- GET `/api/chat/oracle/status` ✅ - Oracle active
-- GET `/api/konsai/query` ✅ - Query processing
+### Core Endpoints
+- `GET /api/settings` - Get all user settings
+- `PUT /api/settings` - Update any settings (bulk update)
+- `GET /api/profile` - Get user profile
+- `PUT /api/profile` - Update user profile
 
-### 🔧 **Admin & Configuration**
-- GET `/api/kons-powa/tasks` ✅ - Task management
-- GET `/api/services/status` ✅ - Service monitoring
-- GET `/api/auth/status` ✅ - Authentication
-- POST `/api/auth/login` ✅ - User login
+### Bulk Operations
+- `PUT /api/settings/bulk` - Update multiple settings at once
 
-### ⚠️ **Known Issues (With Fallbacks)**
-- GET `/api/trading-strategies/recommendations` - Returns 400 but has fallback data
-- GET `/api/waides-ki/status` - Minor endpoint issue (non-critical)
+---
 
-### 🔄 **Real-Time Features**
-- WebSocket connections: ✅ Active
-- Live ETH price updates: ✅ Working
-- WaidBot decision cycles: ✅ Every 60 seconds
-- KonsAI auto-responses: ✅ Operational
+## 🔐 Authentication Settings
 
-## 📈 **System Health**
-- **Total API Endpoints**: 50+
-- **Working Endpoints**: 48+ (96%+)
-- **Critical Systems**: 100% operational
-- **Real-time Data**: ✅ Live updates
-- **Auto-healing**: ✅ KonsPowa active
+### Biometric Authentication
+- `PUT /api/settings/biometric-auth`
+  ```json
+  Body: { "enabled": true/false }
+  Response: { "success": true, "biometricEnabled": true, "message": "Biometric authentication enabled" }
+  ```
 
-**All core functionality is working perfectly!**
+### Advanced Biometric API
+- `GET /api/auth/biometric/challenge` - Generate biometric challenge
+- `POST /api/auth/biometric/register` - Register biometric credential
+- `POST /api/auth/biometric/verify` - Verify biometric authentication
+- `GET /api/auth/biometric/status` - Check biometric status
+- `DELETE /api/auth/biometric` - Remove biometric authentication
+
+### Two-Factor Authentication
+- `PUT /api/settings/two-factor-auth`
+  ```json
+  Body: { "enabled": true/false }
+  Response: { "success": true, "twoFactorEnabled": true, "message": "Two-factor authentication enabled" }
+  ```
+
+---
+
+## ⏰ Session & Data Management
+
+### Session Timeout
+- `PUT /api/settings/session-timeout`
+  ```json
+  Body: { "timeout": 30 }
+  Response: { "success": true, "sessionTimeout": 30, "message": "Session timeout updated to 30 minutes" }
+  ```
+  - Validation: 5-120 minutes
+
+### Data Retention
+- `PUT /api/settings/data-retention`
+  ```json
+  Body: { "days": 365 }
+  Response: { "success": true, "dataRetention": 365, "message": "Data retention updated to 365 days" }
+  ```
+  - Validation: 7-3650 days
+
+---
+
+## 🔔 Notification Settings
+
+### Email Notifications
+- `PUT /api/settings/email-notifications`
+  ```json
+  Body: { "enabled": true/false }
+  Response: { "success": true, "emailNotifications": true, "message": "Email notifications enabled" }
+  ```
+
+### Push Notifications
+- `PUT /api/settings/push-notifications`
+  ```json
+  Body: { "enabled": true/false }
+  Response: { "success": true, "pushNotifications": true, "message": "Push notifications enabled" }
+  ```
+
+### News Alerts
+- `PUT /api/settings/news-alerts`
+  ```json
+  Body: { "enabled": true/false }
+  Response: { "success": true, "newsAlerts": true, "message": "News alerts enabled" }
+  ```
+
+---
+
+## 🔌 API Access Settings
+
+### API Access Toggle
+- `PUT /api/settings/api-access`
+  ```json
+  Body: { "enabled": true/false }
+  Response: { "success": true, "apiAccess": true, "message": "API access enabled" }
+  ```
+
+### Webhook URL Configuration
+- `PUT /api/settings/webhook-url`
+  ```json
+  Body: { "url": "https://your-webhook.com/endpoint" }
+  Response: { "success": true, "webhookUrl": "https://your-webhook.com/endpoint", "message": "Webhook URL updated" }
+  ```
+  - URL validation included
+  - Set to null/empty to remove webhook
+
+### Webhook Processing
+- `POST /api/waides_ki/webhook` - Receive webhook notifications
+
+---
+
+## 📊 Grouped Settings Retrieval
+
+### Security Settings
+- `GET /api/settings/security`
+  ```json
+  Response: {
+    "biometricEnabled": false,
+    "twoFactorEnabled": false,
+    "sessionTimeout": 30,
+    "dataRetention": 365,
+    "ipWhitelist": []
+  }
+  ```
+
+### Notification Settings
+- `GET /api/settings/notifications`
+  ```json
+  Response: {
+    "emailNotifications": true,
+    "pushNotifications": true,
+    "tradeAlerts": true,
+    "priceAlerts": true,
+    "newsAlerts": false
+  }
+  ```
+
+### API Settings
+- `GET /api/settings/api`
+  ```json
+  Response: {
+    "apiAccess": false,
+    "webhookUrl": null,
+    "betaFeatures": false,
+    "developerMode": false
+  }
+  ```
+
+---
+
+## 💾 Database Integration
+
+### Schema Fields (PostgreSQL)
+All settings are stored in the `user_settings` table with these fields:
+- `biometric_enabled` (boolean)
+- `two_factor_enabled` (boolean) 
+- `session_timeout` (integer, minutes)
+- `data_retention` (integer, days)
+- `email_notifications` (boolean)
+- `push_notifications` (boolean)
+- `news_alerts` (boolean)
+- `api_access` (boolean)
+- `webhook_url` (text, nullable)
+
+### Data Persistence
+- All changes are immediately saved to PostgreSQL database
+- Automatic timestamp tracking with `updated_at` field
+- Default values provided for all settings
+- Proper data validation and error handling
+
+---
+
+## 🔒 Security Features
+
+### Input Validation
+- Session timeout: 5-120 minutes
+- Data retention: 7-3650 days
+- URL validation for webhook endpoints
+- Protected fields from user modification
+
+### Error Handling
+- Comprehensive error messages
+- Graceful fallbacks for missing data
+- Proper HTTP status codes
+- Detailed logging for debugging
+
+---
+
+## 🚀 Frontend Integration
+
+The existing profile page components are already connected and working:
+- Toggle switches for boolean settings
+- Input fields with validation
+- Real-time updates with toast notifications
+- Proper loading states and error handling
+
+All settings are now fully functional with complete backend support!

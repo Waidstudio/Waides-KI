@@ -1635,90 +1635,95 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
   }, [messages, currentTypingMessage]);
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-white font-inter relative overflow-hidden">
+    <div className={konsmikMode ? 
+      (konsmikTheme === 'nebula' ? "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 text-white font-inter relative overflow-hidden" :
+       konsmikTheme === 'starfield' ? "min-h-screen bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white font-inter relative overflow-hidden" :
+       konsmikTheme === 'galaxy' ? "min-h-screen bg-gradient-to-br from-violet-900 via-purple-900 to-pink-900 text-white font-inter relative overflow-hidden" :
+       "min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white font-inter relative overflow-hidden") :
+      "min-h-screen bg-black text-white font-inter relative overflow-hidden"}>
       
-      {/* Static Background - No Animations */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/10 via-black to-blue-900/10"></div>
+      {/* Enhanced Konsmik Background Effects */}
+      {konsmikMode ? (
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Starfield Animation */}
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse opacity-60"></div>
+          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-300 rounded-full animate-ping opacity-40"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-purple-300 rounded-full animate-pulse opacity-30"></div>
+          <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-pink-300 rounded-full animate-ping opacity-50"></div>
+          <div className="absolute bottom-1/3 right-1/2 w-2 h-2 bg-yellow-300 rounded-full animate-pulse opacity-40"></div>
+          <div className="absolute top-2/3 left-1/5 w-1 h-1 bg-cyan-300 rounded-full animate-ping opacity-35"></div>
+          <div className="absolute bottom-1/5 right-1/5 w-2.5 h-2.5 bg-violet-300 rounded-full animate-pulse opacity-45"></div>
+          <div className="absolute top-3/4 right-2/3 w-1 h-1 bg-emerald-300 rounded-full animate-ping opacity-30"></div>
+          <div className="absolute top-1/6 left-2/3 w-1.5 h-1.5 bg-rose-300 rounded-full animate-pulse opacity-40"></div>
+          <div className="absolute bottom-2/3 left-1/6 w-1 h-1 bg-amber-300 rounded-full animate-ping opacity-45"></div>
+        </div>
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(120,119,198,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)]"></div>
+        </div>
+      )}
 
-      {/* Complete Top Navigation Bar */}
-      <div className="relative z-10 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20">
-        <div className="flex items-center justify-between px-3 py-2">
-          {/* Left: Time */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
-          </div>
+      {/* Top Status Bar - Minimal Scrollable */}
+      <div className="relative z-10 flex items-center justify-center px-4 py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
+          <span className="text-xs text-gray-400">•</span>
+          <button 
+            onClick={() => setLocation('/wallet')}
+            className="text-xs text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <Wallet className="w-3 h-3" />
+            ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}
+          </button>
+          <span className="text-xs text-gray-400">|</span>
           
-          {/* Center: Main Navigation */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setLocation('/wallet')}
-              className="text-sm text-blue-300 font-medium hover:text-blue-200 transition-colors cursor-pointer flex items-center gap-2"
-            >
-              <Wallet className="w-4 h-4" />
-              <span className="hidden sm:inline">SmaiSika</span>
-              ꠄ{walletContext.smaiBalance?.toFixed(2) || '0.00'}
-            </button>
-            
-            <button 
-              onClick={() => setActiveTab('core')}
-              className={`text-sm font-medium hover:text-purple-200 transition-colors cursor-pointer flex items-center gap-2 ${
-                activeTab === 'core' ? 'text-purple-300' : 'text-purple-400'
-              }`}
-            >
-              <Heart className="w-4 h-4" />
-              <span className="hidden sm:inline">Heart of Waides Ki</span>
-            </button>
-            
-            <button 
-              onClick={() => setActiveTab('konsai')}
-              className={`text-sm font-medium hover:text-emerald-200 transition-colors cursor-pointer flex items-center gap-2 ${
-                activeTab === 'konsai' ? 'text-emerald-300' : 'text-emerald-400'
-              }`}
-            >
-              <Eye className="w-4 h-4" />
-              <span className="hidden sm:inline">KonsAI Chat</span>
-            </button>
-            
-            <button 
-              onClick={() => setLocation('/forum')}
-              className="text-sm text-cyan-300 font-medium hover:text-cyan-200 transition-colors cursor-pointer flex items-center gap-2"
-            >
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Forum</span>
+          {/* Futuristic Forum Portal */}
+          <button 
+            onClick={() => setLocation('/forum')}
+            className="relative text-xs text-cyan-300 font-medium hover:text-cyan-200 transition-all duration-300 cursor-pointer flex items-center gap-1 group"
+          >
+            <div className="relative">
+              <Hexagon className="w-3 h-3 animate-pulse" />
+              <Atom className="w-2 h-2 absolute top-0.5 left-0.5 text-purple-400 animate-spin" style={{animationDuration: '3s'}} />
               {forumNotifications > 0 && (
-                <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-bold">{forumNotifications}</span>
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="text-[8px] text-white font-bold">{forumNotifications}</span>
                 </div>
               )}
-            </button>
-          </div>
+            </div>
+            <span className="group-hover:text-gradient-to-r group-hover:from-cyan-300 group-hover:to-purple-300">
+              Forum
+            </span>
+          </button>
+          <span className="text-xs text-gray-400">|</span>
           
-          {/* Right: Tab Navigation */}
-          <div className="flex bg-gray-800/60 rounded-md p-0.5">
+          {/* Tab Navigation - Minimal */}
+          <div className="flex bg-gray-800/40 rounded-sm p-0.5">
             <button
               onClick={() => setActiveTab('chat')}
-              className={`px-3 py-1 rounded-sm text-xs font-medium transition-all ${
+              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
                 activeTab === 'chat'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Brain className="w-3 h-3" />
-                <span>AI Chat</span>
+                <Brain className="w-2.5 h-2.5" />
+                <span>KI Chat</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab('core')}
-              className={`px-3 py-1 rounded-sm text-xs font-medium transition-all ${
+              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
                 activeTab === 'core'
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <div className="flex items-center gap-1">
-                <Heart className="w-3 h-3" />
-                <span>Core</span>
+                <Heart className="w-2.5 h-2.5" />
+                <span>Heart of Waides Ki</span>
               </div>
             </button>
             <button
@@ -1731,7 +1736,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             >
               <div className="flex items-center gap-1">
                 <Eye className="w-2.5 h-2.5" />
-                <span>KonsAI</span>
+                <span>Konsai</span>
               </div>
             </button>
           </div>
@@ -1742,31 +1747,31 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       {activeTab === 'chat' && (
         <>
 
-      {/* Chat Window - Full Screen Optimized */}
-      <div className={`relative z-10 flex-1 mx-1 mb-1 bg-black/40 backdrop-blur-sm rounded-lg border border-purple-500/20 p-2 overflow-hidden w-full ${
-        activeTab === 'chat' ? 'h-[calc(100vh-60px)]' : 'h-[calc(100vh-200px)]'
+      {/* Chat Window - Expanded to take up full available space */}
+      <div className={`relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden w-full ${
+        activeTab === 'chat' ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-235px)]'
       }`}>
-        <div className="h-full overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
+        <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center px-2">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-3">
-                <Brain className="w-8 h-8 text-white" />
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
+                <Brain className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
-              <p className="text-gray-400 max-w-md mb-3 text-sm">
+              <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
+              <p className="text-gray-400 max-w-md mb-4">
                 Your next-generation KI trading oracle. Ask anything about markets, strategies, or trading insights.
               </p>
               
-              {/* Compact Quick Actions */}
-              <div className="flex flex-wrap gap-1 mb-3 justify-center">
+              {/* Quick Actions */}
+              <div className="flex flex-wrap gap-2 mb-4 justify-center">
                 <Button
                   onClick={() => handleQuickAction('kons-powa-prediction')}
                   disabled={isProcessing || isKonsPowaPredictionLoading}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-3 py-1 text-xs flex items-center gap-1 disabled:opacity-50"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
                   {isKonsPowaPredictionLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Loading...
                     </>
                   ) : (
@@ -1781,11 +1786,11 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   onClick={() => handleQuickAction('market-analysis')}
                   disabled={isProcessing || isMarketAnalysisLoading}
                   variant="outline"
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-3 py-1 text-xs flex items-center gap-1 disabled:opacity-50"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
                   {isMarketAnalysisLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-purple-300/30 border-t-purple-300 rounded-full" />
+                      <div className="w-4 h-4 border-2 border-purple-300/30 border-t-purple-300 rounded-full animate-spin" />
                       Loading...
                     </>
                   ) : (
@@ -1800,11 +1805,11 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   onClick={() => handleQuickAction('generate-strategy')}
                   disabled={isProcessing || isStrategiesLoading}
                   variant="outline"
-                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-3 py-1 text-xs flex items-center gap-1 disabled:opacity-50"
+                  className="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50"
                 >
                   {isStrategiesLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-purple-300/30 border-t-purple-300 rounded-full" />
+                      <div className="w-4 h-4 border-2 border-purple-300/30 border-t-purple-300 rounded-full animate-spin" />
                       Loading...
                     </>
                   ) : (
@@ -2055,15 +2060,15 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             <div className="flex justify-start">
               <div className="max-w-[80%] p-4 rounded-2xl bg-gray-800/60 border border-purple-500/20 text-gray-100">
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse">
                     <Brain className="w-3 h-3 text-white" />
                   </div>
                   <span className="text-xs text-purple-300 font-medium">Waides KI is thinking...</span>
-                  {showAudioIcon && <Volume2 className="w-4 h-4 text-purple-400" />}
+                  {showAudioIcon && <Volume2 className="w-4 h-4 text-purple-400 animate-pulse" />}
                 </div>
                 <div className="whitespace-pre-wrap leading-relaxed">
                   {renderMessageWithLinks(currentTypingMessage)}
-                  <span>|</span>
+                  <span className="animate-pulse">|</span>
                 </div>
               </div>
             </div>
@@ -2072,14 +2077,14 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       </div>
 
-          {/* Compact Chat Input */}
-          <div className="relative z-10 p-1 w-full">
-            <div className="flex items-center gap-2 bg-gray-900/60 backdrop-blur-sm rounded-lg border border-purple-500/20 p-2">
+          {/* Chat Input */}
+          <div className="relative z-10 p-2 w-full">
+            <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
               <Input
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
                 placeholder="Ask anything..."
-                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-sm"
+                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                 disabled={isProcessing}
               />
@@ -2087,9 +2092,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 rounded-md transition-all ${
+                className={`p-2 rounded-full transition-all ${
                   voiceEnabled 
-                    ? 'bg-red-500/20 text-red-400' 
+                    ? 'bg-red-500/20 text-red-400 animate-pulse' 
                     : speechSupported
                     ? 'hover:bg-purple-500/20 text-purple-400'
                     : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
@@ -2097,49 +2102,49 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
                 disabled={isProcessing || !speechSupported}
               >
-                {voiceEnabled ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </Button>
               
               <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white p-1 rounded-md transition-all disabled:opacity-50"
+                className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
                 onClick={sendMessage}
                 disabled={!currentMessage.trim() || isProcessing}
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-5 h-5" />
               </Button>
             </div>
           </div>
         </>
       )}
 
-      {/* Heart of Waides Ki - Optimized Display */}
+      {/* Heart of Waides Ki - Free Display */}
       {activeTab === 'core' && (
         <div className="relative z-10 flex-1 flex flex-col h-full">
-          {/* Compact Header */}
-          <div className="text-center py-3 px-2">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg">
-                <Brain className="w-5 h-5 text-white" />
+          {/* Enhanced Header - Free Display */}
+          <div className="text-center py-6 px-4">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 shadow-lg">
+                <Brain className="w-8 h-8 text-white" />
               </div>
               <div className="text-center">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
                   Heart of Waides Ki
                 </h1>
-                <div className="text-sm text-purple-300 font-medium">
+                <div className="text-lg text-purple-300 font-medium mt-1">
                   Core Intelligence Engine
                 </div>
               </div>
-              <div className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
-                <Heart className="w-5 h-5 text-white" />
+              <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                <Heart className="w-8 h-8 text-white animate-pulse" />
               </div>
             </div>
-            <div className="text-purple-300/80 text-sm">
+            <div className="text-purple-300/80 text-lg">
               Autonomous spiritual trading intelligence with kons powa consciousness
             </div>
           </div>
 
-          {/* Core Engine Panel - Optimized Height */}
-          <div className="flex-1 px-2">
+          {/* Core Engine Panel - Full Height */}
+          <div className="flex-1 px-4">
             <WaidesKICoreEnginePanel />
           </div>
         </div>
@@ -2152,7 +2157,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         <div className="mb-4 p-4 bg-gradient-to-br from-green-900/40 to-blue-900/40 border border-green-500/30 rounded-lg">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-400 rounded-full "></div>
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
               <span className="text-green-300 font-semibold">Kons Powa Autonomous Trading Active</span>
             </div>
             <button
@@ -2256,10 +2261,10 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           <div className="relative h-full">
             {/* Cosmic Background Effects */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-cyan-900/20 to-purple-900/20">
-              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-300 rounded-full  opacity-60"></div>
-              <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-300 rounded-full  opacity-40"></div>
-              <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-pink-300 rounded-full  opacity-30"></div>
-              <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-yellow-300 rounded-full  opacity-50"></div>
+              <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-cyan-300 rounded-full animate-pulse opacity-60"></div>
+              <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-300 rounded-full animate-ping opacity-40"></div>
+              <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-pink-300 rounded-full animate-pulse opacity-30"></div>
+              <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-yellow-300 rounded-full animate-ping opacity-50"></div>
             </div>
 
             {/* Header */}
@@ -2267,8 +2272,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <Hexagon className="w-8 h-8 text-cyan-400 " />
-                    <Atom className="w-4 h-4 absolute top-2 left-2 text-purple-400 " style={{animationDuration: '3s'}} />
+                    <Hexagon className="w-8 h-8 text-cyan-400 animate-pulse" />
+                    <Atom className="w-4 h-4 absolute top-2 left-2 text-purple-400 animate-spin" style={{animationDuration: '3s'}} />
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
@@ -2282,7 +2287,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                     <div className="text-sm text-cyan-300 font-bold">{forumActivity.activeUsers} Users Online</div>
                     <div className="text-xs text-gray-400">{forumActivity.newPosts} New Posts</div>
                   </div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full "></div>
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -2303,7 +2308,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                             onClick={generateNewPost}
                             className="bg-gradient-to-r from-purple-600 via-cyan-600 to-purple-600 hover:from-purple-700 hover:via-cyan-700 hover:to-purple-700 text-white font-bold px-6 py-2 rounded-xl transform transition-all duration-300 hover:scale-105"
                           >
-                            <Sparkles className="w-4 h-4 mr-2 " />
+                            <Sparkles className="w-4 h-4 mr-2 animate-pulse" />
                             Generate AI Post
                           </Button>
                           <Badge className="bg-green-600/20 text-green-300 border border-green-500/30 px-3 py-1">
@@ -2340,7 +2345,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                                 )}
                                 {topic.category === 'kons-powa-only' && (
                                   <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <Sparkles className="w-4 h-4 text-white " />
+                                    <Sparkles className="w-4 h-4 text-white animate-pulse" />
                                   </div>
                                 )}
                                 {topic.category === 'user' && (
@@ -2434,7 +2439,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                                     {post.speaker === 'KonsAI' ? (
                                       <Brain className="w-6 h-6 text-white" />
                                     ) : (
-                                      <Sparkles className="w-6 h-6 text-white " />
+                                      <Sparkles className="w-6 h-6 text-white animate-pulse" />
                                     )}
                                   </div>
                                   <div className="flex-1">
@@ -2470,7 +2475,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                                       post.sentiment === 'bearish' ? 'bg-red-400' :
                                       post.sentiment === 'mystical' ? 'bg-purple-400' :
                                       'bg-gray-400'
-                                    } `}></div>
+                                    } animate-pulse`}></div>
                                     <span className="text-xs text-gray-400 capitalize">{post.sentiment} Signal</span>
                                   </div>
                                   {post.technicalData && (
@@ -2484,7 +2489,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                             
                           {aiConversations.filter(post => post.topicId === selectedThread.id).length === 0 && (
                             <div className="text-center py-12">
-                              <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 " />
+                              <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4 animate-pulse" />
                               <p className="text-gray-400 mb-4">No posts yet. Click "Generate AI Post" to create new content!</p>
                             </div>
                           )}
@@ -2517,7 +2522,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   {/* Live Conversation Stats */}
                   <div className="bg-gradient-to-br from-emerald-900/40 to-cyan-900/40 border border-emerald-500/30 rounded-lg p-4">
                     <h3 className="text-lg font-bold text-emerald-300 mb-3 flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 " />
+                      <MessageSquare className="w-5 h-5 animate-pulse" />
                       Live Activity
                     </h3>
                     <div className="space-y-3">
@@ -2548,21 +2553,21 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                     </h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 p-2 bg-purple-900/20 rounded">
-                        <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full "></div>
+                        <div className="w-3 h-3 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full animate-pulse"></div>
                         <div>
                           <div className="text-sm font-medium text-purple-300">KonsAI Neural Core</div>
                           <div className="text-xs text-gray-400">Processing ETH signals...</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-yellow-900/20 rounded">
-                        <div className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full "></div>
+                        <div className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse"></div>
                         <div>
                           <div className="text-sm font-medium text-yellow-300">Kons Powa Oracle</div>
                           <div className="text-xs text-gray-400">Channeling divine wisdom...</div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-green-900/20 rounded">
-                        <div className="w-3 h-3 bg-green-400 rounded-full "></div>
+                        <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                         <div>
                           <div className="text-sm font-medium text-green-300">Conversation Engine</div>
                           <div className="text-xs text-gray-400">Auto-generating insights...</div>
@@ -2579,19 +2584,19 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                     </h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
-                        <div className="w-2 h-2 bg-green-400 rounded-full "></div>
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                         <span className="text-xs text-indigo-300">ETH Scalping Techniques</span>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full "></div>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                         <span className="text-xs text-indigo-300">Risk Management Rules</span>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full "></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                         <span className="text-xs text-indigo-300">Market Psychology</span>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-indigo-900/20 rounded hover:bg-indigo-900/40 transition-colors cursor-pointer">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full "></div>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
                         <span className="text-xs text-indigo-300">DCA Strategies</span>
                       </div>
                     </div>
@@ -2653,7 +2658,7 @@ function SmaiSikaWalletTab() {
         <Card className="bg-purple-900/30 border-purple-500/30">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-300 ">ꠄ{smaiBalance?.toLocaleString() || '5,250.75'}</div>
+              <div className="text-2xl font-bold text-purple-300 animate-pulse">ꠄ{smaiBalance?.toLocaleString() || '5,250.75'}</div>
               <div className="text-sm text-gray-400">SmaiKa Balance</div>
               <div className="text-xs text-purple-400">≈ ${((smaiBalance || 5250.75) * 1.2).toLocaleString()}</div>
             </div>
@@ -2663,7 +2668,7 @@ function SmaiSikaWalletTab() {
         <Card className="bg-blue-900/30 border-blue-500/30">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-300 ">₦{localBalance?.toLocaleString() || '2,625,375'}</div>
+              <div className="text-2xl font-bold text-blue-300 animate-pulse">₦{localBalance?.toLocaleString() || '2,625,375'}</div>
               <div className="text-sm text-gray-400">Local Currency</div>
               <div className="text-xs text-blue-400">≈ ${((localBalance || 2625375) * 0.0012).toLocaleString()}</div>
             </div>
@@ -2673,7 +2678,7 @@ function SmaiSikaWalletTab() {
         <Card className="bg-green-900/30 border-green-500/30">
           <CardContent className="p-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-300 ">ꠄ{lockedForTrade?.toLocaleString() || '1,200'}</div>
+              <div className="text-2xl font-bold text-green-300 animate-pulse">ꠄ{lockedForTrade?.toLocaleString() || '1,200'}</div>
               <div className="text-sm text-gray-400">Locked for Trading</div>
               <div className="text-xs text-green-400">Active Positions</div>
             </div>
