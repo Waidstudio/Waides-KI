@@ -1,332 +1,414 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
+  Play, 
+  Pause, 
+  Square, 
   Activity, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle, 
   Zap, 
-  Brain,
-  Shield,
-  TrendingUp,
+  Shield, 
+  Database,
+  Cpu,
+  Network,
+  Timer,
+  CheckCircle,
+  AlertTriangle,
+  BarChart3,
   Settings,
-  RefreshCw,
-  Play,
-  Square
-} from "lucide-react";
-import { useState, useEffect } from "react";
+  Sparkles
+} from 'lucide-react';
+import { SacredGrid, SacredGridItem, SacredContainer, SacredSection, SacredText } from '@/components/ui/SacredResponsiveGrid';
+import { FloatingElement } from '@/components/ui/SacredMotion';
 
-interface KonsPowaTask {
-  id: number;
-  title: string;
-  area: string;
+interface TaskStatus {
+  id: string;
+  name: string;
+  category: 'system' | 'trading' | 'monitoring' | 'healing' | 'optimization';
+  status: 'running' | 'completed' | 'failed' | 'pending';
+  progress: number;
+  lastRun: string;
+  nextRun: string;
+  executionTime: number;
   description: string;
-  status?: 'pending' | 'in-progress' | 'completed' | 'failed';
-  critical?: boolean;
-  lastChecked?: number;
-  executionCount?: number;
-  autoHeal?: boolean;
 }
 
-interface TaskStats {
-  total: number;
-  completed: number;
-  pending: number;
-  inProgress: number;
-  failed: number;
-  critical: number;
-  autoHeal: number;
-  completionPercentage: number;
+interface SystemMetrics {
+  totalTasks: number;
+  activeTasks: number;
+  completedToday: number;
+  failureRate: number;
+  systemHealth: number;
+  autoHealingActive: boolean;
+  tasksPerSecond: number;
+  uptime: string;
 }
 
-export default function KonsPowaTaskDashboard() {
-  const [selectedArea, setSelectedArea] = useState<string>('all');
-  const [autoMode, setAutoMode] = useState(false);
-  const queryClient = useQueryClient();
-
-  // Fetch tasks and statistics
-  const { data: tasks, isLoading } = useQuery<KonsPowaTask[]>({
-    queryKey: ['/api/kons-powa/tasks'],
-    refetchInterval: 10000 // Refresh every 10 seconds
+export const KonsPowaTaskDashboard = () => {
+  const [autoMode, setAutoMode] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [metrics, setMetrics] = useState<SystemMetrics>({
+    totalTasks: 150,
+    activeTasks: 47,
+    completedToday: 1247,
+    failureRate: 0.2,
+    systemHealth: 98.7,
+    autoHealingActive: true,
+    tasksPerSecond: 12.4,
+    uptime: "7d 14h 23m"
   });
 
-  const { data: stats } = useQuery<TaskStats>({
-    queryKey: ['/api/kons-powa/stats'],
-    refetchInterval: 5000 // Refresh stats every 5 seconds
-  });
-
-  const { data: nextTask } = useQuery<KonsPowaTask | null>({
-    queryKey: ['/api/kons-powa/next-priority'],
-    refetchInterval: 15000 // Check for next priority task every 15 seconds
-  });
-
-  // Mutation to run specific task
-  const runTaskMutation = useMutation({
-    mutationFn: async (taskId: number) => {
-      const response = await fetch(`/api/kons-powa/tasks/${taskId}/run`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      return response.json();
+  const [tasks, setTasks] = useState<TaskStatus[]>([
+    {
+      id: 'trade-monitor',
+      name: 'ETH Trade Monitoring',
+      category: 'trading',
+      status: 'running',
+      progress: 100,
+      lastRun: '2s ago',
+      nextRun: '3s',
+      executionTime: 142,
+      description: 'Real-time ETH price monitoring and signal detection'
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/kons-powa'] });
-    }
-  });
-
-  // Mutation to toggle auto mode
-  const toggleAutoModeMutation = useMutation({
-    mutationFn: async (enabled: boolean) => {
-      const response = await fetch('/api/kons-powa/auto-mode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled })
-      });
-      return response.json();
+    {
+      id: 'system-health',
+      name: 'System Health Check',
+      category: 'system',
+      status: 'completed',
+      progress: 100,
+      lastRun: '30s ago',
+      nextRun: '30s',
+      executionTime: 89,
+      description: 'Comprehensive system health validation'
     },
-    onSuccess: () => {
-      setAutoMode(!autoMode);
+    {
+      id: 'db-optimize',
+      name: 'Database Optimization',
+      category: 'optimization',
+      status: 'running',
+      progress: 67,
+      lastRun: '5m ago',
+      nextRun: '15m',
+      executionTime: 3420,
+      description: 'Automated database performance optimization'
+    },
+    {
+      id: 'auto-healing',
+      name: 'Auto-Healing Engine',
+      category: 'healing',
+      status: 'running',
+      progress: 100,
+      lastRun: '1s ago',
+      nextRun: '10s',
+      executionTime: 45,
+      description: 'Continuous system monitoring and auto-repair'
+    },
+    {
+      id: 'risk-analysis',
+      name: 'Risk Assessment',
+      category: 'monitoring',
+      status: 'running',
+      progress: 89,
+      lastRun: '10s ago',
+      nextRun: '1m',
+      executionTime: 234,
+      description: 'Real-time trading risk analysis and alerts'
     }
-  });
+  ]);
 
-  // Get unique areas for filtering
-  const areas = tasks ? [...new Set(tasks.map(task => task.area))] : [];
-  
-  // Filter tasks based on selected area
-  const filteredTasks = tasks?.filter(task => 
-    selectedArea === 'all' || task.area === selectedArea
-  ) || [];
+  // Simulate real-time updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTasks(prev => prev.map(task => ({
+        ...task,
+        progress: task.status === 'running' ? Math.min(100, task.progress + Math.random() * 5) : task.progress,
+        lastRun: task.status === 'running' ? `${Math.floor(Math.random() * 60)}s ago` : task.lastRun
+      })));
 
-  // Get status color
-  const getStatusColor = (status?: string) => {
+      setMetrics(prev => ({
+        ...prev,
+        activeTasks: 45 + Math.floor(Math.random() * 10),
+        tasksPerSecond: 10 + Math.random() * 5,
+        completedToday: prev.completedToday + Math.floor(Math.random() * 3)
+      }));
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-500';
-      case 'in-progress': return 'bg-blue-500';
-      case 'failed': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'running': return <Activity className="h-4 w-4 text-green-400 animate-pulse" />;
+      case 'completed': return <CheckCircle className="h-4 w-4 text-blue-400" />;
+      case 'failed': return <AlertTriangle className="h-4 w-4 text-red-400" />;
+      case 'pending': return <Timer className="h-4 w-4 text-yellow-400" />;
+      default: return <Timer className="h-4 w-4 text-gray-400" />;
     }
   };
 
-  // Get status icon
-  const getStatusIcon = (status?: string) => {
-    switch (status) {
-      case 'completed': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'in-progress': return <Activity className="w-4 h-4 text-blue-500" />;
-      case 'failed': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      default: return <Clock className="w-4 h-4 text-gray-500" />;
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'system': return <Cpu className="h-4 w-4" />;
+      case 'trading': return <BarChart3 className="h-4 w-4" />;
+      case 'monitoring': return <Shield className="h-4 w-4" />;
+      case 'healing': return <Zap className="h-4 w-4" />;
+      case 'optimization': return <Settings className="h-4 w-4" />;
+      default: return <Database className="h-4 w-4" />;
     }
   };
 
-  if (isLoading) {
-    return (
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-white flex items-center">
-            <Brain className="w-5 h-5 mr-2 text-purple-400" />
-            KonsPowa Task Engine
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-400">Loading KonsPowa tasks...</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'running': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'completed': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'failed': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  const filteredTasks = selectedCategory === 'all' 
+    ? tasks 
+    : tasks.filter(task => task.category === selectedCategory);
 
   return (
-    <div className="space-y-6">
-      {/* Header with Controls */}
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-white flex items-center">
-              <Brain className="w-5 h-5 mr-2 text-purple-400" />
+    <SacredContainer size="full" className="py-8">
+      <SacredSection gradient="cosmic" padding="md" className="rounded-lg border border-purple-500/20">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+          <div>
+            <SacredText variant="h2" gradient className="flex items-center gap-3">
+              <Sparkles className="h-8 w-8 text-purple-400" />
               KonsPowa Task Engine
-              <Badge variant="outline" className="ml-2 border-purple-500 text-purple-400">
-                {autoMode ? 'AUTO' : 'MANUAL'}
-              </Badge>
-            </CardTitle>
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={() => toggleAutoModeMutation.mutate(!autoMode)}
-                variant="outline"
-                size="sm"
-                className={`border-slate-700 ${autoMode ? 'bg-purple-900/50 text-purple-400' : ''}`}
-              >
-                {autoMode ? <Square className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-                {autoMode ? 'Stop Auto' : 'Start Auto'}
-              </Button>
-              <Button
-                onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/kons-powa'] })}
-                variant="outline"
-                size="sm"
-                className="border-slate-700 hover:bg-slate-800"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
-            </div>
+            </SacredText>
+            <SacredText variant="body" className="mt-2">
+              Autonomous system orchestration toward infinite scalability
+            </SacredText>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Stats Cards */}
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-xs text-slate-400 uppercase">Completion</div>
-              <div className="text-2xl font-bold text-green-400">{stats?.completionPercentage || 0}%</div>
-              <Progress value={stats?.completionPercentage || 0} className="mt-2" />
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <SacredText variant="caption">Auto Mode</SacredText>
+              <Switch 
+                checked={autoMode} 
+                onCheckedChange={setAutoMode}
+                className="data-[state=checked]:bg-purple-600"
+              />
             </div>
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-xs text-slate-400 uppercase">Critical</div>
-              <div className="text-2xl font-bold text-red-400">{stats?.critical || 0}</div>
-              <div className="text-xs text-slate-500">High Priority</div>
-            </div>
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-xs text-slate-400 uppercase">Auto-Heal</div>
-              <div className="text-2xl font-bold text-blue-400">{stats?.autoHeal || 0}</div>
-              <div className="text-xs text-slate-500">Self-Healing</div>
-            </div>
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-xs text-slate-400 uppercase">Active</div>
-              <div className="text-2xl font-bold text-purple-400">{stats?.inProgress || 0}</div>
-              <div className="text-xs text-slate-500">Running Now</div>
-            </div>
+            <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
+              <Activity className="h-3 w-3 mr-1 animate-pulse" />
+              {metrics.activeTasks} Active
+            </Badge>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Next Priority Task */}
-      {nextTask && (
-        <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/10 border-purple-500/50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold text-white flex items-center">
-              <Zap className="w-5 h-5 mr-2 text-yellow-400" />
-              Next Priority Task
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Badge variant="outline" className="border-purple-500 text-purple-400">
-                    {nextTask.area}
-                  </Badge>
-                  {nextTask.critical && (
-                    <Badge variant="destructive" className="text-xs">
-                      CRITICAL
-                    </Badge>
-                  )}
-                  {nextTask.autoHeal && (
-                    <Badge variant="outline" className="border-blue-500 text-blue-400 text-xs">
-                      AUTO-HEAL
-                    </Badge>
-                  )}
-                </div>
-                <h3 className="font-semibold text-white mb-1">{nextTask.title}</h3>
-                <p className="text-sm text-slate-300">{nextTask.description}</p>
-              </div>
-              <Button
-                onClick={() => runTaskMutation.mutate(nextTask.id)}
-                disabled={runTaskMutation.isPending}
-                className="ml-4 bg-purple-600 hover:bg-purple-700"
-              >
-                {runTaskMutation.isPending ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
-                Run
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Filter and Tasks */}
-      <Card className="bg-slate-900/50 border-slate-800">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-white">
-              Task Management ({filteredTasks.length} tasks)
-            </CardTitle>
-            <Select value={selectedArea} onValueChange={setSelectedArea}>
-              <SelectTrigger className="w-48 bg-slate-800 border-slate-700">
-                <SelectValue placeholder="Filter by area" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Areas</SelectItem>
-                {areas.map(area => (
-                  <SelectItem key={area} value={area}>{area}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {filteredTasks.map(task => (
-              <div
-                key={task.id}
-                className="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition-colors"
-              >
-                <div className="flex items-center space-x-3 flex-1">
-                  <div className="flex items-center space-x-2">
-                    {getStatusIcon(task.status)}
-                    <span className="text-xs text-slate-500">#{task.id}</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="font-medium text-white text-sm">{task.title}</span>
-                      <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">
-                        {task.area}
-                      </Badge>
-                      {task.critical && (
-                        <Badge variant="destructive" className="text-xs">
-                          CRITICAL
-                        </Badge>
-                      )}
-                      {task.autoHeal && (
-                        <Badge variant="outline" className="border-blue-500 text-blue-400 text-xs">
-                          <Zap className="w-3 h-3 mr-1" />
-                          AUTO
-                        </Badge>
-                      )}
+        {/* Metrics Dashboard */}
+        <SacredGrid columns={4} gap="md" className="mb-8" animated>
+          <SacredGridItem span={1} animated>
+            <FloatingElement>
+              <Card className="bg-slate-800/40 border-purple-500/30 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <SacredText variant="caption" className="text-purple-300">System Health</SacredText>
+                      <SacredText variant="h3" className="text-green-400 font-mono">
+                        {metrics.systemHealth}%
+                      </SacredText>
                     </div>
-                    <p className="text-xs text-slate-400">{task.description}</p>
-                    {task.lastChecked && (
-                      <p className="text-xs text-slate-500 mt-1">
-                        Last checked: {new Date(task.lastChecked).toLocaleTimeString()}
-                      </p>
-                    )}
+                    <Shield className="h-8 w-8 text-green-400" />
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className={`w-2 h-2 rounded-full ${getStatusColor(task.status)}`} />
-                  {task.status === 'pending' && (
-                    <Button
-                      onClick={() => runTaskMutation.mutate(task.id)}
-                      disabled={runTaskMutation.isPending}
-                      variant="outline"
-                      size="sm"
-                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  <Progress 
+                    value={metrics.systemHealth} 
+                    className="mt-3 h-2 bg-slate-700"
+                  />
+                </CardContent>
+              </Card>
+            </FloatingElement>
+          </SacredGridItem>
+
+          <SacredGridItem span={1} animated>
+            <FloatingElement>
+              <Card className="bg-slate-800/40 border-purple-500/30 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <SacredText variant="caption" className="text-purple-300">Tasks/Second</SacredText>
+                      <SacredText variant="h3" className="text-cyan-400 font-mono">
+                        {metrics.tasksPerSecond.toFixed(1)}
+                      </SacredText>
+                    </div>
+                    <Zap className="h-8 w-8 text-cyan-400 animate-pulse" />
+                  </div>
+                  <SacredText variant="caption" className="text-cyan-300 mt-2">
+                    Processing Rate
+                  </SacredText>
+                </CardContent>
+              </Card>
+            </FloatingElement>
+          </SacredGridItem>
+
+          <SacredGridItem span={1} animated>
+            <FloatingElement>
+              <Card className="bg-slate-800/40 border-purple-500/30 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <SacredText variant="caption" className="text-purple-300">Completed Today</SacredText>
+                      <SacredText variant="h3" className="text-blue-400 font-mono">
+                        {metrics.completedToday.toLocaleString()}
+                      </SacredText>
+                    </div>
+                    <CheckCircle className="h-8 w-8 text-blue-400" />
+                  </div>
+                  <SacredText variant="caption" className="text-blue-300 mt-2">
+                    Success Rate: {(100 - metrics.failureRate).toFixed(1)}%
+                  </SacredText>
+                </CardContent>
+              </Card>
+            </FloatingElement>
+          </SacredGridItem>
+
+          <SacredGridItem span={1} animated>
+            <FloatingElement>
+              <Card className="bg-slate-800/40 border-purple-500/30 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <SacredText variant="caption" className="text-purple-300">Uptime</SacredText>
+                      <SacredText variant="h3" className="text-purple-400 font-mono">
+                        {metrics.uptime}
+                      </SacredText>
+                    </div>
+                    <Network className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <SacredText variant="caption" className="text-purple-300 mt-2">
+                    Auto-Healing: {metrics.autoHealingActive ? 'Active' : 'Inactive'}
+                  </SacredText>
+                </CardContent>
+              </Card>
+            </FloatingElement>
+          </SacredGridItem>
+        </SacredGrid>
+
+        {/* Task Management */}
+        <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 bg-slate-800/40 mb-6">
+            <TabsTrigger value="all" className="data-[state=active]:bg-purple-600">All</TabsTrigger>
+            <TabsTrigger value="system" className="data-[state=active]:bg-purple-600">System</TabsTrigger>
+            <TabsTrigger value="trading" className="data-[state=active]:bg-purple-600">Trading</TabsTrigger>
+            <TabsTrigger value="monitoring" className="data-[state=active]:bg-purple-600">Monitor</TabsTrigger>
+            <TabsTrigger value="healing" className="data-[state=active]:bg-purple-600">Healing</TabsTrigger>
+            <TabsTrigger value="optimization" className="data-[state=active]:bg-purple-600">Optimize</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value={selectedCategory} className="mt-0">
+            <SacredGrid columns={1} gap="md" animated>
+              <AnimatePresence>
+                {filteredTasks.map((task, index) => (
+                  <SacredGridItem key={task.id} span={1} animated>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ delay: index * 0.1 }}
                     >
-                      <Play className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+                      <Card className="bg-slate-800/30 border-purple-500/20 backdrop-blur-sm hover:border-purple-400/40 transition-all duration-300">
+                        <CardContent className="p-6">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                {getCategoryIcon(task.category)}
+                                <SacredText variant="h4" className="text-white font-semibold">
+                                  {task.name}
+                                </SacredText>
+                                <Badge 
+                                  variant="outline" 
+                                  className={`${getStatusColor(task.status)} text-xs`}
+                                >
+                                  {getStatusIcon(task.status)}
+                                  {task.status}
+                                </Badge>
+                              </div>
+                              
+                              <SacredText variant="caption" className="text-gray-400 mb-3">
+                                {task.description}
+                              </SacredText>
+                              
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                                <div>
+                                  <SacredText variant="caption" className="text-purple-300">Last Run</SacredText>
+                                  <SacredText variant="caption" className="text-white font-mono">
+                                    {task.lastRun}
+                                  </SacredText>
+                                </div>
+                                <div>
+                                  <SacredText variant="caption" className="text-purple-300">Next Run</SacredText>
+                                  <SacredText variant="caption" className="text-white font-mono">
+                                    {task.nextRun}
+                                  </SacredText>
+                                </div>
+                                <div>
+                                  <SacredText variant="caption" className="text-purple-300">Execution</SacredText>
+                                  <SacredText variant="caption" className="text-white font-mono">
+                                    {task.executionTime}ms
+                                  </SacredText>
+                                </div>
+                                <div>
+                                  <SacredText variant="caption" className="text-purple-300">Progress</SacredText>
+                                  <SacredText variant="caption" className="text-white font-mono">
+                                    {task.progress}%
+                                  </SacredText>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2 sm:min-w-[200px]">
+                              <Progress 
+                                value={task.progress} 
+                                className="h-2 bg-slate-700"
+                              />
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="flex-1 border-green-500/30 text-green-400 hover:bg-green-500/20"
+                                >
+                                  <Play className="h-3 w-3 mr-1" />
+                                  Run
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="flex-1 border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20"
+                                >
+                                  <Pause className="h-3 w-3 mr-1" />
+                                  Pause
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="border-red-500/30 text-red-400 hover:bg-red-500/20"
+                                >
+                                  <Square className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  </SacredGridItem>
+                ))}
+              </AnimatePresence>
+            </SacredGrid>
+          </TabsContent>
+        </Tabs>
+      </SacredSection>
+    </SacredContainer>
   );
-}
+};

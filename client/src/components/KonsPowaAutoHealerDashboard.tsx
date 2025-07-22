@@ -101,7 +101,7 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-export default function KonsPowaAutoHealerDashboard() {
+function KonsPowaAutoHealerDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const queryClient = useQueryClient();
 
@@ -463,3 +463,5 @@ export default function KonsPowaAutoHealerDashboard() {
     </div>
   );
 }
+
+export default KonsPowaAutoHealerDashboard;

@@ -19,6 +19,9 @@ import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
+import SacredNavigation from "@/components/ui/SacredNavigation";
+import SacredLanding from "@/components/ui/SacredLanding";
+import { SacredPageTransition, CosmicBackground } from "@/components/ui/SacredMotion";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
@@ -102,120 +105,29 @@ function Router() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <nav className="bg-slate-800 border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <Link href="/">
-                <h1 className="text-xl font-bold text-slate-100 hover:text-blue-400 transition-colors cursor-pointer">
-                  Waides KI
-                </h1>
-              </Link>
-              <div className="hidden lg:flex space-x-6">
-                {navItems.map((item) => (
-                  <Link key={item.path} href={item.path}>
-                    <span
-                      className={cn(
-                        "inline-flex items-center px-2 pt-1 text-sm font-medium border-b-2 transition-colors cursor-pointer",
-                        location === item.path
-                          ? "border-blue-500 text-slate-100"
-                          : "border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-300"
-                      )}
-                    >
-                      {item.label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-              
-              {/* Mobile navigation */}
-              <div className="lg:hidden">
-                <select 
-                  value={location}
-                  onChange={(e) => window.location.href = e.target.value}
-                  className="bg-slate-700 text-slate-100 border-slate-600 rounded px-3 py-1 text-sm"
-                >
-                  {navItems.map((item) => (
-                    <option key={item.path} value={item.path}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+    <CosmicBackground className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      {/* Sacred Navigation */}
+      <SacredNavigation />
 
-            {/* Right side - Notifications and User Profile */}
-            <div className="flex items-center space-x-4">
-              {/* Notifications */}
-              <NotificationBell />
-
-              {/* User Profile Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-slate-400 hover:text-slate-100 hover:bg-slate-700"
-                  >
-                    <User className="h-5 w-5 mr-2" />
-                    <span className="hidden sm:inline">
-                      {isAuthenticated ? user?.username || 'Profile' : 'Profile'}
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile & Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/biometric-trading" className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Trading Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/full-engine" className="cursor-pointer">
-                      <span className="mr-2">💰</span>
-                      <span>SmaiSika Wallet</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {isAuthenticated ? (
-                    <DropdownMenuItem 
-                      onClick={() => logout()} 
-                      className="text-red-400 cursor-pointer"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Sign Out</span>
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem asChild>
-                      <Link href="/login" className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Sign In</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main>
+      {/* Sacred Main Content Area */}
+      <main className="pt-20">
         <Switch>
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           
-          {/* Public routes */}
-          <Route path="/" component={WaidesKIVisionPortal} />
+          {/* Sacred Landing Page */}
+          <Route path="/">
+            {() => (
+              <SacredPageTransition>
+                <SacredLanding />
+              </SacredPageTransition>
+            )}
+          </Route>
+          
+          {/* Vision Portal - moved to /portal */}
+          <Route path="/portal" component={WaidesKIVisionPortal} />
+          <Route path="/trading" component={WaidesKIVisionPortal} />
           <Route path="/wallet" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/forum" component={ForumPage} />
@@ -320,7 +232,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
-    </div>
+    </CosmicBackground>
   );
 }
 

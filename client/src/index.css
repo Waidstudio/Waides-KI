@@ -1,3 +1,6 @@
+/* Import Sacred Theme */
+@import './styles/sacred-theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

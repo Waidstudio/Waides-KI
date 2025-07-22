@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import KonsPowaTaskDashboard from "@/components/KonsPowaTaskDashboard";
+import { KonsPowaTaskDashboard } from "@/components/KonsPowaTaskDashboard";
 import KonsPowaAutoHealerDashboard from "@/components/KonsPowaAutoHealerDashboard";
 import { Brain, Zap, Activity, Settings } from "lucide-react";
 

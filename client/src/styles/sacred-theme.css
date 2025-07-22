@@ -1,0 +1,355 @@
+/* Sacred Theme System for Waides KI UI/UX Transformation */
+
+:root {
+  /* Sacred Color Palette */
+  --sacred-void: hsl(240, 20%, 5%);
+  --sacred-deep: hsl(250, 25%, 8%);
+  --sacred-shadow: hsl(255, 30%, 12%);
+  --sacred-surface: hsl(260, 25%, 15%);
+  --sacred-mist: hsl(265, 20%, 25%);
+  
+  /* Divine Energy Colors */
+  --divine-purple: hsl(270, 70%, 60%);
+  --divine-cyan: hsl(190, 80%, 65%);
+  --divine-gold: hsl(45, 90%, 70%);
+  --divine-pink: hsl(320, 70%, 65%);
+  --divine-green: hsl(150, 60%, 55%);
+  
+  /* Sacred Text */
+  --sacred-text-primary: hsl(0, 0%, 95%);
+  --sacred-text-secondary: hsl(265, 30%, 75%);
+  --sacred-text-muted: hsl(265, 20%, 55%);
+  
+  /* Sacred Gradients */
+  --sacred-gradient-primary: linear-gradient(135deg, var(--divine-purple), var(--divine-cyan));
+  --sacred-gradient-secondary: linear-gradient(135deg, var(--divine-pink), var(--divine-gold));
+  --sacred-gradient-surface: linear-gradient(135deg, var(--sacred-surface), var(--sacred-shadow));
+  
+  /* Sacred Shadows */
+  --sacred-glow-purple: 0 0 30px hsla(270, 70%, 60%, 0.3);
+  --sacred-glow-cyan: 0 0 30px hsla(190, 80%, 65%, 0.3);
+  --sacred-glow-gold: 0 0 30px hsla(45, 90%, 70%, 0.3);
+  
+  /* Sacred Grid System (7-column) */
+  --sacred-grid-cols: 7;
+  --sacred-gap: 1.5rem;
+  --sacred-container-max: 1400px;
+  
+  /* Sacred Timing */
+  --sacred-transition-fast: 0.2s ease-out;
+  --sacred-transition-normal: 0.4s ease-in-out;
+  --sacred-transition-slow: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  --sacred-transition-ritual: 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Sacred Base Styles */
+.sacred-container {
+  max-width: var(--sacred-container-max);
+  margin: 0 auto;
+  padding: 0 var(--sacred-gap);
+}
+
+.sacred-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--sacred-grid-cols), 1fr);
+  gap: var(--sacred-gap);
+}
+
+/* Sacred Typography */
+.sacred-title {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  background: var(--sacred-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.sacred-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--sacred-text-secondary);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.sacred-body {
+  color: var(--sacred-text-primary);
+  line-height: 1.6;
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+}
+
+.sacred-muted {
+  color: var(--sacred-text-muted);
+  font-size: 0.875rem;
+}
+
+/* Sacred Surfaces */
+.sacred-surface {
+  background: var(--sacred-gradient-surface);
+  border: 1px solid hsla(265, 30%, 25%, 0.3);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+.sacred-card {
+  @apply sacred-surface;
+  padding: 1.5rem;
+  transition: all var(--sacred-transition-normal);
+}
+
+.sacred-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sacred-glow-purple);
+  border-color: var(--divine-purple);
+}
+
+/* Sacred Buttons */
+.sacred-button {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  background: var(--sacred-gradient-primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--sacred-transition-normal);
+  overflow: hidden;
+}
+
+.sacred-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left var(--sacred-transition-slow);
+}
+
+.sacred-button:hover::before {
+  left: 100%;
+}
+
+.sacred-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sacred-glow-purple);
+}
+
+.sacred-button:active {
+  transform: translateY(0);
+}
+
+/* Sacred Inputs */
+.sacred-input {
+  background: var(--sacred-surface);
+  border: 1px solid hsla(265, 30%, 25%, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--sacred-text-primary);
+  transition: all var(--sacred-transition-normal);
+}
+
+.sacred-input:focus {
+  outline: none;
+  border-color: var(--divine-cyan);
+  box-shadow: var(--sacred-glow-cyan);
+}
+
+.sacred-input::placeholder {
+  color: var(--sacred-text-muted);
+}
+
+/* Sacred Navigation */
+.sacred-nav {
+  background: hsla(240, 20%, 5%, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid hsla(265, 30%, 25%, 0.3);
+}
+
+.sacred-nav-item {
+  color: var(--sacred-text-secondary);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: all var(--sacred-transition-fast);
+  position: relative;
+}
+
+.sacred-nav-item:hover,
+.sacred-nav-item.active {
+  color: var(--sacred-text-primary);
+  background: hsla(270, 70%, 60%, 0.1);
+}
+
+.sacred-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 2px;
+  background: var(--sacred-gradient-primary);
+  border-radius: 1px;
+}
+
+/* Sacred Animations */
+@keyframes sacredPulse {
+  0%, 100% { 
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes sacredFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes sacredGlow {
+  0%, 100% { 
+    filter: brightness(1) drop-shadow(0 0 10px var(--divine-purple));
+  }
+  50% { 
+    filter: brightness(1.2) drop-shadow(0 0 20px var(--divine-cyan));
+  }
+}
+
+@keyframes sacredRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.sacred-pulse { animation: sacredPulse 3s ease-in-out infinite; }
+.sacred-float { animation: sacredFloat 4s ease-in-out infinite; }
+.sacred-glow { animation: sacredGlow 3s ease-in-out infinite; }
+.sacred-rotate { animation: sacredRotate 10s linear infinite; }
+
+/* Sacred Responsive Grid */
+@media (max-width: 768px) {
+  :root {
+    --sacred-grid-cols: 3;
+    --sacred-gap: 1rem;
+  }
+  
+  .sacred-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --sacred-grid-cols: 1;
+    --sacred-gap: 0.75rem;
+  }
+}
+
+/* Sacred Scroll Behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+.sacred-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: var(--divine-purple) var(--sacred-surface);
+}
+
+.sacred-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sacred-scroll-area::-webkit-scrollbar-track {
+  background: var(--sacred-surface);
+}
+
+.sacred-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--divine-purple);
+  border-radius: 3px;
+}
+
+.sacred-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: var(--divine-cyan);
+}
+
+/* Sacred Loading States */
+.sacred-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--sacred-surface) 25%,
+    var(--sacred-mist) 50%,
+    var(--sacred-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite ease-in-out;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Sacred Utilities */
+.sacred-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sacred-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sacred-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.sacred-hidden {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sacred-visible {
+  opacity: 1;
+  pointer-events: auto;
+  user-select: auto;
+}
+
+/* Sacred Tooltips */
+.sacred-tooltip {
+  position: relative;
+}
+
+.sacred-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--sacred-void);
+  color: var(--sacred-text-primary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--sacred-transition-fast);
+  border: 1px solid var(--divine-purple);
+  box-shadow: var(--sacred-glow-purple);
+}
+
+.sacred-tooltip:hover::after {
+  opacity: 1;
+}
