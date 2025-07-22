@@ -59,6 +59,7 @@ import KonsPowaPage from "@/pages/KonsPowaPage";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
+import ForumPage from "@/pages/forum";
 
 import NotFound from "@/pages/not-found";
 
@@ -70,6 +71,7 @@ function Router() {
     { path: "/", label: "Vision Portal" },
     { path: "/wallet", label: "Wallet" },
     { path: "/dashboard", label: "Dashboard" },
+    { path: "/forum", label: "Cosmic Forum" },
     { path: "/waidbot-engine", label: "Waidbot Engine" },
     { path: "/market-storytelling", label: "Market Stories" },
     { path: "/waidbot", label: "WaidBot" },
@@ -216,6 +218,7 @@ function Router() {
           <Route path="/" component={WaidesKIVisionPortal} />
           <Route path="/wallet" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={Dashboard} />
+          <Route path="/forum" component={ForumPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
           <Route path="/live-data" component={LiveDataPage} />

@@ -1680,7 +1680,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           
           {/* Futuristic Forum Portal */}
           <button 
-            onClick={() => setShowForumPortal(!showForumPortal)}
+            onClick={() => setLocation('/forum')}
             className="relative text-xs text-cyan-300 font-medium hover:text-cyan-200 transition-all duration-300 cursor-pointer flex items-center gap-1 group"
           >
             <div className="relative">
