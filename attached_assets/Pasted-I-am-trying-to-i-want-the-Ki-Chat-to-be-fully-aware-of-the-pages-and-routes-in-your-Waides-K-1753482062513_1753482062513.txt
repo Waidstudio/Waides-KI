@@ -1,0 +1,128 @@
+I am trying to 
+
+i want the **Ki Chat** to be fully aware of the pages and routes in your **Waides KI** application, so it can guide users effectively while also ensuring it doesn't leak or mention sensitive admin routes. Below is the refined prompt you can paste into Replit or into your backend system to help **Ki Chat** understand these routes, their behaviors, and interactions with users.
+
+---
+
+### **Prompt for Ki Chat Awareness:**
+
+> **Goal:** Ensure that **Ki Chat** is fully aware of all the public and protected routes in **Waides KI** and can guide users intelligently while keeping sensitive information secure. The chat must provide guidance for all public and user-accessible pages and must prevent any reference to private, admin, or sensitive pages from being exposed to the user.
+
+### **Instructions:**
+
+1. **Awareness of Public Routes:**
+
+* **Ki Chat** should recognize and respond to queries based on **public pages**. These include:
+
+* **/landing:** Landing page for new users.
+* **/login:** Login page for users.
+* **/register:** Registration page for new users.
+* **/forgot-password:** Password recovery page.
+* **/dashboard:** Main user dashboard.
+* **/wallet:** Wallet page.
+* **/wallet-simple:** Simple wallet interface.
+* **/forum:** Community forum for users.
+* **/profile:** User profile page.
+* **/learning:** Trading Academy for user education.
+* **/waidbot, /waidbot-pro, /waidbot-engine:** Trading bot pages.
+
+2. **Awareness of Core User Pages (User Login Required):**
+
+* **Ki Chat** should be able to guide users to all **core pages** after they have logged in. These pages include:
+
+* **/portal:** Main trading portal.
+* **/trading:** Trading interface.
+* **/waidbot-engine:** Trading bot engine.
+* **/strategy-autogen:** Strategy auto-generation (protected but guide-able if the user has access).
+* **/enhanced-waidbot:** Advanced WaidBot interface (protected).
+
+3. **Awareness of Advanced AI Features:**
+
+* **Ki Chat** should recognize and introduce users to all advanced AI features, offering them explanations of how each works:
+
+* **/market-storytelling:** AI-driven market analysis.
+* **/voice-command:** Voice trading interface.
+* **/biometric-trading:** Biometric interface for trades.
+* **/dream-vision:** AI-driven dream analysis and predictions.
+* **/vision-spirit:** Spiritual trading insights.
+* **/spiritual-recall:** Spiritual recall system.
+* **/seasonal-rebirth:** Trading patterns based on seasonal changes.
+* **/sigil-layer:** Sigil layer system.
+* **/shadow-defense:** Security-focused trading defense system.
+* **/reincarnation:** Reincarnation loop for market prediction.
+
+4. **Awareness of Guardian & Network Systems:**
+
+* **Ki Chat** should be aware of and introduce these systems when relevant to the user’s needs:
+
+* **/eth-empath-guardian:** ETH guardian system.
+* **/meta-guardian:** Meta-guardian network.
+* **/full-engine:** Complete engine management.
+* **/ml-lifecycle:** Machine learning lifecycle manager.
+* **/risk-backtesting:** Risk scenario backtesting.
+
+5. **Awareness of System & Utilities:**
+
+* **Ki Chat** should guide users to **system and utility pages** such as:
+
+* **/gateway:** System gateway.
+* **/api-docs:** API documentation for developers.
+
+6. **Security and Privacy:**
+
+* **Ki Chat** should **NOT** have knowledge or access to the following **Admin Pages**:
+
+* **/admin, /admin-panel, /config, /expanded-config, /payment-admin, /sms-config, /kons-powa**.
+* These routes should be completely **blocked** from **Ki Chat's responses**. If a user asks for anything related to these, it should respond with a generic message like "Sorry, that’s not something I can assist you with."
+
+7. **User Interaction Flow:**
+
+* **First-Time User:** When a user interacts with **Ki Chat** for the first time:
+
+* It should introduce itself:
+"Hello, I am Konsmik Intelligent Chat. I'm here to guide you through the platform. If you're new to trading, I suggest visiting the **Learning Academy** to start your journey."
+* Then, direct the user to **/learning** to start their education on trading.
+* If the user asks anything about the trading process, **Ki Chat** should guide them to relevant pages like **/trading**, **/wallet**, **/waidbot**, etc.
+* **Fund Account:** If a user asks how to fund their account, **Ki Chat** should respond with:
+
+* "You can easily fund your account via the **Wallet** page. Let me guide you there: **/wallet**. Once you’re there, you can add funds or withdraw as needed. Let me know if you need any help with the process."
+* **Trading Guidance:** If the user asks how to start trading, it should say:
+
+* "To start trading, go to the **Trading Interface** here: **/trading**. You can also access advanced features like the **WaidBot Engine** and **Strategy Autogen** if you're looking to take your trading to the next level."
+
+8. **Admin/Privileged Pages (Sensitive Information):**
+
+* **Ki Chat** must **never** respond with any information or even hint at the existence of **admin pages** such as:
+
+* **/admin-login**, **/payment-admin**, **/sms-config**, **/kons-powa**, **/expanded-config**, etc.
+* If a user somehow tries to access these, **Ki Chat** should redirect them to relevant public resources or provide an appropriate response like:
+
+* "This page is only accessible to authorized users. Please contact support for assistance."
+
+---
+
+### **Additional Considerations:**
+
+* **Ki Chat** should always aim to provide clear, helpful, and friendly guidance to users.
+* It should offer specific instructions and advice without overwhelming users with unnecessary details.
+* Ensure that **Ki Chat** is constantly aware of new pages and routes added to the system to provide up-to-date assistance.
+
+
+I want you to:
+- Research my codebase first
+- Find related files and functions
+- Assess if changes are possible without restructuring existing code
+- Develop a plan that builds on existing code
+- Write the plan in Instructions.md
+And also, use already created Kons Powa and Konsai and others 
+
+
+
+INSTRUCTION FOR DEVELOPER:
+	•	DO NOT remove or overwrite any existing files or functions unless explicitly told.
+	•	If updating an existing file (e.g., routes/user.js), EDIT it in place — do not create a duplicate like routes/user1.js.
+	•	Maintain current file/folder structure. No rearrangement.
+	•	Keep all routing paths unchanged unless specified.
+	•	Only build what I request. Do not improvise beyond instructions.
+	•	Every component or function added should have inline comments and must integrate with the current system.
+	•	⚠️ Submit a changelog showing what files you modified and what was added.
