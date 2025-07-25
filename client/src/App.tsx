@@ -126,7 +126,7 @@ function Router() {
           
           {/* Vision Portal - moved to /portal */}
           <Route path="/portal" component={WaidesKIVisionPortal} />
-          <Route path="/trading" component={WaidesKIVisionPortal} />
+          <Route path="/trading" component={UserDashboard} />
           <Route path="/wallet" component={ProfessionalWalletPage} />
           <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={UserDashboard} />
