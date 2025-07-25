@@ -519,6 +519,64 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trading positions endpoint
+  app.get("/api/trade/positions", async (req, res) => {
+    try {
+      // Mock trading positions for now - replace with actual trading engine data
+      const positions = [
+        {
+          id: "pos_1",
+          pair: "ETH/USDT",
+          side: "buy",
+          size: 0.5,
+          entryPrice: 3650.00,
+          currentPrice: 3725.08,
+          unrealizedPnl: 37.54,
+          percentage: 2.06,
+          margin: 1825.04,
+          status: "open"
+        }
+      ];
+      res.json(positions);
+    } catch (error) {
+      console.error('Error fetching positions:', error);
+      res.status(500).json({ error: 'Failed to fetch positions' });
+    }
+  });
+
+  // Trading history endpoint
+  app.get("/api/trade/history", async (req, res) => {
+    try {
+      // Mock trading history for now - replace with actual trading engine data
+      const history = {
+        trades: [
+          {
+            id: "trade_1",
+            pair: "ETH/USDT",
+            side: "buy",
+            amount: 0.3,
+            price: 3600.00,
+            status: "filled",
+            timestamp: new Date(Date.now() - 3600000).toISOString()
+          },
+          {
+            id: "trade_2", 
+            pair: "ETH/USDT",
+            side: "sell",
+            amount: 0.2,
+            price: 3650.00,
+            status: "filled",
+            timestamp: new Date(Date.now() - 7200000).toISOString()
+          }
+        ]
+      };
+      res.json(history);
+    } catch (error) {
+      console.error('Error fetching trade history:', error);
+      res.status(500).json({ error: 'Failed to fetch trade history' });
+    }
+  });
+
   // KonsAI chat endpoint
   app.post("/api/konsai/chat", async (req, res) => {
     try {

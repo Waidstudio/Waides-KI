@@ -54,6 +54,7 @@ import WaidesFullEngine from "@/components/WaidesFullEngine";
 import RiskScenarioBacktesting from "@/components/RiskScenarioBacktesting";
 import MLLifecycleManager from "@/components/MLLifecycleManager";
 import WaidesKIVisionPortal from "@/components/WaidesKIVisionPortal";
+import TradingInterface from "@/components/TradingInterface";
 import AdminConfigPanel from "@/components/AdminConfigPanel";
 import StrategyAutogenPage from "@/pages/StrategyAutogenPage";
 import VoiceCommandPage from "@/pages/VoiceCommandPage";
@@ -74,7 +75,8 @@ function Router() {
   const { user, logout, isAuthenticated } = useAuth();
 
   const navItems = [
-    { path: "/", label: "Vision Portal" },
+    { path: "/portal", label: "Vision Portal" },
+    { path: "/trading", label: "Trading Interface" },
     { path: "/wallet", label: "Wallet" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/forum", label: "Cosmic Forum" },
@@ -124,9 +126,10 @@ function Router() {
           {/* Professional Landing Page */}
           <Route path="/" component={ProfessionalLanding} />
           
-          {/* Vision Portal - moved to /portal */}
+          {/* Vision Portal - comprehensive AI interface */}
           <Route path="/portal" component={WaidesKIVisionPortal} />
-          <Route path="/trading" component={WaidesKIVisionPortal} />
+          {/* Trading Interface - focused trading execution */}
+          <Route path="/trading" component={TradingInterface} />
           <Route path="/wallet" component={ProfessionalWalletPage} />
           <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={UserDashboard} />
