@@ -221,10 +221,13 @@ export class AuthService {
     userAgent: string
   ): Promise<LoginResult> {
     try {
+      // Clean IP address to handle proxy headers with multiple IPs
+      const cleanIpAddress = ipAddress.split(',')[0].trim();
+      
       // Check login attempts
-      const attemptCheck = await this.checkLoginAttempts(credentials.email, ipAddress);
+      const attemptCheck = await this.checkLoginAttempts(credentials.email, cleanIpAddress);
       if (!attemptCheck.allowed) {
-        await this.recordLoginAttempt(credentials.email, ipAddress, userAgent, false, 'too_many_attempts');
+        await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, false, 'too_many_attempts');
         return {
           success: false,
           message: 'Too many failed login attempts. Please try again later.',
@@ -241,7 +244,7 @@ export class AuthService {
         .limit(1);
 
       if (!user) {
-        await this.recordLoginAttempt(credentials.email, ipAddress, userAgent, false, 'user_not_found');
+        await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, false, 'user_not_found');
         return {
           success: false,
           message: 'Invalid email or password',
@@ -252,7 +255,7 @@ export class AuthService {
       // Verify password
       const passwordValid = await this.verifyPassword(credentials.password, user.passwordHash);
       if (!passwordValid) {
-        await this.recordLoginAttempt(credentials.email, ipAddress, userAgent, false, 'invalid_password');
+        await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, false, 'invalid_password');
         return {
           success: false,
           message: 'Invalid email or password',
@@ -285,7 +288,7 @@ export class AuthService {
         sessionId: sessionId,
         tokenHash: tokenHash,
         expiresAt,
-        ipAddress,
+        ipAddress: cleanIpAddress,
         userAgent,
       });
 
@@ -296,10 +299,10 @@ export class AuthService {
         .where(eq(adminUsers.id, user.id));
 
       // Record successful login
-      await this.recordLoginAttempt(credentials.email, ipAddress, userAgent, true);
+      await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, true);
 
       // Log activity
-      await this.logActivity(user.id, 'login', 'admin_session', { ipAddress, userAgent }, ipAddress, userAgent);
+      await this.logActivity(user.id, 'login', 'admin_session', { ipAddress: cleanIpAddress, userAgent }, cleanIpAddress, userAgent);
 
       return {
         success: true,
