@@ -169,7 +169,7 @@ export class AuthService {
         and(
           eq(adminLoginAttempts.email, email),
           eq(adminLoginAttempts.success, false),
-          gte(adminLoginAttempts.timestamp, since)
+          gte(adminLoginAttempts.createdAt, since)
         )
       );
 
@@ -264,10 +264,26 @@ export class AuthService {
       const sessionId = this.generateSessionId();
       const expiresAt = new Date(Date.now() + (credentials.rememberMe ? REMEMBER_ME_DURATION : SESSION_DURATION));
 
+      // Generate token and hash it for storage
+      const authenticatedUser: AuthenticatedUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role as AdminRole,
+        permissions: user.permissions || RolePermissions[user.role as AdminRole] || [],
+        firstName: user.firstName || undefined,
+        lastName: user.lastName || undefined,
+        profileImage: user.profileImage || undefined,
+        lastLogin: new Date(),
+      };
+      
+      const token = this.generateToken(authenticatedUser, sessionId, credentials.rememberMe);
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
       await db.insert(adminSessions).values({
-        id: sessionId,
         userId: user.id,
-        sessionData: { rememberMe: credentials.rememberMe || false },
+        sessionId: sessionId,
+        tokenHash: tokenHash,
         expiresAt,
         ipAddress,
         userAgent,
@@ -284,22 +300,6 @@ export class AuthService {
 
       // Log activity
       await this.logActivity(user.id, 'login', 'admin_session', { ipAddress, userAgent }, ipAddress, userAgent);
-
-      // Create authenticated user object
-      const authenticatedUser: AuthenticatedUser = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role as AdminRole,
-        permissions: user.permissions || RolePermissions[user.role as AdminRole] || [],
-        firstName: user.firstName || undefined,
-        lastName: user.lastName || undefined,
-        profileImage: user.profileImage || undefined,
-        lastLogin: new Date(),
-      };
-
-      // Generate token
-      const token = this.generateToken(authenticatedUser, sessionId, credentials.rememberMe);
 
       return {
         success: true,

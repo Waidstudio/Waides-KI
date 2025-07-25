@@ -31,14 +31,16 @@ export const adminUsers = pgTable("admin_users", {
 
 // Admin Sessions Table
 export const adminSessions = pgTable("admin_sessions", {
-  id: varchar("id").primaryKey(),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   userId: integer("user_id").notNull().references(() => adminUsers.id, { onDelete: "cascade" }),
-  sessionData: jsonb("session_data"),
+  sessionId: varchar("session_id"),
+  tokenHash: varchar("token_hash"),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   ipAddress: varchar("ip_address", { length: 45 }),
   userAgent: text("user_agent"),
   isActive: boolean("is_active").default(true),
+  lastActivity: timestamp("last_activity").defaultNow(),
 });
 
 // Admin Activity Logs Table
@@ -61,7 +63,7 @@ export const adminLoginAttempts = pgTable("admin_login_attempts", {
   ipAddress: varchar("ip_address", { length: 45 }).notNull(),
   userAgent: text("user_agent"),
   success: boolean("success").notNull(),
-  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   failureReason: varchar("failure_reason", { length: 100 }),
 });
 
