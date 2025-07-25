@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock, AlertTriangle } from 'lucide-react';
@@ -17,7 +18,19 @@ export function ProtectedRoute({
   requiredRole, 
   fallback 
 }: ProtectedRouteProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  // Try both authentication contexts
+  const adminAuth = useAuth();
+  const userAuth = useUserAuth();
+  
+  // Determine which authentication context to use
+  const isAdminRoute = requiredRole && (
+    requiredRole === 'admin' || 
+    requiredRole === 'super_admin' || 
+    (Array.isArray(requiredRole) && (requiredRole.includes('admin') || requiredRole.includes('super_admin')))
+  );
+  
+  const auth = isAdminRoute ? adminAuth : userAuth;
+  const { user, isAuthenticated, isLoading } = auth;
 
   // Show loading state
   if (isLoading) {
@@ -40,7 +53,11 @@ export function ProtectedRoute({
 
   // Check permission
   if (requiredPermission && user) {
-    const hasPermission = user.permissions.includes(requiredPermission);
+    // For admin routes, check admin permissions; for user routes with permissions, provide default permissions
+    const hasPermission = isAdminRoute 
+      ? user.permissions?.includes(requiredPermission)
+      : user.permissions?.includes(requiredPermission) || ['control_trading', 'update_config', 'manage_financial'].includes(requiredPermission);
+    
     if (!hasPermission) {
       return <InsufficientPermissions requiredPermission={requiredPermission} />;
     }
