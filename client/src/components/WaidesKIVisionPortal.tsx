@@ -386,66 +386,65 @@ ${intelligentResponse}
     setIsTyping(true);
 
     try {
-      // Use enhanced KonsAI Intelligence Engine for all questions
-      const response = await fetch('/api/konsai/enhanced-chat', {
+      // Use enhanced Ki Chat with natural processing
+      const response = await fetch('/api/ki-chat/route-aware-query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           message: messageText,
-          mode: 'comprehensive',
-          complexity: 'adaptive'
+          currentPath: location,
+          isAuthenticated: !!user,
+          userRole: user?.role || 'user',
+          permissions: user?.permissions || [],
+          userId: user?.id,
+          personality: 'wise',
+          spiritualEnergy: 75,
+          consciousnessLevel: 3,
+          auraIntensity: 80,
+          prophecyMode: false,
+          useNaturalProcessing: true,
+          previousMessages: messages.slice(-5).map(m => m.message) // Last 5 messages for context
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        const konsaiResponse: ChatMessage = {
+        
+        // Create natural response message
+        const kiResponse: ChatMessage = {
           id: (Date.now() + 1).toString(),
           sender: 'waides',
-          message: data.response || 'I am here to help with your trading and investment needs.',
+          message: data.response || 'I am here to guide you through Waides KI. How can I help you today?',
           timestamp: new Date(),
-          source: 'enhanced_bot_memory',
-          confidence: 95
+          source: data.isNaturalResponse ? 'natural_processing' : 'spiritual_ai',
+          confidence: 95,
+          reasoning: data.reasoning,
+          quickActions: data.quickActions,
+          routeSuggestions: data.routeSuggestions
         };
         
-        setMessages(prev => [...prev, konsaiResponse]);
+        setMessages(prev => [...prev, kiResponse]);
         setIsTyping(false);
       } else {
-        throw new Error('Enhanced chat service unavailable');
+        throw new Error('Ki Chat service unavailable');
       }
     } catch (error) {
       setIsTyping(false);
-      console.error('Enhanced chat error:', error);
+      console.error('Ki Chat error:', error);
       
-      // Fallback to trading query handler if enhanced chat fails
-      try {
-        const response = await handleTradingQuery(messageText);
-        const konsaiResponse: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          sender: 'waides',
-          message: response.message,
-          timestamp: new Date(),
-          source: 'combined',
-          confidence: response.confidence,
-          reasoning: response.recommendations
-        };
-        
-        setMessages(prev => [...prev, konsaiResponse]);
-      } catch (fallbackError) {
-        // Final fallback response
-        const fallbackResponse: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          sender: 'waides',
-          message: "I understand your question. I can help with trading strategies, market analysis, wallet management, and intelligent navigation through the Waides KI system. What would you like to explore?",
-          timestamp: new Date(),
-          source: 'enhanced_bot_memory',
-          confidence: 85
-        };
-        
-        setMessages(prev => [...prev, fallbackResponse]);
-      }
+      // Fallback to basic response
+      const fallbackResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'waides',
+        message: "I'm here to help you navigate Waides KI and answer your questions about trading, learning, and platform features. Please try your question again, and I'll provide clear guidance.",
+        timestamp: new Date(),
+        source: 'fallback',
+        confidence: 85
+      };
+      
+      setMessages(prev => [...prev, fallbackResponse]);
     }
   };
   const [isListening, setIsListening] = useState(false);

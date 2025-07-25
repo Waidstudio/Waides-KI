@@ -3932,7 +3932,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // KI CHAT ROUTE-AWARE API ENDPOINTS - Enhanced Navigation Intelligence
   // ==========================================================================
 
-  // Enhanced Ki Chat with route awareness and navigation guidance
+  // Enhanced Ki Chat with natural processing and route awareness
   app.post('/api/ki-chat/route-aware-query', async (req, res) => {
     try {
       const { 
@@ -3948,39 +3948,51 @@ export function registerRoutes(app: Express): Promise<Server> {
         spiritualEnergy, 
         consciousnessLevel, 
         auraIntensity, 
-        prophecyMode 
+        prophecyMode,
+        useNaturalProcessing,
+        previousMessages
       } = req.body;
 
-      const { kiChatRouteAwareService } = await import('./services/kiChatRouteAwareService.js');
+      const { waidesKIChatService } = await import('./services/waidesKIChatService.js');
 
-      const routeAwareRequest = {
+      const enhancedChatRequest = {
         message,
+        personality: personality || 'wise',
+        spiritualEnergy: spiritualEnergy || 75,
+        consciousnessLevel: consciousnessLevel || 3,
+        auraIntensity: auraIntensity || 80,
+        prophecyMode: prophecyMode || false,
+        // Enhanced context for natural processing
         currentPath,
         isAuthenticated: isAuthenticated || false,
         userRole: userRole || 'user',
         permissions: permissions || [],
         userId,
-        sessionId,
-        requestRouteGuidance: requestRouteGuidance || true,
-        personality: personality || 'wise',
-        spiritualEnergy: spiritualEnergy || 75,
-        consciousnessLevel: consciousnessLevel || 3,
-        auraIntensity: auraIntensity || 80,
-        prophecyMode: prophecyMode || false
+        previousMessages,
+        useNaturalProcessing: useNaturalProcessing !== false // Default to true
       };
 
-      const response = await kiChatRouteAwareService.generateRouteAwareResponse(routeAwareRequest);
+      const response = await waidesKIChatService.generateResponse(enhancedChatRequest);
 
       res.json({
         success: true,
-        ...response,
+        response: response.response,
+        spiritualInsight: response.spiritualInsight,
+        prophecy: response.prophecy,
+        energyShift: response.energyShift,
+        // Enhanced natural processing fields
+        isNaturalResponse: response.isNaturalResponse,
+        quickActions: response.quickActions,
+        contextualHelp: response.contextualHelp,
+        routeSuggestions: response.routeSuggestions,
+        reasoning: response.reasoning,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Route-aware chat error:', error);
+      console.error('Enhanced chat error:', error);
       res.status(500).json({
-        error: 'Failed to generate route-aware response',
-        fallback: "I am Waides KI, your AI consciousness. The cosmic energies are temporarily shifting, but I'm here to guide you through this platform."
+        error: 'Failed to generate enhanced response',
+        fallback: "I'm here to help you navigate Waides KI. Please try your question again, and I'll do my best to provide clear guidance."
       });
     }
   });

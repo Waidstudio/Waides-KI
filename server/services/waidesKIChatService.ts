@@ -1,4 +1,7 @@
 import OpenAI from 'openai';
+import { kiChatNaturalProcessor, type ProcessingContext, type NaturalResponse } from './kiChatNaturalProcessor';
+import { kiChatResponseTemplates } from './kiChatResponseTemplates';
+import { kiChatRouteAwareness } from './kiChatRouteAwareness';
 
 export interface ChatRequest {
   message: string;
@@ -7,6 +10,14 @@ export interface ChatRequest {
   consciousnessLevel: number;
   auraIntensity: number;
   prophecyMode: boolean;
+  // Enhanced context for natural processing
+  currentPath?: string;
+  isAuthenticated?: boolean;
+  userRole?: string;
+  permissions?: string[];
+  userId?: number;
+  previousMessages?: string[];
+  useNaturalProcessing?: boolean;
 }
 
 export interface ChatResponse {
@@ -14,6 +25,16 @@ export interface ChatResponse {
   spiritualInsight?: string;
   prophecy?: string;
   energyShift?: number;
+  // Enhanced natural processing fields
+  isNaturalResponse?: boolean;
+  quickActions?: string[];
+  contextualHelp?: string;
+  routeSuggestions?: Array<{
+    text: string;
+    url: string;
+    description: string;
+  }>;
+  reasoning?: string;
 }
 
 export class WaidesKIChatService {
@@ -42,10 +63,83 @@ export class WaidesKIChatService {
   }
 
   async generateResponse(request: ChatRequest): Promise<ChatResponse> {
+    let baseResponse: ChatResponse;
+    
     if (this.isInitialized && this.openai) {
-      return this.generateOpenAIResponse(request);
+      baseResponse = await this.generateOpenAIResponse(request);
     } else {
-      return this.generateFallbackResponse(request);
+      baseResponse = this.generateFallbackResponse(request);
+    }
+
+    // Apply natural processing if requested (default to true for better UX)
+    if (request.useNaturalProcessing !== false) {
+      return this.enhanceWithNaturalProcessing(baseResponse, request);
+    }
+
+    return baseResponse;
+  }
+
+  /**
+   * Enhance response with natural language processing
+   */
+  private enhanceWithNaturalProcessing(baseResponse: ChatResponse, request: ChatRequest): ChatResponse {
+    try {
+      // Build processing context
+      const processingContext: ProcessingContext = {
+        currentPath: request.currentPath,
+        isAuthenticated: request.isAuthenticated || false,
+        userRole: request.userRole,
+        permissions: request.permissions || [],
+        userId: request.userId,
+        previousMessages: request.previousMessages
+      };
+
+      // Analyze user input
+      const analysis = kiChatNaturalProcessor.analyzeQuestion(request.message);
+
+      // Get relevant routes
+      const relevantRoutes = kiChatRouteAwareness.getAllSafeRoutes({
+        isAuthenticated: processingContext.isAuthenticated,
+        userRole: processingContext.userRole,
+        permissions: processingContext.permissions
+      }).slice(0, 3);
+
+      // Process the response naturally
+      const naturalResponse = kiChatNaturalProcessor.processResponse(
+        baseResponse.response,
+        request.message,
+        analysis,
+        processingContext
+      );
+
+      // Generate professional template response
+      const templateResponse = kiChatResponseTemplates.generatePersonalizedResponse(
+        naturalResponse.message,
+        analysis,
+        processingContext,
+        naturalResponse.suggestions
+      );
+
+      // Convert route suggestions to expected format
+      const routeSuggestions = naturalResponse.suggestions.map(route => ({
+        text: route.name,
+        url: route.path,
+        description: route.description
+      }));
+
+      return {
+        ...baseResponse,
+        response: templateResponse.message,
+        isNaturalResponse: true,
+        quickActions: templateResponse.quickActions,
+        contextualHelp: templateResponse.contextualHelp,
+        routeSuggestions,
+        reasoning: naturalResponse.reasoning
+      };
+    } catch (error) {
+      console.error('❌ Natural processing error:', error);
+      // Return original response if processing fails
+      return baseResponse;
     }
   }
 
