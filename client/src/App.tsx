@@ -23,6 +23,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
+import EnhancedWalletPage from "@/pages/EnhancedWalletPage";
 import LoginPage from "@/pages/LoginPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import RegisterPage from "@/pages/RegisterPage";
@@ -131,6 +132,7 @@ function Router() {
           {/* Trading Interface - focused trading execution */}
           <Route path="/trading" component={TradingInterface} />
           <Route path="/wallet" component={ProfessionalWalletPage} />
+          <Route path="/wallet-enhanced" component={EnhancedWalletPage} />
           <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={UserDashboard} />
           <Route path="/forum" component={ForumPage} />
