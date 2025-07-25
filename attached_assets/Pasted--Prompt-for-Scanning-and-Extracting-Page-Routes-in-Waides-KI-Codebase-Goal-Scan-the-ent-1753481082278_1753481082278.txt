@@ -1,0 +1,64 @@
+
+**Prompt for Scanning and Extracting Page Routes in Waides KI Codebase:**
+
+> **Goal:** Scan the entire codebase of the **Waides KI** application to extract every page route, including their associated components, behaviors, and relevant metadata. This information will be used to help build up the **Kons Powa** system.
+
+### **Instructions:**
+
+1. **Scan the Codebase:**
+
+   * Go through the entire codebase of the **Waides KI** project. Look for files related to routing and page components (e.g., routes, components, and views in React/Vue, route definitions, etc.).
+   * Extract **every route** and ensure the paths, components, and any dynamic parameters are captured.
+
+2. **List All Routes:**
+
+   * For each route, provide:
+
+     * The **URL path** (route string).
+     * The **associated component(s)** or page(s) rendered by that route.
+     * Any **dynamic parameters** (e.g., `/:id`, `:slug`) that influence how the route behaves.
+     * The **HTTP method** used for the route (GET, POST, etc.).
+
+3. **Route Metadata:**
+
+   * Capture and include any associated **metadata** for each route, such as:
+
+     * **Protected Routes:** Are there routes that require user authentication or special permissions?
+     * **State Management:** Does the route rely on any global state or context (e.g., Redux, Vuex)?
+     * **Data Fetching:** Does the route fetch any data from APIs or databases before rendering?
+     * **Parameters:** Any special query parameters or route params that affect the behavior of the route.
+
+4. **Identify Routing Libraries or Frameworks:**
+
+   * Identify which routing library or framework is being used (e.g., React Router, Vue Router, Next.js, or custom routing solution).
+   * Ensure that all routes are identified even if they are dynamically generated or nested.
+
+5. **Handle Nested Routes:**
+
+   * For nested routes, list both the parent route and the child route, including the relationship between them.
+
+6. **Route Accessibility:**
+
+   * Indicate if a route is public or private (protected by authentication or authorization).
+   * If there are any **redirects** or **fallbacks** in the routing system, capture these as well.
+
+7. **Any Special Routing Logic:**
+
+   * Identify any advanced or custom routing logic (e.g., lazy loading, route guards, conditional rendering).
+   * Highlight any routes that dynamically load content or redirect users based on specific conditions.
+
+8. **Provide Output:**
+
+   * Present the output in an organized table or structured format, with the route, associated components, methods, and any relevant metadata, so that it can be easily referenced during the build of Kons Powa.
+
+---
+
+### **Additional Requirements:**
+
+* The scanned route data should be presented in a way that is easy to reference and understand for building **Kons Powa**.
+* The output should be detailed but not too overwhelming, with clear distinctions between different categories of routes (public/private, dynamic/static, etc.).
+
+---
+
+Once pasted into Replit, this prompt should guide the platform to scan the project and return a comprehensive list of the routes in **Waides KI**. This will help you gather all the necessary information to integrate and expand upon these routes for the **Konsai** system.
+
