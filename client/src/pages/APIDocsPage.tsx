@@ -344,7 +344,7 @@ if (signal.should_trade) {
 # Get market summary
 response = requests.get('${baseUrl}/api/eth/market-summary')
 data = response.json()
-print(f"ETH: ${data['currentPrice']} ({data['priceChangePercent24h']}%)")
+print(f"ETH: ${'{data[\'currentPrice\']} ({data[\'priceChangePercent24h\']}%)'}")
 
 # Simulate trade
 trade_data = {
@@ -354,7 +354,7 @@ trade_data = {
 }
 sim_response = requests.post('${baseUrl}/api/trade/simulate', json=trade_data)
 trade = sim_response.json()
-print(f"Simulated trade: {trade['action']} at ${trade['entry_price']}")`}
+print(f"Simulated trade: ${'{trade[\'action\']} at ${trade[\'entry_price\']}'}")`}
             </pre>
           </div>
 

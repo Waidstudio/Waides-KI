@@ -27,7 +27,7 @@ function RegisterPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation('/'); // Redirect to dashboard for regular users
+      setLocation('/dashboard'); // Redirect to dashboard for regular users
     }
   }, [isAuthenticated, setLocation]);
 
@@ -52,7 +52,7 @@ function RegisterPage() {
     const result = await register(formData.username, formData.email, formData.password, formData.confirmPassword);
     
     if (result.success) {
-      setLocation('/'); // Redirect to user dashboard
+      setLocation('/dashboard'); // Redirect to user dashboard
     } else {
       setError(result.message);
     }

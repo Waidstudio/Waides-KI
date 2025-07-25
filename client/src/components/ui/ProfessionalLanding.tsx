@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
+import { useUserAuth } from "@/context/UserAuthContext";
 import { 
   TrendingUp, 
   Shield, 
@@ -51,6 +52,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Progress } from './progress';
 
 const ProfessionalLanding = () => {
+  const { user, isAuthenticated, logout } = useUserAuth();
   const [konsPowaActive, setKonsPowaActive] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
@@ -234,31 +236,66 @@ const ProfessionalLanding = () => {
             Empowering traders to execute with our AI service and ultimate one-stop trading solution.
           </p>
 
-          {/* Main CTA Card */}
-          <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 max-w-lg mx-auto border border-gray-700">
-            <h2 className="text-2xl font-bold text-white mb-4">
-              Start Trading with AI
-            </h2>
-            <p className="text-gray-300 mb-8 leading-relaxed">
-              Connect to advanced algorithms and explore various enhanced strategies for complex trading scenarios.
-            </p>
-            <div className="space-y-4">
-              <Button 
-                asChild
-                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 text-lg font-semibold rounded-xl border-0"
-              >
-                <Link href="/register">
-                  Start for Free
-                </Link>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full border-2 border-gray-600 text-gray-300 hover:bg-gray-700/50 py-4 text-lg font-semibold rounded-xl"
-              >
-                Explore Features
-              </Button>
+          {/* Main CTA Card - Different content for authenticated vs non-authenticated users */}
+          {isAuthenticated ? (
+            // Authenticated User Content
+            <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 max-w-lg mx-auto border border-gray-700">
+              <h2 className="text-2xl font-bold text-white mb-4">
+                Welcome back, {user?.username}!
+              </h2>
+              <p className="text-gray-300 mb-8 leading-relaxed">
+                Your AI trading dashboard is ready. Monitor your portfolio, execute trades, and access KonsAI insights.
+              </p>
+              <div className="space-y-4">
+                <Button 
+                  asChild
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 text-lg font-semibold rounded-xl border-0"
+                >
+                  <Link href="/dashboard">
+                    Go to Dashboard
+                  </Link>
+                </Button>
+                <Button 
+                  asChild
+                  variant="outline" 
+                  className="w-full border-2 border-gray-600 text-gray-300 hover:bg-gray-700/50 py-4 text-lg font-semibold rounded-xl"
+                >
+                  <Link href="/trading">
+                    Start Trading
+                  </Link>
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            // Non-authenticated User Content
+            <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 max-w-lg mx-auto border border-gray-700">
+              <h2 className="text-2xl font-bold text-white mb-4">
+                Start Trading with AI
+              </h2>
+              <p className="text-gray-300 mb-8 leading-relaxed">
+                Connect to advanced algorithms and explore various enhanced strategies for complex trading scenarios.
+              </p>
+              <div className="space-y-4">
+                <Button 
+                  asChild
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-4 text-lg font-semibold rounded-xl border-0"
+                >
+                  <Link href="/register">
+                    Start for Free
+                  </Link>
+                </Button>
+                <Button 
+                  asChild
+                  variant="outline" 
+                  className="w-full border-2 border-gray-600 text-gray-300 hover:bg-gray-700/50 py-4 text-lg font-semibold rounded-xl"
+                >
+                  <Link href="/login">
+                    Login
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Secondary Card */}
           <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 max-w-lg mx-auto border border-gray-700">

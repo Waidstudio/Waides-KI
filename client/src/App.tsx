@@ -65,6 +65,7 @@ import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
 import ForumPage from "@/pages/forum";
+import UserDashboard from "@/pages/UserDashboard";
 
 import NotFound from "@/pages/not-found";
 
@@ -128,7 +129,7 @@ function Router() {
           <Route path="/trading" component={WaidesKIVisionPortal} />
           <Route path="/wallet" component={ProfessionalWalletPage} />
           <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
-          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/dashboard" component={UserDashboard} />
           <Route path="/forum" component={ForumPage} />
           <Route path="/waidbot" component={WaidBotPage} />
           <Route path="/waidbot-pro" component={WaidBotProPage} />
