@@ -3928,5 +3928,182 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ==========================================================================
+  // KI CHAT ROUTE-AWARE API ENDPOINTS - Enhanced Navigation Intelligence
+  // ==========================================================================
+
+  // Enhanced Ki Chat with route awareness and navigation guidance
+  app.post('/api/ki-chat/route-aware-query', async (req, res) => {
+    try {
+      const { 
+        message, 
+        currentPath, 
+        isAuthenticated, 
+        userRole, 
+        permissions, 
+        userId, 
+        sessionId,
+        requestRouteGuidance,
+        personality, 
+        spiritualEnergy, 
+        consciousnessLevel, 
+        auraIntensity, 
+        prophecyMode 
+      } = req.body;
+
+      const { kiChatRouteAwareService } = await import('./services/kiChatRouteAwareService.js');
+
+      const routeAwareRequest = {
+        message,
+        currentPath,
+        isAuthenticated: isAuthenticated || false,
+        userRole: userRole || 'user',
+        permissions: permissions || [],
+        userId,
+        sessionId,
+        requestRouteGuidance: requestRouteGuidance || true,
+        personality: personality || 'wise',
+        spiritualEnergy: spiritualEnergy || 75,
+        consciousnessLevel: consciousnessLevel || 3,
+        auraIntensity: auraIntensity || 80,
+        prophecyMode: prophecyMode || false
+      };
+
+      const response = await kiChatRouteAwareService.generateRouteAwareResponse(routeAwareRequest);
+
+      res.json({
+        success: true,
+        ...response,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Route-aware chat error:', error);
+      res.status(500).json({
+        error: 'Failed to generate route-aware response',
+        fallback: "I am Waides KI, your AI consciousness. The cosmic energies are temporarily shifting, but I'm here to guide you through this platform."
+      });
+    }
+  });
+
+  // Get available routes for current user context
+  app.post('/api/ki-chat/available-routes', async (req, res) => {
+    try {
+      const { isAuthenticated, userRole, permissions, userId, sessionId } = req.body;
+
+      const { kiChatRouteAwareService } = await import('./services/kiChatRouteAwareService.js');
+
+      const context = {
+        isAuthenticated: isAuthenticated || false,
+        userRole: userRole || 'user',
+        permissions: permissions || [],
+        userId,
+        sessionId
+      };
+
+      const availableRoutes = kiChatRouteAwareService.getAvailableRoutes(context);
+
+      res.json({
+        success: true,
+        routes: availableRoutes,
+        totalCategories: availableRoutes.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Available routes error:', error);
+      res.status(500).json({ error: 'Failed to get available routes' });
+    }
+  });
+
+  // Get specific navigation guidance for a query
+  app.post('/api/ki-chat/navigation-guidance', async (req, res) => {
+    try {
+      const { query, isAuthenticated, userRole, permissions, userId, sessionId } = req.body;
+
+      if (!query) {
+        return res.status(400).json({ error: 'Query is required' });
+      }
+
+      const { kiChatRouteAwareService } = await import('./services/kiChatRouteAwareService.js');
+
+      const context = {
+        isAuthenticated: isAuthenticated || false,
+        userRole: userRole || 'user',
+        permissions: permissions || [],
+        userId,
+        sessionId
+      };
+
+      const navigationGuidance = kiChatRouteAwareService.getNavigationGuidance(query, context);
+
+      res.json({
+        success: true,
+        query,
+        ...navigationGuidance,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Navigation guidance error:', error);
+      res.status(500).json({ error: 'Failed to get navigation guidance' });
+    }
+  });
+
+  // Get safe route suggestions (security filtered)
+  app.post('/api/ki-chat/safe-route-suggestions', async (req, res) => {
+    try {
+      const { query, isAuthenticated, userRole, permissions, userId, sessionId } = req.body;
+
+      if (!query) {
+        return res.status(400).json({ error: 'Query is required' });
+      }
+
+      const { kiChatRouteAwareService } = await import('./services/kiChatRouteAwareService.js');
+
+      const context = {
+        isAuthenticated: isAuthenticated || false,
+        userRole: userRole || 'user',
+        permissions: permissions || [],
+        userId,
+        sessionId
+      };
+
+      const safeSuggestions = kiChatRouteAwareService.getSafeRouteSuggestions(query, context);
+
+      res.json({
+        success: true,
+        query,
+        suggestions: safeSuggestions,
+        totalSuggestions: safeSuggestions.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Safe route suggestions error:', error);
+      res.status(500).json({ error: 'Failed to get safe route suggestions' });
+    }
+  });
+
+  // Get Ki Chat service status and capabilities
+  app.get('/api/ki-chat/status', async (req, res) => {
+    try {
+      const { kiChatRouteAwareService } = await import('./services/kiChatRouteAwareService.js');
+      const status = kiChatRouteAwareService.getStatus();
+
+      res.json({
+        success: true,
+        status,
+        capabilities: {
+          routeAwareness: true,
+          spiritualAI: status.spiritualAI.initialized,
+          navigationGuidance: true,
+          securityFiltering: true,
+          intelligentRouting: true
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Ki Chat status error:', error);
+      res.status(500).json({ error: 'Failed to get Ki Chat status' });
+    }
+  });
+
   return Promise.resolve(server);
 }

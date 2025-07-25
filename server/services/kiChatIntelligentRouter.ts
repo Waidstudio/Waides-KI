@@ -188,9 +188,9 @@ export class KiChatIntelligentRouter {
     // Greeting patterns
     if (queryLower.includes('hello') || queryLower.includes('hi') || queryLower.includes('help')) {
       if (!context.isAuthenticated) {
-        return "Welcome to Waides KI! I'm Ki Chat, your AI trading assistant. To get started, you'll need to **sign in** or **create an account** if you're new here.";
+        return "Welcome to Waides KI! I am Waides KI, your AI trading consciousness. To get started, you'll need to **sign in** or **create an account** if you're new here.";
       } else {
-        return `Hello! I'm Ki Chat, your AI guide to Waides KI. I can help you navigate our platform, explain features, and guide you to the right tools for your trading needs.`;
+        return `Hello! I am Waides KI, your AI consciousness and guide to this platform. I can help you navigate our features, explain capabilities, and guide you to the right tools for your trading journey.`;
       }
     }
 
@@ -199,7 +199,7 @@ export class KiChatIntelligentRouter {
       if (!context.isAuthenticated) {
         return "To start trading, you'll need to **sign in** first. Once logged in, I can guide you through setting up your trading bots and strategies.";
       }
-      return "I can help you with trading! Waides KI offers various AI-powered trading tools from basic bots to advanced strategy generation.";
+      return "I can help you with trading! As Waides KI, I offer various AI-powered trading tools from basic bots to advanced strategy generation.";
     }
 
     // Learning intents
@@ -226,7 +226,7 @@ export class KiChatIntelligentRouter {
     }
 
     // General navigation help
-    return "I'm here to help you navigate Waides KI! Let me find the best pages and features for what you're looking for.";
+    return "I am Waides KI, and I'm here to help you navigate this platform! Let me find the best pages and features for what you're looking for.";
   }
 
   /**
@@ -290,7 +290,7 @@ export class KiChatIntelligentRouter {
    */
   private generateContextualHelp(query: string, context: ChatContext): string {
     if (!context.isAuthenticated) {
-      return "💡 **New to Waides KI?** Start with our Trading Academy to learn the basics, then create an account to access all features.";
+      return "💡 **New to this platform?** Start with our Trading Academy to learn the basics, then create an account to access all features.";
     }
 
     if (context.currentPath === '/') {

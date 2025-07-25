@@ -26,6 +26,7 @@ import { useLocation } from 'wouter';
 import getSmartAnswer, { detectCommandTrigger, detectPageRecommendation } from './WaidesKI_MemoryEngine';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
 import type { 
   ChatMessage, 
   OracleResponse, 
@@ -83,6 +84,12 @@ export default function WaidesKIVisionPortal() {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [konsaiInput, setKonsaiInput] = useState('');
   const [showWalletModal, setShowWalletModal] = useState(false);
+  
+  // Route-aware context initialization
+  const [location] = useLocation();
+  const { user } = useAuth();
+  const walletContext = useSmaiWallet();
+  const { toast } = useToast();
 
   // Konsai chat handlers
   const handleQuickAction = (action: string) => {
@@ -149,21 +156,21 @@ export default function WaidesKIVisionPortal() {
         await refetchKonsPowaPrediction();
         const prediction = konsPowaPrediction;
         
-        if (prediction) {
+        if (prediction && typeof prediction === 'object') {
           intelligentResponse = `**🔮 Kons Powa Enhanced Intelligence Prediction**
 
 ${intelligentResponse}
 
 **📊 Current Database Analysis:**
-• **Price:** $${prediction.ethPrice}
-• **Prediction:** ${prediction.prediction}
-• **Confidence:** ${prediction.confidence}%
-• **Strategy:** ${prediction.strategy}
-• **Timeframe:** ${prediction.timeframe}
-• **Kons Power Level:** ${prediction.konsPowerLevel}%
-• **Divine Alignment:** ${prediction.divineAlignment}%
-• **Spiritual Energy:** ${prediction.spiritualEnergy}%
-• **Reasoning:** ${prediction.reasoning}
+• **Price:** $${(prediction as any).ethPrice || 'N/A'}
+• **Prediction:** ${(prediction as any).prediction || 'N/A'}
+• **Confidence:** ${(prediction as any).confidence || 0}%
+• **Strategy:** ${(prediction as any).strategy || 'N/A'}
+• **Timeframe:** ${(prediction as any).timeframe || 'N/A'}
+• **Kons Power Level:** ${(prediction as any).konsPowerLevel || 0}%
+• **Divine Alignment:** ${(prediction as any).divineAlignment || 0}%
+• **Spiritual Energy:** ${(prediction as any).spiritualEnergy || 0}%
+• **Reasoning:** ${(prediction as any).reasoning || 'N/A'}
 
 *Powered by KonsAI Intelligence Engine v2.0 + Database Analysis*`;
         }
@@ -180,19 +187,19 @@ ${intelligentResponse}
         await refetchKonsPowaPrediction();
         const prediction = konsPowaPrediction;
         
-        if (prediction) {
+        if (prediction && typeof prediction === 'object') {
           let message = `**🔮 Kons Powa ETH Prediction (Database Fallback)**\n\n`;
-          message += `**Price:** $${prediction.ethPrice}\n`;
-          message += `**Prediction:** ${prediction.prediction}\n`;
-          message += `**Confidence:** ${prediction.confidence}%\n`;
-          message += `**Strategy:** ${prediction.strategy}\n`;
-          message += `**Timeframe:** ${prediction.timeframe}\n`;
-          message += `**Kons Power Level:** ${prediction.konsPowerLevel}%\n`;
-          message += `**Divine Alignment:** ${prediction.divineAlignment}%\n`;
-          message += `**Spiritual Energy:** ${prediction.spiritualEnergy}%\n`;
-          message += `**Reasoning:** ${prediction.reasoning}\n`;
+          message += `**Price:** $${(prediction as any).ethPrice || 'N/A'}\n`;
+          message += `**Prediction:** ${(prediction as any).prediction || 'N/A'}\n`;
+          message += `**Confidence:** ${(prediction as any).confidence || 0}%\n`;
+          message += `**Strategy:** ${(prediction as any).strategy || 'N/A'}\n`;
+          message += `**Timeframe:** ${(prediction as any).timeframe || 'N/A'}\n`;
+          message += `**Kons Power Level:** ${(prediction as any).konsPowerLevel || 0}%\n`;
+          message += `**Divine Alignment:** ${(prediction as any).divineAlignment || 0}%\n`;
+          message += `**Spiritual Energy:** ${(prediction as any).spiritualEnergy || 0}%\n`;
+          message += `**Reasoning:** ${(prediction as any).reasoning || 'N/A'}\n`;
           
-          typeMessage(message, 'oracle', prediction.confidence);
+          typeMessage(message, 'oracle', (prediction as any).confidence || 0);
         } else {
           typeMessage('Kons Powa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
         }
@@ -209,22 +216,23 @@ ${intelligentResponse}
       await refetchMarketAnalysis();
       const analysis = marketAnalysis;
       
-      if (analysis) {
+      if (analysis && typeof analysis === 'object') {
         let message = `**📊 Market Analysis (Database)**\n\n`;
-        message += `**ETH Price:** $${analysis.ethPrice}\n`;
-        message += `**24h Volume:** $${(analysis.volume24h / 1000000).toFixed(2)}M\n`;
-        message += `**Market Cap:** $${(analysis.marketCap / 1000000000).toFixed(2)}B\n`;
-        message += `**24h Change:** ${analysis.priceChange24h.toFixed(2)}%\n`;
-        message += `**Trend Direction:** ${analysis.trendDirection}\n`;
-        message += `**MACD Signal:** ${analysis.macdSignal}\n`;
-        message += `**RSI:** ${analysis.rsiValue}\n`;
-        message += `**Fear & Greed Index:** ${analysis.fearGreedIndex}\n`;
+        message += `**ETH Price:** $${(analysis as any).ethPrice || 'N/A'}\n`;
+        message += `**24h Volume:** $${((analysis as any).volume24h / 1000000).toFixed(2) || '0'}M\n`;
+        message += `**Market Cap:** $${((analysis as any).marketCap / 1000000000).toFixed(2) || '0'}B\n`;
+        message += `**24h Change:** ${((analysis as any).priceChange24h || 0).toFixed(2)}%\n`;
+        message += `**Trend Direction:** ${(analysis as any).trendDirection || 'N/A'}\n`;
+        message += `**MACD Signal:** ${(analysis as any).macdSignal || 'N/A'}\n`;
+        message += `**RSI:** ${(analysis as any).rsiValue || 'N/A'}\n`;
+        message += `**Fear & Greed Index:** ${(analysis as any).fearGreedIndex || 'N/A'}\n`;
         
-        if (analysis.indicators) {
+        const indicators = (analysis as any).indicators;
+        if (indicators) {
           message += `\n**Technical Indicators:**\n`;
-          if (analysis.indicators.rsi) message += `- RSI: ${analysis.indicators.rsi}\n`;
-          if (analysis.indicators.macd?.signal) message += `- MACD: ${analysis.indicators.macd.signal}\n`;
-          if (analysis.indicators.stochastic?.signal) message += `- Stochastic: ${analysis.indicators.stochastic.signal}\n`;
+          if (indicators.rsi) message += `- RSI: ${indicators.rsi}\n`;
+          if (indicators.macd?.signal) message += `- MACD: ${indicators.macd.signal}\n`;
+          if (indicators.stochastic?.signal) message += `- Stochastic: ${indicators.stochastic.signal}\n`;
         }
         
         typeMessage(message, 'oracle', 85);
@@ -244,7 +252,7 @@ ${intelligentResponse}
       await refetchStrategies();
       const strategies = strategyRecommendations;
       
-      if (strategies && strategies.length > 0) {
+      if (strategies && Array.isArray(strategies) && strategies.length > 0) {
         let message = `**⚡ Trading Strategy Recommendations (Database)**\n\n`;
         
         strategies.slice(0, 3).forEach((strategy: any, index: number) => {
@@ -261,15 +269,19 @@ ${intelligentResponse}
         await refetchEnhancedData();
         const dashboardData = enhancedDashboardData;
         
-        if (dashboardData) {
+        if (dashboardData && typeof dashboardData === 'object') {
           let message = `**⚡ Market-Based Strategy Recommendation**\n\n`;
-          message += `**Current ETH Price:** $${dashboardData.ethData.price}\n`;
-          message += `**24h Change:** ${dashboardData.ethData.priceChange24h.toFixed(2)}%\n`;
+          const ethData = (dashboardData as any).ethData;
+          if (ethData) {
+            message += `**Current ETH Price:** $${ethData.price || 'N/A'}\n`;
+            message += `**24h Change:** ${(ethData.priceChange24h || 0).toFixed(2)}%\n`;
+          }
           
-          if (dashboardData.konsPowaPrediction) {
-            message += `**Kons Powa Recommendation:** ${dashboardData.konsPowaPrediction.prediction}\n`;
-            message += `**Strategy:** ${dashboardData.konsPowaPrediction.strategy}\n`;
-            message += `**Risk Level:** ${dashboardData.konsPowaPrediction.riskLevel}\n`;
+          const konsPowaPrediction = (dashboardData as any).konsPowaPrediction;
+          if (konsPowaPrediction) {
+            message += `**Kons Powa Recommendation:** ${konsPowaPrediction.prediction || 'N/A'}\n`;
+            message += `**Strategy:** ${konsPowaPrediction.strategy || 'N/A'}\n`;
+            message += `**Risk Level:** ${konsPowaPrediction.riskLevel || 'N/A'}\n`;
           }
           
           typeMessage(message, 'oracle', 75);
@@ -440,8 +452,7 @@ ${intelligentResponse}
   const [oracleEnabled, setOracleEnabled] = useState(false);
   const [reasoningMode, setReasoningMode] = useState(false);
   
-  // Wallet context integration
-  const walletContext = useSmaiWallet();
+  // Chat mode configuration
   const [chatMode, setChatMode] = useState<'auto' | 'openai' | 'spiritual' | 'oracle'>('auto');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
@@ -716,9 +727,7 @@ ${intelligentResponse}
   const recognitionRef = useRef<any>(null);
   const queryClient = useQueryClient();
 
-  const { smaiBalance, localBalance, transactions, canAffordTrade } = useSmaiWallet();
-  const { toast } = useToast();
-  const [location, setLocation] = useLocation();
+  const { smaiBalance, localBalance, transactions, canAffordTrade } = walletContext;
 
   // Handle page navigation from recommendations
   const handlePageNavigation = (route: string) => {
@@ -1319,7 +1328,58 @@ ${intelligentResponse}
     },
   });
 
-  const typeMessage = (message: string, source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error', confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
+  // Route-aware Ki Chat mutation - Enhanced Navigation Intelligence
+  const routeAwareChatMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch('/api/ki-chat/route-aware-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          currentPath: location,
+          isAuthenticated: !!user,
+          userRole: user?.role || 'user',
+          permissions: user?.permissions || [],
+          userId: user?.id,
+          sessionId: 'vision-portal',
+          requestRouteGuidance: true,
+          personality: 'wise',
+          spiritualEnergy: spiritualEnergy,
+          consciousnessLevel: consciousnessLevel,
+          auraIntensity: auraIntensity,
+          prophecyMode: prophecyMode
+        }),
+      });
+      if (!response.ok) throw new Error('Route-aware chat service unavailable');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data && data.response) {
+        typeMessage(data.response, 'enhanced_bot_memory', data.confidence || 90);
+        
+        // Handle route suggestions if provided
+        if (data.routeSuggestions && data.routeSuggestions.length > 0) {
+          const suggestionMessage = `\n🗺️ **Navigation Guidance:**\n${data.routeSuggestions.map((route: any) => 
+            `• [${route.title}](${route.path}) - ${route.description}`
+          ).join('\n')}`;
+          
+          setTimeout(() => {
+            typeMessage(suggestionMessage, 'enhanced_bot_memory', 85);
+          }, 1500);
+        }
+      } else {
+        typeMessage('I am Waides KI, your spiritual guide through this platform. How may I assist you?', 'enhanced_bot_memory', 85);
+      }
+      setIsProcessing(false);
+    },
+    onError: (error) => {
+      console.error('Route-aware chat error:', error);
+      // Fallback to enhanced chat
+      enhancedChatMutation.mutate(currentMessage);
+    }
+  });
+
+  const typeMessage = (message: string, source?: 'incite' | 'chatgpt' | 'konslang' | 'combined' | 'reasoning' | 'enhanced_bot_memory' | 'waidbot_summon' | 'oracle' | 'error' | 'navigation_guide', confidence?: number, konslangProcessing?: string, reasoning?: any[]) => {
     // Use cosmic enhanced version
     typeMessageKonsmik(message, source, confidence, konslangProcessing, reasoning);
   };
@@ -1466,7 +1526,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     } else if (isKonsPredictionRequest) {
       // Handle Kons Powa ETH prediction requests
       handleKonsPowaPrediction();
-    } else if (isKonsAiRequest && aiPersonality === 'cosmic') {
+    } else if (isKonsAiRequest && typeof aiPersonality === 'object' && (aiPersonality as any).mode === 'cosmic') {
       // Route to KonsAi for higher divine intelligence
       konsAiMutation.mutate(currentMessage);
     } else {
@@ -1477,7 +1537,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           break;
         case 'spiritual':
           // Use local Memory Engine for instant responses with plugin support and wallet context
-          const memoryResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
+          const memoryResponse = getSmartAnswer(currentMessage, enhancedDashboardData, (walletContext as any)?.balance, 0);
           if (memoryResponse) {
             typeMessage(memoryResponse.message, 'enhanced_bot_memory', memoryResponse.confidence);
             setIsProcessing(false);
@@ -1485,10 +1545,6 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             // Fallback to server-side spiritual intelligence
             questionMutation.mutate(currentMessage);
           }
-          break;
-        case 'konsai':
-          // Route directly to KonsAi for higher divine intelligence
-          konsAiMutation.mutate(currentMessage);
           break;
         case 'oracle':
           if (oracleEnabled) {
@@ -1498,16 +1554,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             questionMutation.mutate(currentMessage);
           }
           break;
-        default: // 'auto' mode - Educational Learning Guide
-          // Use local Educational Memory Engine for learning guidance and page recommendations
-          const educationalResponse = getSmartAnswer(currentMessage, enhancedDashboardData, walletContext?.balance, 0);
-          if (educationalResponse) {
-            typeMessage(educationalResponse.message, 'enhanced_bot_memory', educationalResponse.confidence);
-            setIsProcessing(false);
-          } else {
-            // Fallback to enhanced KonsAI if no educational match found
-            enhancedChatMutation.mutate(currentMessage);
-          }
+        default: // 'auto' mode - Route-Aware Educational Learning Guide
+          // First try route-aware Ki Chat for enhanced navigation guidance
+          routeAwareChatMutation.mutate(currentMessage);
           break;
       }
     }
@@ -2645,7 +2694,6 @@ function SmaiSikaWalletTab() {
     transactions,
     isLoading
   } = useSmaiWallet();
-  const { toast } = useToast();
   const [fundAmount, setFundAmount] = useState('');
   const [convertAmount, setConvertAmount] = useState('');
 
@@ -2917,7 +2965,6 @@ function SmaiSikaWalletTab() {
 
 // Local Wallet Tab Component
 function LocalWalletTab() {
-  const { toast } = useToast();
   const [bankAccount, setBankAccount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   
