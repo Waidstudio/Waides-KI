@@ -16,6 +16,7 @@ import {
   AdminRoles,
   RolePermissions,
 } from '@shared/authSchema';
+import { users } from '@shared/schema';
 
 // Environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'waides-ki-admin-secret-2025';
@@ -28,8 +29,8 @@ interface AuthenticatedUser {
   id: number;
   username: string;
   email: string;
-  role: AdminRole;
-  permissions: AdminPermission[];
+  role: AdminRole | 'user';
+  permissions: AdminPermission[] | string[];
   firstName?: string;
   lastName?: string;
   profileImage?: string;
@@ -236,12 +237,33 @@ export class AuthService {
         };
       }
 
-      // Find user
-      const [user] = await db
+      // Find user - check both admin and regular users
+      let user: any = null;
+      let isAdminUser = false;
+      
+      // First check admin users
+      const [adminUser] = await db
         .select()
         .from(adminUsers)
         .where(and(eq(adminUsers.email, credentials.email), eq(adminUsers.isActive, true)))
         .limit(1);
+
+      if (adminUser) {
+        user = adminUser;
+        isAdminUser = true;
+      } else {
+        // Check regular users if not found in admin
+        const [regularUser] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, credentials.email))
+          .limit(1);
+        
+        if (regularUser) {
+          user = regularUser;
+          isAdminUser = false;
+        }
+      }
 
       if (!user) {
         await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, false, 'user_not_found');
@@ -252,8 +274,9 @@ export class AuthService {
         };
       }
 
-      // Verify password
-      const passwordValid = await this.verifyPassword(credentials.password, user.passwordHash);
+      // Verify password (different field names for admin vs regular users)
+      const passwordHash = isAdminUser ? user.passwordHash : user.password;
+      const passwordValid = await this.verifyPassword(credentials.password, passwordHash);
       if (!passwordValid) {
         await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, false, 'invalid_password');
         return {
@@ -272,37 +295,51 @@ export class AuthService {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role as AdminRole,
-        permissions: user.permissions || RolePermissions[user.role as AdminRole] || [],
-        firstName: user.firstName || undefined,
-        lastName: user.lastName || undefined,
-        profileImage: user.profileImage || undefined,
+        role: isAdminUser ? (user.role as AdminRole) : 'user' as any,
+        permissions: isAdminUser ? (user.permissions || RolePermissions[user.role as AdminRole] || []) : ['view_dashboard', 'view_wallet', 'create_trades', 'view_trades'] as any,
+        firstName: isAdminUser ? (user.firstName || undefined) : undefined,
+        lastName: isAdminUser ? (user.lastName || undefined) : undefined,
+        profileImage: isAdminUser ? (user.profileImage || undefined) : undefined,
         lastLogin: new Date(),
       };
       
       const token = this.generateToken(authenticatedUser, sessionId, credentials.rememberMe);
       const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
-      await db.insert(adminSessions).values({
-        userId: user.id,
-        sessionId: sessionId,
-        tokenHash: tokenHash,
-        expiresAt,
-        ipAddress: cleanIpAddress,
-        userAgent,
-      });
+      // Insert session into appropriate table based on user type
+      if (isAdminUser) {
+        await db.insert(adminSessions).values({
+          userId: user.id,
+          sessionId: sessionId,
+          tokenHash: tokenHash,
+          expiresAt,
+          ipAddress: cleanIpAddress,
+          userAgent,
+        });
+      } else {
+        // For regular users, insert into user_sessions table
+        await db.execute(`
+          INSERT INTO user_sessions (session_id, user_id, token_hash, expires_at, ip_address, user_agent)
+          VALUES ('${sessionId}', ${user.id}, '${tokenHash}', '${expiresAt.toISOString()}', '${cleanIpAddress}', '${userAgent}')
+        `);
+      }
 
       // Update last login
-      await db
-        .update(adminUsers)
-        .set({ lastLogin: new Date() })
-        .where(eq(adminUsers.id, user.id));
+      if (isAdminUser) {
+        await db
+          .update(adminUsers)
+          .set({ lastLogin: new Date() })
+          .where(eq(adminUsers.id, user.id));
+      }
+      // Regular users don't have lastLogin tracking in the users table
 
       // Record successful login
       await this.recordLoginAttempt(credentials.email, cleanIpAddress, userAgent, true);
 
-      // Log activity
-      await this.logActivity(user.id, 'login', 'admin_session', { ipAddress: cleanIpAddress, userAgent }, cleanIpAddress, userAgent);
+      // Log activity - only for admin users
+      if (isAdminUser) {
+        await this.logActivity(user.id, 'login', 'admin_session', { ipAddress: cleanIpAddress, userAgent }, cleanIpAddress, userAgent);
+      }
 
       return {
         success: true,
