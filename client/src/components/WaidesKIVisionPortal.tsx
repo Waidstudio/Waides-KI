@@ -84,6 +84,9 @@ export default function WaidesKIVisionPortal() {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [konsaiInput, setKonsaiInput] = useState('');
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [activeModule, setActiveModule] = useState('chat');
+  const [aiInsights, setAiInsights] = useState<any>(null);
+  const [systemHealth, setSystemHealth] = useState(98.7);
   
   // Route-aware context initialization
   const [location] = useLocation();

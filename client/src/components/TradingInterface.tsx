@@ -11,7 +11,9 @@ import {
   TrendingUp, TrendingDown, BarChart3, Wallet, Activity, 
   DollarSign, Target, Shield, Zap, RefreshCw, AlertTriangle,
   CheckCircle, Clock, ArrowUpDown, ArrowUp, ArrowDown,
-  PlayCircle, PauseCircle, Settings, History, Eye
+  PlayCircle, PauseCircle, Settings, History, Eye, Calculator,
+  LineChart, PieChart, TrendingUpDown, Maximize2, Minimize2,
+  Monitor, Bot, Brain, Crosshair, FlashOn, Timer, Layers
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -63,6 +65,12 @@ export default function TradingInterface() {
   const [activeTab, setActiveTab] = useState('execute');
   const [showOrderDialog, setShowOrderDialog] = useState(false);
   const [pendingOrder, setPendingOrder] = useState<any>(null);
+  const [leverage, setLeverage] = useState('1');
+  const [stopLoss, setStopLoss] = useState('');
+  const [takeProfit, setTakeProfit] = useState('');
+  const [autoTradingEnabled, setAutoTradingEnabled] = useState(false);
+  const [riskLevel, setRiskLevel] = useState('medium');
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   // Fetch current market data
   const { data: marketData, isLoading: marketLoading } = useQuery({
@@ -251,10 +259,12 @@ export default function TradingInterface() {
 
         {/* Main Trading Interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-800">
+          <TabsList className="grid w-full grid-cols-6 bg-slate-800">
             <TabsTrigger value="execute">Execute Trade</TabsTrigger>
             <TabsTrigger value="positions">Positions</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
@@ -320,6 +330,91 @@ export default function TradingInterface() {
                         type="number"
                         step="0.01"
                       />
+                    </div>
+                  )}
+
+                  {/* Advanced Options Toggle */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+                    className="w-full"
+                  >
+                    {showAdvancedOptions ? <Minimize2 className="w-4 h-4 mr-2" /> : <Maximize2 className="w-4 h-4 mr-2" />}
+                    {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
+                  </Button>
+
+                  {/* Advanced Options */}
+                  {showAdvancedOptions && (
+                    <div className="space-y-4 p-4 border border-slate-700 rounded-lg bg-slate-800/30">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm text-slate-400 mb-2 block">Leverage</label>
+                          <Select value={leverage} onValueChange={setLeverage}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1">1x (No Leverage)</SelectItem>
+                              <SelectItem value="2">2x</SelectItem>
+                              <SelectItem value="5">5x</SelectItem>
+                              <SelectItem value="10">10x</SelectItem>
+                              <SelectItem value="25">25x</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm text-slate-400 mb-2 block">Risk Level</label>
+                          <Select value={riskLevel} onValueChange={setRiskLevel}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="low">Low Risk</SelectItem>
+                              <SelectItem value="medium">Medium Risk</SelectItem>
+                              <SelectItem value="high">High Risk</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm text-slate-400 mb-2 block">Stop Loss</label>
+                          <Input
+                            value={stopLoss}
+                            onChange={(e) => setStopLoss(e.target.value)}
+                            placeholder="Optional"
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm text-slate-400 mb-2 block">Take Profit</label>
+                          <Input
+                            value={takeProfit}
+                            onChange={(e) => setTakeProfit(e.target.value)}
+                            placeholder="Optional"
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 border border-slate-600 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <Bot className="w-4 h-4 text-cyan-400" />
+                          <span className="text-sm text-white">Auto-Trading Mode</span>
+                        </div>
+                        <Button
+                          variant={autoTradingEnabled ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setAutoTradingEnabled(!autoTradingEnabled)}
+                        >
+                          {autoTradingEnabled ? <PauseCircle className="w-4 h-4 mr-1" /> : <PlayCircle className="w-4 h-4 mr-1" />}
+                          {autoTradingEnabled ? 'Enabled' : 'Disabled'}
+                        </Button>
+                      </div>
                     </div>
                   )}
 
@@ -502,6 +597,241 @@ export default function TradingInterface() {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-slate-800 bg-slate-900/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-cyan-400">
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    Performance Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-400">Total P&L</p>
+                          <p className="text-2xl font-bold text-green-400">+$1,247.83</p>
+                        </div>
+                        <TrendingUp className="w-8 h-8 text-green-400" />
+                      </div>
+                    </div>
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-400">Win Rate</p>
+                          <p className="text-2xl font-bold text-white">68.4%</p>
+                        </div>
+                        <Target className="w-8 h-8 text-purple-400" />
+                      </div>
+                    </div>
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-400">Avg Trade</p>
+                          <p className="text-2xl font-bold text-white">$89.12</p>
+                        </div>
+                        <Calculator className="w-8 h-8 text-emerald-400" />
+                      </div>
+                    </div>
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-slate-400">Total Trades</p>
+                          <p className="text-2xl font-bold text-white">247</p>
+                        </div>
+                        <Activity className="w-8 h-8 text-orange-400" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-slate-800 bg-slate-900/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-purple-400">
+                    <PieChart className="w-5 h-5 mr-2" />
+                    Risk Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-3 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-slate-300">Portfolio Risk Score</span>
+                        <Badge className="bg-yellow-500/20 text-yellow-400">Medium</Badge>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '45%' }}></div>
+                      </div>
+                    </div>
+                    <div className="p-3 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-slate-300">Exposure Level</span>
+                        <Badge className="bg-green-500/20 text-green-400">Safe</Badge>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <div className="bg-green-400 h-2 rounded-full" style={{ width: '25%' }}></div>
+                      </div>
+                    </div>
+                    <div className="p-3 border border-slate-700 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-slate-300">Drawdown Risk</span>
+                        <Badge className="bg-green-500/20 text-green-400">Low</Badge>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-2">
+                        <div className="bg-green-400 h-2 rounded-full" style={{ width: '15%' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* AI Assistant Tab */}
+          <TabsContent value="ai-assistant">
+            <Card className="border-slate-800 bg-slate-900/50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-cyan-400">
+                  <Brain className="w-5 h-5 mr-2" />
+                  WaidesKI Trading Assistant
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* AI Recommendations */}
+                  <div className="lg:col-span-2 space-y-4">
+                    <div className="p-4 border border-slate-700 rounded-lg bg-gradient-to-r from-cyan-500/10 to-purple-500/10">
+                      <div className="flex items-center mb-3">
+                        <Brain className="w-5 h-5 text-cyan-400 mr-2" />
+                        <h3 className="font-medium text-white">Market Analysis</h3>
+                      </div>
+                      <p className="text-slate-300 text-sm mb-3">
+                        Based on current market conditions and your trading profile, I recommend a cautious approach. 
+                        ETH is showing consolidation patterns around $3,720 with moderate volume.
+                      </p>
+                      <div className="flex space-x-2">
+                        <Badge className="bg-green-500/20 text-green-400">
+                          <TrendingUp className="w-3 h-3 mr-1" />
+                          Bullish Bias
+                        </Badge>
+                        <Badge className="bg-blue-500/20 text-blue-400">
+                          <Timer className="w-3 h-3 mr-1" />
+                          Medium Term
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <div className="flex items-center mb-3">
+                        <Target className="w-5 h-5 text-purple-400 mr-2" />
+                        <h3 className="font-medium text-white">Trade Suggestions</h3>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="p-3 border border-slate-600 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-white font-medium">ETH Long Position</span>
+                            <Badge className="bg-green-500/20 text-green-400">High Confidence</Badge>
+                          </div>
+                          <div className="text-sm text-slate-400">
+                            Entry: $3,720 | Target: $3,850 | Stop: $3,650
+                          </div>
+                          <Button size="sm" className="mt-2 bg-green-600 hover:bg-green-700">
+                            <Crosshair className="w-3 h-3 mr-1" />
+                            Execute Suggestion
+                          </Button>
+                        </div>
+                        <div className="p-3 border border-slate-600 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-white font-medium">Scalp Trade Setup</span>
+                            <Badge className="bg-yellow-500/20 text-yellow-400">Medium Confidence</Badge>
+                          </div>
+                          <div className="text-sm text-slate-400">
+                            Quick scalp on breakout above $3,730 resistance
+                          </div>
+                          <Button size="sm" variant="outline" className="mt-2">
+                            <Eye className="w-3 h-3 mr-1" />
+                            Monitor Setup
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* AI Controls */}
+                  <div className="space-y-4">
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <h3 className="font-medium text-white mb-3 flex items-center">
+                        <Bot className="w-4 h-4 mr-2 text-cyan-400" />
+                        AI Settings
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-300">Auto-Analysis</span>
+                          <Button variant="outline" size="sm">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            On
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-300">Smart Alerts</span>
+                          <Button variant="outline" size="sm">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            On
+                          </Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-300">Risk Monitor</span>
+                          <Button variant="outline" size="sm">
+                            <Shield className="w-3 h-3 mr-1" />
+                            Active
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 border border-slate-700 rounded-lg">
+                      <h3 className="font-medium text-white mb-3 flex items-center">
+                        <Monitor className="w-4 h-4 mr-2 text-purple-400" />
+                        Quick Actions
+                      </h3>
+                      <div className="space-y-2">
+                        <Button variant="outline" size="sm" className="w-full justify-start">
+                          <LineChart className="w-3 h-3 mr-2" />
+                          Generate Report
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full justify-start">
+                          <RefreshCw className="w-3 h-3 mr-2" />
+                          Refresh Analysis
+                        </Button>
+                        <Button variant="outline" size="sm" className="w-full justify-start">
+                          <Settings className="w-3 h-3 mr-2" />
+                          Configure AI
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="p-4 border border-slate-700 rounded-lg bg-gradient-to-b from-purple-500/10 to-cyan-500/10">
+                      <div className="text-center">
+                        <Brain className="w-8 h-8 mx-auto mb-2 text-cyan-400" />
+                        <p className="text-sm text-slate-300 mb-3">
+                          WaidesKI is actively monitoring 12 market indicators
+                        </p>
+                        <div className="flex items-center justify-center space-x-1">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span className="text-xs text-slate-400">AI Active</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
