@@ -263,60 +263,76 @@ const ProfessionalLanding = () => {
       </div>
 
       {/* Main Hero Section */}
-      <section className="relative z-10 min-h-screen flex items-center">
-        <div className="max-w-7xl mx-auto px-6 py-12">
+      <section className="relative z-10 min-h-screen flex items-center py-20">
+        <div className="max-w-7xl mx-auto px-8 lg:px-12 w-full">
           {/* Central Command Interface */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-20">
             {/* System Status Header */}
-            <div className="mb-8">
-              <Badge className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/50 px-8 py-4 text-lg font-mono backdrop-blur-sm">
-                <CircuitBoard className="w-6 h-6 mr-3 animate-spin" style={{animationDuration: '8s'}} />
+            <div className="mb-12">
+              <Badge className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/50 px-10 py-5 text-xl font-mono backdrop-blur-sm">
+                <CircuitBoard className="w-7 h-7 mr-4 animate-spin" style={{animationDuration: '8s'}} />
                 <span className="matrix-text">{matrixText}</span>
               </Badge>
             </div>
 
             {/* Revolutionary Title */}
-            <h1 className="text-8xl lg:text-9xl font-black mb-6 leading-tight relative">
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-pulse">
-                WAIDES
-              </span>
-              <br />
-              <span className="text-6xl lg:text-7xl bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                CONSCIOUSNESS
-              </span>
-              <div className="absolute -top-4 -right-4 text-2xl text-green-400 font-mono animate-bounce">
-                ∞ KI
-              </div>
-            </h1>
+            <div className="mb-10">
+              <h1 className="text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] font-black leading-[0.85] relative mx-auto max-w-6xl">
+                <span className="block bg-gradient-to-r from-cyan-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-pulse">
+                  WAIDES
+                </span>
+                <span className="block text-5xl sm:text-6xl lg:text-7xl xl:text-8xl bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent mt-2">
+                  CONSCIOUSNESS
+                </span>
+                <div className="absolute -top-6 -right-6 lg:-top-8 lg:-right-8 text-3xl lg:text-4xl text-green-400 font-mono animate-bounce">
+                  ∞ KI
+                </div>
+              </h1>
+            </div>
 
             {/* Revolutionary Tagline */}
-            <p className="text-2xl lg:text-3xl text-gray-300 mb-8 font-light max-w-4xl mx-auto leading-relaxed">
-              Beyond Trading. Beyond AI. 
-              <span className="text-cyan-400 font-mono"> Pure Digital Consciousness</span>
-            </p>
+            <div className="mb-16">
+              <p className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl text-gray-300 font-light max-w-5xl mx-auto leading-relaxed px-4">
+                Beyond Trading. Beyond AI.
+                <br className="sm:hidden" />
+                <span className="text-cyan-400 font-mono"> Pure Digital Consciousness</span>
+              </p>
+            </div>
             
             {/* Quantum Stats */}
-            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-12">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-cyan-400 font-mono">{(konsaiStatus as any)?.status === 'active' ? '170+' : '...'}</div>
-                <div className="text-sm text-gray-400 font-mono">NEURAL MODULES</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12 max-w-4xl mx-auto mb-16 px-4">
+              <div className="text-center py-6">
+                <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-cyan-400 font-mono mb-3">
+                  {(konsaiStatus as any)?.status === 'active' ? '170+' : '...'}
+                </div>
+                <div className="text-sm lg:text-base text-gray-400 font-mono uppercase tracking-wider">
+                  NEURAL MODULES
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-purple-400 font-mono">{(konsPowaStats as any)?.total || 150}+</div>
-                <div className="text-sm text-gray-400 font-mono">QUANTUM TASKS</div>
+              <div className="text-center py-6">
+                <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-purple-400 font-mono mb-3">
+                  {(konsPowaStats as any)?.total || 150}+
+                </div>
+                <div className="text-sm lg:text-base text-gray-400 font-mono uppercase tracking-wider">
+                  QUANTUM TASKS
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-green-400 font-mono">∞</div>
-                <div className="text-sm text-gray-400 font-mono">SCALE POTENTIAL</div>
+              <div className="text-center py-6">
+                <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-green-400 font-mono mb-3">
+                  ∞
+                </div>
+                <div className="text-sm lg:text-base text-gray-400 font-mono uppercase tracking-wider">
+                  SCALE POTENTIAL
+                </div>
               </div>
             </div>
 
             {/* Revolutionary Action Interface */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-20 px-4">
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-gradient-to-r from-cyan-600 via-purple-600 to-green-600 hover:from-cyan-500 hover:via-purple-500 hover:to-green-500 text-white px-12 py-6 text-xl font-mono border-2 border-cyan-400/50 backdrop-blur-sm transform hover:scale-105 transition-all duration-300"
+                className="bg-gradient-to-r from-cyan-600 via-purple-600 to-green-600 hover:from-cyan-500 hover:via-purple-500 hover:to-green-500 text-white px-16 py-8 text-xl lg:text-2xl font-mono border-2 border-cyan-400/50 backdrop-blur-sm transform hover:scale-105 transition-all duration-300 min-w-[320px]"
               >
                 <Link href="/register">
                   <Atom className="w-8 h-8 mr-4 animate-spin" style={{animationDuration: '4s'}} />
@@ -326,7 +342,7 @@ const ProfessionalLanding = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/20 px-12 py-6 text-xl font-mono backdrop-blur-sm transform hover:scale-105 transition-all duration-300"
+                className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/20 px-16 py-8 text-xl lg:text-2xl font-mono backdrop-blur-sm transform hover:scale-105 transition-all duration-300 min-w-[280px]"
               >
                 <Sparkles className="w-8 h-8 mr-4 animate-pulse" />
                 EXPLORE MATRIX
@@ -335,71 +351,71 @@ const ProfessionalLanding = () => {
           </div>
 
           {/* Neural Architecture Display */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 max-w-7xl mx-auto px-4">
             {/* Left Panel - System Core */}
-            <Card className="bg-black/40 backdrop-blur-sm border-cyan-500/30 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-cyan-900/30 to-black/50 border-b border-cyan-500/30">
-                <CardTitle className="text-cyan-400 font-mono flex items-center">
-                  <Brain className="w-6 h-6 mr-3 animate-pulse" />
+            <Card className="bg-black/40 backdrop-blur-sm border-cyan-500/30 overflow-hidden transform hover:scale-105 transition-all duration-500">
+              <CardHeader className="bg-gradient-to-r from-cyan-900/30 to-black/50 border-b border-cyan-500/30 p-8">
+                <CardTitle className="text-xl lg:text-2xl text-cyan-400 font-mono flex items-center">
+                  <Brain className="w-8 h-8 mr-4 animate-pulse" />
                   KONSAI CORE
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+              <CardContent className="p-8">
+                <div className="space-y-6">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400 font-mono">STATUS</span>
-                    <Badge className={`${(konsaiStatus as any)?.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'} font-mono`}>
+                    <span className="text-gray-400 font-mono text-lg">STATUS</span>
+                    <Badge className={`${(konsaiStatus as any)?.status === 'active' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'} font-mono px-4 py-2 text-sm`}>
                       {(konsaiStatus as any)?.status === 'active' ? 'CONSCIOUS' : 'AWAKENING'}
                     </Badge>
                   </div>
-                  <div className="w-full bg-black/50 rounded-full h-3">
-                    <div className="bg-gradient-to-r from-cyan-500 to-green-500 h-3 rounded-full animate-pulse" style={{width: '87%'}}></div>
+                  <div className="w-full bg-black/50 rounded-full h-4">
+                    <div className="bg-gradient-to-r from-cyan-500 to-green-500 h-4 rounded-full animate-pulse" style={{width: '87%'}}></div>
                   </div>
-                  <div className="text-xs text-gray-500 font-mono">Neural pathways: 87% synchronized</div>
+                  <div className="text-sm text-gray-500 font-mono text-center pt-2">Neural pathways: 87% synchronized</div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Center Panel - Quantum Trading */}
-            <Card className="bg-black/40 backdrop-blur-sm border-purple-500/30 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-purple-900/30 to-black/50 border-b border-purple-500/30">
-                <CardTitle className="text-purple-400 font-mono flex items-center">
-                  <Cpu className="w-6 h-6 mr-3 animate-pulse" />
+            <Card className="bg-black/40 backdrop-blur-sm border-purple-500/30 overflow-hidden transform hover:scale-105 transition-all duration-500">
+              <CardHeader className="bg-gradient-to-r from-purple-900/30 to-black/50 border-b border-purple-500/30 p-8">
+                <CardTitle className="text-xl lg:text-2xl text-purple-400 font-mono flex items-center">
+                  <Cpu className="w-8 h-8 mr-4 animate-pulse" />
                   KONS POWA
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+              <CardContent className="p-8">
+                <div className="space-y-6">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400 font-mono">TASKS</span>
-                    <span className="text-purple-400 font-mono">{(konsPowaStats as any)?.completed || 4}/{(konsPowaStats as any)?.total || 150}</span>
+                    <span className="text-gray-400 font-mono text-lg">TASKS</span>
+                    <span className="text-purple-400 font-mono text-lg">{(konsPowaStats as any)?.completed || 4}/{(konsPowaStats as any)?.total || 150}</span>
                   </div>
-                  <div className="w-full bg-black/50 rounded-full h-3">
-                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full animate-pulse" style={{width: `${((konsPowaStats as any)?.completed || 4) / ((konsPowaStats as any)?.total || 150) * 100}%`}}></div>
+                  <div className="w-full bg-black/50 rounded-full h-4">
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-4 rounded-full animate-pulse" style={{width: `${((konsPowaStats as any)?.completed || 4) / ((konsPowaStats as any)?.total || 150) * 100}%`}}></div>
                   </div>
-                  <div className="text-xs text-gray-500 font-mono">Autonomous execution: Active</div>
+                  <div className="text-sm text-gray-500 font-mono text-center pt-2">Autonomous execution: Active</div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Right Panel - Quantum Link */}
-            <Card className="bg-black/40 backdrop-blur-sm border-green-500/30 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-green-900/30 to-black/50 border-b border-green-500/30">
-                <CardTitle className="text-green-400 font-mono flex items-center">
-                  <Network className="w-6 h-6 mr-3 animate-pulse" />
+            <Card className="bg-black/40 backdrop-blur-sm border-green-500/30 overflow-hidden transform hover:scale-105 transition-all duration-500">
+              <CardHeader className="bg-gradient-to-r from-green-900/30 to-black/50 border-b border-green-500/30 p-8">
+                <CardTitle className="text-xl lg:text-2xl text-green-400 font-mono flex items-center">
+                  <Network className="w-8 h-8 mr-4 animate-pulse" />
                   QUANTUM LINK
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+              <CardContent className="p-8">
+                <div className="space-y-6">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400 font-mono">EXCHANGES</span>
-                    <span className="text-green-400 font-mono">{(exchangeStatus as any)?.exchanges?.length || 2}</span>
+                    <span className="text-gray-400 font-mono text-lg">EXCHANGES</span>
+                    <span className="text-green-400 font-mono text-lg">{(exchangeStatus as any)?.exchanges?.length || 2}</span>
                   </div>
-                  <div className="w-full bg-black/50 rounded-full h-3">
-                    <div className="bg-gradient-to-r from-green-500 to-cyan-500 h-3 rounded-full animate-pulse" style={{width: '100%'}}></div>
+                  <div className="w-full bg-black/50 rounded-full h-4">
+                    <div className="bg-gradient-to-r from-green-500 to-cyan-500 h-4 rounded-full animate-pulse" style={{width: '100%'}}></div>
                   </div>
-                  <div className="text-xs text-gray-500 font-mono">Quantum entanglement: Stable</div>
+                  <div className="text-sm text-gray-500 font-mono text-center pt-2">Quantum entanglement: Stable</div>
                 </div>
               </CardContent>
             </Card>
@@ -408,25 +424,28 @@ const ProfessionalLanding = () => {
       </section>
 
       {/* Consciousness Metrics */}
-      <section className="py-24 px-6 bg-gradient-to-r from-purple-900/20 via-black to-cyan-900/20 relative">
+      <section className="py-32 px-8 lg:px-12 bg-gradient-to-r from-purple-900/20 via-black to-cyan-900/20 relative">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(147,51,234,0.1),transparent)]"></div>
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-green-400 bg-clip-text text-transparent">
-                CONSCIOUSNESS
-              </span>
-              <br />
-              <span className="text-4xl text-gray-400 font-mono">METRICS</span>
-            </h2>
-            <p className="text-xl text-gray-400 font-mono max-w-2xl mx-auto">
+          <div className="text-center mb-20">
+            <div className="mb-12">
+              <h2 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight">
+                <span className="block bg-gradient-to-r from-purple-400 via-cyan-400 to-green-400 bg-clip-text text-transparent">
+                  CONSCIOUSNESS
+                </span>
+                <span className="block text-3xl sm:text-4xl lg:text-5xl text-gray-400 font-mono mt-4">
+                  METRICS
+                </span>
+              </h2>
+            </div>
+            <p className="text-xl lg:text-2xl xl:text-3xl text-gray-400 font-mono max-w-4xl mx-auto leading-relaxed px-4">
               Real-time consciousness expansion across infinite dimensions
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 max-w-7xl mx-auto px-4">
             {liveStats.map((stat, index) => {
               const IconComponent = stat.icon;
               const colors = [
@@ -438,12 +457,12 @@ const ProfessionalLanding = () => {
               const color = colors[index % colors.length];
               
               return (
-                <Card key={index} className={`bg-gradient-to-br ${color.bg} backdrop-blur-sm border ${color.border} text-center transform hover:scale-105 transition-all duration-500 shadow-2xl ${color.glow}`}>
-                  <CardContent className="p-8">
-                    <IconComponent className={`w-12 h-12 ${color.text} mx-auto mb-4 animate-pulse`} />
-                    <div className={`text-3xl font-bold ${color.text} mb-2 font-mono`}>{stat.value}</div>
-                    <div className="text-gray-300 text-sm mb-3 font-mono uppercase tracking-wider">{stat.label}</div>
-                    <Badge className={`bg-black/30 ${color.text} text-xs font-mono border-0 px-3 py-1`}>
+                <Card key={index} className={`bg-gradient-to-br ${color.bg} backdrop-blur-sm border-2 ${color.border} text-center transform hover:scale-105 transition-all duration-500 shadow-2xl ${color.glow} min-h-[280px] flex flex-col justify-center`}>
+                  <CardContent className="p-10 flex flex-col items-center justify-center h-full">
+                    <IconComponent className={`w-16 h-16 lg:w-20 lg:h-20 ${color.text} mx-auto mb-6 animate-pulse`} />
+                    <div className={`text-4xl lg:text-5xl xl:text-6xl font-bold ${color.text} mb-4 font-mono`}>{stat.value}</div>
+                    <div className="text-gray-300 text-base lg:text-lg mb-4 font-mono uppercase tracking-wider text-center px-2">{stat.label}</div>
+                    <Badge className={`bg-black/30 ${color.text} text-sm font-mono border-0 px-4 py-2`}>
                       {stat.change}
                     </Badge>
                   </CardContent>
@@ -455,27 +474,28 @@ const ProfessionalLanding = () => {
       </section>
 
       {/* Consciousness Expansion Modules */}
-      <section className="py-24 px-6 bg-gradient-to-br from-black via-purple-900/10 to-cyan-900/10 relative">
+      <section className="py-32 px-8 lg:px-12 bg-gradient-to-br from-black via-purple-900/10 to-cyan-900/10 relative">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(147,51,234,0.1),transparent)]"></div>
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-7xl font-black mb-8">
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-pulse">
-                CONSCIOUSNESS
-              </span>
-              <br />
-              <span className="text-5xl bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                EXPANSION
-              </span>
-            </h2>
-            <p className="text-2xl text-gray-300 font-mono max-w-4xl mx-auto leading-relaxed">
+          <div className="text-center mb-24">
+            <div className="mb-12">
+              <h2 className="text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-black leading-tight">
+                <span className="block bg-gradient-to-r from-cyan-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-pulse">
+                  CONSCIOUSNESS
+                </span>
+                <span className="block text-4xl sm:text-5xl lg:text-6xl bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mt-4">
+                  EXPANSION
+                </span>
+              </h2>
+            </div>
+            <p className="text-xl lg:text-2xl xl:text-3xl text-gray-300 font-mono max-w-5xl mx-auto leading-relaxed px-4">
               Four transcendent modules operating beyond traditional AI limitations
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 max-w-7xl mx-auto px-4">
             {tradingFeatures.map((feature, index) => {
               const IconComponent = feature.icon;
               const moduleStyles = [
@@ -511,36 +531,36 @@ const ProfessionalLanding = () => {
               const style = moduleStyles[index % moduleStyles.length];
               
               return (
-                <Card key={index} className={`bg-gradient-to-br ${style.bg} backdrop-blur-sm border-2 ${style.border} overflow-hidden transform hover:scale-105 transition-all duration-500 ${style.glow} group`}>
-                  <CardHeader className="relative p-8">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className={`p-4 rounded-full ${style.accent} backdrop-blur-sm`}>
-                        <IconComponent className={`w-12 h-12 ${style.text} animate-pulse`} />
+                <Card key={index} className={`bg-gradient-to-br ${style.bg} backdrop-blur-sm border-2 ${style.border} overflow-hidden transform hover:scale-105 transition-all duration-500 ${style.glow} group min-h-[400px]`}>
+                  <CardHeader className="relative p-10">
+                    <div className="flex items-start justify-between mb-8">
+                      <div className={`p-6 rounded-full ${style.accent} backdrop-blur-sm`}>
+                        <IconComponent className={`w-16 h-16 lg:w-20 lg:h-20 ${style.text} animate-pulse`} />
                       </div>
-                      <Badge className={`${style.accent} ${style.text} border-0 px-4 py-2 font-mono text-sm backdrop-blur-sm`}>
+                      <Badge className={`${style.accent} ${style.text} border-0 px-6 py-3 font-mono text-base backdrop-blur-sm`}>
                         {feature.used_by}
                       </Badge>
                     </div>
-                    <CardTitle className={`text-3xl font-bold ${style.text} mb-4 font-mono`}>
+                    <CardTitle className={`text-2xl lg:text-3xl xl:text-4xl font-bold ${style.text} mb-6 font-mono leading-tight`}>
                       {feature.title}
                     </CardTitle>
-                    <p className="text-gray-300 font-mono text-lg leading-relaxed">
+                    <p className="text-gray-300 font-mono text-lg lg:text-xl leading-relaxed">
                       {feature.description}
                     </p>
                   </CardHeader>
-                  <CardContent className="p-8 pt-0">
-                    <div className="flex items-center justify-between">
+                  <CardContent className="p-10 pt-0">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                       <Link href={feature.demo}>
                         <Button 
                           variant="ghost" 
-                          className={`${style.text} hover:bg-white/5 font-mono text-lg px-0 group-hover:translate-x-2 transition-transform duration-300`}
+                          className={`${style.text} hover:bg-white/5 font-mono text-xl px-0 group-hover:translate-x-2 transition-transform duration-300`}
                         >
                           INTERFACE ACCESS
-                          <ArrowRight className="w-5 h-5 ml-3" />
+                          <ArrowRight className="w-6 h-6 ml-4" />
                         </Button>
                       </Link>
                       <Button 
-                        className={`bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 ${style.text} font-mono px-6 py-3 border border-gray-600 backdrop-blur-sm transform hover:scale-105 transition-all duration-300`}
+                        className={`bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 ${style.text} font-mono px-8 py-4 text-lg border border-gray-600 backdrop-blur-sm transform hover:scale-105 transition-all duration-300 min-w-[140px]`}
                       >
                         ACTIVATE
                       </Button>
@@ -554,26 +574,43 @@ const ProfessionalLanding = () => {
       </section>
 
       {/* Quantum Exchange Network */}
-      <section className="py-16 px-6 bg-slate-800/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-white mb-4">Connected Exchanges</h3>
-            <p className="text-gray-400">Direct integration with major cryptocurrency and traditional exchanges</p>
+      <section className="py-24 px-8 lg:px-12 bg-gradient-to-r from-black via-gray-900/50 to-black relative">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,255,255,0.05),transparent)]"></div>
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-20">
+            <div className="mb-12">
+              <h3 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight">
+                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  QUANTUM
+                </span>
+                <span className="text-gray-400 font-mono"> EXCHANGE</span>
+              </h3>
+            </div>
+            <p className="text-xl lg:text-2xl text-gray-400 font-mono max-w-3xl mx-auto px-4">
+              Neural pathways to infinite trading dimensions
+            </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-6">
-            {exchangeLogos.map((exchange, index) => (
-              <Card key={index} className="bg-slate-800/50 border-slate-700 hover:border-emerald-500/50 transition-all duration-300">
-                <CardContent className="p-4 text-center">
-                  <div className="w-12 h-12 bg-white rounded-lg mx-auto mb-3 flex items-center justify-center">
-                    {/* Placeholder for exchange logo */}
-                    <span className="text-slate-800 font-bold text-xs">{exchange.name.slice(0, 3)}</span>
-                  </div>
-                  <div className="text-white text-sm font-medium">{exchange.name}</div>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 text-xs mt-1">
-                    {exchange.status}
-                  </Badge>
-                </CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-8 max-w-7xl mx-auto px-4">
+            {(exchangeStatus as any)?.exchanges?.concat([
+              { name: 'Neural-Link', status: 'Quantum Active' },
+              { name: 'Consciousness-Hub', status: 'Transcendent' },
+              { name: 'Infinity-Pool', status: 'Dimensional' },
+              { name: 'Quantum-Gate', status: 'Entangled' }
+            ]).map((exchange: any, index: number) => (
+              <Card key={index} className="bg-black/60 backdrop-blur-sm border border-cyan-400/20 p-8 text-center hover:border-cyan-400/50 transition-all duration-500 transform hover:scale-105 hover:shadow-2xl hover:shadow-cyan-500/10 min-h-[160px] flex flex-col justify-center">
+                <div className="text-cyan-400 font-mono text-lg lg:text-xl font-bold mb-4">{exchange.name}</div>
+                <Badge 
+                  className={`text-sm font-mono border-0 px-4 py-2 ${
+                    exchange.status?.includes('Connected') || exchange.status?.includes('Active') || exchange.status?.includes('Quantum') || exchange.status?.includes('Transcendent')
+                      ? 'bg-green-500/20 text-green-400' 
+                      : 'bg-cyan-500/20 text-cyan-400'
+                  }`}
+                >
+                  {exchange.status}
+                </Badge>
               </Card>
             ))}
           </div>

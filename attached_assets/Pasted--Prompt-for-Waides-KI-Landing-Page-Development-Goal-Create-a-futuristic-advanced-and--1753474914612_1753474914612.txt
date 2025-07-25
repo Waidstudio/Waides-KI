@@ -1,0 +1,72 @@
+
+**Prompt for Waides KI Landing Page Development:**
+
+> **Goal:** Create a futuristic, advanced, and professional landing page for Waides KI that captivates users at first glance. The design should reflect a high-tech, cutting-edge experience. The page should focus on usability and seamless navigation, while showcasing the app's unique features.
+
+### **General Design Requirements:**
+
+1. **Color Scheme:**
+
+   * Use a combination of dark tones, neon accents, and metallic highlights. Think of sleek blacks, silvers, deep blues, and neon greens, blues, or purples.
+   * Avoid clutter and keep the layout minimalistic yet visually engaging.
+
+2. **Typography:**
+
+   * Use modern, sans-serif fonts. Consider futuristic fonts with a tech-oriented vibe (e.g., Roboto, Orbitron, or Exo).
+   * Font size should be clear and readable, but make use of size variation to highlight important elements.
+
+3. **Imagery:**
+
+   * Integrate high-tech abstract imagery like digital grids, holograms, and glowing effects.
+   * Use modern, sleek icons and graphics to represent the features of the app.
+
+4. **Animations:**
+
+   * Smooth transitions between sections (scrolling effects, hover effects).
+   * Parallax scrolling to give a sense of depth and immersion.
+   * Subtle animations for icons and text (e.g., fade-ins, zoom effects).
+
+5. **Responsive Design:**
+
+   * Ensure the page adapts perfectly across different screen sizes (mobile, tablet, desktop).
+
+### **Landing Page Structure:**
+
+1. **Header:**
+
+   * Logo on the left, sleek navigation links on the right (Home, Features, Download, About).
+   * Sticky navigation bar that keeps the menu accessible as the user scrolls.
+   * A futuristic hero section with an interactive background (dynamic visuals such as a moving galaxy, digital world, or advanced tech grid).
+   * A brief, powerful headline introducing Waides KI (e.g., "Unlock the Future of Digital Interaction").
+
+2. **Main Content Area:**
+
+   * **Section 1: About Waides KI**
+
+     * Short introduction to the app, using engaging text and visuals.
+     * Option to display a video or animation showing how Waides KI works.
+
+   * **Section 2: Features**
+
+     * Visual representation of key features with icons and short descriptions.
+     * Interactive, hover-based animations that highlight each feature when users scroll over them.
+
+   * **Section 3: Testimonials**
+
+     * Add a carousel or slider for user reviews or testimonials with high-quality user photos (optional).
+
+   * **Section 4: Call to Action (CTA):**
+
+     * Prominent button like "Get Started" or "Join the Future" that leads to the sign-up page or download link.
+
+3. **Footer:**
+
+   * Include links for privacy policy, terms of service, and social media icons (e.g., Twitter, LinkedIn, GitHub).
+   * Optional: Add an email newsletter sign-up section.
+
+### **Additional Features:**
+
+* **Interactivity:** Hover animations, smooth scroll, parallax effects for a dynamic feel.
+* **Performance:** Ensure fast load times by optimizing assets and using lazy loading for images and content.
+* **SEO & Meta Tags:** Include appropriate meta tags for SEO purposes (e.g., title, description, and keywords for search engines).
+* **Security:** Ensure that all user data collected on the landing page (e.g., email) is securely handled.
