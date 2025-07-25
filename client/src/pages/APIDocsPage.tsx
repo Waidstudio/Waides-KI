@@ -249,19 +249,17 @@ export default function APIDocsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="container mx-auto px-6 py-12 space-y-8 max-w-7xl">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="text-center lg:text-left">
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-emerald-400 bg-clip-text text-transparent">
-                API Documentation
-              </span>
-            </h1>
-            <p className="text-slate-300 text-lg max-w-2xl">
-              Comprehensive REST API endpoints for seamless third-party integration with Waides KI trading platform
-            </p>
-          </div>
-          <div className="flex flex-col items-center lg:items-end gap-3">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8">
+        <div className="text-center space-y-4 mb-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-emerald-400 bg-clip-text text-transparent">
+              API Documentation
+            </span>
+          </h1>
+          <p className="text-slate-300 text-base sm:text-lg max-w-4xl mx-auto px-4">
+            Comprehensive REST API endpoints for seamless third-party integration with Waides KI trading platform
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 mt-4">
             <Badge variant="outline" className="border-blue-500 text-blue-400 px-4 py-2 text-sm font-medium">
               REST API v1.0
             </Badge>
@@ -271,58 +269,61 @@ export default function APIDocsPage() {
           </div>
         </div>
 
-        <Card className="bg-slate-800/80 border-slate-700 backdrop-blur-xl shadow-2xl">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-white text-xl flex items-center gap-2">
-              <ExternalLink className="h-5 w-5 text-blue-400" />
-              API Base URL
-            </CardTitle>
-            <CardDescription className="text-slate-300">
-              All endpoints are relative to this base URL. Copy to get started with integration.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between bg-slate-700/50 p-4 rounded-lg border border-slate-600">
-              <code className="text-blue-400 font-mono text-lg flex-1">{baseUrl}</code>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => copyToClipboard(baseUrl, 'base-url')}
-                className="ml-3 hover:bg-slate-600"
-              >
-                {copiedEndpoint === 'base-url' ? (
-                  <span className="text-green-400 text-sm">Copied!</span>
-                ) : (
-                  <Copy className="h-4 w-4 text-slate-300" />
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="max-w-6xl mx-auto">
+          <Card className="bg-slate-800/80 border-slate-700 backdrop-blur-xl shadow-2xl">
+            <CardHeader className="pb-4 text-center">
+              <CardTitle className="text-white text-xl flex items-center justify-center gap-2">
+                <ExternalLink className="h-5 w-5 text-blue-400" />
+                API Base URL
+              </CardTitle>
+              <CardDescription className="text-slate-300">
+                All endpoints are relative to this base URL. Copy to get started with integration.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row items-center justify-between bg-slate-700/50 p-4 rounded-lg border border-slate-600 gap-3">
+                <code className="text-blue-400 font-mono text-sm sm:text-lg flex-1 text-center sm:text-left break-all">{baseUrl}</code>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(baseUrl, 'base-url')}
+                  className="hover:bg-slate-600 shrink-0"
+                >
+                  {copiedEndpoint === 'base-url' ? (
+                    <span className="text-green-400 text-sm">Copied!</span>
+                  ) : (
+                    <Copy className="h-4 w-4 text-slate-300" />
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Tabs defaultValue="market" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 bg-slate-800/80 backdrop-blur-xl p-2 h-auto gap-2">
-            <TabsTrigger value="market" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white px-4 py-3 text-sm font-medium">
-              Market Data
-            </TabsTrigger>
-            <TabsTrigger value="signals" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-4 py-3 text-sm font-medium">
-              AI Signals
-            </TabsTrigger>
-            <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-4 py-3 text-sm font-medium">
-              Trading
-            </TabsTrigger>
-            <TabsTrigger value="websocket" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white px-4 py-3 text-sm font-medium">
-              WebSocket
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white px-4 py-3 text-sm font-medium">
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="admin" className="data-[state=active]:bg-red-600 data-[state=active]:text-white px-4 py-3 text-sm font-medium">
-              Admin
-            </TabsTrigger>
-          </TabsList>
+        <div className="max-w-6xl mx-auto">
+          <Tabs defaultValue="market" className="space-y-6 sm:space-y-8">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 bg-slate-800/80 backdrop-blur-xl p-2 h-auto gap-1 sm:gap-2">
+              <TabsTrigger value="market" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium">
+                Market Data
+              </TabsTrigger>
+              <TabsTrigger value="signals" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium">
+                AI Signals
+              </TabsTrigger>
+              <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium">
+                Trading
+              </TabsTrigger>
+              <TabsTrigger value="websocket" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium">
+                WebSocket
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium">
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="admin" className="data-[state=active]:bg-red-600 data-[state=active]:text-white px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium">
+                Admin
+              </TabsTrigger>
+            </TabsList>
 
-          <div className="max-h-[80vh] overflow-y-auto pr-2 space-y-8">
+            <div className="max-h-[75vh] overflow-y-auto px-1 space-y-6 sm:space-y-8">
             <TabsContent value="market" className="space-y-6 mt-0">
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold text-white mb-2">Market Data Endpoints</h2>
@@ -363,26 +364,28 @@ export default function APIDocsPage() {
               {renderEndpoints(endpoints.analytics, 'pink')}
             </TabsContent>
 
-            <TabsContent value="admin" className="space-y-6 mt-0">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">Admin Operations</h2>
-                <p className="text-slate-400">System administration, monitoring, and maintenance endpoints</p>
-              </div>
-              {renderEndpoints(endpoints.admin, 'red')}
-            </TabsContent>
-          </div>
-        </Tabs>
+              <TabsContent value="admin" className="space-y-6 mt-0">
+                <div className="text-center mb-6">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Admin Operations</h2>
+                  <p className="text-slate-400 text-sm sm:text-base">System administration, monitoring, and maintenance endpoints</p>
+                </div>
+                {renderEndpoints(endpoints.admin, 'red')}
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
 
-        <Card className="bg-slate-800/80 border-slate-700 backdrop-blur-xl shadow-2xl">
-          <CardHeader>
-            <CardTitle className="text-white text-xl">Integration Examples</CardTitle>
-            <CardDescription className="text-slate-300">Code examples for common integration scenarios</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h4 className="text-lg font-medium text-slate-300 mb-3">JavaScript/Node.js</h4>
-              <div className="bg-slate-900/50 border border-slate-600 rounded-lg overflow-hidden">
-                <pre className="p-4 text-sm text-slate-300 overflow-x-auto leading-relaxed">
+        <div className="max-w-6xl mx-auto">
+          <Card className="bg-slate-800/80 border-slate-700 backdrop-blur-xl shadow-2xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-white text-xl sm:text-2xl">Integration Examples</CardTitle>
+              <CardDescription className="text-slate-300 text-sm sm:text-base">Code examples for common integration scenarios</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h4 className="text-base sm:text-lg font-medium text-slate-300 mb-3">JavaScript/Node.js</h4>
+                <div className="bg-slate-900/50 border border-slate-600 rounded-lg overflow-hidden">
+                  <pre className="p-3 sm:p-4 text-xs sm:text-sm text-slate-300 overflow-x-auto leading-relaxed">
 {`// Get current ETH price
 const response = await fetch('${baseUrl}/api/eth/price');
 const data = await response.json();
@@ -394,14 +397,14 @@ const signal = await signalResponse.json();
 if (signal.should_trade) {
   console.log('Signal:', signal.recommendation);
 }`}
-                </pre>
+                  </pre>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <h4 className="text-lg font-medium text-slate-300 mb-3">Python</h4>
-              <div className="bg-slate-900/50 border border-slate-600 rounded-lg overflow-hidden">
-                <pre className="p-4 text-sm text-slate-300 overflow-x-auto leading-relaxed">
+              <div>
+                <h4 className="text-base sm:text-lg font-medium text-slate-300 mb-3">Python</h4>
+                <div className="bg-slate-900/50 border border-slate-600 rounded-lg overflow-hidden">
+                  <pre className="p-3 sm:p-4 text-xs sm:text-sm text-slate-300 overflow-x-auto leading-relaxed">
 {`import requests
 
 # Get market summary
@@ -418,14 +421,14 @@ trade_data = {
 sim_response = requests.post('${baseUrl}/api/trade/simulate', json=trade_data)
 trade = sim_response.json()
 print(f"Simulated trade: {trade['action']} at {trade['entry_price']}")`}
-                </pre>
+                  </pre>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <h4 className="text-lg font-medium text-slate-300 mb-3">cURL</h4>
-              <div className="bg-slate-900/50 border border-slate-600 rounded-lg overflow-hidden">
-                <pre className="p-4 text-sm text-slate-300 overflow-x-auto leading-relaxed">
+              <div>
+                <h4 className="text-base sm:text-lg font-medium text-slate-300 mb-3">cURL</h4>
+                <div className="bg-slate-900/50 border border-slate-600 rounded-lg overflow-hidden">
+                  <pre className="p-3 sm:p-4 text-xs sm:text-sm text-slate-300 overflow-x-auto leading-relaxed">
 {`# Get system status
 curl "${baseUrl}/api/status"
 
@@ -436,11 +439,12 @@ curl "${baseUrl}/api/eth/price"
 curl -X POST "${baseUrl}/api/trade/simulate" \\
   -H "Content-Type: application/json" \\
   -d '{"strategy_id":"UPTREND_ABOVE_HV","action":"buy","amount":0.1}'`}
-                </pre>
+                  </pre>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
