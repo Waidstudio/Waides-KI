@@ -15,7 +15,7 @@ import {
   type AdminPermission,
   AdminRoles,
   RolePermissions,
-} from '@shared/schema';
+} from '@shared/authSchema';
 
 // Environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'waides-ki-admin-secret-2025';
@@ -159,6 +159,9 @@ export class AuthService {
   private async checkLoginAttempts(email: string, ipAddress: string): Promise<{ allowed: boolean; remainingAttempts?: number; lockoutUntil?: Date }> {
     const since = new Date(Date.now() - LOCKOUT_DURATION);
     
+    // Handle multiple IP addresses from proxy headers by taking the first one
+    const cleanIpAddress = ipAddress.split(',')[0].trim();
+    
     const attempts = await db
       .select({ count: count() })
       .from(adminLoginAttempts)
@@ -166,7 +169,7 @@ export class AuthService {
         and(
           eq(adminLoginAttempts.email, email),
           eq(adminLoginAttempts.success, false),
-          gte(adminLoginAttempts.createdAt, since)
+          gte(adminLoginAttempts.timestamp, since)
         )
       );
 
@@ -196,9 +199,12 @@ export class AuthService {
     failureReason?: string
   ): Promise<void> {
     try {
+      // Handle multiple IP addresses from proxy headers by taking the first one
+      const cleanIpAddress = ipAddress.split(',')[0].trim();
+      
       await db.insert(adminLoginAttempts).values({
         email,
-        ipAddress,
+        ipAddress: cleanIpAddress,
         userAgent,
         success,
         failureReason,
