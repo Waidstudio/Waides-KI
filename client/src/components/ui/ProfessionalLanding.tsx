@@ -34,7 +34,15 @@ import {
   Eye,
   Smartphone,
   CreditCard,
-  Settings
+  Settings,
+  Cpu,
+  Binary,
+  Hexagon,
+  Atom,
+  Waves,
+  Sparkles,
+  Radar,
+  CircuitBoard
 } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
@@ -44,6 +52,8 @@ import { Progress } from './progress';
 const ProfessionalLanding = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [matrixText, setMatrixText] = useState('INITIALIZING...');
+  const [konsPowaActive, setKonsPowaActive] = useState(false);
 
   // Fetch real-time platform statistics
   const { data: liveStatsData } = useQuery({
@@ -60,6 +70,42 @@ const ProfessionalLanding = () => {
     queryKey: ['/api/platform/exchange-status'],
     refetchInterval: 120000
   });
+
+  // Fetch KonsPowa and KonsAI system data
+  const { data: konsPowaStats } = useQuery({
+    queryKey: ['/api/kons-powa/stats'],
+    refetchInterval: 10000
+  });
+
+  const { data: konsaiStatus } = useQuery({
+    queryKey: ['/api/chat/oracle/status'],
+    refetchInterval: 15000
+  });
+
+  // Matrix text animation effect
+  useEffect(() => {
+    const matrixSequence = [
+      'INITIALIZING...',
+      'LOADING WAIDES KI...',
+      'KONSAI AWAKENING...',
+      'KONS POWA ACTIVATED...',
+      'SYSTEM READY'
+    ];
+    let index = 0;
+    const interval = setInterval(() => {
+      setMatrixText(matrixSequence[index]);
+      index = (index + 1) % matrixSequence.length;
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // KonsPowa activation effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setKonsPowaActive(prev => !prev);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Real-time market data from actual APIs
   const liveStats = [
@@ -91,32 +137,36 @@ const ProfessionalLanding = () => {
 
   const tradingFeatures = [
     {
-      title: 'Real-Time Market Data',
-      description: 'Live data feeds from Binance, CoinGecko, and major exchanges',
-      icon: BarChart3,
-      demo: '/live-data',
-      used_by: `${exchangeStatus?.exchanges?.length || 0} data sources`
-    },
-    {
-      title: 'WaidBot Trading Engine',
-      description: 'Autonomous trading system with KonsLang AI technology',
-      icon: Bot,
-      demo: '/waidbot',
-      used_by: 'AI-powered system'
-    },
-    {
-      title: 'Portfolio Management',
-      description: 'Professional wallet and risk management tools',
-      icon: Shield,
-      demo: '/wallet',
-      used_by: 'Enterprise-grade security'
-    },
-    {
-      title: 'Trading Analytics',
-      description: 'Comprehensive market analysis and trading insights',
-      icon: Network,
+      title: 'KonsAI Intelligence Engine',
+      description: `170+ Omniscient modules with real-time market consciousness`,
+      icon: Brain,
       demo: '/dashboard',
-      used_by: 'Real-time analytics'
+      used_by: `${konsaiStatus?.status === 'active' ? 'ACTIVE' : 'LOADING'} Neural Core`,
+      glow: 'cyan'
+    },
+    {
+      title: 'KonsPowa Task Engine',
+      description: `${konsPowaStats?.total || 150}+ autonomous tasks for infinite scaling`,
+      icon: Cpu,
+      demo: '/kons-powa',
+      used_by: `${konsPowaStats?.completed || 0}/${konsPowaStats?.total || 150} Tasks Complete`,
+      glow: 'purple'
+    },
+    {
+      title: 'WaidBot Quantum Trading',
+      description: 'Autonomous multi-dimensional trading consciousness',
+      icon: Atom,
+      demo: '/waidbot',
+      used_by: 'Quantum Processing Active',
+      glow: 'green'
+    },
+    {
+      title: 'Neural Network Gateway',
+      description: `${exchangeStatus?.exchanges?.length || 0} data sources with holographic analysis`,
+      icon: Network,
+      demo: '/live-data',
+      used_by: 'Holographic Data Streams',
+      glow: 'blue'
     }
   ];
 
@@ -171,105 +221,135 @@ const ProfessionalLanding = () => {
   }, [realTestimonials.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/10 to-slate-900">
-      {/* Hero Section with Real Demo */}
-      <section className="pt-20 pb-16 px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Futuristic Background */}
+      <div className="absolute inset-0 digital-grid opacity-20"></div>
+      <div className="absolute inset-0 hologram opacity-30"></div>
+      
+      {/* Floating Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400 rounded-full parallax-slow"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 6}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Hero Section */}
+      <section className="pt-24 pb-20 px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="mb-6 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-4 py-2">
-                <Activity className="w-4 h-4 mr-2" />
-                Live Trading Platform • {userMetrics?.totalUsers || 0} Registered Users
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              {/* Matrix Status Badge */}
+              <Badge className="mb-6 bg-cyan-500/20 text-cyan-400 border-cyan-500/50 px-6 py-3 border-glow-cyan">
+                <Binary className="w-5 h-5 mr-3" />
+                <span className="matrix-text">{matrixText}</span>
               </Badge>
               
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-                Professional Trading
-                <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent block">
-                  Made Simple
+              {/* Glitch Title */}
+              <h1 className="text-6xl lg:text-7xl font-bold mb-8 leading-tight" data-text="WAIDES KI">
+                <span className="glitch neon-cyan">WAIDES KI</span>
+                <br />
+                <span className="bg-gradient-to-r from-purple-400 via-green-400 to-blue-400 bg-clip-text text-transparent text-4xl lg:text-5xl">
+                  Neural Trading Matrix
                 </span>
               </h1>
               
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Professional trading platform with real-time market data, AI-powered analysis, 
-                and comprehensive portfolio management tools.
+              {/* Futuristic Description */}
+              <p className="text-xl text-gray-300 mb-10 leading-relaxed font-mono">
+                &gt; Advanced AI consciousness with{' '}
+                <span className="neon-green">170+ intelligence modules</span>,{' '}
+                <span className="neon-purple">quantum trading algorithms</span>, and{' '}
+                <span className="neon-cyan">autonomous task execution</span>
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link href="/portal">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg">
-                    Start Live Trading
-                    <Rocket className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
+              {/* Futuristic Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-6 mb-10">
+                <Button 
+                  asChild 
+                  size="lg" 
+                  className="bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white px-10 py-4 tech-hover border-glow-cyan"
+                >
+                  <Link href="/register">
+                    <Hexagon className="w-6 h-6 mr-3" />
+                    INITIALIZE NEURAL LINK
+                  </Link>
+                </Button>
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="border-emerald-500 text-emerald-400 hover:bg-emerald-500/10 px-8 py-4 text-lg"
-                  onClick={() => setIsVideoPlaying(true)}
+                  className="border-purple-500 text-purple-400 hover:bg-purple-500/20 px-10 py-4 tech-hover border-glow-purple"
                 >
-                  <PlayCircle className="mr-2 w-5 h-5" />
-                  Watch Platform Demo
+                  <Radar className="w-6 h-6 mr-3" />
+                  SCAN QUANTUM DEMO
                 </Button>
               </div>
               
-              {/* Trust Indicators */}
-              <div className="flex items-center space-x-8 text-sm">
-                <div className="flex items-center text-gray-400">
-                  <Shield className="w-4 h-4 text-emerald-400 mr-2" />
-                  Secure Platform
+              {/* System Status Indicators */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm font-mono">
+                <div className="flex items-center text-cyan-400">
+                  <div className={`w-3 h-3 rounded-full mr-3 ${(konsaiStatus as any)?.status === 'active' ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+                  KONSAI: {(konsaiStatus as any)?.status === 'active' ? 'ONLINE' : 'LOADING'}
                 </div>
-                <div className="flex items-center text-gray-400">
-                  <Lock className="w-4 h-4 text-emerald-400 mr-2" />
-                  Real-time Data
+                <div className="flex items-center text-purple-400">
+                  <div className={`w-3 h-3 rounded-full mr-3 ${konsPowaActive ? 'bg-purple-400 animate-pulse' : 'bg-gray-400'}`}></div>
+                  KONS POWA: {(konsPowaStats as any)?.completionPercentage || 0}%
                 </div>
-                <div className="flex items-center text-gray-400">
-                  <Award className="w-4 h-4 text-emerald-400 mr-2" />
-                  AI-Powered Analysis
+                <div className="flex items-center text-green-400">
+                  <div className="w-3 h-3 rounded-full bg-green-400 mr-3 animate-pulse"></div>
+                  QUANTUM LINK: ACTIVE
                 </div>
               </div>
             </div>
-            
-            {/* Live Trading Interface Preview */}
-            <div className="relative">
-              <Card className="bg-slate-800/90 backdrop-blur-sm border-slate-700 overflow-hidden">
-                <CardHeader className="border-b border-slate-700">
+
+            {/* Holographic Interface Preview */}
+            <div className="relative parallax-fast">
+              <Card className="bg-black/60 backdrop-blur-sm border-cyan-500/30 overflow-hidden tech-hover border-glow-cyan">
+                <CardHeader className="border-b border-cyan-500/30 bg-gradient-to-r from-cyan-900/20 to-purple-900/20">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-white">Live Trading Interface</CardTitle>
-                    <Badge className="bg-emerald-500/20 text-emerald-400">
-                      <Activity className="w-3 h-3 mr-1" />
-                      LIVE
+                    <CardTitle className="text-cyan-400 font-mono">NEURAL INTERFACE</CardTitle>
+                    <Badge className="bg-cyan-500/20 text-cyan-400 border-glow-cyan">
+                      <Waves className="w-3 h-3 mr-1" />
+                      SCANNING
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  {/* Simulated Trading Interface */}
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400">BTC/USD</span>
+                  {/* Holographic Trading Interface */}
+                  <div className="p-6 space-y-4 bg-gradient-to-br from-black/80 to-purple-900/20">
+                    <div className="flex items-center justify-between border-b border-cyan-500/20 pb-4">
+                      <span className="text-cyan-400 font-mono">ETH/QUANTUM</span>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-emerald-400">$43,287.50</div>
-                        <div className="text-emerald-400 text-sm">+2.34% (+$987.50)</div>
+                        <div className="text-2xl font-bold neon-green">$3,287.50</div>
+                        <div className="neon-green text-sm">+12.34% SURGE</div>
                       </div>
                     </div>
                     
-                    <div className="bg-slate-700/50 p-4 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-400 text-sm">Portfolio Value</span>
-                        <span className="text-white font-medium">$127,453.67</span>
+                    <div className="bg-black/50 p-4 rounded-lg border border-purple-500/30 hologram">
+                      <div className="text-purple-400 text-sm font-mono mb-2">KONSAI ANALYSIS:</div>
+                      <div className="text-green-400 text-xs font-mono">
+                        &gt; NEURAL PATTERN DETECTED<br/>
+                        &gt; QUANTUM PROBABILITY: 87.3%<br/>
+                        &gt; KONS POWA ENGAGED
                       </div>
-                      <Progress value={78} className="h-2 mb-2" />
-                      <div className="text-emerald-400 text-sm">+$8,342.15 today (+6.98%)</div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button className="bg-emerald-600 hover:bg-emerald-700">
-                        <TrendingUp className="w-4 h-4 mr-2" />
-                        Buy
-                      </Button>
-                      <Button variant="outline" className="border-red-500 text-red-400 hover:bg-red-500/10">
-                        <BarChart3 className="w-4 h-4 mr-2" />
-                        Sell
-                      </Button>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm font-mono">
+                        <span className="text-gray-400">SYSTEM LOAD:</span>
+                        <span className="neon-cyan">{(konsPowaStats as any)?.total || 150} TASKS</span>
+                      </div>
+                      <Progress value={85} className="h-2 bg-black/50" />
+                      <div className="flex justify-between text-xs font-mono text-gray-500">
+                        <span>AUTONOMOUS</span>
+                        <span>INFINITE SCALE</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -279,19 +359,28 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
-      {/* Live Statistics */}
-      <section className="py-16 px-6 bg-slate-800/30">
-        <div className="max-w-7xl mx-auto">
+      {/* Neural Statistics */}
+      <section className="py-20 px-6 bg-gradient-to-r from-black via-gray-900 to-black relative">
+        <div className="absolute inset-0 digital-grid opacity-10"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">
+              <span className="neon-cyan">QUANTUM ANALYTICS</span>
+            </h2>
+            <p className="text-gray-400 font-mono">Real-time neural network processing</p>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {liveStats.map((stat, index) => {
               const IconComponent = stat.icon;
+              const glowColors = ['cyan', 'purple', 'green', 'blue'];
+              const glowClass = `border-glow-${glowColors[index % glowColors.length]}`;
               return (
-                <Card key={index} className="bg-slate-800/50 border-slate-700 text-center">
+                <Card key={index} className={`bg-black/60 backdrop-blur-sm ${glowClass} text-center tech-hover`}>
                   <CardContent className="p-6">
-                    <IconComponent className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-                    <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                    <div className="text-gray-400 text-sm mb-2">{stat.label}</div>
-                    <Badge className="bg-emerald-500/20 text-emerald-400 text-xs">
+                    <IconComponent className={`w-8 h-8 neon-${glowColors[index % glowColors.length]} mx-auto mb-3`} />
+                    <div className={`text-2xl font-bold neon-${glowColors[index % glowColors.length]} mb-1 font-mono`}>{stat.value}</div>
+                    <div className="text-gray-400 text-sm mb-2 font-mono">{stat.label}</div>
+                    <Badge className={`bg-${glowColors[index % glowColors.length]}-500/20 text-${glowColors[index % glowColors.length]}-400 text-xs font-mono`}>
                       {stat.change}
                     </Badge>
                   </CardContent>
@@ -302,43 +391,47 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
-      {/* Platform Features with Real Demos */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
+      {/* Neural Architecture Features */}
+      <section className="py-20 px-6 relative">
+        <div className="absolute inset-0 hologram opacity-20"></div>
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Professional Trading Tools
+            <h2 className="text-5xl font-bold mb-6">
+              <span className="glitch neon-purple" data-text="NEURAL">NEURAL</span>{' '}
+              <span className="neon-cyan">ARCHITECTURE</span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              Everything you need to trade like an institution. Used by over 47,000 professional traders worldwide.
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto font-mono">
+              &gt; Quantum consciousness modules operating at infinite scale<br/>
+              &gt; {(konsaiStatus as any)?.status === 'active' ? '170+ Intelligence Modules ACTIVE' : 'Systems Initializing...'}
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {tradingFeatures.map((feature, index) => {
               const IconComponent = feature.icon;
+              const glowColor = feature.glow || 'cyan';
               return (
-                <Card key={index} className="bg-slate-800/50 border-slate-700 hover:border-blue-500/50 transition-all duration-300 group">
-                  <CardHeader>
+                <Card key={index} className={`bg-black/60 backdrop-blur-sm border-${glowColor}-500/30 tech-hover border-glow-${glowColor} group`}>
+                  <CardHeader className="bg-gradient-to-r from-black/80 to-gray-900/40">
                     <div className="flex items-center justify-between">
-                      <IconComponent className="w-10 h-10 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                      <Badge variant="outline" className="text-gray-400 border-gray-600">
+                      <IconComponent className={`w-12 h-12 neon-${glowColor} parallax-slow`} />
+                      <Badge className={`bg-${glowColor}-500/20 text-${glowColor}-400 border-${glowColor}-500/50 font-mono`}>
                         {feature.used_by}
                       </Badge>
                     </div>
-                    <CardTitle className="text-xl text-white">{feature.title}</CardTitle>
+                    <CardTitle className={`text-xl neon-${glowColor} font-mono`}>{feature.title}</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-400 mb-6">{feature.description}</p>
+                  <CardContent className="p-6">
+                    <p className="text-gray-300 mb-6 font-mono text-sm leading-relaxed">{feature.description}</p>
                     <div className="flex items-center justify-between">
                       <Link href={feature.demo}>
-                        <Button variant="ghost" className="text-blue-400 hover:text-blue-300 p-0">
-                          Try Live Demo
+                        <Button variant="ghost" className={`text-${glowColor}-400 hover:text-${glowColor}-300 p-0 font-mono`}>
+                          &gt; ACCESS MODULE
                           <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                       </Link>
-                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                        Get Started
+                      <Button size="sm" className={`bg-gradient-to-r from-${glowColor}-600 to-${glowColor}-500 hover:from-${glowColor}-500 hover:to-${glowColor}-400 tech-hover font-mono`}>
+                        INITIALIZE
                       </Button>
                     </div>
                   </CardContent>

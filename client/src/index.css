@@ -123,6 +123,203 @@
   .waides-glow-green {
     box-shadow: 0 0 20px hsl(151, 100%, 50%, 0.3);
   }
+
+  /* Futuristic Neon Theme Colors */
+  .neon-cyan {
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+  }
+
+  .neon-purple {
+    color: #bf00ff;
+    text-shadow: 0 0 10px #bf00ff;
+  }
+
+  .neon-green {
+    color: #00ff41;
+    text-shadow: 0 0 10px #00ff41;
+  }
+
+  .neon-blue {
+    color: #0080ff;
+    text-shadow: 0 0 10px #0080ff;
+  }
+
+  /* Futuristic Glowing Borders */
+  .border-glow-cyan {
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  }
+
+  .border-glow-purple {
+    border: 2px solid #bf00ff;
+    box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+  }
+
+  .border-glow-green {
+    border: 2px solid #00ff41;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+  }
+
+  /* Digital Grid Background */
+  .digital-grid {
+    background-image: 
+      linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+  }
+
+  @keyframes gridMove {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+  }
+
+  /* Holographic Effects */
+  .hologram {
+    background: linear-gradient(45deg, 
+      rgba(0, 255, 255, 0.1) 0%,
+      rgba(191, 0, 255, 0.1) 25%,
+      rgba(0, 255, 65, 0.1) 50%,
+      rgba(0, 128, 255, 0.1) 75%,
+      rgba(0, 255, 255, 0.1) 100%);
+    background-size: 400% 400%;
+    animation: holoShift 8s ease-in-out infinite;
+  }
+
+  @keyframes holoShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Futuristic Hover Effects */
+  .tech-hover {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tech-hover::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+    transition: transform 0.6s;
+    transform: rotate(45deg) translate(-100%, -100%);
+  }
+
+  .tech-hover:hover::before {
+    transform: rotate(45deg) translate(100%, 100%);
+  }
+
+  .tech-hover:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+  }
+
+  /* Parallax Scrolling Elements */
+  .parallax-slow {
+    transform: translateZ(0);
+    animation: floatSlow 6s ease-in-out infinite;
+  }
+
+  .parallax-fast {
+    transform: translateZ(0);
+    animation: floatFast 4s ease-in-out infinite;
+  }
+
+  @keyframes floatSlow {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+
+  @keyframes floatFast {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-15px) scale(1.05); }
+  }
+
+  /* Matrix-style Text Animation */
+  .matrix-text {
+    font-family: 'Courier New', monospace;
+    color: #00ff41;
+    text-shadow: 0 0 5px #00ff41;
+    animation: textGlow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes textGlow {
+    from { text-shadow: 0 0 5px #00ff41; }
+    to { text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41; }
+  }
+
+  /* Futuristic Loading Animation */
+  .loading-ring {
+    border: 4px solid rgba(0, 255, 255, 0.1);
+    border-left: 4px solid #00ffff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Glitch Effect */
+  .glitch {
+    position: relative;
+    animation: glitch 2s infinite;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch::before {
+    animation: glitch-1 0.5s infinite;
+    color: #ff0040;
+    z-index: -1;
+  }
+
+  .glitch::after {
+    animation: glitch-2 0.5s infinite;
+    color: #00ffff;
+    z-index: -2;
+  }
+
+  @keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+  }
+
+  @keyframes glitch-1 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+  }
+
+  @keyframes glitch-2 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(-2px, 2px); }
+  }
   
   .waides-glow-red {
     box-shadow: 0 0 20px hsl(351, 100%, 64%, 0.3);
