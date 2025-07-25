@@ -27,7 +27,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation('/');
+      setLocation('/admin-panel');
     }
   }, [isAuthenticated, setLocation]);
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
     const result = await login(formData.email, formData.password, formData.rememberMe);
     
     if (result.success) {
-      setLocation('/'); // Redirect to home
+      setLocation('/admin-panel'); // Redirect to admin panel
     } else {
       setError(result.message);
     }
