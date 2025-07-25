@@ -11,7 +11,7 @@ SmaiSika (ꠄ): An advanced autonomous wealth management platform leveraging cut
   - ✅ **SESSION CREATION**: Fixed admin sessions table integration with proper token hash generation
   - ✅ **COMPREHENSIVE FIX**: Applied IP address parsing across login attempts, session storage, and activity tracking
   - ✅ **LOGIN FUNCTIONALITY**: Authentication system now works properly for both API and browser requests
-  - **Credentials**: admin@waides.com / password (functional login system)
+  - **Credentials**: admin@waides.com / WaidesKI2025! (fully functional authentication)
 - **2025-07-22**: Professional Landing Page & Compact Navigation Implementation Complete
   - ✅ **PROFESSIONAL REDESIGN**: Replaced mystical landing page with business-focused, realistic design
   - ✅ **ENTERPRISE FEATURES**: Highlighted AI-powered trading, risk management, real-time analytics, portfolio optimization
