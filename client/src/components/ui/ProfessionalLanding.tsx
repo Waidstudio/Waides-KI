@@ -98,25 +98,25 @@ const ProfessionalLanding = () => {
   const liveStats = [
     { 
       label: 'Registered Users', 
-      value: userMetrics?.totalUsers?.toString() || '0', 
+      value: (userMetrics as any)?.totalUsers?.toString() || '0', 
       change: 'Live Count', 
       icon: Users 
     },
     { 
       label: '24h Volume', 
-      value: liveStatsData?.stats?.volume24h || 'Loading...', 
+      value: (liveStatsData as any)?.stats?.volume24h || 'Loading...', 
       change: 'Live Data', 
       icon: Activity 
     },
     { 
       label: 'System Status', 
       value: 'Operational', 
-      change: liveStatsData?.stats?.uptime || '99.9%', 
+      change: (liveStatsData as any)?.stats?.uptime || '99.9%', 
       icon: Target 
     },
     { 
       label: 'Exchange Connectivity', 
-      value: exchangeStatus?.exchanges?.filter(e => e.status === 'Connected')?.length?.toString() || '0', 
+      value: (exchangeStatus as any)?.exchanges?.filter((e: any) => e.status === 'Connected')?.length?.toString() || '0', 
       change: 'Connected APIs', 
       icon: Shield 
     }
@@ -128,15 +128,15 @@ const ProfessionalLanding = () => {
       description: `170+ Omniscient modules with real-time market consciousness`,
       icon: Brain,
       demo: '/dashboard',
-      used_by: `${konsaiStatus?.status === 'active' ? 'ACTIVE' : 'LOADING'} Neural Core`,
+      used_by: `${(konsaiStatus as any)?.status === 'active' ? 'ACTIVE' : 'LOADING'} Neural Core`,
       glow: 'cyan'
     },
     {
       title: 'KonsPowa Task Engine',
-      description: `${konsPowaStats?.total || 150}+ autonomous tasks for infinite scaling`,
+      description: `${(konsPowaStats as any)?.total || 150}+ autonomous tasks for infinite scaling`,
       icon: Cpu,
       demo: '/kons-powa',
-      used_by: `${konsPowaStats?.completed || 0}/${konsPowaStats?.total || 150} Tasks Complete`,
+      used_by: `${(konsPowaStats as any)?.completed || 0}/${(konsPowaStats as any)?.total || 150} Tasks Complete`,
       glow: 'purple'
     },
     {
@@ -149,7 +149,7 @@ const ProfessionalLanding = () => {
     },
     {
       title: 'Neural Network Gateway',
-      description: `${exchangeStatus?.exchanges?.length || 0} data sources with holographic analysis`,
+      description: `${(exchangeStatus as any)?.exchanges?.length || 0} data sources with holographic analysis`,
       icon: Network,
       demo: '/live-data',
       used_by: 'Holographic Data Streams',
@@ -188,7 +188,7 @@ const ProfessionalLanding = () => {
   ];
 
   // Real exchange connections from API
-  const exchangeLogos = exchangeStatus?.exchanges || [
+  const exchangeLogos = (exchangeStatus as any)?.exchanges || [
     { name: 'Binance', status: 'Checking...' },
     { name: 'CoinGecko', status: 'Checking...' }
   ];
@@ -470,7 +470,328 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
+      {/* 3D Interactive User Guide Section */}
+      <section className="py-20 px-6 bg-slate-800/50 border-t border-purple-500/20">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-purple-500/20 px-4 py-2 rounded-full mb-4">
+              <Binary className="h-4 w-4 text-purple-400" />
+              <span className="text-purple-300 text-sm font-medium">Interactive Navigation Guide</span>
+            </div>
+            <h2 className="text-4xl font-bold text-white mb-6">
+              Master <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">Waides KI Platform</span>
+            </h2>
+            <p className="text-gray-400 text-xl max-w-3xl mx-auto leading-relaxed">
+              Explore our comprehensive AI trading ecosystem with this interactive 3D guide. Click any section to jump directly to that feature.
+            </p>
+          </div>
 
+          <UserGuide3D />
+        </div>
+      </section>
+
+    </div>
+  );
+};
+
+// 3D Interactive User Guide Component
+const UserGuide3D = () => {
+  const [activeSection, setActiveSection] = useState(0);
+  const [isRotating, setIsRotating] = useState(true);
+
+  const guideSection = [
+    {
+      id: 1,
+      title: "Getting Started",
+      icon: PlayCircle,
+      color: "from-blue-500 to-cyan-500",
+      description: "Begin your AI trading journey",
+      steps: [
+        { 
+          name: "Create Account & Login", 
+          route: "/login", 
+          icon: Users,
+          time: "2 min",
+          description: "Sign up and access your personal trading dashboard"
+        },
+        { 
+          name: "Set Up Wallet", 
+          route: "/wallet", 
+          icon: Wallet,
+          time: "5 min",
+          description: "Fund your account and manage your trading balance"
+        },
+        { 
+          name: "Explore Dashboard", 
+          route: "/dashboard", 
+          icon: Monitor,
+          time: "10 min",
+          description: "Familiarize yourself with trading tools and real-time data"
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: "AI Trading Systems",
+      icon: Brain,
+      color: "from-purple-500 to-pink-500",
+      description: "Harness artificial intelligence for trading",
+      steps: [
+        { 
+          name: "KonsAI Intelligence", 
+          route: "/dashboard", 
+          icon: Cpu,
+          time: "15 min",
+          description: "Chat with our AI oracle for market insights and predictions"
+        },
+        { 
+          name: "WaidBot Trading", 
+          route: "/waidbot", 
+          icon: Bot,
+          time: "20 min",
+          description: "Activate autonomous trading bots with quantum algorithms"
+        },
+        { 
+          name: "WaidBot Pro", 
+          route: "/waidbot-pro", 
+          icon: Zap,
+          time: "30 min",
+          description: "Advanced bot configurations with custom strategies"
+        }
+      ]
+    },
+    {
+      id: 3,
+      title: "Advanced Features",
+      icon: Rocket,
+      color: "from-green-500 to-emerald-500",
+      description: "Professional trading tools and analytics",
+      steps: [
+        { 
+          name: "Live Market Data", 
+          route: "/live-data", 
+          icon: Activity,
+          time: "10 min",
+          description: "Real-time charts, candlesticks, and technical indicators"
+        },
+        { 
+          name: "KonsPowa Engine", 
+          route: "/kons-powa", 
+          icon: CircuitBoard,
+          time: "25 min",
+          description: "System automation with 150+ autonomous tasks"
+        },
+        { 
+          name: "Strategy Generator", 
+          route: "/strategy-autogen", 
+          icon: Target,
+          time: "45 min",
+          description: "AI-powered strategy creation and backtesting"
+        }
+      ]
+    },
+    {
+      id: 4,
+      title: "Learning & Community",
+      icon: Users,
+      color: "from-orange-500 to-red-500",
+      description: "Education and social trading",
+      steps: [
+        { 
+          name: "Trading Academy", 
+          route: "/learning", 
+          icon: Award,
+          time: "60+ min",
+          description: "Comprehensive courses from beginner to expert level"
+        },
+        { 
+          name: "Cosmic Forum", 
+          route: "/forum", 
+          icon: Globe,
+          time: "Ongoing",
+          description: "Connect with traders, share strategies, get AI insights"
+        },
+        { 
+          name: "Vision Portal", 
+          route: "/portal", 
+          icon: Eye,
+          time: "15 min",
+          description: "Explore advanced trading interfaces and tools"
+        }
+      ]
+    }
+  ];
+
+  useEffect(() => {
+    if (isRotating) {
+      const interval = setInterval(() => {
+        setActiveSection((prev) => (prev + 1) % guideSection.length);
+      }, 4000);
+      return () => clearInterval(interval);
+    }
+  }, [isRotating, guideSection.length]);
+
+  const handleSectionClick = (index: number) => {
+    setActiveSection(index);
+    setIsRotating(false);
+    setTimeout(() => setIsRotating(true), 8000); // Resume rotation after 8 seconds
+  };
+
+  return (
+    <div className="relative">
+      {/* Main 3D Container */}
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        
+        {/* Left Side - 3D Section Cards */}
+        <div className="lg:w-1/2 space-y-4">
+          {guideSection.map((section, index) => {
+            const Icon = section.icon;
+            const isActive = activeSection === index;
+            
+            return (
+              <Card 
+                key={section.id}
+                className={`
+                  cursor-pointer transition-all duration-500 transform hover:scale-105
+                  ${isActive 
+                    ? 'bg-gradient-to-r ' + section.color + ' shadow-2xl border-0 scale-105' 
+                    : 'bg-slate-800/60 border-slate-700 hover:border-purple-500/50'
+                  }
+                `}
+                onClick={() => handleSectionClick(index)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className={`
+                      p-3 rounded-xl transition-all duration-300
+                      ${isActive 
+                        ? 'bg-white/20 backdrop-blur-sm' 
+                        : 'bg-purple-500/20'
+                      }
+                    `}>
+                      <Icon className={`h-6 w-6 ${isActive ? 'text-white' : 'text-purple-400'}`} />
+                    </div>
+                    <div>
+                      <h3 className={`text-lg font-bold ${isActive ? 'text-white' : 'text-slate-200'}`}>
+                        {section.title}
+                      </h3>
+                      <p className={`text-sm ${isActive ? 'text-white/80' : 'text-slate-400'}`}>
+                        {section.description}
+                      </p>
+                    </div>
+                    <div className="ml-auto">
+                      <ArrowRight className={`h-5 w-5 transition-transform duration-300 ${
+                        isActive ? 'translate-x-1 text-white' : 'text-slate-400'
+                      }`} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Right Side - Active Section Details */}
+        <div className="lg:w-1/2">
+          <Card className="bg-slate-900/60 border-slate-700 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {(() => {
+                    const Icon = guideSection[activeSection].icon;
+                    return <Icon className="h-8 w-8 text-purple-400" />;
+                  })()}
+                  <CardTitle className="text-2xl text-white">
+                    {guideSection[activeSection].title}
+                  </CardTitle>
+                </div>
+                <Link href="/">
+                  <Button variant="outline" size="sm" className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20">
+                    ← Back to Home
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {guideSection[activeSection].steps.map((step, stepIndex) => {
+                const StepIcon = step.icon;
+                return (
+                  <Link key={stepIndex} href={step.route}>
+                    <Card className="bg-slate-800/40 border-slate-600 hover:border-purple-500/50 hover:bg-slate-700/40 transition-all cursor-pointer group">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="p-2 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition-colors">
+                            <StepIcon className="h-5 w-5 text-purple-400" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-semibold text-white group-hover:text-purple-300 transition-colors">
+                                {step.name}
+                              </h4>
+                              <Badge variant="outline" className="border-cyan-500/50 text-cyan-400 text-xs">
+                                {step.time}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-slate-400">
+                              {step.description}
+                            </p>
+                          </div>
+                          <ArrowRight className="h-4 w-4 text-slate-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+              
+              {/* Quick Navigation */}
+              <div className="mt-6 pt-4 border-t border-slate-700">
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="border-green-500/50 text-green-400">
+                    {guideSection[activeSection].steps.length} Steps
+                  </Badge>
+                  <Badge variant="outline" className="border-blue-500/50 text-blue-400">
+                    Interactive Guide
+                  </Badge>
+                  <Badge variant="outline" className="border-purple-500/50 text-purple-400">
+                    Direct Links
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Additional Quick Links */}
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <Link href="/admin-panel">
+              <Card className="bg-slate-800/40 border-slate-700 hover:border-orange-500/50 cursor-pointer group transition-all">
+                <CardContent className="p-4 text-center">
+                  <Settings className="h-6 w-6 text-orange-400 mx-auto mb-2" />
+                  <p className="text-sm text-white group-hover:text-orange-300">Admin Panel</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/api-docs">
+              <Card className="bg-slate-800/40 border-slate-700 hover:border-cyan-500/50 cursor-pointer group transition-all">
+                <CardContent className="p-4 text-center">
+                  <FileText className="h-6 w-6 text-cyan-400 mx-auto mb-2" />
+                  <p className="text-sm text-white group-hover:text-cyan-300">API Docs</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation Helper */}
+      <div className="mt-12 text-center">
+        <div className="inline-flex items-center gap-2 bg-slate-800/60 backdrop-blur-sm px-6 py-3 rounded-full border border-slate-700">
+          <Sparkles className="h-4 w-4 text-purple-400" />
+          <span className="text-slate-300 text-sm">
+            Click any section above to explore • Auto-rotation every 4s
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
