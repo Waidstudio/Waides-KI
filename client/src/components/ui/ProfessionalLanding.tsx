@@ -52,6 +52,7 @@ import { Progress } from './progress';
 
 const ProfessionalLanding = () => {
   const [konsPowaActive, setKonsPowaActive] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   // Fetch real-time platform statistics
   const { data: liveStatsData } = useQuery({
@@ -207,11 +208,11 @@ const ProfessionalLanding = () => {
   }, [realTestimonials.length]);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white relative overflow-hidden">
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-gray-50 to-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-100/20 via-pink-100/10 to-orange-100/20"></div>
+      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-orange-900/20"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Main Title */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
@@ -223,22 +224,22 @@ const ProfessionalLanding = () => {
               Instant
             </span>
             <br />
-            <span className="text-black font-bold">
+            <span className="text-white font-bold">
               AI Trading Infrastructure
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
             Empowering traders to execute with our AI service and ultimate one-stop trading solution.
           </p>
 
           {/* Main CTA Card */}
-          <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8 max-w-lg mx-auto border border-gray-100">
-            <h2 className="text-2xl font-bold text-black mb-4">
+          <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 max-w-lg mx-auto border border-gray-700">
+            <h2 className="text-2xl font-bold text-white mb-4">
               Start Trading with AI
             </h2>
-            <p className="text-gray-600 mb-8 leading-relaxed">
+            <p className="text-gray-300 mb-8 leading-relaxed">
               Connect to advanced algorithms and explore various enhanced strategies for complex trading scenarios.
             </p>
             <div className="space-y-4">
@@ -252,7 +253,7 @@ const ProfessionalLanding = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className="w-full border-2 border-gray-200 text-gray-700 hover:bg-gray-50 py-4 text-lg font-semibold rounded-xl"
+                className="w-full border-2 border-gray-600 text-gray-300 hover:bg-gray-700/50 py-4 text-lg font-semibold rounded-xl"
               >
                 Explore Features
               </Button>
@@ -260,16 +261,16 @@ const ProfessionalLanding = () => {
           </div>
 
           {/* Secondary Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-8 max-w-lg mx-auto border border-gray-100">
-            <h2 className="text-2xl font-bold text-black mb-4">
+          <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 max-w-lg mx-auto border border-gray-700">
+            <h2 className="text-2xl font-bold text-white mb-4">
               Scale with Custom Trading Chains
             </h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-6 leading-relaxed">
               Deploy your strategies across multiple exchanges with our unified infrastructure.
             </p>
             <Button 
               variant="outline" 
-              className="w-full border-2 border-purple-200 text-purple-600 hover:bg-purple-50 py-3 text-lg font-semibold rounded-xl"
+              className="w-full border-2 border-purple-500/50 text-purple-400 hover:bg-purple-500/10 py-3 text-lg font-semibold rounded-xl"
             >
               Learn More
             </Button>
@@ -278,7 +279,7 @@ const ProfessionalLanding = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-6 bg-gray-50">
+      <section className="py-20 px-6 bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
@@ -286,7 +287,7 @@ const ProfessionalLanding = () => {
                 Why Choose Waides?
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Professional-grade AI trading platform designed for modern traders
             </p>
           </div>
@@ -330,13 +331,13 @@ const ProfessionalLanding = () => {
                 color: "from-cyan-500 to-cyan-600"
               }
             ].map((feature, index) => (
-              <Card key={index} className="bg-white border border-gray-200 hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden">
+              <Card key={index} className="bg-gray-800/80 backdrop-blur-xl border border-gray-700 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 rounded-2xl overflow-hidden">
                 <CardContent className="p-8">
                   <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center mb-6`}>
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-black mb-4">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                  <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
+                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -345,13 +346,13 @@ const ProfessionalLanding = () => {
       </section>
 
       {/* Performance Stats */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 bg-gray-900/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-black">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
               Trusted by Thousands of Traders
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Join the growing community of successful traders using our platform
             </p>
           </div>
@@ -387,9 +388,9 @@ const ProfessionalLanding = () => {
                 <div className={`w-16 h-16 bg-gradient-to-r ${stat.gradient} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
                   <span className="text-2xl font-bold text-white">{stat.value.slice(0, 2)}</span>
                 </div>
-                <div className="text-3xl font-bold text-black mb-2">{stat.value}</div>
-                <div className="text-lg font-semibold text-gray-800 mb-1">{stat.label}</div>
-                <div className="text-sm text-gray-600">{stat.description}</div>
+                <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
+                <div className="text-lg font-semibold text-gray-200 mb-1">{stat.label}</div>
+                <div className="text-sm text-gray-400">{stat.description}</div>
               </div>
             ))}
           </div>
@@ -399,13 +400,13 @@ const ProfessionalLanding = () => {
 
 
       {/* Exchange Integration */}
-      <section className="py-20 px-6 bg-gray-50">
+      <section className="py-20 px-6 bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h3 className="text-4xl sm:text-5xl font-bold mb-6 text-black">
+            <h3 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
               Connected Exchanges
             </h3>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Direct integration with major trading venues and liquidity providers
             </p>
           </div>
@@ -425,12 +426,12 @@ const ProfessionalLanding = () => {
               { name: 'Phemex', status: 'Live' },
               { name: 'Deribit', status: 'Live' }
             ].map((exchange, index) => (
-              <Card key={index} className="bg-white border border-gray-200 hover:shadow-lg transition-all duration-300 rounded-2xl p-6 text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <span className="text-xs font-bold text-gray-600">{exchange.name.slice(0, 3).toUpperCase()}</span>
+              <Card key={index} className="bg-gray-800/80 backdrop-blur-xl border border-gray-700 hover:shadow-lg hover:shadow-green-500/10 transition-all duration-300 rounded-2xl p-6 text-center">
+                <div className="w-12 h-12 bg-gradient-to-r from-gray-600 to-gray-700 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <span className="text-xs font-bold text-gray-200">{exchange.name.slice(0, 3).toUpperCase()}</span>
                 </div>
-                <div className="text-sm font-semibold text-black mb-2">{exchange.name}</div>
-                <Badge className="bg-green-100 text-green-700 border-0 text-xs px-2 py-1">
+                <div className="text-sm font-semibold text-white mb-2">{exchange.name}</div>
+                <Badge className="bg-green-500/20 text-green-400 border-0 text-xs px-2 py-1">
                   {exchange.status}
                 </Badge>
               </Card>
