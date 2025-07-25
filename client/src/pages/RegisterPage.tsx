@@ -1,100 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Eye, EyeOff, Shield, UserPlus, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
-import { Link, useLocation } from 'wouter';
+import { AlertCircle, UserPlus, Users, Eye, EyeOff } from 'lucide-react';
 
-
-export default function RegisterPage() {
+function RegisterPage() {
   const [, setLocation] = useLocation();
+  const { register, isAuthenticated, isLoading } = useUserAuth();
   
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
-    acceptTerms: false,
   });
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateForm = () => {
-    if (!formData.username.trim()) {
-      setError('Username is required');
-      return false;
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation('/'); // Redirect to dashboard for regular users
     }
-    if (!formData.email.trim()) {
-      setError('Email is required');
-      return false;
-    }
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
-      return false;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return false;
-    }
-    if (!formData.acceptTerms) {
-      setError('You must accept the terms and conditions');
-      return false;
-    }
-    return true;
-  };
+  }, [isAuthenticated, setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    
-    if (!validateForm()) return;
-    
     setIsSubmitting(true);
+    setError('');
 
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+    // Client-side validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setIsSubmitting(false);
+      return;
+    }
 
-      const data = await response.json();
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setIsSubmitting(false);
+      return;
+    }
 
-      if (data.success) {
-        setSuccess('Account created successfully! You can now log in.');
-        setTimeout(() => {
-          setLocation('/login');
-        }, 2000);
-      } else {
-        setError(data.message || 'Registration failed');
-      }
-    } catch (error) {
-      setError('Network error. Please try again.');
+    const result = await register(formData.username, formData.email, formData.password, formData.confirmPassword);
+    
+    if (result.success) {
+      setLocation('/'); // Redirect to user dashboard
+    } else {
+      setError(result.message);
     }
     
     setIsSubmitting(false);
   };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) setError('');
-    if (success) setSuccess('');
+    if (error) setError(''); // Clear error when user starts typing
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <Card className="w-96 bg-slate-800 border-slate-700">
+          <CardContent className="pt-6 text-center">
+            <UserPlus className="h-12 w-12 text-emerald-500 mx-auto mb-4 animate-pulse" />
+            <p className="text-slate-300">Loading...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4">
@@ -102,38 +84,45 @@ export default function RegisterPage() {
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-2">
-            <Shield className="h-8 w-8 text-blue-500" />
-            <h1 className="text-3xl font-bold text-slate-100">Waides KI</h1>
+            <UserPlus className="h-8 w-8 text-emerald-500" />
+            <h1 className="text-3xl font-bold text-slate-100">Create Account</h1>
           </div>
-          <p className="text-slate-400">Create Your Account</p>
+          <p className="text-slate-400">Join the autonomous wealth management platform</p>
         </div>
 
         {/* Registration Card */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-xl text-slate-100 flex items-center">
-              <UserPlus className="h-5 w-5 mr-2" />
-              Sign Up
+            <CardTitle className="text-xl text-slate-100 flex items-center gap-2">
+              <Users className="w-5 h-5 text-emerald-500" />
+              User Registration
             </CardTitle>
             <CardDescription className="text-slate-400">
-              Join the autonomous wealth management revolution
+              Create your trading account to access AI-powered financial tools
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              
+              {/* Already have account */}
+              <div className="text-center pb-2">
+                <p className="text-sm text-slate-400">
+                  Already have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/login')}
+                    className="text-emerald-400 hover:text-emerald-300 underline"
+                  >
+                    Sign in here
+                  </button>
+                </p>
+              </div>
+              
               {/* Error Alert */}
               {error && (
                 <Alert variant="destructive" className="bg-red-950 border-red-800">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              {/* Success Alert */}
-              {success && (
-                <Alert className="bg-green-950 border-green-800 text-green-200">
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>{success}</AlertDescription>
                 </Alert>
               )}
 
@@ -143,12 +132,14 @@ export default function RegisterPage() {
                 <Input
                   id="username"
                   type="text"
-                  placeholder="Choose a username"
+                  placeholder="Enter your username"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400"
+                  className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-emerald-500"
                   required
+                  minLength={3}
                 />
+                <p className="text-xs text-slate-500">At least 3 characters</p>
               </div>
 
               {/* Email Field */}
@@ -157,10 +148,10 @@ export default function RegisterPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400"
+                  className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-emerald-500"
                   required
                 />
               </div>
@@ -172,22 +163,24 @@ export default function RegisterPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Choose a strong password"
+                    placeholder="Create a strong password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400 pr-10"
+                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-emerald-500 pr-10"
                     required
+                    minLength={8}
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-slate-200"
+                    className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-slate-100"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
+                <p className="text-xs text-slate-500">At least 8 characters</p>
               </div>
 
               {/* Confirm Password Field */}
@@ -200,86 +193,50 @@ export default function RegisterPage() {
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400 pr-10"
+                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-emerald-500 pr-10"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-slate-200"
+                    className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-slate-100"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
-              </div>
-
-              {/* Terms and Conditions */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="acceptTerms"
-                  checked={formData.acceptTerms}
-                  onCheckedChange={(checked) => handleInputChange('acceptTerms', checked as boolean)}
-                  className="border-slate-600"
-                />
-                <Label htmlFor="acceptTerms" className="text-sm text-slate-300">
-                  I accept the{' '}
-                  <Link href="/terms" className="text-blue-400 hover:text-blue-300 underline">
-                    Terms and Conditions
-                  </Link>
-                  {' '}and{' '}
-                  <Link href="/privacy" className="text-blue-400 hover:text-blue-300 underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Creating Account...</span>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Creating account...</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <UserPlus className="h-4 w-4" />
-                    <span>Create Account</span>
+                    <UserPlus className="w-4 h-4" />
+                    <span>Create Trading Account</span>
                   </div>
                 )}
               </Button>
-            </form>
-
-            {/* Sign In Link */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-slate-400">
-                Already have an account?{' '}
-                <Link href="/login" className="text-blue-400 hover:text-blue-300 underline">
-                  Sign in here
-                </Link>
+              
+              {/* Terms */}
+              <p className="text-xs text-slate-500 text-center">
+                By creating an account, you agree to our Terms of Service and Privacy Policy
               </p>
-            </div>
+            </form>
           </CardContent>
         </Card>
-
-        {/* Back to Home */}
-        <div className="text-center">
-          <Link href="/" className="inline-flex items-center text-sm text-slate-400 hover:text-slate-300">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to Home
-          </Link>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center text-xs text-slate-500">
-          Waides KI v1.0 • Secure Registration System
-        </div>
       </div>
     </div>
   );
 }
+
+export default RegisterPage;

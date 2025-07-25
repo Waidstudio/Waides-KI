@@ -1,53 +1,49 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface AdminUser {
+interface User {
   id: number;
   username: string;
   email: string;
-  role: 'super_admin' | 'admin' | 'viewer';
+  role: 'user';
   permissions: string[];
-  firstName?: string;
-  lastName?: string;
-  profileImage?: string;
-  lastLogin?: Date;
+  moralityScore?: number;
+  spiritualAlignment?: number;
+  createdAt?: Date;
 }
 
-interface AdminAuthContextType {
-  user: AdminUser | null;
+interface UserAuthContextType {
+  user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; message: string }>;
+  register: (username: string, email: string, password: string, confirmPassword: string) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
-  hasRole: (role: string | string[]) => boolean;
 }
 
-const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
+const UserAuthContext = createContext<UserAuthContextType | undefined>(undefined);
 
-// Backward compatibility export as AuthContext
-export { AdminAuthContext as AuthContext };
-
-interface AdminAuthProviderProps {
+interface UserAuthProviderProps {
   children: ReactNode;
 }
 
-export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
+export function UserAuthProvider({ children }: UserAuthProviderProps) {
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('waides_admin_auth_token');
+    return localStorage.getItem('waides_user_auth_token');
   });
   
-  const [user, setUser] = useState<AdminUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const queryClient = useQueryClient();
 
-  // Verify token and get admin user info
+  // Verify token and get user info
   const { data: userData, isLoading: isVerifying, error } = useQuery({
-    queryKey: ['admin_auth', 'me'],
+    queryKey: ['user_auth', 'me'],
     queryFn: async () => {
       if (!token) return null;
       
-      const response = await fetch('/api/admin-auth/me', {
+      const response = await fetch('/api/user-auth/me', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -64,10 +60,10 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     retry: false,
   });
 
-  // Admin login mutation
+  // Login mutation
   const loginMutation = useMutation({
     mutationFn: async ({ email, password, rememberMe }: { email: string; password: string; rememberMe?: boolean }) => {
-      const response = await fetch('/api/admin-auth/login', {
+      const response = await fetch('/api/user-auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,17 +82,46 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     onSuccess: (data) => {
       setToken(data.token);
       setUser(data.user);
-      localStorage.setItem('waides_admin_auth_token', data.token);
-      queryClient.setQueryData(['admin_auth', 'me'], data.user);
+      localStorage.setItem('waides_user_auth_token', data.token);
+      queryClient.setQueryData(['user_auth', 'me'], data.user);
     },
   });
 
-  // Admin logout mutation
+  // Register mutation
+  const registerMutation = useMutation({
+    mutationFn: async ({ username, email, password, confirmPassword }: { username: string; email: string; password: string; confirmPassword: string }) => {
+      const response = await fetch('/api/user-auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, confirmPassword }),
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+      
+      return data;
+    },
+    onSuccess: (data) => {
+      if (data.token) {
+        setToken(data.token);
+        setUser(data.user);
+        localStorage.setItem('waides_user_auth_token', data.token);
+        queryClient.setQueryData(['user_auth', 'me'], data.user);
+      }
+    },
+  });
+
+  // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
       if (!token) return;
       
-      await fetch('/api/admin-auth/logout', {
+      await fetch('/api/user-auth/logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -106,7 +131,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     onSettled: () => {
       setToken(null);
       setUser(null);
-      localStorage.removeItem('waides_admin_auth_token');
+      localStorage.removeItem('waides_user_auth_token');
       queryClient.clear();
     },
   });
@@ -118,7 +143,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     } else if (error && token) {
       // Token is invalid, clear it
       setToken(null);
-      localStorage.removeItem('waides_admin_auth_token');
+      localStorage.removeItem('waides_user_auth_token');
     }
   }, [userData, error, token]);
 
@@ -134,6 +159,18 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     }
   };
 
+  const register = async (username: string, email: string, password: string, confirmPassword: string) => {
+    try {
+      await registerMutation.mutateAsync({ username, email, password, confirmPassword });
+      return { success: true, message: 'Registration successful' };
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error instanceof Error ? error.message : 'Registration failed' 
+      };
+    }
+  };
+
   const logout = async () => {
     await logoutMutation.mutateAsync();
   };
@@ -143,46 +180,28 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
     return user.permissions.includes(permission);
   };
 
-  const hasRole = (role: string | string[]): boolean => {
-    if (!user) return false;
-    const roles = Array.isArray(role) ? role : [role];
-    return roles.includes(user.role);
-  };
-
-  const value: AdminAuthContextType = {
+  const value: UserAuthContextType = {
     user,
     token,
     isAuthenticated: !!user,
-    isLoading: isVerifying || loginMutation.isPending || logoutMutation.isPending,
+    isLoading: isVerifying || loginMutation.isPending || registerMutation.isPending || logoutMutation.isPending,
     login,
+    register,
     logout,
     hasPermission,
-    hasRole,
   };
 
   return (
-    <AdminAuthContext.Provider value={value}>
+    <UserAuthContext.Provider value={value}>
       {children}
-    </AdminAuthContext.Provider>
+    </UserAuthContext.Provider>
   );
 }
 
-export function useAdminAuth() {
-  const context = useContext(AdminAuthContext);
+export function useUserAuth() {
+  const context = useContext(UserAuthContext);
   if (context === undefined) {
-    throw new Error('useAdminAuth must be used within an AdminAuthProvider');
+    throw new Error('useUserAuth must be used within a UserAuthProvider');
   }
   return context;
 }
-
-// Keep the old useAuth for backward compatibility (will be deprecated)
-export function useAuth() {
-  const context = useContext(AdminAuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AdminAuthProvider');
-  }
-  return context;
-}
-
-// Backward compatibility export
-export { AdminAuthProvider as AuthProvider };

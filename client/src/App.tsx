@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
-import { AuthProvider } from "@/context/AuthContext";
+import { AdminAuthProvider } from "@/context/AuthContext";
+import { UserAuthProvider } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
 import LoginPage from "@/pages/LoginPage";
+import AdminLoginPage from "@/pages/AdminLoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import Dashboard from "@/pages/dashboard";
@@ -112,7 +114,9 @@ function Router() {
       {/* Main Content Area */}
       <main>
         <Switch>
+          {/* Authentication Routes */}
           <Route path="/login" component={LoginPage} />
+          <Route path="/admin-login" component={AdminLoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           
@@ -231,21 +235,21 @@ function Router() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SmaiWalletProvider>
-          <TooltipProvider>
-            <div className="dark min-h-screen waides-bg">
-              <Toaster />
-              <Router />
-            </div>
-          </TooltipProvider>
-        </SmaiWalletProvider>
-      </AuthProvider>
+      <TooltipProvider>
+        <AdminAuthProvider>
+          <UserAuthProvider>
+            <SmaiWalletProvider>
+              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                <Router />
+                <Toaster />
+              </div>
+            </SmaiWalletProvider>
+          </UserAuthProvider>
+        </AdminAuthProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
-
-export default App;

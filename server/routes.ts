@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage.js";
 import { serviceRegistry } from "./serviceRegistry.js";
 import { authService } from "./services/authService.js";
+import { userAuthService } from "./services/userAuthService.js";
 import { 
   securityHeaders, 
   rateLimitLogin, 
@@ -16,7 +17,7 @@ import {
   getUserAgent,
   updateLoginAttempts
 } from "./middleware/authMiddleware.js";
-import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/schema.js";
+import { AdminPermissions, loginSchema, insertAdminUserSchema, userLoginSchema, userRegisterSchema } from "@shared/schema.js";
 
 // WebSocket setup for real-time features
 let wss: any = null;
@@ -36,8 +37,8 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Authentication routes (public)
-  app.post("/api/auth/login", rateLimitLogin, async (req, res) => {
+  // ADMIN Authentication routes (public)
+  app.post("/api/admin-auth/login", rateLimitLogin, async (req, res) => {
     try {
       const credentials = loginSchema.parse(req.body);
       const ipAddress = getClientIP(req);
@@ -64,11 +65,163 @@ export function registerRoutes(app: Express): Promise<Server> {
         });
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Admin login error:', error);
       res.status(400).json({
         success: false,
         message: 'Invalid request data'
       });
+    }
+  });
+
+  // USER Authentication routes (public)
+  app.post("/api/user-auth/login", rateLimitLogin, async (req, res) => {
+    try {
+      const credentials = userLoginSchema.parse(req.body);
+      const ipAddress = getClientIP(req);
+      const userAgent = getUserAgent(req);
+      
+      const result = await userAuthService.login(credentials, ipAddress, userAgent);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          user: result.user,
+          token: result.token,
+          message: result.message
+        });
+      } else {
+        res.status(401).json({
+          success: false,
+          message: result.message
+        });
+      }
+    } catch (error) {
+      console.error('User login error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'Invalid request data'
+      });
+    }
+  });
+
+  app.post("/api/user-auth/register", rateLimitLogin, async (req, res) => {
+    try {
+      const userData = userRegisterSchema.parse(req.body);
+      
+      const result = await userAuthService.register(userData);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          user: result.user,
+          message: result.message
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: result.message
+        });
+      }
+    } catch (error) {
+      console.error('User registration error:', error);
+      res.status(400).json({
+        success: false,
+        message: 'Invalid request data'
+      });
+    }
+  });
+
+  // Admin "me" endpoint - get current admin user
+  app.get("/api/admin-auth/me", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'No token provided' });
+      }
+
+      const token = authHeader.substring(7);
+      const sessionInfo = await authService.verifyToken(token);
+
+      if (!sessionInfo) {
+        return res.status(401).json({ success: false, message: 'Invalid token' });
+      }
+
+      res.json({
+        success: true,
+        user: sessionInfo.user
+      });
+    } catch (error) {
+      console.error('Admin auth verification error:', error);
+      res.status(401).json({ success: false, message: 'Authentication failed' });
+    }
+  });
+
+  // User "me" endpoint - get current user
+  app.get("/api/user-auth/me", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'No token provided' });
+      }
+
+      const token = authHeader.substring(7);
+      const sessionInfo = await userAuthService.verifyToken(token);
+
+      if (!sessionInfo) {
+        return res.status(401).json({ success: false, message: 'Invalid token' });
+      }
+
+      res.json({
+        success: true,
+        user: sessionInfo.user
+      });
+    } catch (error) {
+      console.error('User auth verification error:', error);
+      res.status(401).json({ success: false, message: 'Authentication failed' });
+    }
+  });
+
+  // Admin logout endpoint
+  app.post("/api/admin-auth/logout", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(400).json({ success: false, message: 'No token provided' });
+      }
+
+      const token = authHeader.substring(7);
+      const sessionInfo = await authService.verifyToken(token);
+
+      if (sessionInfo) {
+        await authService.logout(sessionInfo.sessionId, sessionInfo.userId);
+      }
+
+      res.json({ success: true, message: 'Logged out successfully' });
+    } catch (error) {
+      console.error('Admin logout error:', error);
+      res.status(500).json({ success: false, message: 'Logout failed' });
+    }
+  });
+
+  // User logout endpoint
+  app.post("/api/user-auth/logout", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(400).json({ success: false, message: 'No token provided' });
+      }
+
+      const token = authHeader.substring(7);
+      const sessionInfo = await userAuthService.verifyToken(token);
+
+      if (sessionInfo) {
+        await userAuthService.logout(sessionInfo.sessionId);
+      }
+
+      res.json({ success: true, message: 'Logged out successfully' });
+    } catch (error) {
+      console.error('User logout error:', error);
+      res.status(500).json({ success: false, message: 'Logout failed' });
     }
   });
 

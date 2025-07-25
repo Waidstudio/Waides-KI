@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useUserAuth } from '@/context/UserAuthContext';
+import { useLocation } from 'wouter';
+import { useAdminAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Eye, EyeOff, Shield, Zap, AlertCircle, CheckCircle, Users } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { AlertCircle, Shield, Lock } from 'lucide-react';
 
-export default function LoginPage() {
+function AdminLoginPage() {
   const [, setLocation] = useLocation();
-  const { login, isAuthenticated, isLoading } = useUserAuth();
+  const { login, isAuthenticated, isLoading } = useAdminAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -27,7 +26,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation('/'); // Redirect to dashboard for regular users
+      setLocation('/admin-panel');
     }
   }, [isAuthenticated, setLocation]);
 
@@ -39,7 +38,7 @@ export default function LoginPage() {
     const result = await login(formData.email, formData.password, formData.rememberMe);
     
     if (result.success) {
-      setLocation('/'); // Redirect to user dashboard
+      setLocation('/admin-panel'); // Redirect to admin panel
     } else {
       setError(result.message);
     }
@@ -72,44 +71,31 @@ export default function LoginPage() {
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-2">
             <Shield className="h-8 w-8 text-blue-500" />
-            <h1 className="text-3xl font-bold text-slate-100">Waides KI</h1>
+            <h1 className="text-3xl font-bold text-slate-100">Waides KI Admin</h1>
           </div>
-          <p className="text-slate-400">Autonomous Wealth Management System</p>
+          <p className="text-slate-400">Administrative Access Portal</p>
         </div>
 
         {/* Login Card */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl text-slate-100 flex items-center gap-2">
-              <Users className="w-5 h-5 text-emerald-500" />
-              User Login
+              <Lock className="w-5 h-5 text-blue-500" />
+              Admin Login
             </CardTitle>
             <CardDescription className="text-slate-400">
-              Enter your credentials to access your trading account
+              Enter your administrator credentials to access the admin panel
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               
               {/* Demo Credentials Info */}
-              <div className="bg-emerald-950/50 border border-emerald-800/30 rounded-lg p-3 mb-4">
-                <p className="text-xs text-emerald-300 font-medium mb-1">Demo User Credentials:</p>
-                <p className="text-xs text-emerald-200">user@waides.com / WaidesUser2025!</p>
+              <div className="bg-blue-950/50 border border-blue-800/30 rounded-lg p-3 mb-4">
+                <p className="text-xs text-blue-300 font-medium mb-1">Demo Admin Credentials:</p>
+                <p className="text-xs text-blue-200">admin@waides.com / WaidesKI2025!</p>
               </div>
               
-              {/* Registration Link */}
-              <div className="text-center pb-2">
-                <p className="text-sm text-slate-400">
-                  Don't have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => setLocation('/register')}
-                    className="text-emerald-400 hover:text-emerald-300 underline"
-                  >
-                    Sign up here
-                  </button>
-                </p>
-              </div>
               {/* Error Alert */}
               {error && (
                 <Alert variant="destructive" className="bg-red-950 border-red-800">
@@ -120,14 +106,14 @@ export default function LoginPage() {
 
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">Email</Label>
+                <Label htmlFor="email" className="text-slate-300">Admin Email</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="user@waides.com"
+                  placeholder="admin@waides.com"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400"
+                  className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-blue-500"
                   required
                 />
               </div>
@@ -138,51 +124,43 @@ export default function LoginPage() {
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your admin password"
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400 pr-10"
+                    className="bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-blue-500 pr-10"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-slate-100"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-slate-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-slate-400" />
-                    )}
+                    {showPassword ? "Hide" : "Show"}
                   </Button>
                 </div>
               </div>
 
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="rememberMe"
-                    checked={formData.rememberMe}
-                    onCheckedChange={(checked) => handleInputChange('rememberMe', checked as boolean)}
-                  />
-                  <Label htmlFor="rememberMe" className="text-sm text-slate-300">
-                    Remember me
-                  </Label>
-                </div>
-                <a href="/forgot-password" className="text-sm text-blue-400 hover:text-blue-300">
-                  Forgot password?
-                </a>
+              {/* Remember Me */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onCheckedChange={(checked) => handleInputChange('rememberMe', checked as boolean)}
+                  className="border-slate-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                />
+                <Label htmlFor="rememberMe" className="text-sm text-slate-300">
+                  Keep me signed in for 30 days
+                </Label>
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium"
-                disabled={isSubmitting || !formData.email || !formData.password}
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium"
+                disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <div className="flex items-center space-x-2">
@@ -191,22 +169,22 @@ export default function LoginPage() {
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Users className="w-4 h-4" />
-                    <span>Sign In to Trading Account</span>
+                    <Shield className="w-4 h-4" />
+                    <span>Sign In to Admin Panel</span>
                   </div>
                 )}
               </Button>
-
-              {/* Admin Login Link */}
+              
+              {/* User Login Link */}
               <div className="text-center pt-4 border-t border-slate-700">
                 <p className="text-sm text-slate-400">
-                  Administrator?{' '}
+                  Not an administrator?{' '}
                   <button
                     type="button"
-                    onClick={() => setLocation('/admin-login')}
+                    onClick={() => setLocation('/login')}
                     className="text-blue-400 hover:text-blue-300 underline"
                   >
-                    Admin Login
+                    User Login
                   </button>
                 </p>
               </div>
@@ -217,3 +195,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default AdminLoginPage;
