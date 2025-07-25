@@ -131,8 +131,7 @@ function Router() {
           <Route path="/portal" component={WaidesKIVisionPortal} />
           {/* Trading Interface - focused trading execution */}
           <Route path="/trading" component={TradingInterface} />
-          <Route path="/wallet" component={ProfessionalWalletPage} />
-          <Route path="/wallet-enhanced" component={EnhancedWalletPage} />
+          <Route path="/wallet" component={EnhancedWalletPage} />
           <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
           <Route path="/dashboard" component={UserDashboard} />
           <Route path="/forum" component={ForumPage} />
