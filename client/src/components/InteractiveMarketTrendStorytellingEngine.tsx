@@ -110,6 +110,11 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const [visualMode, setVisualMode] = useState<string>('cinematic'); // cinematic, technical, abstract
   const [interactionMode, setInteractionMode] = useState<string>('guided'); // guided, free_explore, quiz
   
+  // Live Commentary Integration States
+  const [liveCommentaryMode, setLiveCommentaryMode] = useState(false);
+  const [availableLiveCommentary, setAvailableLiveCommentary] = useState<any[]>([]);
+  const [isPlayingLiveCommentary, setIsPlayingLiveCommentary] = useState(false);
+  
   const audioRef = useRef<HTMLAudioElement>(null);
   const narratorRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -205,6 +210,40 @@ export default function InteractiveMarketTrendStorytellingEngine() {
       return await apiRequest('/api/voice-narration/generate', {
         method: 'POST'
       });
+    }
+  });
+
+  // Live Commentary Integration Queries
+  const { data: liveCommentaryData, refetch: refetchLiveCommentary } = useQuery({
+    queryKey: ['/api/market-storytelling/live-commentary'],
+    refetchInterval: 15000, // Refresh every 15 seconds for new commentary
+    enabled: liveCommentaryMode,
+    onSuccess: (data) => {
+      if (data?.commentary) {
+        setAvailableLiveCommentary(data.commentary);
+      }
+    }
+  });
+
+  // Play Live Commentary Mutation
+  const playLiveCommentaryMutation = useMutation({
+    mutationFn: async (commentaryId: string) => {
+      return await apiRequest('/api/market-storytelling/play-live', {
+        method: 'POST',
+        body: JSON.stringify({ commentaryId }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: (data) => {
+      setIsPlayingLiveCommentary(true);
+      // Stop regular story playback when playing live commentary
+      if (storytellingState.isPlaying) {
+        pauseStoryMutation.mutate();
+      }
+      console.log('Playing live commentary:', data);
+      setTimeout(() => {
+        setIsPlayingLiveCommentary(false);
+      }, (data.duration || 10) * 1000);
     }
   });
 
@@ -474,12 +513,68 @@ export default function InteractiveMarketTrendStorytellingEngine() {
                     <BookOpen className="w-6 h-6 text-purple-400" />
                     <span>Story Controls</span>
                   </CardTitle>
-                  <Badge variant="outline" className="border-purple-400/40 text-purple-400">
-                    Chapter {storytellingState.currentChapter + 1} of {marketStory?.length || 0}
-                  </Badge>
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="outline" className="border-purple-400/40 text-purple-400">
+                      Chapter {storytellingState.currentChapter + 1} of {marketStory?.length || 0}
+                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setLiveCommentaryMode(!liveCommentaryMode)}
+                      className={`border-green-400/40 ${liveCommentaryMode ? 'bg-green-400/20 text-green-400' : 'text-green-400 hover:bg-green-400/10'}`}
+                    >
+                      <Mic className="w-3 h-3 mr-1" />
+                      Live {liveCommentaryMode ? 'ON' : 'OFF'}
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Live Commentary Section */}
+                {liveCommentaryMode && (
+                  <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg p-4 border border-green-400/20 mb-4">
+                    <h4 className="text-sm font-semibold text-green-400 mb-3 flex items-center space-x-2">
+                      <Headphones className="w-4 h-4" />
+                      <span>Live AI Commentary Queue</span>
+                      {isPlayingLiveCommentary && (
+                        <Badge variant="outline" className="border-green-400/40 text-green-400 animate-pulse">
+                          Playing Live
+                        </Badge>
+                      )}
+                      {liveCommentaryData?.count > 0 && (
+                        <Badge variant="outline" className="border-green-400/40 text-green-400">
+                          {liveCommentaryData.count} Available
+                        </Badge>
+                      )}
+                    </h4>
+                    {availableLiveCommentary.length > 0 ? (
+                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {availableLiveCommentary.slice(0, 3).map((commentary, index) => (
+                          <div key={index} className="flex items-center justify-between bg-slate-800/50 rounded p-2">
+                            <div className="flex-1">
+                              <div className="text-sm text-white">{commentary.title || `Live Commentary ${index + 1}`}</div>
+                              <div className="text-xs text-slate-400">{commentary.personaId || 'KonsAI'} • {commentary.duration || 10}s</div>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => playLiveCommentaryMutation.mutate(commentary.id || `commentary-${index}`)}
+                              disabled={isPlayingLiveCommentary || playLiveCommentaryMutation.isPending}
+                              className="border-green-400/40 text-green-400 hover:bg-green-400/10"
+                            >
+                              <Play className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-slate-400 text-center py-2">
+                        No live commentary available. Enable voice narration system to generate new commentary.
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Playback Controls */}
                 <div className="flex items-center justify-center space-x-4">
                   <Button
@@ -498,19 +593,21 @@ export default function InteractiveMarketTrendStorytellingEngine() {
                   
                   <Button
                     onClick={storytellingState.isPlaying ? pauseStory : playStory}
-                    disabled={playStoryMutation.isPending || pauseStoryMutation.isPending}
+                    disabled={playStoryMutation.isPending || pauseStoryMutation.isPending || isPlayingLiveCommentary}
                     className={`w-16 h-16 rounded-full ${
                       storytellingState.isPlaying 
                         ? 'bg-red-600 hover:bg-red-700' 
                         : 'bg-purple-600 hover:bg-purple-700'
                     } ${
-                      (playStoryMutation.isPending || pauseStoryMutation.isPending) 
+                      (playStoryMutation.isPending || pauseStoryMutation.isPending || isPlayingLiveCommentary) 
                         ? 'opacity-50 cursor-not-allowed' 
                         : ''
                     }`}
                   >
                     {playStoryMutation.isPending || pauseStoryMutation.isPending ? (
                       <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : isPlayingLiveCommentary ? (
+                      <Mic className="w-8 h-8" />
                     ) : storytellingState.isPlaying ? (
                       <Pause className="w-8 h-8" />
                     ) : (

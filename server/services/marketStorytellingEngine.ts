@@ -495,6 +495,37 @@ export class MarketStorytellingEngine {
             message: `Seeking to chapter ${seekChapter + 1}`,
             chapterTitle: this.getChapterTitle(seekChapter, persona)
           };
+
+        case 'play_live_commentary':
+          // Play the latest live commentary from voice narration system
+          const liveCommentary = this.getLatestLiveCommentary();
+          if (liveCommentary) {
+            return { 
+              status: 'playing_live', 
+              commentary: liveCommentary,
+              duration: liveCommentary.audioData?.duration || 10,
+              persona: liveCommentary.personaId,
+              marketPrice: currentPrice,
+              message: `Playing live commentary from ${liveCommentary.title}`,
+              timestamp: liveCommentary.timestamp
+            };
+          }
+          return { 
+            status: 'error', 
+            message: 'No live commentary available',
+            marketPrice: currentPrice
+          };
+
+        case 'get_live_queue':
+          // Return available live commentary queue
+          const liveQueue = this.getLiveCommentaryQueue();
+          return {
+            status: 'success',
+            liveCommentary: liveQueue,
+            count: liveQueue.length,
+            marketPrice: currentPrice,
+            message: `${liveQueue.length} live commentary items available`
+          };
           
         default:
           throw new Error(`Unknown action: ${action}`);
@@ -508,6 +539,22 @@ export class MarketStorytellingEngine {
         error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
+  }
+
+  private getLatestLiveCommentary(): any {
+    // Access global live commentary queue set by voice narration engine
+    const liveQueue = (global as any).liveCommentaryQueue || [];
+    return liveQueue.length > 0 ? liveQueue[0] : null;
+  }
+
+  private getLiveCommentaryQueue(): any[] {
+    // Return all available live commentary for story controls
+    return (global as any).liveCommentaryQueue || [];
+  }
+
+  async getLiveCommentaryForPlayback(): Promise<any[]> {
+    // Public method to get live commentary queue
+    return this.getLiveCommentaryQueue();
   }
 
   private getChapterTitle(chapterIndex: number, persona: string): string {

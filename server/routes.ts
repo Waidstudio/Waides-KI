@@ -6105,5 +6105,69 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ==========================================================================
+  // LIVE COMMENTARY INTEGRATION - Story Controls Playback
+  // ==========================================================================
+
+  // Get live commentary queue for story controls
+  app.get('/api/market-storytelling/live-commentary', async (req, res) => {
+    try {
+      // Access global live commentary queue directly
+      const liveCommentary = (global as any).liveCommentaryQueue || [];
+      
+      res.json({
+        success: true,
+        commentary: liveCommentary,
+        count: liveCommentary.length,
+        message: `${liveCommentary.length} live commentary items available for playback`
+      });
+    } catch (error: any) {
+      console.error('Live commentary error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch live commentary',
+        details: error.message
+      });
+    }
+  });
+
+  // Play specific live commentary through story controls
+  app.post('/api/market-storytelling/play-live', async (req, res) => {
+    try {
+      const { commentaryId } = req.body;
+      
+      // Find commentary in global queue
+      const liveCommentary = (global as any).liveCommentaryQueue || [];
+      const commentary = liveCommentary.find((item: any) => item.id === commentaryId);
+      
+      if (!commentary) {
+        return res.status(404).json({
+          success: false,
+          error: 'Commentary not found',
+          message: `Commentary with ID ${commentaryId} not found in queue`
+        });
+      }
+
+      // Simulate playing the commentary (in production this would trigger audio playback)
+      const result = {
+        action: 'play_live_commentary',
+        commentary: commentary,
+        message: `Now playing: ${commentary.title}`,
+        duration: commentary.duration,
+        playbackStarted: true,
+        timestamp: new Date().toISOString()
+      };
+
+      res.json({ success: true, ...result });
+    } catch (error: any) {
+      console.error('Play live commentary error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to play live commentary',
+        details: error.message
+      });
+    }
+  });
+
   return Promise.resolve(server);
 }

@@ -44,6 +44,15 @@ interface NarrationQueue {
   scheduledTime: string;
 }
 
+// Initialize global live commentary queue for story controls integration
+declare global {
+  var liveCommentaryQueue: any[];
+}
+
+if (!global.liveCommentaryQueue) {
+  global.liveCommentaryQueue = [];
+}
+
 export class VoiceNarrationEngine {
   private ethMonitor: EthMonitor;
   private activePersonas: Map<string, VoicePersona> = new Map();
@@ -56,6 +65,11 @@ export class VoiceNarrationEngine {
     this.ethMonitor = ethMonitor;
     this.initializeVoicePersonas();
     this.startMarketMonitoring();
+    
+    // Generate initial live commentary for testing
+    setTimeout(() => {
+      this.generateInitialCommentary();
+    }, 2000);
   }
 
   private initializeVoicePersonas() {
@@ -291,9 +305,98 @@ export class VoiceNarrationEngine {
     // Sort by priority (higher first)
     this.narrationQueue.sort((a, b) => b.priority - a.priority);
 
+    // Add to global commentary queue for story controls integration
+    this.addToGlobalCommentaryQueue(narration);
+
     // Start narration if not currently playing
     if (!this.isNarrating) {
       await this.playNextNarration();
+    }
+  }
+
+  private addToGlobalCommentaryQueue(narration: LiveNarration): void {
+    // Add to global queue for story controls access
+    const commentaryItem = {
+      id: narration.id,
+      title: `${this.activePersonas.get(narration.personaId)?.name || narration.personaId} Commentary`,
+      content: narration.content,
+      personaId: narration.personaId,
+      timestamp: narration.timestamp,
+      audioData: narration.audioData,
+      duration: narration.audioData?.duration || 10,
+      marketContext: narration.marketContext,
+      botActivity: narration.botActivity
+    };
+
+    // Keep only the 10 most recent commentary items
+    global.liveCommentaryQueue.unshift(commentaryItem);
+    if (global.liveCommentaryQueue.length > 10) {
+      global.liveCommentaryQueue = global.liveCommentaryQueue.slice(0, 10);
+    }
+
+    console.log(`📢 [Voice Engine] Added live commentary to global queue: ${commentaryItem.title} (${global.liveCommentaryQueue.length} total)`);
+  }
+
+  private async generateInitialCommentary(): Promise<void> {
+    console.log('📢 [Voice Engine] Generating initial live commentary for testing...');
+    
+    // Generate initial commentary from different personas
+    const personas = ['konsai', 'sage_trader', 'street_trader'];
+    
+    for (const personaId of personas) {
+      const persona = this.activePersonas.get(personaId);
+      if (persona) {
+        await this.generateLiveNarration(persona);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Small delay between generations
+      }
+    }
+  }
+
+  private async sendToStoryControls(narration: LiveNarration): Promise<void> {
+    try {
+      // Convert voice narration to story chapter format for playback
+      const storyChapter = {
+        id: narration.id,
+        title: `Live Commentary - ${this.activePersonas.get(narration.personaId)?.name || narration.personaId}`,
+        timeframe: 'Real-time',
+        narrative: narration.content,
+        priceAction: {
+          from: narration.marketContext.ethPrice * 0.99, // Simulate previous price
+          to: narration.marketContext.ethPrice,
+          change: narration.marketContext.priceChange,
+          volume: narration.marketContext.volume
+        },
+        keyEvents: [`Live ${narration.personaId} commentary at ${new Date(narration.timestamp).toLocaleTimeString()}`],
+        emotions: {
+          fear: Math.random() * 30,
+          greed: Math.random() * 40,
+          hope: Math.random() * 60,
+          panic: Math.random() * 20
+        },
+        technicalSignals: {
+          rsi: Math.random() * 100,
+          macd: narration.marketContext.trend === 'BULLISH' ? 'BULLISH' : 'BEARISH',
+          support: narration.marketContext.ethPrice * 0.95,
+          resistance: narration.marketContext.ethPrice * 1.05
+        },
+        nextChapterPreview: 'Continue listening to live market commentary...',
+        audioData: narration.audioData,
+        personaId: narration.personaId,
+        timestamp: narration.timestamp,
+        isLiveCommentary: true
+      };
+      
+      // Store in global story queue for story controls access
+      global.liveCommentaryQueue = global.liveCommentaryQueue || [];
+      global.liveCommentaryQueue.unshift(storyChapter); // Add to beginning for latest first
+      
+      // Keep only last 20 commentary chapters
+      if (global.liveCommentaryQueue.length > 20) {
+        global.liveCommentaryQueue = global.liveCommentaryQueue.slice(0, 20);
+      }
+      
+    } catch (error) {
+      console.error('Failed to send narration to story controls:', error);
     }
   }
 
