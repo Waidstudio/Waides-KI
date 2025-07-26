@@ -43,7 +43,8 @@ import {
   Mic,
   Camera,
   Monitor,
-  Smartphone
+  Smartphone,
+  Square
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -229,24 +230,104 @@ export default function InteractiveMarketTrendStorytellingEngine() {
     }
   }, [liveCommentaryData]);
 
-  // Play Live Commentary Mutation
+  // Play Live Commentary Mutation with actual audio playback
   const playLiveCommentaryMutation = useMutation({
     mutationFn: async (commentaryId: string) => {
-      return await apiRequest('/api/market-storytelling/play-live', {
+      // Find the commentary in available list to get content
+      const commentary = availableLiveCommentary.find(c => c.id === commentaryId);
+      if (!commentary) {
+        throw new Error('Commentary not found');
+      }
+      
+      // Call backend API for tracking
+      const response = await apiRequest('/api/market-storytelling/play-live', {
         method: 'POST',
         body: { commentaryId }
       });
+      
+      return { ...response, commentary };
     },
     onSuccess: (data: any) => {
       setIsPlayingLiveCommentary(true);
+      
       // Stop regular story playback when playing live commentary
       if (storytellingState.isPlaying) {
         pauseStoryMutation.mutate();
       }
-      console.log('Playing live commentary:', data);
+      
+      // Stop any existing speech synthesis
+      window.speechSynthesis.cancel();
+      
+      // Play the live commentary using Speech Synthesis API
+      if (data.commentary && data.commentary.content) {
+        const utterance = new SpeechSynthesisUtterance(data.commentary.content);
+        
+        // Set voice characteristics based on persona
+        const voices = window.speechSynthesis.getVoices();
+        const personaId = data.commentary.personaId;
+        
+        // Try to match voice to persona characteristics
+        let selectedVoice = voices.find(voice => 
+          voice.name.toLowerCase().includes('male') && 
+          voice.lang.startsWith('en')
+        );
+        
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+        
+        // Adjust speech characteristics based on persona
+        switch (personaId) {
+          case 'sage_trader':
+            utterance.rate = 0.8;
+            utterance.pitch = 0.7;
+            break;
+          case 'data_scientist':
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            break;
+          case 'street_trader':
+            utterance.rate = 1.3;
+            utterance.pitch = 1.2;
+            break;
+          case 'zen_master':
+            utterance.rate = 0.6;
+            utterance.pitch = 0.8;
+            break;
+          default:
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+        }
+        
+        utterance.volume = storytellingState.volume / 100;
+        
+        // Handle speech end
+        utterance.onend = () => {
+          setIsPlayingLiveCommentary(false);
+        };
+        
+        utterance.onerror = () => {
+          setIsPlayingLiveCommentary(false);
+          console.error('Speech synthesis error');
+        };
+        
+        // Store reference for potential cancellation
+        narratorRef.current = utterance;
+        
+        // Start speaking
+        window.speechSynthesis.speak(utterance);
+        
+        console.log('Playing live commentary:', data.commentary.content);
+      }
+      
+      // Fallback timeout in case speech doesn't trigger onend
       setTimeout(() => {
         setIsPlayingLiveCommentary(false);
-      }, (data.duration || 10) * 1000);
+      }, (data.commentary?.duration || 10) * 1000);
+    },
+    onError: (error) => {
+      setIsPlayingLiveCommentary(false);
+      console.error('Live commentary playback error:', error);
     }
   });
 
@@ -257,6 +338,14 @@ export default function InteractiveMarketTrendStorytellingEngine() {
 
   const pauseStory = () => {
     pauseStoryMutation.mutate();
+  };
+
+  const stopLiveCommentary = () => {
+    window.speechSynthesis.cancel();
+    setIsPlayingLiveCommentary(false);
+    if (narratorRef.current) {
+      narratorRef.current = null;
+    }
   };
 
   const nextChapterMutation = useMutation({
@@ -560,15 +649,27 @@ export default function InteractiveMarketTrendStorytellingEngine() {
                               <div className="text-sm text-white">{commentary.title || `Live Commentary ${index + 1}`}</div>
                               <div className="text-xs text-slate-400">{commentary.personaId || 'KonsAI'} • {commentary.duration || 10}s</div>
                             </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => playLiveCommentaryMutation.mutate(commentary.id || `commentary-${index}`)}
-                              disabled={isPlayingLiveCommentary || playLiveCommentaryMutation.isPending}
-                              className="border-green-400/40 text-green-400 hover:bg-green-400/10"
-                            >
-                              <Play className="w-3 h-3" />
-                            </Button>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => playLiveCommentaryMutation.mutate(commentary.id || `commentary-${index}`)}
+                                disabled={isPlayingLiveCommentary || playLiveCommentaryMutation.isPending}
+                                className="border-green-400/40 text-green-400 hover:bg-green-400/10"
+                              >
+                                <Play className="w-3 h-3" />
+                              </Button>
+                              {isPlayingLiveCommentary && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={stopLiveCommentary}
+                                  className="border-red-400/40 text-red-400 hover:bg-red-400/10"
+                                >
+                                  <Square className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
