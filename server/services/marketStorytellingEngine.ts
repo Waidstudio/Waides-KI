@@ -415,4 +415,117 @@ export class MarketStorytellingEngine {
       };
     }
   }
+
+  // Enhanced Story Controls - Real-time playback management
+  async controlStoryPlayback(action: string, options: any): Promise<any> {
+    const { persona = 'sage_trader', mode = 'epic', speed = 1, chapter = 0 } = options;
+    
+    try {
+      const ethData = await this.ethMonitor.fetchEthData();
+      const currentPrice = ethData.price;
+      const priceChange = ethData.priceChange24h;
+      
+      switch (action) {
+        case 'play':
+          return {
+            status: 'playing',
+            currentChapter: chapter,
+            speed: Math.max(0.5, Math.min(3, speed)),
+            persona,
+            mode,
+            marketPrice: currentPrice,
+            priceChange,
+            message: `Story playback started with ${persona} persona in ${mode} mode at ${speed}x speed`,
+            nextUpdate: new Date(Date.now() + 10000).toISOString()
+          };
+          
+        case 'pause':
+          return {
+            status: 'paused',
+            currentChapter: chapter,
+            persona,
+            mode,
+            marketPrice: currentPrice,
+            message: 'Story playback paused',
+            canResume: true
+          };
+          
+        case 'stop':
+          return {
+            status: 'stopped',
+            currentChapter: 0,
+            persona,
+            mode,
+            marketPrice: currentPrice,
+            message: 'Story playback stopped and reset to beginning'
+          };
+          
+        case 'next':
+          const nextChapter = Math.min(3, chapter + 1);
+          return {
+            status: 'playing',
+            currentChapter: nextChapter,
+            persona,
+            mode,
+            marketPrice: currentPrice,
+            message: `Advanced to chapter ${nextChapter + 1}`,
+            chapterTitle: this.getChapterTitle(nextChapter, persona)
+          };
+          
+        case 'previous':
+          const prevChapter = Math.max(0, chapter - 1);
+          return {
+            status: 'playing',
+            currentChapter: prevChapter,
+            persona,
+            mode,
+            marketPrice: currentPrice,
+            message: `Returned to chapter ${prevChapter + 1}`,
+            chapterTitle: this.getChapterTitle(prevChapter, persona)
+          };
+          
+        case 'seek':
+          const seekChapter = Math.max(0, Math.min(3, chapter));
+          return {
+            status: 'playing',
+            currentChapter: seekChapter,
+            persona,
+            mode,
+            marketPrice: currentPrice,
+            message: `Seeking to chapter ${seekChapter + 1}`,
+            chapterTitle: this.getChapterTitle(seekChapter, persona)
+          };
+          
+        default:
+          throw new Error(`Unknown action: ${action}`);
+      }
+    } catch (error) {
+      console.error('Story control error:', error);
+      return {
+        status: 'error',
+        action,
+        message: 'Failed to control story playback',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  private getChapterTitle(chapterIndex: number, persona: string): string {
+    const chapters = [
+      'Current Market State',
+      'Market Psychology Analysis', 
+      'Technical Analysis Deep Dive',
+      'Future Outlook & Strategy'
+    ];
+    
+    const personaPrefix = {
+      'sage_trader': 'The Sage Reveals:',
+      'data_scientist': 'Data Analysis:',
+      'street_trader': 'Street Wisdom:',
+      'zen_master': 'Mindful Observation:'
+    };
+    
+    const prefix = personaPrefix[persona as keyof typeof personaPrefix] || 'Market Story:';
+    return `${prefix} ${chapters[chapterIndex] || 'Unknown Chapter'}`;
+  }
 }

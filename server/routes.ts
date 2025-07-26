@@ -5626,5 +5626,238 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ==========================================================================
+  // MARKET STORYTELLING API ENDPOINTS - Real-Time Interactive Story Controls
+  // ==========================================================================
+  
+  // Generate market story with real-time data based on persona and mode
+  app.get('/api/market-storytelling/story', async (req, res) => {
+    try {
+      const { persona = 'sage_trader', mode = 'epic' } = req.query;
+      
+      // Get market storytelling engine service
+      const { MarketStorytellingEngine } = await import('./services/marketStorytellingEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const marketStorytellingEngine = new MarketStorytellingEngine(ethMonitor);
+      
+      const story = await marketStorytellingEngine.generateMarketStory(
+        persona as string, 
+        mode as string
+      );
+      
+      res.json({
+        success: true,
+        story,
+        persona,
+        mode,
+        generatedAt: new Date().toISOString(),
+        isLive: true
+      });
+    } catch (error) {
+      console.error('Market storytelling error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate market story',
+        success: false
+      });
+    }
+  });
+
+  // Get real-time market storytelling metrics
+  app.get('/api/market-storytelling/metrics', async (req, res) => {
+    try {
+      // Get market storytelling engine service
+      const { MarketStorytellingEngine } = await import('./services/marketStorytellingEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const marketStorytellingEngine = new MarketStorytellingEngine(ethMonitor);
+      
+      const metrics = await marketStorytellingEngine.getStoryMetrics();
+      
+      res.json({
+        success: true,
+        metrics,
+        timestamp: new Date().toISOString(),
+        isLive: true
+      });
+    } catch (error) {
+      console.error('Market storytelling metrics error:', error);
+      res.status(500).json({ 
+        error: 'Failed to get story metrics',
+        success: false
+      });
+    }
+  });
+
+  // Control story playback - Start/Stop/Resume
+  app.post('/api/market-storytelling/controls/:action', async (req, res) => {
+    try {
+      const { action } = req.params;
+      const { persona, mode, speed = 1, chapter = 0 } = req.body;
+      
+      const validActions = ['play', 'pause', 'stop', 'next', 'previous', 'seek'];
+      if (!validActions.includes(action)) {
+        return res.status(400).json({ 
+          error: 'Invalid action. Must be: play, pause, stop, next, previous, or seek',
+          success: false 
+        });
+      }
+
+      // Get market storytelling engine service
+      const { MarketStorytellingEngine } = await import('./services/marketStorytellingEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const marketStorytellingEngine = new MarketStorytellingEngine(ethMonitor);
+      
+      const result = await marketStorytellingEngine.controlStoryPlayback(
+        action, 
+        { persona, mode, speed, chapter }
+      );
+      
+      res.json({
+        success: true,
+        action,
+        result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Story control error:', error);
+      res.status(500).json({ 
+        error: 'Failed to control story playback',
+        success: false
+      });
+    }
+  });
+
+  // Get live market emotions for storytelling
+  app.get('/api/market-storytelling/emotions', async (req, res) => {
+    try {
+      // Get current market data
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      // Calculate emotions based on market conditions
+      const emotions = {
+        fear: Math.max(0, Math.min(100, 100 - (ethData.priceChange24h * 10 + 50))),
+        greed: Math.max(0, Math.min(100, ethData.priceChange24h * 10 + 50)),
+        hope: Math.max(0, Math.min(100, ethData.volume / 1000000 * 10 + 40)),
+        panic: Math.max(0, Math.min(100, Math.abs(ethData.priceChange24h) * 5)),
+        euphoria: Math.max(0, Math.min(100, Math.max(0, ethData.priceChange24h * 15))),
+        despair: Math.max(0, Math.min(100, Math.max(0, -ethData.priceChange24h * 15)))
+      };
+      
+      res.json({
+        success: true,
+        emotions,
+        marketPrice: ethData.price,
+        priceChange: ethData.priceChange24h,
+        dominantEmotion: Object.keys(emotions).reduce((a, b) => emotions[a] > emotions[b] ? a : b),
+        timestamp: new Date().toISOString(),
+        isLive: true
+      });
+    } catch (error) {
+      console.error('Market emotions error:', error);
+      res.status(500).json({ 
+        error: 'Failed to get market emotions',
+        success: false
+      });
+    }
+  });
+
+  // Update story settings in real-time
+  app.post('/api/market-storytelling/settings', async (req, res) => {
+    try {
+      const { 
+        voiceSpeed = 1, 
+        volume = 75, 
+        autoAdvance = true, 
+        narrationEnabled = true,
+        visualMode = 'cinematic',
+        interactionMode = 'guided'
+      } = req.body;
+      
+      // Store settings (in production, this would be saved to database/user preferences)
+      const settings = {
+        voiceSpeed: Math.max(0.5, Math.min(3, voiceSpeed)),
+        volume: Math.max(0, Math.min(100, volume)),
+        autoAdvance,
+        narrationEnabled,
+        visualMode,
+        interactionMode,
+        updatedAt: new Date().toISOString()
+      };
+      
+      res.json({
+        success: true,
+        settings,
+        message: 'Story settings updated successfully'
+      });
+    } catch (error) {
+      console.error('Settings update error:', error);
+      res.status(500).json({ 
+        error: 'Failed to update story settings',
+        success: false
+      });
+    }
+  });
+
+  // Get available story personas with real market expertise
+  app.get('/api/market-storytelling/personas', async (req, res) => {
+    try {
+      const personas = [
+        {
+          id: 'sage_trader',
+          name: 'The Sage Trader',
+          personality: 'Wise and experienced, speaks with gravitas',
+          voiceStyle: 'Deep, measured, contemplative',
+          expertise: ['Risk Management', 'Market Psychology', 'Long-term Trends'],
+          narrativeStyle: 'Philosophical with ancient wisdom metaphors',
+          marketFocus: 'Long-term value and risk assessment',
+          active: true
+        },
+        {
+          id: 'data_scientist',
+          name: 'The Data Scientist',
+          personality: 'Analytical and precise, loves numbers',
+          voiceStyle: 'Clear, factual, confident',
+          expertise: ['Technical Analysis', 'Statistics', 'Algorithms'],
+          narrativeStyle: 'Data-driven with scientific explanations',
+          marketFocus: 'Technical indicators and quantitative analysis',
+          active: true
+        },
+        {
+          id: 'street_trader',
+          name: 'The Street Trader',
+          personality: 'Fast-paced and energetic, market veteran',
+          voiceStyle: 'Quick, excited, passionate',
+          expertise: ['Day Trading', 'Market Sentiment', 'Quick Decisions'],
+          narrativeStyle: 'High-energy with trading floor intensity',
+          marketFocus: 'Short-term price action and momentum',
+          active: true
+        },
+        {
+          id: 'zen_master',
+          name: 'The Zen Master',
+          personality: 'Calm and mindful, sees bigger picture',
+          voiceStyle: 'Peaceful, slow, meditative',
+          expertise: ['Emotional Control', 'Patience', 'Inner Balance'],
+          narrativeStyle: 'Meditation-focused with spiritual metaphors',
+          marketFocus: 'Emotional discipline and market psychology',
+          active: true
+        }
+      ];
+      
+      res.json({
+        success: true,
+        personas,
+        totalPersonas: personas.length,
+        activePersonas: personas.filter(p => p.active).length
+      });
+    } catch (error) {
+      console.error('Personas fetch error:', error);
+      res.status(500).json({ 
+        error: 'Failed to get story personas',
+        success: false
+      });
+    }
+  });
+
   return Promise.resolve(server);
 }
