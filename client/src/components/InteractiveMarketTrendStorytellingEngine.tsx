@@ -218,23 +218,25 @@ export default function InteractiveMarketTrendStorytellingEngine() {
     queryKey: ['/api/market-storytelling/live-commentary'],
     refetchInterval: 15000, // Refresh every 15 seconds for new commentary
     enabled: liveCommentaryMode,
-    onSuccess: (data) => {
-      if (data?.commentary) {
-        setAvailableLiveCommentary(data.commentary);
-      }
-    }
   });
+
+  // Update available commentary when data changes
+  useEffect(() => {
+    if (liveCommentaryData && typeof liveCommentaryData === 'object' && 'commentary' in liveCommentaryData) {
+      const data = liveCommentaryData as { commentary: any[] };
+      setAvailableLiveCommentary(data.commentary);
+    }
+  }, [liveCommentaryData]);
 
   // Play Live Commentary Mutation
   const playLiveCommentaryMutation = useMutation({
     mutationFn: async (commentaryId: string) => {
       return await apiRequest('/api/market-storytelling/play-live', {
         method: 'POST',
-        body: JSON.stringify({ commentaryId }),
-        headers: { 'Content-Type': 'application/json' }
+        body: { commentaryId }
       });
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       setIsPlayingLiveCommentary(true);
       // Stop regular story playback when playing live commentary
       if (storytellingState.isPlaying) {
