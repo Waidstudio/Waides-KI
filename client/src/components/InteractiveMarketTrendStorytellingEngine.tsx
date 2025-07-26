@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Play,
   Pause,
@@ -26,7 +27,23 @@ import {
   BarChart3,
   PieChart,
   LineChart,
-  Layers
+  Layers,
+  Headphones,
+  Settings,
+  Film,
+  Globe,
+  Cpu,
+  Waves,
+  Hexagon,
+  Share2,
+  Download,
+  Star,
+  History,
+  Palette,
+  Mic,
+  Camera,
+  Monitor,
+  Smartphone
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -244,34 +261,134 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const progress = marketStory ? ((storytellingState.currentChapter + 1) / marketStory.length) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
-      {/* Cinematic Background */}
-      <div className="absolute inset-0 opacity-20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden pb-20 sm:pb-24">
+      {/* Enhanced Futuristic Background Effects */}
+      <div className="absolute inset-0 opacity-30">
         <div 
           className="w-full h-full"
           style={{
             backgroundImage: `
-              radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-              radial-gradient(circle at 40% 80%, rgba(120, 200, 255, 0.3) 0%, transparent 50%)
+              radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.4) 0%, transparent 60%),
+              radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.3) 0%, transparent 60%),
+              radial-gradient(circle at 40% 90%, rgba(168, 85, 247, 0.3) 0%, transparent 60%),
+              conic-gradient(from 0deg at 50% 50%, rgba(139, 92, 246, 0.1) 0deg, transparent 60deg, rgba(59, 130, 246, 0.1) 120deg, transparent 180deg, rgba(168, 85, 247, 0.1) 240deg, transparent 300deg)
             `,
-            animation: 'float 20s ease-in-out infinite'
+            animation: 'float 25s ease-in-out infinite, pulse 8s ease-in-out infinite alternate'
           }}
         ></div>
       </div>
 
-      <div className="relative z-10 p-4 lg:p-6 xl:p-8">
-        {/* Header */}
-        <div className="text-center space-y-4 mb-8">
-          <h1 className="text-4xl lg:text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-            Interactive Market Storytelling
+      {/* Neural Network Grid Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="w-full h-full" style={{
+          backgroundImage: `
+            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+          animation: 'gridShift 30s linear infinite'
+        }}></div>
+      </div>
+
+      {/* Floating Quantum Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-purple-400/20 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 2}s`,
+              animationDuration: `${4 + i}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 p-4 sm:p-6 lg:p-8 xl:p-12">
+        {/* Enhanced Futuristic Header */}
+        <div className="text-center space-y-6 mb-12">
+          {/* Neural Network Header Badge */}
+          <div className="inline-flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 rounded-full blur-md opacity-30 animate-pulse"></div>
+              <div className="relative bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-sm border border-purple-400/30 rounded-full px-6 py-3">
+                <span className="text-purple-300 font-semibold flex items-center space-x-2">
+                  <Film className="w-5 h-5" />
+                  <span>AI-Powered Market Cinema</span>
+                  <Sparkles className="w-5 h-5" />
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-tight">
+            Neural Market Storytelling
           </h1>
-          <p className="text-lg lg:text-xl text-slate-300 max-w-4xl mx-auto">
-            Experience market movements through immersive narratives with AI-powered storytelling and voice narration
+          <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
+            Experience market movements through immersive AI narratives, emotional intelligence, and real-time data storytelling
           </p>
+          
+          {/* Live Status Indicators */}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mt-8">
+            <Badge variant="outline" className="border-green-400/40 text-green-400 animate-pulse">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+              Live Market Data
+            </Badge>
+            <Badge variant="outline" className="border-blue-400/40 text-blue-400 animate-pulse">
+              <Brain className="w-3 h-3 mr-1" />
+              AI Narrator Active
+            </Badge>
+            <Badge variant="outline" className="border-purple-400/40 text-purple-400 animate-pulse">
+              <Waves className="w-3 h-3 mr-1" />
+              Real-time Audio
+            </Badge>
+            <Badge variant="outline" className="border-cyan-400/40 text-cyan-400 animate-pulse">
+              <Hexagon className="w-3 h-3 mr-1" />
+              Quantum Processing
+            </Badge>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+        {/* Advanced Tabbed Interface */}
+        <Tabs defaultValue="live-story" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-1 bg-slate-800/50 backdrop-blur-sm border border-purple-400/20 rounded-xl p-1 mb-8">
+            <TabsTrigger value="live-story" className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Film className="w-4 h-4" />
+              <span className="hidden sm:inline">Live Story</span>
+              <span className="sm:hidden">Story</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai-narrator" className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Brain className="w-4 h-4" />
+              <span className="hidden sm:inline">AI Narrator</span>
+              <span className="sm:hidden">AI</span>
+            </TabsTrigger>
+            <TabsTrigger value="market-emotions" className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Activity className="w-4 h-4" />
+              <span className="hidden sm:inline">Emotions</span>
+              <span className="sm:hidden">Feel</span>
+            </TabsTrigger>
+            <TabsTrigger value="neural-analysis" className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Cpu className="w-4 h-4" />
+              <span className="hidden sm:inline">Neural</span>
+              <span className="sm:hidden">AI</span>
+            </TabsTrigger>
+            <TabsTrigger value="visualization" className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Monitor className="w-4 h-4" />
+              <span className="hidden sm:inline">Visual</span>
+              <span className="sm:hidden">VFX</span>
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Settings</span>
+              <span className="sm:hidden">Set</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Live Story Tab Content */}
+          <TabsContent value="live-story" className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Story Display */}
           <div className="xl:col-span-2 space-y-6">
             {/* Story Controls */}
@@ -622,12 +739,255 @@ export default function InteractiveMarketTrendStorytellingEngine() {
             </Card>
           </div>
         </div>
+      </TabsContent>
+
+    {/* AI Narrator Tab Content */}
+    <TabsContent value="ai-narrator" className="space-y-6">
+      <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-blue-400/40 backdrop-blur shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-xl text-white flex items-center space-x-2">
+            <Brain className="w-6 h-6 text-blue-400" />
+            <span>Neural AI Narrator</span>
+            <Badge variant="outline" className="border-blue-400/40 text-blue-400 ml-auto">
+              Advanced Mode
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card className="bg-slate-800/50 border border-blue-400/20">
+              <CardContent className="p-4 text-center">
+                <Headphones className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                <p className="text-sm text-blue-300 font-semibold">Voice Quality</p>
+                <p className="text-xs text-slate-400">Neural Synthesis</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-slate-800/50 border border-purple-400/20">
+              <CardContent className="p-4 text-center">
+                <Mic className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                <p className="text-sm text-purple-300 font-semibold">Live Recording</p>
+                <p className="text-xs text-slate-400">Real-time Mode</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-slate-800/50 border border-green-400/20">
+              <CardContent className="p-4 text-center">
+                <Waves className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                <p className="text-sm text-green-300 font-semibold">Audio Effects</p>
+                <p className="text-xs text-slate-400">3D Spatial</p>
+              </CardContent>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Market Emotions Tab Content */}
+    <TabsContent value="market-emotions" className="space-y-6">
+      <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-orange-400/40 backdrop-blur shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-xl text-white flex items-center space-x-2">
+            <Activity className="w-6 h-6 text-orange-400" />
+            <span>Emotional Intelligence Engine</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <TrendingDown className="w-8 h-8 text-red-400" />
+                </div>
+                <p className="text-sm font-semibold text-red-400">Fear</p>
+                <p className="text-xs text-slate-400">High Alert</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-green-500/20 flex items-center justify-center">
+                  <TrendingUp className="w-8 h-8 text-green-400" />
+                </div>
+                <p className="text-sm font-semibold text-green-400">Greed</p>
+                <p className="text-xs text-slate-400">Moderate</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Star className="w-8 h-8 text-blue-400" />
+                </div>
+                <p className="text-sm font-semibold text-blue-400">Hope</p>
+                <p className="text-xs text-slate-400">Rising</p>
+              </div>
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-purple-500/20 flex items-center justify-center">
+                  <Zap className="w-8 h-8 text-purple-400" />
+                </div>
+                <p className="text-sm font-semibold text-purple-400">Panic</p>
+                <p className="text-xs text-slate-400">Low</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Neural Analysis Tab Content */}
+    <TabsContent value="neural-analysis" className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-cyan-400/40 backdrop-blur shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl text-white flex items-center space-x-2">
+              <Cpu className="w-6 h-6 text-cyan-400" />
+              <span>Neural Processing</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-300">Processing Speed</span>
+                <Badge className="bg-cyan-400/20 text-cyan-400">98.7%</Badge>
+              </div>
+              <Progress value={98.7} className="h-2 bg-slate-700" />
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-slate-300">Pattern Recognition</span>
+                <Badge className="bg-purple-400/20 text-purple-400">95.2%</Badge>
+              </div>
+              <Progress value={95.2} className="h-2 bg-slate-700" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-green-400/40 backdrop-blur shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl text-white flex items-center space-x-2">
+              <Globe className="w-6 h-6 text-green-400" />
+              <span>Global Sentiment</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center space-y-2">
+              <div className="text-3xl font-bold text-green-400">🚀 Bullish</div>
+              <p className="text-sm text-slate-300">Market confidence at 73%</p>
+              <div className="flex justify-center space-x-2 mt-4">
+                <Badge className="bg-green-400/20 text-green-400">+2.8%</Badge>
+                <Badge className="bg-blue-400/20 text-blue-400">Volume: High</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </TabsContent>
+
+    {/* Visualization Tab Content */}
+    <TabsContent value="visualization" className="space-y-6">
+      <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-pink-400/40 backdrop-blur shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-xl text-white flex items-center space-x-2">
+            <Monitor className="w-6 h-6 text-pink-400" />
+            <span>Visual Experience Engine</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-pink-400/40 text-pink-400 hover:bg-pink-400/10">
+              <Camera className="w-6 h-6" />
+              <span className="text-xs">Cinematic Mode</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-blue-400/40 text-blue-400 hover:bg-blue-400/10">
+              <BarChart3 className="w-6 h-6" />
+              <span className="text-xs">Technical Charts</span>
+            </Button>
+            <Button variant="outline" className="h-20 flex-col space-y-2 border-purple-400/40 text-purple-400 hover:bg-purple-400/10">
+              <Layers className="w-6 h-6" />
+              <span className="text-xs">Abstract Art</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </TabsContent>
+
+    {/* Settings Tab Content */}
+    <TabsContent value="settings" className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-orange-400/40 backdrop-blur shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl text-white flex items-center space-x-2">
+              <Settings className="w-6 h-6 text-orange-400" />
+              <span>Experience Settings</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Storytelling Speed</label>
+              <Slider
+                value={[storytellingState.speed]}
+                onValueChange={(value) => setStorytellingState(prev => ({ ...prev, speed: value[0] }))}
+                max={3}
+                min={0.5}
+                step={0.1}
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Audio Volume</label>
+              <Slider
+                value={[storytellingState.volume]}
+                onValueChange={(value) => setStorytellingState(prev => ({ ...prev, volume: value[0] }))}
+                max={100}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-teal-400/40 backdrop-blur shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl text-white flex items-center space-x-2">
+              <Palette className="w-6 h-6 text-teal-400" />
+              <span>Personalization</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-300">Mobile Optimized</span>
+                <Button variant="outline" size="sm" className="border-teal-400/40 text-teal-400">
+                  <Smartphone className="w-4 h-4 mr-1" />
+                  Active
+                </Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-300">Share Stories</span>
+                <Button variant="outline" size="sm" className="border-blue-400/40 text-blue-400">
+                  <Share2 className="w-4 h-4 mr-1" />
+                  Enable
+                </Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-300">Export Mode</span>
+                <Button variant="outline" size="sm" className="border-green-400/40 text-green-400">
+                  <Download className="w-4 h-4 mr-1" />
+                  Ready
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </TabsContent>
+  </Tabs>
       </div>
 
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes gridShift {
+          0% { transform: translateX(0) translateY(0); }
+          100% { transform: translateX(40px) translateY(40px); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.8; }
         }
       `}</style>
     </div>
