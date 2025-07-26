@@ -15,7 +15,8 @@ import {
   checkSessionTimeout,
   getClientIP,
   getUserAgent,
-  updateLoginAttempts
+  updateLoginAttempts,
+  requireAnyAuth
 } from "./middleware/authMiddleware.js";
 import { AdminPermissions, loginSchema, insertAdminUserSchema, userLoginSchema, userRegisterSchema } from "@shared/schema.js";
 import jwt from 'jsonwebtoken';

@@ -314,3 +314,77 @@ export const ipWhitelist = (allowedIPs: string[] = []) => {
     next();
   };
 };
+
+// Universal authentication middleware that accepts both admin and user auth
+export const requireAnyAuth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Get token from Authorization header or X-Admin-Token header
+    const authHeader = req.headers.authorization;
+    const adminToken = req.headers['x-admin-token'] as string;
+    
+    let token: string | null = null;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else if (adminToken) {
+      token = adminToken;
+    }
+    
+    if (!token) {
+      return res.status(401).json({
+        error: 'Authentication required',
+        message: 'Access token not provided'
+      });
+    }
+    
+    // Try admin auth first
+    try {
+      const sessionInfo = await authService.verifyToken(token);
+      if (sessionInfo && new Date() <= sessionInfo.expiresAt) {
+        req.user = sessionInfo.user;
+        req.sessionId = sessionInfo.sessionId;
+        return next();
+      }
+    } catch (adminError) {
+      // Admin auth failed, try user auth
+    }
+    
+    // Try user auth
+    try {
+      const { userAuthService } = await import('../services/userAuthService');
+      const userInfo = await userAuthService.verifyToken(token);
+      if (userInfo) {
+        req.user = userInfo.user;
+        req.sessionId = userInfo.sessionId;
+        return next();
+      }
+    } catch (userError) {
+      // User auth failed, try fallback
+    }
+    
+    // Try fallback user auth
+    try {
+      const { fallbackAuthService } = await import('../services/fallbackAuthService');
+      const fallbackInfo = await fallbackAuthService.verifyToken(token);
+      if (fallbackInfo) {
+        req.user = fallbackInfo.user;
+        req.sessionId = fallbackInfo.sessionId;
+        return next();
+      }
+    } catch (fallbackError) {
+      // All auth methods failed
+    }
+    
+    return res.status(401).json({
+      error: 'Invalid or expired token',
+      message: 'Please log in again'
+    });
+    
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return res.status(500).json({
+      error: 'Authentication error',
+      message: 'An error occurred during authentication'
+    });
+  }
+};

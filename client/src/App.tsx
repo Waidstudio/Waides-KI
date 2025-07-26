@@ -17,12 +17,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import { AdminAuthProvider } from "@/context/AuthContext";
-import { UserAuthProvider } from "@/context/UserAuthContext";
+import { UserAuthProvider, useUserAuth } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
 import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
+import HomePage from "@/components/HomePage";
 import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
 import EnhancedWalletPage from "@/pages/EnhancedWalletPage";
 import LoginPage from "@/pages/LoginPage";
@@ -125,21 +126,80 @@ function Router() {
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           
-          {/* Professional Landing Page */}
-          <Route path="/" component={ProfessionalLanding} />
+          {/* Professional Landing Page - Only for non-authenticated users */}
+          <Route path="/" component={HomePage} />
           
-          {/* Vision Portal - comprehensive AI interface */}
-          <Route path="/portal" component={WaidesKIVisionPortal} />
-          {/* Trading Interface - focused trading execution */}
-          <Route path="/trading" component={TradingInterface} />
-          <Route path="/wallet" component={EnhancedWalletPage} />
-          <Route path="/wallet-simple" component={SmaiSikaWalletPage} />
-          <Route path="/dashboard" component={UserDashboard} />
-          <Route path="/forum" component={ForumPage} />
-          <Route path="/waidbot" component={WaidBotPage} />
-          <Route path="/waidbot-pro" component={WaidBotProPage} />
-          <Route path="/live-data" component={LiveDataPage} />
-          <Route path="/learning" component={LearningPage} />
+          {/* Protected Core Routes */}
+          <Route path="/portal">
+            {() => (
+              <ProtectedRoute>
+                <WaidesKIVisionPortal />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/trading">
+            {() => (
+              <ProtectedRoute>
+                <TradingInterface />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/wallet">
+            {() => (
+              <ProtectedRoute>
+                <EnhancedWalletPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/wallet-simple">
+            {() => (
+              <ProtectedRoute>
+                <SmaiSikaWalletPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/dashboard">
+            {() => (
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/forum">
+            {() => (
+              <ProtectedRoute>
+                <ForumPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/waidbot">
+            {() => (
+              <ProtectedRoute>
+                <WaidBotPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/waidbot-pro">
+            {() => (
+              <ProtectedRoute>
+                <WaidBotProPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/live-data">
+            {() => (
+              <ProtectedRoute>
+                <LiveDataPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/learning">
+            {() => (
+              <ProtectedRoute>
+                <LearningPage />
+              </ProtectedRoute>
+            )}
+          </Route>
           
           {/* Trading protected routes */}
           <Route path="/waidbot-engine">
@@ -209,8 +269,20 @@ function Router() {
           </Route>
           
           {/* Advanced system routes */}
-          <Route path="/market-storytelling" component={InteractiveMarketTrendStorytellingEngine} />
-          <Route path="/voice-command" component={VoiceCommandPage} />
+          <Route path="/market-storytelling">
+            {() => (
+              <ProtectedRoute>
+                <InteractiveMarketTrendStorytellingEngine />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/voice-command">
+            {() => (
+              <ProtectedRoute>
+                <VoiceCommandPage />
+              </ProtectedRoute>
+            )}
+          </Route>
           <Route path="/kons-powa">
             {() => (
               <ProtectedRoute requiredRole={["admin", "super_admin"]}>
@@ -218,22 +290,125 @@ function Router() {
               </ProtectedRoute>
             )}
           </Route>
-          <Route path="/biometric-trading" component={BiometricTradingInterface} />
-          <Route path="/profile" component={ProfilePage} />
-          <Route path="/ml-lifecycle" component={MLLifecycleManager} />
-          <Route path="/risk-backtesting" component={RiskScenarioBacktesting} />
-          <Route path="/reincarnation" component={ReincarnationLoop} />
-          <Route path="/spiritual-recall" component={SpiritualRecall} />
-          <Route path="/seasonal-rebirth" component={SeasonalRebirth} />
-          <Route path="/sigil-layer" component={SigilLayer} />
-          <Route path="/shadow-defense" component={ShadowOverrideDefense} />
-          <Route path="/dream-vision" component={DreamLayerVision} />
-          <Route path="/vision-spirit" component={VisionSpiritPage} />
-          <Route path="/eth-empath-guardian" component={ETHEmpathNetworkGuardian} />
-          <Route path="/meta-guardian" component={MetaGuardianNetwork} />
-          <Route path="/full-engine" component={WaidesFullEngine} />
-          <Route path="/gateway" component={GatewayPage} />
-          <Route path="/api-docs" component={APIDocsPage} />
+          <Route path="/biometric-trading">
+            {() => (
+              <ProtectedRoute>
+                <BiometricTradingInterface />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/profile">
+            {() => (
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/ml-lifecycle">
+            {() => (
+              <ProtectedRoute>
+                <MLLifecycleManager />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/risk-backtesting">
+            {() => (
+              <ProtectedRoute>
+                <RiskScenarioBacktesting />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/reincarnation">
+            {() => (
+              <ProtectedRoute>
+                <ReincarnationLoop />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/spiritual-recall">
+            {() => (
+              <ProtectedRoute>
+                <SpiritualRecall />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/seasonal-rebirth">
+            {() => (
+              <ProtectedRoute>
+                <SeasonalRebirth />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/sigil-layer">
+            {() => (
+              <ProtectedRoute>
+                <SigilLayer />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/shadow-defense">
+            {() => (
+              <ProtectedRoute>
+                <ShadowOverrideDefense />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/dream-vision">
+            {() => (
+              <ProtectedRoute>
+                <DreamLayerVision />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/vision-spirit">
+            {() => (
+              <ProtectedRoute>
+                <VisionSpiritPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/eth-empath-guardian">
+            {() => (
+              <ProtectedRoute>
+                <ETHEmpathNetworkGuardian />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/meta-guardian">
+            {() => (
+              <ProtectedRoute>
+                <MetaGuardianNetwork />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/full-engine">
+            {() => (
+              <ProtectedRoute>
+                <WaidesFullEngine />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/gateway">
+            {() => (
+              <ProtectedRoute>
+                <GatewayPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/api-docs">
+            {() => (
+              <ProtectedRoute>
+                <APIDocsPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/autonomous-wealth">
+            {() => (
+              <ProtectedRoute>
+                <AutonomousWealthEngine />
+              </ProtectedRoute>
+            )}
+          </Route>
           <Route component={NotFound} />
         </Switch>
       </main>
