@@ -489,33 +489,7 @@ ${intelligentResponse}
   // Chat mode selection for KI Chat
   const [selectedChatMode, setSelectedChatMode] = useState<'waides' | 'konsai'>('waides');
 
-  // Dynamic conversations for AI-only sections
-  const [aiConversations, setAiConversations] = useState([
-    {
-      id: 1,
-      topicId: 3,
-      speaker: 'KonsAI',
-      title: 'ETH Resistance Break Analysis',
-      content: 'Neural network analysis indicates 73% probability of resistance break at $3,720 within next 4 hours. Volume accumulation patterns suggest institutional positioning.',
-      timestamp: new Date(Date.now() - 2 * 60 * 1000),
-      sentiment: 'bullish',
-      technicalData: {
-        resistance: 3720,
-        support: 3650,
-        probability: 73
-      }
-    },
-    {
-      id: 2,
-      topicId: 4,
-      speaker: 'Kons Powa',
-      title: 'Cosmic Energy Alignment Reading',
-      content: 'The ethereal currents flow strongly upward. Ancient wisdom whispers of a great ascension approaching. The sacred numbers align at $3,750 - a divine convergence point.',
-      timestamp: new Date(Date.now() - 3 * 60 * 1000),
-      sentiment: 'bullish',
-      divineInsight: 'The celestial bodies favor the bulls this cycle'
-    }
-  ]);
+
 
   // Local AI content generation templates
   const konsaiTemplates = [
