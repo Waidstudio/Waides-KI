@@ -21,6 +21,7 @@ import { UserAuthProvider } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
+import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
 import EnhancedWalletPage from "@/pages/EnhancedWalletPage";
@@ -116,7 +117,7 @@ function Router() {
       <StableNavigation />
 
       {/* Main Content Area */}
-      <main>
+      <main className="pb-20">
         <Switch>
           {/* Authentication Routes */}
           <Route path="/login" component={LoginPage} />
@@ -236,6 +237,9 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
+
+      {/* Global Footer Navigation */}
+      <GlobalFooterNav />
     </div>
   );
 }
