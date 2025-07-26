@@ -80,7 +80,16 @@ export function registerRoutes(app: Express): Promise<Server> {
       const ipAddress = getClientIP(req);
       const userAgent = getUserAgent(req);
       
-      const result = await userAuthService.login(credentials, ipAddress, userAgent);
+      let result;
+      try {
+        // Try normal database authentication first
+        result = await userAuthService.login(credentials, ipAddress, userAgent);
+      } catch (dbError) {
+        console.warn('Database authentication failed, using fallback:', dbError);
+        // Use fallback authentication when database is unavailable
+        const { fallbackAuthService } = await import('./services/fallbackAuthService');
+        result = await fallbackAuthService.login(credentials);
+      }
       
       if (result.success) {
         res.json({
@@ -97,9 +106,9 @@ export function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error('User login error:', error);
-      res.status(400).json({
+      res.status(401).json({
         success: false,
-        message: 'Invalid request data'
+        message: 'An error occurred during login'
       });
     }
   });
@@ -165,7 +174,17 @@ export function registerRoutes(app: Express): Promise<Server> {
       }
 
       const token = authHeader.substring(7);
-      const sessionInfo = await userAuthService.verifyToken(token);
+      let sessionInfo;
+      
+      try {
+        // Try normal database authentication first
+        sessionInfo = await userAuthService.verifyToken(token);
+      } catch (dbError) {
+        console.warn('Database token verification failed, using fallback:', dbError);
+        // Use fallback authentication when database is unavailable
+        const { fallbackAuthService } = await import('./services/fallbackAuthService');
+        sessionInfo = await fallbackAuthService.verifyToken(token);
+      }
 
       if (!sessionInfo) {
         return res.status(401).json({ success: false, message: 'Invalid token' });
@@ -173,7 +192,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         success: true,
-        user: sessionInfo.user
+        user: sessionInfo
       });
     } catch (error) {
       console.error('User auth verification error:', error);
