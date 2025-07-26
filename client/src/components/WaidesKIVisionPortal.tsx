@@ -486,91 +486,6 @@ ${intelligentResponse}
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
-  const [showForumPortal, setShowForumPortal] = useState(false);
-  const [forumNotifications, setForumNotifications] = useState(3);
-  const [forumActivity, setForumActivity] = useState({
-    activeUsers: 127,
-    newPosts: 8,
-    trending: ['ETH Analysis', 'KonsAi Predictions', 'Trading Strategies']
-  });
-  
-  // Forum State Management
-  const [forumView, setForumView] = useState<'topics' | 'thread'>('topics');
-  const [selectedThread, setSelectedThread] = useState<any>(null);
-  const [forumTopics, setForumTopics] = useState([
-    {
-      id: 1,
-      title: 'ETH Trading Strategies & Analysis',
-      description: 'Share your ETH trading strategies, technical analysis, and market insights',
-      category: 'user',
-      posts: 47,
-      replies: 156,
-      lastActivity: '5 minutes ago',
-      isPinned: true,
-      tags: ['ETH', 'Technical Analysis', 'Strategy']
-    },
-    {
-      id: 2,
-      title: 'Risk Management & Portfolio Theory',
-      description: 'Discuss position sizing, stop losses, and portfolio management techniques',
-      category: 'user',
-      posts: 23,
-      replies: 89,
-      lastActivity: '12 minutes ago',
-      isPinned: false,
-      tags: ['Risk Management', 'Portfolio', 'Safety']
-    },
-    {
-      id: 3,
-      title: 'KonsAI Oracle Predictions',
-      description: 'Exclusive KonsAI neural network predictions and market analysis',
-      category: 'konsai-only',
-      posts: 128,
-      replies: 0,
-      lastActivity: '2 minutes ago',
-      isPinned: true,
-      tags: ['KonsAI', 'Predictions', 'Neural Network']
-    },
-    {
-      id: 4,
-      title: 'Kons Powa Divine Wisdom',
-      description: 'Sacred trading insights and spiritual market guidance from Kons Powa',
-      category: 'kons-powa-only',
-      posts: 94,
-      replies: 0,
-      lastActivity: '3 minutes ago',
-      isPinned: true,
-      tags: ['Kons Powa', 'Divine', 'Spiritual Trading']
-    }
-  ]);
-
-  // Dynamic conversations for AI-only sections
-  const [aiConversations, setAiConversations] = useState([
-    {
-      id: 1,
-      topicId: 3,
-      speaker: 'KonsAI',
-      title: 'ETH Resistance Break Analysis',
-      content: 'Neural network analysis indicates 73% probability of resistance break at $3,720 within next 4 hours. Volume accumulation patterns suggest institutional positioning.',
-      timestamp: new Date(Date.now() - 2 * 60 * 1000),
-      sentiment: 'bullish',
-      technicalData: {
-        resistance: 3720,
-        support: 3650,
-        probability: 73
-      }
-    },
-    {
-      id: 2,
-      topicId: 4,
-      speaker: 'Kons Powa',
-      title: 'Cosmic Energy Alignment Reading',
-      content: 'The ethereal currents flow strongly upward. Ancient wisdom whispers of a great ascension approaching. The sacred numbers align at $3,750 - a divine convergence point.',
-      timestamp: new Date(Date.now() - 3 * 60 * 1000),
-      sentiment: 'bullish',
-      divineInsight: 'The celestial bodies favor the bulls this cycle'
-    }
-  ]);
 
   // Local AI content generation templates
   const konsaiTemplates = [
@@ -942,57 +857,7 @@ ${intelligentResponse}
     refetchInterval: 300000, // Refresh every 5 minutes
   });
 
-  // Forum activity simulation and notification management
-  useEffect(() => {
-    if (showForumPortal) {
-      const interval = setInterval(() => {
-        setForumActivity(prev => ({
-          ...prev,
-          activeUsers: Math.max(50, prev.activeUsers + Math.floor(Math.random() * 5) - 2),
-          newPosts: prev.newPosts + (Math.random() > 0.8 ? 1 : 0)
-        }));
-      }, 15000); // Update every 15 seconds
 
-      return () => clearInterval(interval);
-    }
-  }, [showForumPortal]);
-
-  // Mark forum notifications as read when portal opens
-  useEffect(() => {
-    if (showForumPortal && forumNotifications > 0) {
-      const timer = setTimeout(() => {
-        setForumNotifications(0);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showForumPortal]);
-
-  // Simulate new forum notifications periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (!showForumPortal && forumNotifications < 9) {
-        if (Math.random() > 0.85) { // 15% chance every 30 seconds
-          setForumNotifications(prev => Math.min(9, prev + 1));
-        }
-      }
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [showForumPortal, forumNotifications]);
-
-  // Generate new AI posts periodically
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7) { // 30% chance every 45 seconds
-        generateNewPost();
-        if (!showForumPortal) {
-          setForumNotifications(prev => Math.min(9, prev + 1));
-        }
-      }
-    }, 45000);
-
-    return () => clearInterval(interval);
-  }, [showForumPortal, enhancedDashboardData]);
 
   // Chat mutation
   const chatMutation = useMutation({
@@ -1729,26 +1594,6 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           </button>
           <span className="text-xs text-gray-400">|</span>
           
-          {/* Futuristic Forum Portal */}
-          <button 
-            onClick={() => setLocation('/forum')}
-            className="relative text-xs text-cyan-300 font-medium hover:text-cyan-200 transition-all duration-300 cursor-pointer flex items-center gap-1 group"
-          >
-            <div className="relative">
-              <Hexagon className="w-3 h-3 animate-pulse" />
-              <Atom className="w-2 h-2 absolute top-0.5 left-0.5 text-purple-400 animate-spin" style={{animationDuration: '3s'}} />
-              {forumNotifications > 0 && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center animate-pulse">
-                  <span className="text-[8px] text-white font-bold">{forumNotifications}</span>
-                </div>
-              )}
-            </div>
-            <span className="group-hover:text-gradient-to-r group-hover:from-cyan-300 group-hover:to-purple-300">
-              Forum
-            </span>
-          </button>
-          <span className="text-xs text-gray-400">|</span>
-          
           {/* Tab Navigation - Minimal */}
           <div className="flex bg-gray-800/40 rounded-sm p-0.5">
             <button
@@ -2302,8 +2147,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </DialogContent>
       </Dialog>
 
-      {/* Futuristic Forum Portal */}
-      <Dialog open={showForumPortal} onOpenChange={setShowForumPortal}>
+
         <DialogContent className="max-w-4xl h-[80vh] bg-gradient-to-br from-black via-purple-950/50 to-black border-cyan-500/30 p-0 overflow-hidden" aria-describedby="forum-description">
           <DialogHeader className="sr-only">
             <DialogTitle>WaidesKI Cosmic Forum</DialogTitle>
