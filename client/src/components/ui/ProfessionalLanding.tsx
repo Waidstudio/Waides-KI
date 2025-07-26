@@ -527,6 +527,162 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
+      {/* Footer Navigation */}
+      <footer className="bg-slate-900 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            {/* Trading & Core Features */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-6">Trading & Core</h3>
+              <div className="space-y-3">
+                <Link href="/portal" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Vision Portal
+                </Link>
+                <Link href="/trading" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Trading Interface
+                </Link>
+                <Link href="/wallet" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Wallet
+                </Link>
+                <Link href="/dashboard" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Dashboard
+                </Link>
+                <Link href="/live-data" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Live Market Data
+                </Link>
+                <Link href="/biometric-trading" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Biometric Trading
+                </Link>
+              </div>
+            </div>
+
+            {/* AI & Bot Systems */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-6">AI & Bots</h3>
+              <div className="space-y-3">
+                <Link href="/waidbot-engine" className="block text-slate-400 hover:text-emerald-400 transition-colors font-medium">
+                  WaidBot Engine
+                </Link>
+                <Link href="/waidbot" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  WaidBot
+                </Link>
+                <Link href="/waidbot-pro" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  WaidBot Pro
+                </Link>
+                <Link href="/strategy-autogen" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Strategy Generator
+                </Link>
+                <Link href="/kons-powa" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  KonsPowa Engine
+                </Link>
+                <Link href="/voice-command" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Voice Command
+                </Link>
+              </div>
+            </div>
+
+            {/* Advanced Features */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-6">Advanced Features</h3>
+              <div className="space-y-3">
+                <Link href="/market-storytelling" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Market Stories
+                </Link>
+                <Link href="/risk-backtesting" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Risk Backtesting
+                </Link>
+                <Link href="/ml-lifecycle" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  ML Lifecycle
+                </Link>
+                <Link href="/dream-vision" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Dream Vision
+                </Link>
+                <Link href="/vision-spirit" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Vision Spirit
+                </Link>
+                <Link href="/spiritual-recall" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Spiritual Recall
+                </Link>
+              </div>
+            </div>
+
+            {/* Community & Support */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-6">Community & Support</h3>
+              <div className="space-y-3">
+                <Link href="/forum" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Cosmic Forum
+                </Link>
+                <Link href="/learning" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Trading Academy
+                </Link>
+                <Link href="/profile" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  User Profile
+                </Link>
+                <Link href="/admin-panel" className="block text-slate-400 hover:text-orange-400 transition-colors">
+                  Admin Panel
+                </Link>
+                <Link href="/api-docs" className="block text-slate-400 hover:text-cyan-400 transition-colors">
+                  API Documentation
+                </Link>
+                <Link href="/config" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                  Configuration
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Bottom */}
+          <div className="mt-12 pt-8 border-t border-slate-800">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="flex items-center gap-2 mb-4 md:mb-0">
+                <Binary className="h-6 w-6 text-purple-400" />
+                <span className="text-xl font-bold text-white">Waides KI</span>
+                <Badge variant="outline" className="border-emerald-500/50 text-emerald-400 text-xs ml-2">
+                  AI Trading Platform
+                </Badge>
+              </div>
+              
+              <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-slate-400">
+                <span>© 2025 Waides KI. All rights reserved.</span>
+                <div className="flex gap-4">
+                  <Link href="/privacy" className="hover:text-purple-400 transition-colors">
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className="hover:text-purple-400 transition-colors">
+                    Terms of Service
+                  </Link>
+                  <Link href="/support" className="hover:text-purple-400 transition-colors">
+                    Support
+                  </Link>
+                </div>
+              </div>
+            </div>
+            
+            {/* Quick Stats */}
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-2xl font-bold text-emerald-400">200+</div>
+                <div className="text-xs text-slate-400">AI Modules</div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-2xl font-bold text-blue-400">150+</div>
+                <div className="text-xs text-slate-400">Auto Tasks</div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-2xl font-bold text-purple-400">45+</div>
+                <div className="text-xs text-slate-400">Trading Routes</div>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-4">
+                <div className="text-2xl font-bold text-orange-400">98.7%</div>
+                <div className="text-xs text-slate-400">System Health</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 };
