@@ -697,13 +697,11 @@ export class WaidesKILearningEngine {
 
   // Store previous evolution stage for tracking changes
   private previousEvolutionStage: string = 'UNKNOWN';
-      //   this.strategyPerformance = new Map(memoryData.strategies || []);
-      //   this.markedMistakes = new Set(memoryData.mistakes || []);
-      //   this.evolutionStage = memoryData.evolution_stage || 'LEARNING';
-      // }
-    } catch (error) {
-      // Start fresh if no previous data
-    }
+
+  // Initialize fresh learning engine
+  private initializeFreshEngine(): void {
+    // Start fresh if no previous data available
+    console.log('🧠 WaidesKI Learning Engine initialized with fresh state');
   }
 
   // HELPER METHODS

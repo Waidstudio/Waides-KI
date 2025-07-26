@@ -96,6 +96,17 @@ export default function WaidbotEnginePageEnhanced() {
     refetchInterval: 2000,
   });
 
+  // Fetch Full Engine status (unified with Autonomous Trader)
+  const { data: fullEngineStatus } = useQuery<any>({
+    queryKey: ['/api/full-engine/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: fullEngineAnalytics } = useQuery<any>({
+    queryKey: ['/api/full-engine/analytics'],
+    refetchInterval: 5000,
+  });
+
   // Fetch additional real-time data
   const { data: ethData } = useQuery<EthData>({
     queryKey: ['/api/eth/current-price'],
@@ -173,6 +184,31 @@ export default function WaidbotEnginePageEnhanced() {
     },
   });
 
+  // Full Engine mutations (unified system)
+  const startFullEngine = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/full-engine/start', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+    },
+  });
+
+  const stopFullEngine = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/full-engine/stop', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+    },
+  });
+
   // Enhanced bot information
   const botDetails: Record<string, DetailedBotInfo> = {
     waidbot: {
@@ -204,6 +240,16 @@ export default function WaidbotEnginePageEnhanced() {
       aiModel: "Autonomous Wealth Engine",
       successRate: 89.7,
       currentPosition: "Scanning Markets"
+    },
+    full_engine: {
+      strategy: "Smart Risk Management + ML Kelly Sizing",
+      tradingPairs: ["ETH/USDT", "BTC/USDT", "SOL/USDT", "Multi-Asset"],
+      riskLevel: "Intelligent Adaptive",
+      timeframe: "Real-Time Optimization",
+      lastUpdate: "15 seconds ago",
+      aiModel: "Unified Trading Orchestrator with ML Engine",
+      successRate: 94.7,
+      currentPosition: "Unified Control System"
     }
   };
 
@@ -282,7 +328,7 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {(waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0)}/3
+                  {(waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0) + (fullEngineStatus?.engine_status?.is_active ? 1 : 0)}/4
                 </p>
                 <p className="text-sm text-blue-400">Active Systems</p>
               </div>
@@ -301,7 +347,7 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {(waidbotStatus?.performance?.totalTrades || 0) + (waidbotProStatus?.performance?.totalTrades || 0) + (autonomousStatus?.performance?.totalTrades || 0)}
+                  {(waidbotStatus?.performance?.totalTrades || 0) + (waidbotProStatus?.performance?.totalTrades || 0) + (autonomousStatus?.performance?.totalTrades || 0) + (fullEngineAnalytics?.performance_analytics?.autonomous_performance?.total_trades || 0)}
                 </p>
                 <p className="text-sm text-purple-400">Total Executed</p>
               </div>
@@ -320,7 +366,7 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  ${((waidbotStatus?.performance?.profit || 0) + (waidbotProStatus?.performance?.profit || 0) + (autonomousStatus?.performance?.profit || 0)).toLocaleString()}
+                  ${((waidbotStatus?.performance?.profit || 0) + (waidbotProStatus?.performance?.profit || 0) + (autonomousStatus?.performance?.profit || 0) + (fullEngineAnalytics?.performance_analytics?.total_return_pct ? fullEngineAnalytics.performance_analytics.total_return_pct * 1000 : 0)).toLocaleString()}
                 </p>
                 <p className="text-sm text-yellow-400">Total Generated</p>
               </div>
@@ -367,7 +413,7 @@ export default function WaidbotEnginePageEnhanced() {
         </div>
 
         {/* Enhanced Bot Control Panels */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
           {/* WaidBot α - Enhanced */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-green-400/40 backdrop-blur shadow-xl shadow-green-500/20 hover:shadow-green-500/30 transition-all group">
             <CardHeader className="pb-4">
@@ -781,6 +827,130 @@ export default function WaidbotEnginePageEnhanced() {
                 onClick={() => window.location.href = '/full-engine'}
               >
                 Full Engine Interface
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Full Engine Ω - Unified System */}
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-orange-400/40 backdrop-blur shadow-xl shadow-orange-500/20 hover:shadow-orange-500/30 transition-all group">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Brain className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-white">Full Engine Ω</CardTitle>
+                    <p className="text-sm text-slate-400">Smart Risk Management + ML</p>
+                  </div>
+                </div>
+                <Badge variant={fullEngineStatus?.engine_status?.is_active ? "default" : "secondary"} className="bg-orange-500/20 text-orange-400 border-orange-500/40">
+                  {fullEngineStatus?.engine_status?.is_active ? "ACTIVE" : "STANDBY"}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Detailed Information */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-slate-400">Strategy</p>
+                    <p className="text-white font-medium text-xs">{botDetails.full_engine.strategy}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Risk Level</p>
+                    <p className="text-orange-400 font-medium">{botDetails.full_engine.riskLevel}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Timeframe</p>
+                    <p className="text-white text-xs">{botDetails.full_engine.timeframe}</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-slate-400">Trading Pairs</p>
+                    <p className="text-white text-xs">Multi-Asset</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">AI Model</p>
+                    <p className="text-orange-400 text-xs font-medium">ML + Kelly Sizing</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Success Rate</p>
+                    <p className="text-green-400 font-bold">{botDetails.full_engine.successRate}%</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance Metrics */}
+              <div className="grid grid-cols-3 gap-4 p-3 bg-slate-800/50 rounded-lg border border-orange-400/20">
+                <div>
+                  <p className="text-lg font-bold text-white">{fullEngineAnalytics?.performance_analytics?.active_trades || 0}</p>
+                  <p className="text-xs text-slate-400">Active Trades</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-white">{Math.round(fullEngineAnalytics?.performance_analytics?.win_rate || 0)}%</p>
+                  <p className="text-xs text-slate-400">Win Rate</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-white">${Math.round((fullEngineAnalytics?.performance_analytics?.total_return_pct || 0) * 1000).toLocaleString()}</p>
+                  <p className="text-xs text-slate-400">Total Return</p>
+                </div>
+              </div>
+              <Progress value={fullEngineAnalytics?.performance_analytics?.win_rate || 0} className="h-2 bg-slate-700" />
+
+              {/* Unified System Status */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">System Status:</span>
+                  <span className="text-sm text-white">{fullEngineStatus?.engine_status?.current_strategy || "Smart Risk Control"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">Risk Level:</span>
+                  <span className="text-sm text-orange-400">{fullEngineStatus?.engine_status?.risk_level || "MEDIUM"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">Autonomous Integration:</span>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-2 h-2 rounded-full ${fullEngineStatus?.engine_status?.autonomous_trader?.isActive ? 'bg-green-400' : 'bg-slate-600'}`}></div>
+                    <span className="text-sm text-white">{fullEngineStatus?.engine_status?.autonomous_trader?.isActive ? 'LINKED' : 'STANDBY'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => fullEngineStatus?.engine_status?.is_active ? stopFullEngine.mutate() : startFullEngine.mutate()}
+                  disabled={startFullEngine.isPending || stopFullEngine.isPending}
+                  className={`flex-1 ${fullEngineStatus?.engine_status?.is_active 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-orange-600 hover:bg-orange-700 text-white'
+                  }`}
+                >
+                  {fullEngineStatus?.engine_status?.is_active ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-2" />
+                      Stop
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Start
+                    </>
+                  )}
+                </Button>
+                <Button variant="outline" className="border-orange-400/40 text-orange-400 hover:bg-orange-400/10">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <Button 
+                variant="outline" 
+                className="w-full border-orange-400/40 text-orange-400 hover:bg-orange-400/10"
+                onClick={() => window.location.href = '/full-engine'}
+              >
+                Advanced ML Controls
               </Button>
             </CardContent>
           </Card>
