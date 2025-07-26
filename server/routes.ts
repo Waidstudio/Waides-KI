@@ -800,11 +800,14 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Enhanced wallet balance endpoint with detailed breakdown
   app.get("/api/wallet/balance", (req, res) => {
     res.json({
+      success: true,
       balance: 10000,
       currency: "USDT",
       available: 8500,
       locked: 1500,
       pending: 250,
+      smaiBalance: 5250.75, // SmaiSika balance for portal display
+      localBalance: 2625375, // Local currency balance (NGN)
       last_updated: new Date().toISOString()
     });
   });

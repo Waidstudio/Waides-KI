@@ -69,15 +69,30 @@ export const SmaiWalletProvider = ({ children }: SmaiWalletProviderProps) => {
       const data = await response.json();
       
       if (data.success) {
-        setSmaiBalance(data.smaiBalance);
-        setLocalBalance(data.localBalance);
+        setSmaiBalance(data.smaiBalance || 0);
+        setLocalBalance(data.localBalance || 0);
+      } else {
+        // Handle case where API doesn't return success flag
+        setSmaiBalance(data.smaiBalance || 0);
+        setLocalBalance(data.localBalance || 0);
       }
 
       // Fetch transactions
       const transactionsResponse = await fetch('/api/wallet/transactions');
       const transactionsData = await transactionsResponse.json();
       
-      if (transactionsData.success) {
+      if (Array.isArray(transactionsData)) {
+        // Convert API transaction format to our Transaction interface
+        const formattedTransactions = transactionsData.map(tx => ({
+          id: tx.id.toString(),
+          type: tx.type as 'deposit' | 'conversion' | 'trade' | 'withdrawal',
+          amount: tx.amount.toString(),
+          date: new Date(tx.timestamp).toISOString().split('T')[0],
+          status: tx.status as 'completed' | 'pending' | 'failed',
+          description: tx.description
+        }));
+        setTransactions(formattedTransactions);
+      } else if (transactionsData.success && Array.isArray(transactionsData.transactions)) {
         setTransactions(transactionsData.transactions);
       }
     } catch (error) {

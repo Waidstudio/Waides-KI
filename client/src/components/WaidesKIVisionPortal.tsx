@@ -42,11 +42,12 @@ export default function WaidesKIVisionPortal() {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  const { smaiBalance, localBalance, transactions, isLoading } = walletContext || {
+  const { smaiBalance, localBalance, transactions, isLoading, fetchWalletData } = walletContext || {
     smaiBalance: 0,
     localBalance: 0,
     transactions: [],
-    isLoading: false
+    isLoading: false,
+    fetchWalletData: () => Promise.resolve()
   };
 
   // Utility functions
@@ -116,7 +117,7 @@ export default function WaidesKIVisionPortal() {
           <span className="text-xs text-gray-400">•</span>
           <span className="text-xs text-green-400">System Health: {98.7}%</span>
           <span className="text-xs text-gray-400">•</span>
-          <span className="text-xs text-blue-400">SmaiSika Active</span>
+          <span className="text-xs text-blue-400">ꠄ{smaiBalance?.toLocaleString() || '0'} SmaiSika</span>
         </div>
       </div>
 
@@ -258,16 +259,41 @@ export default function WaidesKIVisionPortal() {
           /* Wallet Tab Content */
           <div className="h-full overflow-y-auto space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-purple-300 mb-4">SmaiSika Wallet</h2>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <h2 className="text-2xl font-bold text-purple-300">SmaiSika Wallet</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={fetchWalletData}
+                  disabled={isLoading}
+                  className="text-purple-400 hover:text-purple-300"
+                >
+                  {isLoading ? (
+                    <div className="animate-spin w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full" />
+                  ) : (
+                    "⟳"
+                  )}
+                </Button>
+              </div>
               
               {/* Balance Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <Card className="bg-purple-900/30 border-purple-500/30">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-300">ꠄ{smaiBalance?.toLocaleString() || '5,250.75'}</div>
-                      <div className="text-sm text-gray-400">SmaiKa Balance</div>
-                      <div className="text-xs text-purple-400">≈ ${((smaiBalance || 5250.75) * 1.2).toLocaleString()}</div>
+                      {isLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-8 bg-purple-700/50 rounded mb-2"></div>
+                          <div className="h-4 bg-purple-700/30 rounded mb-1"></div>
+                          <div className="h-3 bg-purple-700/20 rounded"></div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-purple-300">ꠄ{smaiBalance?.toLocaleString() || '0'}</div>
+                          <div className="text-sm text-gray-400">SmaiSika Balance</div>
+                          <div className="text-xs text-purple-400">≈ ${((smaiBalance || 0) * 1.2).toLocaleString()}</div>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -275,9 +301,19 @@ export default function WaidesKIVisionPortal() {
                 <Card className="bg-blue-900/30 border-blue-500/30">
                   <CardContent className="p-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-300">₦{localBalance?.toLocaleString() || '2,625,375'}</div>
-                      <div className="text-sm text-gray-400">Local Currency</div>
-                      <div className="text-xs text-blue-400">≈ ${((localBalance || 2625375) * 0.0012).toLocaleString()}</div>
+                      {isLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-8 bg-blue-700/50 rounded mb-2"></div>
+                          <div className="h-4 bg-blue-700/30 rounded mb-1"></div>
+                          <div className="h-3 bg-blue-700/20 rounded"></div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-blue-300">₦{localBalance?.toLocaleString() || '0'}</div>
+                          <div className="text-sm text-gray-400">Local Currency</div>
+                          <div className="text-xs text-blue-400">≈ ${((localBalance || 0) * 0.0012).toLocaleString()}</div>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
