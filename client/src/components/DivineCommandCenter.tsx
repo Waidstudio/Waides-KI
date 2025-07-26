@@ -22,8 +22,7 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Star,
-  Activity
+  Star
 } from 'lucide-react';
 import type { DivineCommandData } from '@/types/componentTypes';
 
