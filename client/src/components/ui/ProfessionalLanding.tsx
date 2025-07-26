@@ -659,26 +659,6 @@ const ProfessionalLanding = () => {
                 </div>
               </div>
             </div>
-            
-            {/* Quick Stats */}
-            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div className="bg-slate-800/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-emerald-400">200+</div>
-                <div className="text-xs text-slate-400">AI Modules</div>
-              </div>
-              <div className="bg-slate-800/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-blue-400">150+</div>
-                <div className="text-xs text-slate-400">Auto Tasks</div>
-              </div>
-              <div className="bg-slate-800/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-purple-400">45+</div>
-                <div className="text-xs text-slate-400">Trading Routes</div>
-              </div>
-              <div className="bg-slate-800/50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-orange-400">98.7%</div>
-                <div className="text-xs text-slate-400">System Health</div>
-              </div>
-            </div>
           </div>
         </div>
       </footer>
