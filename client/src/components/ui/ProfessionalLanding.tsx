@@ -335,22 +335,76 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section - Authentication Aware */}
       <section className="py-20 px-6 bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
               <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Why Choose Waides?
+                {isAuthenticated ? "Your Active Features" : "Why Choose Waides?"}
               </span>
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Professional-grade AI trading platform designed for modern traders
+              {isAuthenticated 
+                ? "Monitor your active trading features and access advanced tools"
+                : "Professional-grade AI trading platform designed for modern traders"
+              }
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
+            {(isAuthenticated ? [
+              // Authenticated User Features - Active/Personal
+              {
+                icon: Bot,
+                title: "WaidBot Engine",
+                description: "Your AI trading assistant is actively monitoring markets and executing strategies based on your preferences.",
+                color: "from-green-500 to-green-600",
+                status: "Active",
+                action: "/waidbot-engine"
+              },
+              {
+                icon: Wallet,
+                title: "SmaiSika Wallet",
+                description: "Your digital wallet with $10,000 USDT balance. Access Smaipin redemption and currency conversion features.",
+                color: "from-blue-500 to-blue-600",
+                status: "$10,000 USDT",
+                action: "/wallet"
+              },
+              {
+                icon: PieChart,
+                title: "Live Trading Dashboard",
+                description: "Monitor your active positions, track performance, and access real-time market analytics.",
+                color: "from-purple-500 to-purple-600",
+                status: "Live",
+                action: "/trading"
+              },
+              {
+                icon: Brain,
+                title: "KonsAI Oracle",
+                description: "Access advanced AI market predictions and spiritual trading guidance from KonsAI intelligence.",
+                color: "from-cyan-500 to-cyan-600",
+                status: "Oracle Active",
+                action: "/portal"
+              },
+              {
+                icon: Shield,
+                title: "Risk Protection",
+                description: "Your portfolio is protected with automated risk management and position sizing controls.",
+                color: "from-orange-500 to-orange-600",
+                status: "Protected",
+                action: "/config"
+              },
+              {
+                icon: Users,
+                title: "Cosmic Forum",
+                description: "Join trading discussions and access exclusive AI-generated market insights from the community.",
+                color: "from-pink-500 to-pink-600",
+                status: "Community",
+                action: "/forum"
+              }
+            ] : [
+              // Non-authenticated User Features - General
               {
                 icon: Brain,
                 title: "AI-Powered Analysis",
@@ -387,14 +441,29 @@ const ProfessionalLanding = () => {
                 description: "Automated strategy execution with customizable parameters and performance optimization.",
                 color: "from-cyan-500 to-cyan-600"
               }
-            ].map((feature, index) => (
-              <Card key={index} className="bg-gray-800/80 backdrop-blur-xl border border-gray-700 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 rounded-2xl overflow-hidden">
+            ]).map((feature, index) => (
+              <Card key={index} className="bg-gray-800/80 backdrop-blur-xl border border-gray-700 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 rounded-2xl overflow-hidden group">
                 <CardContent className="p-8">
-                  <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center mb-6`}>
-                    <feature.icon className="w-6 h-6 text-white" />
+                  <div className="flex items-center justify-between mb-6">
+                    <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center`}>
+                      <feature.icon className="w-6 h-6 text-white" />
+                    </div>
+                    {isAuthenticated && feature.status && (
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                        {feature.status}
+                      </Badge>
+                    )}
                   </div>
                   <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-                  <p className="text-gray-300 leading-relaxed">{feature.description}</p>
+                  <p className="text-gray-300 leading-relaxed mb-4">{feature.description}</p>
+                  {isAuthenticated && feature.action && (
+                    <Button asChild variant="outline" className="w-full border-gray-600 hover:bg-gray-700/50 group-hover:border-purple-500/50">
+                      <Link href={feature.action}>
+                        Access Now
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Link>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
@@ -402,20 +471,54 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
-      {/* Performance Stats */}
+      {/* Performance Stats - Authentication Aware */}
       <section className="py-20 px-6 bg-gray-900/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
-              Trusted by Thousands of Traders
+              {isAuthenticated ? "Your Trading Performance" : "Trusted by Thousands of Traders"}
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Join the growing community of successful traders using our platform
+              {isAuthenticated 
+                ? "Monitor your personal trading statistics and platform performance"
+                : "Join the growing community of successful traders using our platform"
+              }
             </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
+            {(isAuthenticated ? [
+              // Authenticated User Personal Stats
+              { 
+                value: '$10,000', 
+                label: 'Portfolio Balance', 
+                description: 'Your current USDT balance',
+                gradient: 'from-green-500 to-emerald-600',
+                icon: Wallet
+              },
+              { 
+                value: '0', 
+                label: 'Active Positions', 
+                description: 'Currently open trades',
+                gradient: 'from-blue-500 to-blue-600',
+                icon: TrendingUp
+              },
+              { 
+                value: '100%', 
+                label: 'System Status', 
+                description: 'Your AI systems online',
+                gradient: 'from-purple-500 to-purple-600',
+                icon: Bot
+              },
+              { 
+                value: 'Live', 
+                label: 'WaidBot Engine', 
+                description: 'AI trading assistant',
+                gradient: 'from-orange-500 to-orange-600',
+                icon: Zap
+              }
+            ] : [
+              // Non-authenticated Platform Stats
               { 
                 value: (liveStats?.[0]?.value || '94.7%'), 
                 label: 'Success Rate', 
@@ -440,10 +543,14 @@ const ProfessionalLanding = () => {
                 description: 'Always available',
                 gradient: 'from-orange-500 to-orange-600'
               }
-            ].map((stat, index) => (
+            ]).map((stat, index) => (
               <div key={index} className="text-center">
                 <div className={`w-16 h-16 bg-gradient-to-r ${stat.gradient} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                  <span className="text-2xl font-bold text-white">{stat.value.slice(0, 2)}</span>
+                  {isAuthenticated && stat.icon ? (
+                    <stat.icon className="w-8 h-8 text-white" />
+                  ) : (
+                    <span className="text-2xl font-bold text-white">{stat.value.slice(0, 2)}</span>
+                  )}
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
                 <div className="text-lg font-semibold text-gray-200 mb-1">{stat.label}</div>
@@ -455,6 +562,94 @@ const ProfessionalLanding = () => {
       </section>
 
 
+
+      {/* Quick Actions for Authenticated Users */}
+      {isAuthenticated && (
+        <section className="py-20 px-6 bg-gradient-to-br from-purple-900/20 via-gray-800/50 to-blue-900/20">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl sm:text-5xl font-bold mb-6 text-white">
+                Quick Actions
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Jump straight into your most used features and tools
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  title: "Start Trading",
+                  description: "Open trading interface",
+                  icon: TrendingUp,
+                  route: "/trading",
+                  color: "from-green-500 to-emerald-600",
+                  highlight: true
+                },
+                {
+                  title: "Check Wallet",
+                  description: "View balance & transactions",
+                  icon: Wallet,
+                  route: "/wallet",
+                  color: "from-blue-500 to-blue-600"
+                },
+                {
+                  title: "KonsAI Chat",
+                  description: "AI market insights",
+                  icon: Brain,
+                  route: "/portal",
+                  color: "from-purple-500 to-purple-600"
+                },
+                {
+                  title: "WaidBot Engine",
+                  description: "AI trading assistant",
+                  icon: Bot,
+                  route: "/waidbot-engine",
+                  color: "from-cyan-500 to-cyan-600"
+                }
+              ].map((action, index) => (
+                <Card key={index} className={`bg-gray-800/80 backdrop-blur-xl border border-gray-700 hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden group ${action.highlight ? 'ring-2 ring-green-500/30' : ''}`}>
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-16 h-16 bg-gradient-to-r ${action.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                      <action.icon className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">{action.title}</h3>
+                    <p className="text-gray-300 text-sm mb-4">{action.description}</p>
+                    <Button asChild className={`w-full ${action.highlight ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-700 hover:bg-gray-600'}`}>
+                      <Link href={action.route}>
+                        Access Now
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            {/* Personal Welcome Message */}
+            <div className="mt-12 text-center">
+              <div className="bg-gray-800/60 backdrop-blur-xl rounded-2xl p-8 border border-gray-700">
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  Welcome back, {user?.username}!
+                </h3>
+                <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                  Your AI trading systems are running smoothly. Ready to explore new market opportunities 
+                  or continue monitoring your active strategies?
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                  <Button asChild className="bg-purple-600 hover:bg-purple-700">
+                    <Link href="/portal">
+                      Explore Portal
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="border-gray-600 hover:bg-gray-700/50" onClick={logout}>
+                    <span className="cursor-pointer">Logout</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Exchange Integration */}
       <section className="py-20 px-6 bg-gray-800/50">
