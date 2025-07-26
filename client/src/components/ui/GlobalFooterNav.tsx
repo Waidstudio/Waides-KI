@@ -12,12 +12,6 @@ export default function GlobalFooterNav() {
             <span className="text-xs text-slate-400 group-hover:text-purple-400">Home</span>
           </Link>
 
-          {/* Portal - Highlighted */}
-          <Link href="/portal" className="flex flex-col items-center space-y-1 p-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 transition-colors group border border-purple-400/30">
-            <Bot className="w-4 h-4 text-purple-400 group-hover:text-purple-300" />
-            <span className="text-xs text-purple-400 group-hover:text-purple-300 font-medium">Portal</span>
-          </Link>
-
           {/* WaidBot Engine */}
           <Link href="/waidbot-engine" className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-slate-800/50 transition-colors group">
             <Zap className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
@@ -28,6 +22,15 @@ export default function GlobalFooterNav() {
           <Link href="/trading" className="flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-slate-800/50 transition-colors group">
             <TrendingUp className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
             <span className="text-xs text-slate-400 group-hover:text-emerald-400">Trading</span>
+          </Link>
+
+          {/* Portal - Center & Futuristic */}
+          <Link href="/portal" className="flex flex-col items-center space-y-1 p-3 rounded-xl bg-gradient-to-br from-purple-500/30 via-cyan-500/20 to-purple-500/30 hover:from-purple-400/40 hover:via-cyan-400/30 hover:to-purple-400/40 transition-all duration-300 group border border-purple-400/50 hover:border-cyan-400/60 shadow-lg shadow-purple-500/20 hover:shadow-cyan-500/30 hover:scale-105 transform">
+            <div className="relative">
+              <Bot className="w-5 h-5 text-purple-300 group-hover:text-cyan-300 transition-colors duration-300" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-400/20 to-cyan-400/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            <span className="text-xs text-purple-300 group-hover:text-cyan-300 font-bold tracking-wide">PORTAL</span>
           </Link>
 
           {/* Wallet */}
