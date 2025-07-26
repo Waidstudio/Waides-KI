@@ -55,7 +55,8 @@
 }
 
 /* Footer Navigation Spacing - ensure content is not hidden behind fixed footer */
-main {
+/* Only apply padding when footer is present (authenticated users) */
+.has-footer-nav main {
   padding-bottom: 60px; /* Space for footer navigation */
 }
 

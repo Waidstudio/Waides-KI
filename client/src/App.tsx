@@ -112,12 +112,12 @@ function Router() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+    <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
       {/* Stable Navigation */}
       <StableNavigation />
 
       {/* Main Content Area */}
-      <main className="pb-20">
+      <main>
         <Switch>
           {/* Authentication Routes */}
           <Route path="/login" component={LoginPage} />
