@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { 
-  Mic, Send, Brain, Wallet, Eye, Sparkles, 
-  MicOff, Volume2, MessageCircle,
+  Mic, Send, Brain, Wallet, TrendingUp, Eye, Sparkles, 
+  MicOff, Volume2, Settings, MessageCircle, Activity,
   Moon, Sun, Shield, Database, Globe, Bell
 } from 'lucide-react';
 import KonsaiChat from './KonsaiChat';
@@ -30,6 +30,7 @@ export default function WaidesKIVisionPortal() {
   const [currentMessage, setCurrentMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedChatMode, setSelectedChatMode] = useState('waides');
+  const [activeTab, setActiveTab] = useState('chat');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [konsmikMode, setKonsmikMode] = useState(false);
@@ -135,13 +136,17 @@ export default function WaidesKIVisionPortal() {
               <MessageCircle className="w-4 h-4 inline mr-2" />
               Chat
             </button>
-            <Link 
-              href="/wallet"
-              className="px-4 py-2 text-sm rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gray-700/50 flex items-center"
+            <button
+              onClick={() => setActiveTab('wallet')}
+              className={`px-4 py-2 text-sm rounded-lg transition-all ${
+                activeTab === 'wallet'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
             >
               <Wallet className="w-4 h-4 inline mr-2" />
               Heart of Waides KI
-            </Link>
+            </button>
           </div>
           
           {/* Chat Mode Toggle */}
@@ -178,72 +183,155 @@ export default function WaidesKIVisionPortal() {
 
       {/* Main Content Area */}
       <div className="relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden h-[calc(100vh-140px)]">
-        {selectedChatMode === 'konsai' ? (
-          <KonsaiChat />
-        ) : (
-          <div className="h-full flex flex-col">
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4">
-              {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full text-center">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
-                    <Brain className="w-10 h-10 text-white" />
+        {activeTab === 'chat' ? (
+          selectedChatMode === 'konsai' ? (
+            <KonsaiChat />
+          ) : (
+            <div className="h-full flex flex-col">
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4">
+                {messages.length === 0 && (
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
+                      <Brain className="w-10 h-10 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
+                    <p className="text-gray-400 max-w-md mb-4">
+                      Your next-generation KI trading oracle. Ask anything about markets, strategies, or trading insights.
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
-                  <p className="text-gray-400 max-w-md mb-4">
-                    Your next-generation KI trading oracle. Ask anything about markets, strategies, or trading insights.
-                  </p>
-                </div>
-              )}
-              
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
-                  <div className={`max-w-[80%] p-4 rounded-2xl ${
-                    message.isBot 
-                      ? 'bg-gray-800/60 border border-purple-500/20 text-gray-100'
-                      : 'bg-purple-600/80 text-white'
-                  }`}>
-                    <div className="whitespace-pre-wrap leading-relaxed">
-                      {message.content}
+                )}
+                
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`max-w-[80%] p-4 rounded-2xl ${
+                      message.isBot 
+                        ? 'bg-gray-800/60 border border-purple-500/20 text-gray-100'
+                        : 'bg-purple-600/80 text-white'
+                    }`}>
+                      <div className="whitespace-pre-wrap leading-relaxed">
+                        {message.content}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
 
-            {/* Input Area */}
-            <div className="relative z-10 p-2 w-full">
-              <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
-                <Input
-                  value={currentMessage}
-                  onChange={(e) => setCurrentMessage(e.target.value)}
-                  placeholder="Ask anything..."
-                  className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  disabled={isProcessing}
-                />
-                
+              {/* Input Area */}
+              <div className="relative z-10 p-2 w-full">
+                <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+                  <Input
+                    value={currentMessage}
+                    onChange={(e) => setCurrentMessage(e.target.value)}
+                    placeholder="Ask anything..."
+                    className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    disabled={isProcessing}
+                  />
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`p-2 rounded-full transition-all ${
+                      voiceEnabled 
+                        ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                        : 'hover:bg-purple-500/20 text-purple-400'
+                    }`}
+                    onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+                    disabled={isProcessing}
+                  >
+                    {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                  </Button>
+                  
+                  <Button
+                    className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+                    onClick={sendMessage}
+                    disabled={!currentMessage.trim() || isProcessing}
+                  >
+                    <Send className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )
+        ) : (
+          /* Wallet Tab Content */
+          <div className="h-full overflow-y-auto space-y-6">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <h2 className="text-2xl font-bold text-purple-300">SmaiSika Wallet</h2>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`p-2 rounded-full transition-all ${
-                    voiceEnabled 
-                      ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                      : 'hover:bg-purple-500/20 text-purple-400'
-                  }`}
-                  onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
-                  disabled={isProcessing}
+                  onClick={fetchWalletData}
+                  disabled={isLoading}
+                  className="text-purple-400 hover:text-purple-300"
                 >
-                  {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                  {isLoading ? (
+                    <div className="animate-spin w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full" />
+                  ) : (
+                    "⟳"
+                  )}
                 </Button>
+              </div>
+              
+              {/* Balance Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <Card className="bg-purple-900/30 border-purple-500/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      {isLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-8 bg-purple-700/50 rounded mb-2"></div>
+                          <div className="h-4 bg-purple-700/30 rounded mb-1"></div>
+                          <div className="h-3 bg-purple-700/20 rounded"></div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-purple-300">ꠄ{smaiBalance?.toLocaleString() || '0'}</div>
+                          <div className="text-sm text-gray-400">SmaiSika Balance</div>
+                          <div className="text-xs text-purple-400">≈ ${((smaiBalance || 0) * 1.2).toLocaleString()}</div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
                 
-                <Button
-                  className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
-                  onClick={sendMessage}
-                  disabled={!currentMessage.trim() || isProcessing}
-                >
-                  <Send className="w-5 h-5" />
+                <Card className="bg-blue-900/30 border-blue-500/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      {isLoading ? (
+                        <div className="animate-pulse">
+                          <div className="h-8 bg-blue-700/50 rounded mb-2"></div>
+                          <div className="h-4 bg-blue-700/30 rounded mb-1"></div>
+                          <div className="h-3 bg-blue-700/20 rounded"></div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-blue-300">₦{localBalance?.toLocaleString() || '0'}</div>
+                          <div className="text-sm text-gray-400">Local Currency</div>
+                          <div className="text-xs text-blue-400">≈ ${((localBalance || 0) * 0.0012).toLocaleString()}</div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg">
+                  <TrendingUp className="w-5 h-5 mr-2" />
+                  Fund Account
+                </Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg">
+                  <Activity className="w-5 h-5 mr-2" />
+                  Convert Currency
+                </Button>
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg">
+                  <Settings className="w-5 h-5 mr-2" />
+                  Settings
                 </Button>
               </div>
             </div>
