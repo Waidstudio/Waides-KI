@@ -12,17 +12,29 @@ interface TempUser {
   createdAt: Date;
 }
 
+interface TempSession {
+  sessionId: string;
+  userId: string;
+  expiresAt: Date;
+  ipAddress: string;
+  userAgent: string;
+  lastActivity: Date;
+  isActive: boolean;
+}
+
 interface LoginResult {
   success: boolean;
   user?: any;
   token?: string;
+  sessionId?: string;
   message: string;
 }
 
 // Temporary in-memory user storage when database is unavailable
 class FallbackAuthService {
   private users: Map<string, TempUser> = new Map();
-  private sessions: Map<string, { userId: string; expiresAt: Date }> = new Map();
+  private sessions: Map<string, TempSession> = new Map();
+  private ipSessions: Map<string, Map<string, TempSession>> = new Map(); // ipAddress -> userId -> session
 
   constructor() {
     this.initializeDefaultUsers();
@@ -60,7 +72,21 @@ class FallbackAuthService {
     }
   }
 
-  public async login(credentials: { email: string; password: string }): Promise<LoginResult> {
+  // Check if user already has active session from this IP
+  public checkActiveSessionByIP(userId: string, ipAddress: string): TempSession | null {
+    const cleanIpAddress = ipAddress.split(',')[0].trim();
+    const userSessions = this.ipSessions.get(cleanIpAddress);
+    
+    if (userSessions && userSessions.has(userId)) {
+      const session = userSessions.get(userId)!;
+      if (session.isActive && session.expiresAt > new Date()) {
+        return session;
+      }
+    }
+    return null;
+  }
+
+  public async login(credentials: { email: string; password: string; rememberMe?: boolean }, ipAddress?: string, userAgent?: string): Promise<LoginResult> {
     try {
       const user = this.users.get(credentials.email);
       
@@ -80,15 +106,63 @@ class FallbackAuthService {
         };
       }
 
-      // Generate session token
+      const cleanIpAddress = ipAddress ? ipAddress.split(',')[0].trim() : 'unknown';
+      
+      // Check if user already has active session from this IP
+      const existingSession = this.checkActiveSessionByIP(user.id, cleanIpAddress);
+      if (existingSession) {
+        // Update last activity and return existing session
+        existingSession.lastActivity = new Date();
+        
+        const token = jwt.sign(
+          {
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+            sessionId: existingSession.sessionId
+          },
+          process.env.JWT_SECRET || 'fallback-secret-key',
+          { expiresIn: '365d' }
+        );
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            permissions: user.permissions
+          },
+          token,
+          sessionId: existingSession.sessionId,
+          message: 'Welcome back! Restored your session (using fallback authentication)'
+        };
+      }
+
+      // Generate new session
       const sessionId = crypto.randomUUID();
       const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year - persistent session
 
-      // Store session
-      this.sessions.set(sessionId, {
+      // Create session object
+      const session: TempSession = {
+        sessionId,
         userId: user.id,
-        expiresAt
-      });
+        expiresAt,
+        ipAddress: cleanIpAddress,
+        userAgent: userAgent || 'unknown',
+        lastActivity: new Date(),
+        isActive: true
+      };
+
+      // Store session
+      this.sessions.set(sessionId, session);
+      
+      // Store by IP for quick lookup
+      if (!this.ipSessions.has(cleanIpAddress)) {
+        this.ipSessions.set(cleanIpAddress, new Map());
+      }
+      this.ipSessions.get(cleanIpAddress)!.set(user.id, session);
 
       // Generate JWT token
       const token = jwt.sign(
@@ -112,6 +186,7 @@ class FallbackAuthService {
           permissions: user.permissions
         },
         token,
+        sessionId,
         message: 'Login successful (using fallback authentication)'
       };
 
@@ -130,9 +205,12 @@ class FallbackAuthService {
       
       // Check if session exists and is valid
       const session = this.sessions.get(decoded.sessionId);
-      if (!session || session.expiresAt < new Date()) {
+      if (!session || !session.isActive || session.expiresAt < new Date()) {
         return null;
       }
+
+      // Update last activity
+      session.lastActivity = new Date();
 
       const user = Array.from(this.users.values()).find(u => u.id === decoded.userId);
       if (!user) {
@@ -152,6 +230,33 @@ class FallbackAuthService {
     }
   }
 
+  // Logout - invalidate session
+  public async logout(sessionId: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const session = this.sessions.get(sessionId);
+      if (session) {
+        session.isActive = false;
+        
+        // Remove from IP lookup
+        const userSessions = this.ipSessions.get(session.ipAddress);
+        if (userSessions && userSessions.has(session.userId)) {
+          userSessions.delete(session.userId);
+        }
+      }
+
+      return {
+        success: true,
+        message: 'Logout successful',
+      };
+    } catch (error) {
+      console.error('Logout error:', error);
+      return {
+        success: false,
+        message: 'An error occurred during logout',
+      };
+    }
+  }
+
   public getUserById(id: string): TempUser | undefined {
     return Array.from(this.users.values()).find(user => user.id === id);
   }
@@ -165,8 +270,14 @@ class FallbackAuthService {
     const now = new Date();
     const sessionsArray = Array.from(this.sessions.entries());
     for (const [sessionId, session] of sessionsArray) {
-      if (session.expiresAt < now) {
+      if (session.expiresAt < now || !session.isActive) {
         this.sessions.delete(sessionId);
+        
+        // Also remove from IP lookup
+        const userSessions = this.ipSessions.get(session.ipAddress);
+        if (userSessions && userSessions.has(session.userId)) {
+          userSessions.delete(session.userId);
+        }
       }
     }
   }

@@ -18,6 +18,7 @@ import {
   updateLoginAttempts
 } from "./middleware/authMiddleware.js";
 import { AdminPermissions, loginSchema, insertAdminUserSchema, userLoginSchema, userRegisterSchema } from "@shared/schema.js";
+import jwt from 'jsonwebtoken';
 
 // WebSocket setup for real-time features
 let wss: any = null;
@@ -73,6 +74,60 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // USER Authentication token verification
+  app.get("/api/user-auth/me", async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token'
+        });
+      }
+      
+      const token = authHeader.substring(7);
+      let user;
+      
+      // Try database authentication first
+      try {
+        const sessionInfo = await userAuthService.verifyToken(token);
+        if (sessionInfo) {
+          user = sessionInfo.user;
+        }
+      } catch (dbError) {
+        // Fallback to in-memory authentication
+        try {
+          const { fallbackAuthService } = await import('./services/fallbackAuthService');
+          user = await fallbackAuthService.verifyToken(token);
+        } catch (fallbackError) {
+          return res.status(401).json({
+            success: false,
+            message: 'Invalid token'
+          });
+        }
+      }
+      
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token'
+        });
+      }
+      
+      res.json({
+        success: true,
+        user
+      });
+    } catch (error) {
+      console.error('Token verification error:', error);
+      res.status(401).json({
+        success: false,
+        message: 'Invalid token'
+      });
+    }
+  });
+
   // USER Authentication routes (public)
   app.post("/api/user-auth/login", rateLimitLogin, async (req, res) => {
     // Parse and validate input
@@ -101,7 +156,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       // Fallback to in-memory authentication when database is unavailable
       try {
         const { fallbackAuthService } = await import('./services/fallbackAuthService');
-        result = await fallbackAuthService.login(credentials);
+        result = await fallbackAuthService.login(credentials, ipAddress, userAgent);
         
         if (result.success && !result.message.includes('fallback')) {
           result.message = result.message + ' (using fallback authentication)';

@@ -69,6 +69,8 @@ export class UserAuthService {
         sessionId,
         role: user.role,
         permissions: user.permissions,
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (365 * 24 * 60 * 60) // 1 year
       },
       JWT_SECRET,
       { expiresIn }
@@ -98,6 +100,12 @@ export class UserAuthService {
         return null;
       }
 
+      // Update last activity timestamp
+      await db
+        .update(userSessions)
+        .set({ lastActivity: new Date() })
+        .where(eq(userSessions.sessionId, sessionId));
+
       // Get user data
       const user = await this.getUserById(decoded.userId);
       if (!user) {
@@ -111,6 +119,7 @@ export class UserAuthService {
         expiresAt: session[0].expiresAt,
       };
     } catch (error) {
+      console.error('Token verification error:', error);
       return null;
     }
   }
