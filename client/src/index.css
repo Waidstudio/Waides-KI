@@ -54,6 +54,16 @@
   scroll-behavior: smooth;
 }
 
+/* Footer Navigation Spacing - ensure content is not hidden behind fixed footer */
+main {
+  padding-bottom: 60px; /* Space for footer navigation */
+}
+
+/* Minimize footer height */
+.global-footer-nav {
+  height: 56px; /* Fixed height to prevent layout shift */
+}
+
 .dark {
   --background: hsl(220, 26%, 8%);
   --foreground: hsl(210, 40%, 95%);
