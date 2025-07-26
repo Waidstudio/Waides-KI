@@ -1918,6 +1918,263 @@ export function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Bot Funding System - Fund Trading Bots from SmaiSika Wallet
+  
+  // Get bot balances
+  app.get("/api/wallet/bot-balances", async (req, res) => {
+    try {
+      // Simulate bot balances stored in memory
+      const botBalances = {
+        waidbot: {
+          balance: 10000.00,
+          allocated: 500.00,
+          available: 9500.00,
+          totalTrades: 47,
+          profit: 1250.30,
+          profitPercent: 12.5
+        },
+        waidbot_pro: {
+          balance: 15000.00,
+          allocated: 750.00,
+          available: 14250.00,
+          totalTrades: 63,
+          profit: 2340.75,
+          profitPercent: 15.6
+        },
+        autonomous_trader: {
+          balance: 20000.00,
+          allocated: 1200.00,
+          available: 18800.00,
+          totalTrades: 89,
+          profit: 3120.45,
+          profitPercent: 15.6
+        },
+        full_engine: {
+          balance: 0.00,
+          allocated: 0.00,
+          available: 0.00,
+          totalTrades: 0,
+          profit: 0.00,
+          profitPercent: 0.0
+        }
+      };
+
+      res.json({
+        success: true,
+        botBalances,
+        totalBotBalance: Object.values(botBalances).reduce((sum, bot) => sum + bot.balance, 0),
+        totalProfit: Object.values(botBalances).reduce((sum, bot) => sum + bot.profit, 0),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching bot balances:', error);
+      res.status(500).json({ error: 'Failed to fetch bot balances' });
+    }
+  });
+
+  // Fund a specific bot from SmaiSika wallet
+  app.post("/api/wallet/fund-bot", async (req, res) => {
+    try {
+      const { botType, amount, fundingSource = 'smaisika' } = req.body;
+      
+      if (!botType || !amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Valid bot type and amount required'
+        });
+      }
+
+      const validBots = ['waidbot', 'waidbot_pro', 'autonomous_trader', 'full_engine'];
+      if (!validBots.includes(botType)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid bot type. Must be: waidbot, waidbot_pro, autonomous_trader, or full_engine'
+        });
+      }
+
+      // Check SmaiSika wallet balance
+      const walletBalance = 2580.75; // This would come from actual wallet service
+      
+      if (amount > walletBalance) {
+        return res.status(400).json({
+          success: false,
+          error: 'Insufficient SmaiSika balance',
+          required: amount,
+          available: walletBalance
+        });
+      }
+
+      // Simulate funding transaction
+      const transaction = {
+        id: `fund_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        type: 'bot_funding',
+        botType,
+        amount,
+        fundingSource,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        description: `Funded ${botType.replace('_', ' ').toUpperCase()} with ꠄ${amount.toFixed(2)} from SmaiSika wallet`
+      };
+
+      // Update bot balance (in real implementation, this would update database)
+      const botNames = {
+        waidbot: 'WaidBot',
+        waidbot_pro: 'WaidBot Pro', 
+        autonomous_trader: 'Autonomous Trader',
+        full_engine: 'Full Engine'
+      };
+
+      res.json({
+        success: true,
+        message: `Successfully funded ${botNames[botType]} with ꠄ${amount.toFixed(2)}`,
+        transaction,
+        newBotBalance: amount + (botType === 'full_engine' ? 0 : 10000), // Existing balance + new funding
+        remainingWalletBalance: walletBalance - amount,
+        fundingDetails: {
+          botType,
+          botName: botNames[botType],
+          amountFunded: amount,
+          fundingSource: 'SmaiSika Wallet',
+          activationStatus: 'ready_to_trade'
+        }
+      });
+    } catch (error) {
+      console.error('Error funding bot:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fund bot'
+      });
+    }
+  });
+
+  // Withdraw funds from bot back to SmaiSika wallet
+  app.post("/api/wallet/withdraw-from-bot", async (req, res) => {
+    try {
+      const { botType, amount } = req.body;
+      
+      if (!botType || !amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Valid bot type and amount required'
+        });
+      }
+
+      const validBots = ['waidbot', 'waidbot_pro', 'autonomous_trader', 'full_engine'];
+      if (!validBots.includes(botType)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid bot type'
+        });
+      }
+
+      // Check bot balance (simulate)
+      const botBalance = 10000; // This would come from actual bot service
+      
+      if (amount > botBalance) {
+        return res.status(400).json({
+          success: false,
+          error: 'Insufficient bot balance',
+          required: amount,
+          available: botBalance
+        });
+      }
+
+      // Simulate withdrawal transaction
+      const transaction = {
+        id: `withdraw_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        type: 'bot_withdrawal',
+        botType,
+        amount,
+        status: 'completed',
+        timestamp: new Date().toISOString(),
+        description: `Withdrew ꠄ${amount.toFixed(2)} from ${botType.replace('_', ' ').toUpperCase()} to SmaiSika wallet`
+      };
+
+      const botNames = {
+        waidbot: 'WaidBot',
+        waidbot_pro: 'WaidBot Pro',
+        autonomous_trader: 'Autonomous Trader', 
+        full_engine: 'Full Engine'
+      };
+
+      res.json({
+        success: true,
+        message: `Successfully withdrew ꠄ${amount.toFixed(2)} from ${botNames[botType]}`,
+        transaction,
+        newBotBalance: botBalance - amount,
+        newWalletBalance: 2580.75 + amount, // Current wallet + withdrawal
+        withdrawalDetails: {
+          botType,
+          botName: botNames[botType],
+          amountWithdrawn: amount,
+          destination: 'SmaiSika Wallet'
+        }
+      });
+    } catch (error) {
+      console.error('Error withdrawing from bot:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to withdraw from bot'
+      });
+    }
+  });
+
+  // Get funding history 
+  app.get("/api/wallet/funding-history", async (req, res) => {
+    try {
+      const { botType, limit = 20 } = req.query;
+      
+      // Simulate funding history
+      const fundingHistory = [
+        {
+          id: 'fund_1737934800000_abc123',
+          type: 'bot_funding',
+          botType: 'waidbot_pro',
+          botName: 'WaidBot Pro',
+          amount: 1000.00,
+          status: 'completed',
+          timestamp: new Date(Date.now() - 86400000).toISOString(),
+          description: 'Funded WaidBot Pro with ꠄ1,000.00 from SmaiSika wallet'
+        },
+        {
+          id: 'withdraw_1737934900000_def456',
+          type: 'bot_withdrawal',
+          botType: 'waidbot',
+          botName: 'WaidBot',
+          amount: 500.00,
+          status: 'completed',
+          timestamp: new Date(Date.now() - 172800000).toISOString(),
+          description: 'Withdrew ꠄ500.00 from WaidBot to SmaiSika wallet'
+        },
+        {
+          id: 'fund_1737935000000_ghi789',
+          type: 'bot_funding',
+          botType: 'autonomous_trader',
+          botName: 'Autonomous Trader',
+          amount: 2500.00,
+          status: 'completed',
+          timestamp: new Date(Date.now() - 259200000).toISOString(),
+          description: 'Funded Autonomous Trader with ꠄ2,500.00 from SmaiSika wallet'
+        }
+      ];
+
+      let filteredHistory = fundingHistory;
+      if (botType) {
+        filteredHistory = fundingHistory.filter(h => h.botType === botType);
+      }
+
+      res.json({
+        success: true,
+        history: filteredHistory.slice(0, parseInt(limit as string)),
+        totalTransactions: filteredHistory.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching funding history:', error);
+      res.status(500).json({ error: 'Failed to fetch funding history' });
+    }
+  });
+
   // AI-Powered Portfolio Management
   app.get("/api/wallet/ai/portfolio-analysis", async (req, res) => {
     try {

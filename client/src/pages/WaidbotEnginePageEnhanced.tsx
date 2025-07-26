@@ -25,9 +25,11 @@ import {
   Clock,
   DollarSign,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Wallet
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import BotFundingInterface from "@/components/BotFundingInterface";
 
 interface BotStatus {
   id: string;
@@ -78,6 +80,7 @@ interface DetailedBotInfo {
 
 export default function WaidbotEnginePageEnhanced() {
   const [selectedBot, setSelectedBot] = useState<string | null>(null);
+  const [showFundingInterface, setShowFundingInterface] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch bot statuses
@@ -278,6 +281,22 @@ export default function WaidbotEnginePageEnhanced() {
       <div className="relative z-10 p-4 lg:p-6 xl:p-8">
         {/* Header */}
         <div className="text-center space-y-4 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div></div>
+            <div className="flex space-x-4">
+              <Button
+                onClick={() => setShowFundingInterface(!showFundingInterface)}
+                className={`${
+                  showFundingInterface
+                    ? 'bg-orange-600 hover:bg-orange-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white px-6 py-2 rounded-lg flex items-center space-x-2 transition-all`}
+              >
+                <Wallet className="w-4 h-4" />
+                <span>{showFundingInterface ? 'Hide Funding' : 'Fund Bots'}</span>
+              </Button>
+            </div>
+          </div>
           <h1 className="text-3xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-green-400 via-cyan-400 to-purple-500 bg-clip-text text-transparent">
             Waides KI Konsai Command Center
           </h1>
@@ -1014,6 +1033,13 @@ export default function WaidbotEnginePageEnhanced() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Bot Funding Interface */}
+        {showFundingInterface && (
+          <div className="mt-8">
+            <BotFundingInterface />
+          </div>
+        )}
       </div>
 
       <style>{`
