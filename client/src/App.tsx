@@ -32,7 +32,7 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import Dashboard from "@/pages/dashboard";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
-import WaidbotEnginePage from "@/pages/WaidbotEnginePageNew";
+import WaidbotEnginePage from "@/pages/WaidbotEnginePageEnhanced";
 import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
 import AdminPanel from "@/pages/AdminPanel";
