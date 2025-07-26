@@ -533,100 +533,100 @@ const ProfessionalLanding = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
             {/* Trading & Core Features */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-6">Trading & Core</h3>
-              <div className="space-y-3">
-                <Link href="/portal" className="block text-slate-400 hover:text-purple-400 transition-colors">
+            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-slate-600 pb-3">Trading & Core</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/portal" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Vision Portal
                 </Link>
-                <Link href="/trading" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/trading" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Trading Interface
                 </Link>
-                <Link href="/wallet" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/wallet" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Wallet
                 </Link>
-                <Link href="/dashboard" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/dashboard" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Dashboard
                 </Link>
-                <Link href="/live-data" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/live-data" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Live Market Data
                 </Link>
-                <Link href="/biometric-trading" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/biometric-trading" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Biometric Trading
                 </Link>
               </div>
             </div>
 
             {/* AI & Bot Systems */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-6">AI & Bots</h3>
-              <div className="space-y-3">
-                <Link href="/waidbot-engine" className="block text-slate-400 hover:text-emerald-400 transition-colors font-medium">
+            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-slate-600 pb-3">AI & Bots</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/waidbot-engine" className="bg-emerald-500/20 hover:bg-emerald-500/30 p-3 rounded-lg text-emerald-400 hover:text-emerald-300 transition-all text-sm text-center font-medium">
                   WaidBot Engine
                 </Link>
-                <Link href="/waidbot" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/waidbot" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   WaidBot
                 </Link>
-                <Link href="/waidbot-pro" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/waidbot-pro" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   WaidBot Pro
                 </Link>
-                <Link href="/strategy-autogen" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/strategy-autogen" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Strategy Generator
                 </Link>
-                <Link href="/kons-powa" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/kons-powa" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   KonsPowa Engine
                 </Link>
-                <Link href="/voice-command" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/voice-command" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Voice Command
                 </Link>
               </div>
             </div>
 
             {/* Advanced Features */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-6">Advanced Features</h3>
-              <div className="space-y-3">
-                <Link href="/market-storytelling" className="block text-slate-400 hover:text-purple-400 transition-colors">
+            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-slate-600 pb-3">Advanced Features</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/market-storytelling" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Market Stories
                 </Link>
-                <Link href="/risk-backtesting" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/risk-backtesting" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Risk Backtesting
                 </Link>
-                <Link href="/ml-lifecycle" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/ml-lifecycle" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   ML Lifecycle
                 </Link>
-                <Link href="/dream-vision" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/dream-vision" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Dream Vision
                 </Link>
-                <Link href="/vision-spirit" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/vision-spirit" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Vision Spirit
                 </Link>
-                <Link href="/spiritual-recall" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/spiritual-recall" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Spiritual Recall
                 </Link>
               </div>
             </div>
 
             {/* Community & Support */}
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-6">Community & Support</h3>
-              <div className="space-y-3">
-                <Link href="/forum" className="block text-slate-400 hover:text-purple-400 transition-colors">
+            <div className="bg-slate-800/30 rounded-xl p-6 border border-slate-700">
+              <h3 className="text-lg font-semibold text-white mb-6 border-b border-slate-600 pb-3">Community & Support</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/forum" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Cosmic Forum
                 </Link>
-                <Link href="/learning" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/learning" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Trading Academy
                 </Link>
-                <Link href="/profile" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/profile" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   User Profile
                 </Link>
-                <Link href="/admin-panel" className="block text-slate-400 hover:text-orange-400 transition-colors">
+                <Link href="/admin-panel" className="bg-orange-500/20 hover:bg-orange-500/30 p-3 rounded-lg text-orange-400 hover:text-orange-300 transition-all text-sm text-center">
                   Admin Panel
                 </Link>
-                <Link href="/api-docs" className="block text-slate-400 hover:text-cyan-400 transition-colors">
+                <Link href="/api-docs" className="bg-cyan-500/20 hover:bg-cyan-500/30 p-3 rounded-lg text-cyan-400 hover:text-cyan-300 transition-all text-sm text-center">
                   API Documentation
                 </Link>
-                <Link href="/config" className="block text-slate-400 hover:text-purple-400 transition-colors">
+                <Link href="/config" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Configuration
                 </Link>
               </div>
