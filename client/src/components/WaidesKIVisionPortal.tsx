@@ -486,63 +486,8 @@ ${intelligentResponse}
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
-  const [showForumPortal, setShowForumPortal] = useState(false);
-  const [forumNotifications, setForumNotifications] = useState(3);
-  const [forumActivity, setForumActivity] = useState({
-    activeUsers: 127,
-    newPosts: 8,
-    trending: ['ETH Analysis', 'KonsAi Predictions', 'Trading Strategies']
-  });
-  
-  // Forum State Management
-  const [forumView, setForumView] = useState<'topics' | 'thread'>('topics');
-  const [selectedThread, setSelectedThread] = useState<any>(null);
-  const [forumTopics, setForumTopics] = useState([
-    {
-      id: 1,
-      title: 'ETH Trading Strategies & Analysis',
-      description: 'Share your ETH trading strategies, technical analysis, and market insights',
-      category: 'user',
-      posts: 47,
-      replies: 156,
-      lastActivity: '5 minutes ago',
-      isPinned: true,
-      tags: ['ETH', 'Technical Analysis', 'Strategy']
-    },
-    {
-      id: 2,
-      title: 'Risk Management & Portfolio Theory',
-      description: 'Discuss position sizing, stop losses, and portfolio management techniques',
-      category: 'user',
-      posts: 23,
-      replies: 89,
-      lastActivity: '12 minutes ago',
-      isPinned: false,
-      tags: ['Risk Management', 'Portfolio', 'Safety']
-    },
-    {
-      id: 3,
-      title: 'KonsAI Oracle Predictions',
-      description: 'Exclusive KonsAI neural network predictions and market analysis',
-      category: 'konsai-only',
-      posts: 128,
-      replies: 0,
-      lastActivity: '2 minutes ago',
-      isPinned: true,
-      tags: ['KonsAI', 'Predictions', 'Neural Network']
-    },
-    {
-      id: 4,
-      title: 'Kons Powa Divine Wisdom',
-      description: 'Sacred trading insights and spiritual market guidance from Kons Powa',
-      category: 'kons-powa-only',
-      posts: 94,
-      replies: 0,
-      lastActivity: '3 minutes ago',
-      isPinned: true,
-      tags: ['Kons Powa', 'Divine', 'Spiritual Trading']
-    }
-  ]);
+  // Chat mode selection for KI Chat
+  const [selectedChatMode, setSelectedChatMode] = useState<'waides' | 'konsai'>('waides');
 
   // Dynamic conversations for AI-only sections
   const [aiConversations, setAiConversations] = useState([
