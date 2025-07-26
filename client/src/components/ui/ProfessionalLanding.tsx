@@ -310,8 +310,8 @@ const ProfessionalLanding = () => {
               variant="outline" 
               className="w-full border-2 border-purple-500/50 text-purple-400 hover:bg-purple-500/10 py-3 text-lg font-semibold rounded-xl"
             >
-              <Link href={isAuthenticated ? "/waidbot-engine" : "/register"}>
-                {isAuthenticated ? "Explore Trading Chains" : "Learn More"}
+              <Link href="/about">
+                Learn More
               </Link>
             </Button>
           </div>

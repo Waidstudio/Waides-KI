@@ -25,6 +25,7 @@ import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import HomePage from "@/components/HomePage";
 import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
+import AboutWaidesKI from "@/pages/AboutWaidesKI";
 import EnhancedWalletPage from "@/pages/EnhancedWalletPage";
 import LoginPage from "@/pages/LoginPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
@@ -128,6 +129,9 @@ function Router() {
           
           {/* Professional Landing Page - Only for non-authenticated users */}
           <Route path="/" component={HomePage} />
+          
+          {/* About Waides KI - Comprehensive platform guide */}
+          <Route path="/about" component={AboutWaidesKI} />
           
           {/* Protected Core Routes */}
           <Route path="/portal">
