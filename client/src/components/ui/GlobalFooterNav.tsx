@@ -53,10 +53,10 @@ export default function GlobalFooterNav() {
             <span className="text-xs text-slate-400 group-hover:text-cyan-400">Forum</span>
           </Link>
 
-          {/* Settings */}
-          <Link href="/config" className="flex flex-col items-center space-y-0.5 p-1 rounded-lg hover:bg-slate-800/50 transition-colors group">
+          {/* Market Storytelling */}
+          <Link href="/market-storytelling" className="flex flex-col items-center space-y-0.5 p-1 rounded-lg hover:bg-slate-800/50 transition-colors group">
             <Settings className="w-4 h-4 text-slate-400 group-hover:text-orange-400" />
-            <span className="text-xs text-slate-400 group-hover:text-orange-400">Config</span>
+            <span className="text-xs text-slate-400 group-hover:text-orange-400">Stories</span>
           </Link>
         </div>
       </div>

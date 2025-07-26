@@ -4,6 +4,12 @@
 SmaiSika (ꠄ): An advanced autonomous wealth management platform leveraging cutting-edge AI technologies to deliver intelligent, ethical, and adaptive financial solutions with enhanced user experience.
 
 ## Recent Changes
+- **2025-07-26**: Footer Navigation Update Complete
+  - ✅ **ROUTE REPLACEMENT**: Successfully replaced `/config` with `/market-storytelling` in footer navigation
+  - ✅ **LABEL UPDATE**: Changed footer button label from "Config" to "Stories" for better space utilization
+  - ✅ **NAVIGATION CONSISTENCY**: Maintained orange color scheme and Settings icon for visual consistency
+  - ✅ **HOT RELOAD**: Change applied instantly with Vite hot module replacement
+  - **Result**: Footer navigation now includes Stories button linking to market storytelling functionality
 - **2025-07-26**: Full Engine Integration with WaidBot Engine Complete
   - ✅ **UNIFIED TRADING SYSTEM**: Successfully integrated Full Engine (Smart Risk Management) with Autonomous Trader
   - ✅ **4-BOT INTERFACE**: Expanded WaidBot Engine from 3 to 4 bots - WaidBot, WaidBot Pro, Autonomous Trader, and Full Engine
