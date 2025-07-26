@@ -5801,59 +5801,167 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Get available story personas with real market expertise
   app.get('/api/market-storytelling/personas', async (req, res) => {
     try {
-      const personas = [
-        {
-          id: 'sage_trader',
-          name: 'The Sage Trader',
-          personality: 'Wise and experienced, speaks with gravitas',
-          voiceStyle: 'Deep, measured, contemplative',
-          expertise: ['Risk Management', 'Market Psychology', 'Long-term Trends'],
-          narrativeStyle: 'Philosophical with ancient wisdom metaphors',
-          marketFocus: 'Long-term value and risk assessment',
-          active: true
-        },
-        {
-          id: 'data_scientist',
-          name: 'The Data Scientist',
-          personality: 'Analytical and precise, loves numbers',
-          voiceStyle: 'Clear, factual, confident',
-          expertise: ['Technical Analysis', 'Statistics', 'Algorithms'],
-          narrativeStyle: 'Data-driven with scientific explanations',
-          marketFocus: 'Technical indicators and quantitative analysis',
-          active: true
-        },
-        {
-          id: 'street_trader',
-          name: 'The Street Trader',
-          personality: 'Fast-paced and energetic, market veteran',
-          voiceStyle: 'Quick, excited, passionate',
-          expertise: ['Day Trading', 'Market Sentiment', 'Quick Decisions'],
-          narrativeStyle: 'High-energy with trading floor intensity',
-          marketFocus: 'Short-term price action and momentum',
-          active: true
-        },
-        {
-          id: 'zen_master',
-          name: 'The Zen Master',
-          personality: 'Calm and mindful, sees bigger picture',
-          voiceStyle: 'Peaceful, slow, meditative',
-          expertise: ['Emotional Control', 'Patience', 'Inner Balance'],
-          narrativeStyle: 'Meditation-focused with spiritual metaphors',
-          marketFocus: 'Emotional discipline and market psychology',
-          active: true
-        }
-      ];
+      // Get voice narration engine
+      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
+      
+      const personas = await voiceEngine.getVoicePersonas();
       
       res.json({
         success: true,
         personas,
         totalPersonas: personas.length,
-        activePersonas: personas.filter(p => p.active).length
+        activePersonas: personas.filter(p => p.name).length,
+        voiceEnabled: true
       });
     } catch (error) {
       console.error('Personas fetch error:', error);
       res.status(500).json({ 
         error: 'Failed to get story personas',
+        success: false
+      });
+    }
+  });
+
+  // ==========================================================================
+  // VOICE NARRATION API ENDPOINTS - Live AI Commentary System
+  // ==========================================================================
+
+  // Get current live narration
+  app.get('/api/voice-narration/current', async (req, res) => {
+    try {
+      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
+      
+      const currentNarration = await voiceEngine.getCurrentNarration();
+      
+      res.json({
+        success: true,
+        narration: currentNarration,
+        isActive: !!currentNarration,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Current narration error:', error);
+      res.status(500).json({ 
+        error: 'Failed to get current narration',
+        success: false
+      });
+    }
+  });
+
+  // Get narration queue
+  app.get('/api/voice-narration/queue', async (req, res) => {
+    try {
+      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
+      
+      const queue = await voiceEngine.getNarrationQueue();
+      
+      res.json({
+        success: true,
+        queue,
+        queueLength: queue.length,
+        nextNarration: queue[0] || null
+      });
+    } catch (error) {
+      console.error('Narration queue error:', error);
+      res.status(500).json({ 
+        error: 'Failed to get narration queue',
+        success: false
+      });
+    }
+  });
+
+  // Request specific persona narration
+  app.post('/api/voice-narration/request/:personaId', async (req, res) => {
+    try {
+      const { personaId } = req.params;
+      
+      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
+      
+      const narration = await voiceEngine.requestPersonaNarration(personaId);
+      
+      if (!narration) {
+        return res.status(404).json({
+          success: false,
+          error: `Persona ${personaId} not found or unavailable`
+        });
+      }
+      
+      res.json({
+        success: true,
+        narration,
+        message: `Narration requested for ${personaId}`,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Persona narration request error:', error);
+      res.status(500).json({ 
+        error: 'Failed to request persona narration',
+        success: false
+      });
+    }
+  });
+
+  // Generate immediate live commentary
+  app.post('/api/voice-narration/generate', async (req, res) => {
+    try {
+      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
+      
+      const narration = await voiceEngine.generateLiveNarration();
+      
+      res.json({
+        success: true,
+        narration,
+        generated: !!narration,
+        message: narration ? 'Live narration generated successfully' : 'No narration generated at this time'
+      });
+    } catch (error) {
+      console.error('Generate narration error:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate live narration',
+        success: false
+      });
+    }
+  });
+
+  // Toggle persona active status
+  app.post('/api/voice-narration/personas/:personaId/toggle', async (req, res) => {
+    try {
+      const { personaId } = req.params;
+      const { active } = req.body;
+      
+      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+      const ethMonitor = await serviceRegistry.get('ethMonitor');
+      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
+      
+      const success = await voiceEngine.togglePersonaActive(personaId, active);
+      
+      if (!success) {
+        return res.status(404).json({
+          success: false,
+          error: `Persona ${personaId} not found`
+        });
+      }
+      
+      res.json({
+        success: true,
+        personaId,
+        active,
+        message: `Persona ${personaId} ${active ? 'activated' : 'deactivated'}`
+      });
+    } catch (error) {
+      console.error('Toggle persona error:', error);
+      res.status(500).json({ 
+        error: 'Failed to toggle persona status',
         success: false
       });
     }

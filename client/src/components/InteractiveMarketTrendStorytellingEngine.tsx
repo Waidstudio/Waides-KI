@@ -46,6 +46,7 @@ import {
   Smartphone
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import VoiceNarrationControls from './VoiceNarrationControls';
 
 interface MarketStoryChapter {
   id: string;
@@ -743,6 +744,9 @@ export default function InteractiveMarketTrendStorytellingEngine() {
 
     {/* AI Narrator Tab Content */}
     <TabsContent value="ai-narrator" className="space-y-6">
+      {/* Live Voice Narration Controls */}
+      <VoiceNarrationControls className="mb-6" />
+      
       <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-blue-400/40 backdrop-blur shadow-xl">
         <CardHeader>
           <CardTitle className="text-xl text-white flex items-center space-x-2">
