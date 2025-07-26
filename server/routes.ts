@@ -5967,5 +5967,143 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Audio Landscape endpoints
+  app.get('/api/audio-landscape/state', async (req, res) => {
+    try {
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      const audioLandscape = await audioLandscapeEngine.generateTradingFloorAmbiance();
+      const state = audioLandscapeEngine.getState();
+      
+      res.json({
+        success: true,
+        audioLandscape,
+        state,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get audio landscape state'
+      });
+    }
+  });
+
+  app.get('/api/audio-landscape/sounds', async (req, res) => {
+    try {
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      const sounds = audioLandscapeEngine.getTradingFloorSounds();
+      
+      res.json({
+        success: true,
+        sounds,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get trading floor sounds'
+      });
+    }
+  });
+
+  app.post('/api/audio-landscape/activate', async (req, res) => {
+    try {
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      audioLandscapeEngine.activateAudioLandscape();
+      
+      res.json({
+        success: true,
+        message: 'Audio landscape activated',
+        state: audioLandscapeEngine.getState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to activate audio landscape'
+      });
+    }
+  });
+
+  app.post('/api/audio-landscape/deactivate', async (req, res) => {
+    try {
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      audioLandscapeEngine.deactivateAudioLandscape();
+      
+      res.json({
+        success: true,
+        message: 'Audio landscape deactivated',
+        state: audioLandscapeEngine.getState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to deactivate audio landscape'
+      });
+    }
+  });
+
+  app.post('/api/audio-landscape/volume', async (req, res) => {
+    try {
+      const { type, volume } = req.body;
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      audioLandscapeEngine.updateVolume(type, volume);
+      
+      res.json({
+        success: true,
+        message: `${type} volume updated to ${volume}%`,
+        state: audioLandscapeEngine.getState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update volume'
+      });
+    }
+  });
+
+  app.post('/api/audio-landscape/toggle-sound', async (req, res) => {
+    try {
+      const { soundId } = req.body;
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      const active = audioLandscapeEngine.toggleSound(soundId);
+      
+      res.json({
+        success: true,
+        message: `Sound ${soundId} ${active ? 'activated' : 'deactivated'}`,
+        active,
+        state: audioLandscapeEngine.getState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to toggle sound'
+      });
+    }
+  });
+
+  app.post('/api/audio-landscape/spatial', async (req, res) => {
+    try {
+      const { audioLandscapeEngine } = await import('./services/audioLandscapeEngine');
+      const spatialEnabled = audioLandscapeEngine.toggleSpatialAudio();
+      
+      res.json({
+        success: true,
+        message: `Spatial audio ${spatialEnabled ? 'enabled' : 'disabled'}`,
+        spatialEnabled,
+        state: audioLandscapeEngine.getState(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to toggle spatial audio'
+      });
+    }
+  });
+
   return Promise.resolve(server);
 }

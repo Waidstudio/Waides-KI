@@ -48,6 +48,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import VoiceNarrationControls from './VoiceNarrationControls';
+import AudioLandscapeControls from './AudioLandscapeControls';
 
 interface MarketStoryChapter {
   id: string;
