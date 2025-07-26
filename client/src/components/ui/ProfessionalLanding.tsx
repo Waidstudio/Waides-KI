@@ -315,6 +315,26 @@ const ProfessionalLanding = () => {
         </div>
       </section>
 
+      {/* 3D Interactive User Guide Section */}
+      <section className="py-20 px-6 bg-slate-800/50 border-t border-purple-500/20">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-purple-500/20 px-4 py-2 rounded-full mb-4">
+              <Binary className="h-4 w-4 text-purple-400" />
+              <span className="text-purple-300 text-sm font-medium">Interactive Navigation Guide</span>
+            </div>
+            <h2 className="text-4xl font-bold text-white mb-6">
+              Master <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">Waides KI Platform</span>
+            </h2>
+            <p className="text-gray-400 text-xl max-w-3xl mx-auto leading-relaxed">
+              Explore our comprehensive AI trading ecosystem with this interactive 3D guide. Click any section to jump directly to that feature.
+            </p>
+          </div>
+
+          <UserGuide3D />
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 px-6 bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
@@ -504,26 +524,6 @@ const ProfessionalLanding = () => {
               Schedule Demo
             </Button>
           </div>
-        </div>
-      </section>
-
-      {/* 3D Interactive User Guide Section */}
-      <section className="py-20 px-6 bg-slate-800/50 border-t border-purple-500/20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-purple-500/20 px-4 py-2 rounded-full mb-4">
-              <Binary className="h-4 w-4 text-purple-400" />
-              <span className="text-purple-300 text-sm font-medium">Interactive Navigation Guide</span>
-            </div>
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Master <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">Waides KI Platform</span>
-            </h2>
-            <p className="text-gray-400 text-xl max-w-3xl mx-auto leading-relaxed">
-              Explore our comprehensive AI trading ecosystem with this interactive 3D guide. Click any section to jump directly to that feature.
-            </p>
-          </div>
-
-          <UserGuide3D />
         </div>
       </section>
 
