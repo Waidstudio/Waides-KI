@@ -45,7 +45,8 @@ import {
   Monitor,
   Smartphone
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import VoiceNarrationControls from './VoiceNarrationControls';
 
 interface MarketStoryChapter {
@@ -158,37 +159,109 @@ export default function InteractiveMarketTrendStorytellingEngine() {
     }
   ];
 
+  const queryClient = useQueryClient();
+
+  // Story Control Mutations
+  const playStoryMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/market-storytelling/controls/play', {
+        method: 'POST',
+        body: JSON.stringify({
+          persona: selectedPersona,
+          mode: storyMode,
+          speed: storytellingState.speed,
+          chapter: storytellingState.currentChapter
+        }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: (data) => {
+      setStorytellingState(prev => ({ ...prev, isPlaying: true }));
+      if (storytellingState.narrationEnabled) {
+        startNarration();
+      }
+      // Generate voice narration
+      generateVoiceNarration.mutate();
+    }
+  });
+
+  const pauseStoryMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/market-storytelling/controls/pause', {
+        method: 'POST'
+      });
+    },
+    onSuccess: () => {
+      setStorytellingState(prev => ({ ...prev, isPlaying: false }));
+      if (narratorRef.current) {
+        window.speechSynthesis.cancel();
+      }
+    }
+  });
+
+  const generateVoiceNarration = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/voice-narration/generate', {
+        method: 'POST'
+      });
+    }
+  });
+
   // Control functions
   const playStory = () => {
-    setStorytellingState(prev => ({ ...prev, isPlaying: true }));
-    if (storytellingState.narrationEnabled) {
-      startNarration();
-    }
+    playStoryMutation.mutate();
   };
 
   const pauseStory = () => {
-    setStorytellingState(prev => ({ ...prev, isPlaying: false }));
-    if (narratorRef.current) {
-      window.speechSynthesis.cancel();
-    }
+    pauseStoryMutation.mutate();
   };
 
-  const nextChapter = () => {
-    if (marketStory && storytellingState.currentChapter < marketStory.length - 1) {
-      setStorytellingState(prev => ({ 
-        ...prev, 
-        currentChapter: prev.currentChapter + 1 
-      }));
+  const nextChapterMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/market-storytelling/controls/next', {
+        method: 'POST'
+      });
+    },
+    onSuccess: () => {
+      if (marketStory && storytellingState.currentChapter < marketStory.length - 1) {
+        setStorytellingState(prev => ({ 
+          ...prev, 
+          currentChapter: prev.currentChapter + 1 
+        }));
+        // Generate voice narration for new chapter
+        if (storytellingState.isPlaying && storytellingState.narrationEnabled) {
+          generateVoiceNarration.mutate();
+        }
+      }
     }
+  });
+
+  const previousChapterMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/market-storytelling/controls/previous', {
+        method: 'POST'
+      });
+    },
+    onSuccess: () => {
+      if (storytellingState.currentChapter > 0) {
+        setStorytellingState(prev => ({ 
+          ...prev, 
+          currentChapter: prev.currentChapter - 1 
+        }));
+        // Generate voice narration for previous chapter
+        if (storytellingState.isPlaying && storytellingState.narrationEnabled) {
+          generateVoiceNarration.mutate();
+        }
+      }
+    }
+  });
+
+  const nextChapter = () => {
+    nextChapterMutation.mutate();
   };
 
   const previousChapter = () => {
-    if (storytellingState.currentChapter > 0) {
-      setStorytellingState(prev => ({ 
-        ...prev, 
-        currentChapter: prev.currentChapter - 1 
-      }));
-    }
+    previousChapterMutation.mutate();
   };
 
   const startNarration = () => {
@@ -412,21 +485,32 @@ export default function InteractiveMarketTrendStorytellingEngine() {
                     variant="outline"
                     size="icon"
                     onClick={previousChapter}
-                    disabled={storytellingState.currentChapter === 0}
+                    disabled={storytellingState.currentChapter === 0 || previousChapterMutation.isPending}
                     className="border-purple-400/40 text-purple-400 hover:bg-purple-400/10"
                   >
-                    <SkipBack className="w-4 h-4" />
+                    {previousChapterMutation.isPending ? (
+                      <div className="w-4 h-4 border border-purple-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <SkipBack className="w-4 h-4" />
+                    )}
                   </Button>
                   
                   <Button
                     onClick={storytellingState.isPlaying ? pauseStory : playStory}
+                    disabled={playStoryMutation.isPending || pauseStoryMutation.isPending}
                     className={`w-16 h-16 rounded-full ${
                       storytellingState.isPlaying 
                         ? 'bg-red-600 hover:bg-red-700' 
                         : 'bg-purple-600 hover:bg-purple-700'
+                    } ${
+                      (playStoryMutation.isPending || pauseStoryMutation.isPending) 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : ''
                     }`}
                   >
-                    {storytellingState.isPlaying ? (
+                    {playStoryMutation.isPending || pauseStoryMutation.isPending ? (
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : storytellingState.isPlaying ? (
                       <Pause className="w-8 h-8" />
                     ) : (
                       <Play className="w-8 h-8 ml-1" />
@@ -437,10 +521,14 @@ export default function InteractiveMarketTrendStorytellingEngine() {
                     variant="outline"
                     size="icon"
                     onClick={nextChapter}
-                    disabled={!marketStory || storytellingState.currentChapter >= marketStory.length - 1}
+                    disabled={!marketStory || storytellingState.currentChapter >= marketStory.length - 1 || nextChapterMutation.isPending}
                     className="border-purple-400/40 text-purple-400 hover:bg-purple-400/10"
                   >
-                    <SkipForward className="w-4 h-4" />
+                    {nextChapterMutation.isPending ? (
+                      <div className="w-4 h-4 border border-purple-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <SkipForward className="w-4 h-4" />
+                    )}
                   </Button>
                 </div>
 
