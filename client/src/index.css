@@ -57,12 +57,13 @@
 /* Footer Navigation Spacing - ensure content is not hidden behind fixed footer */
 /* Only apply padding when footer is present (authenticated users) */
 .has-footer-nav main {
-  padding-bottom: 60px; /* Space for footer navigation */
+  padding-bottom: 64px; /* Space for footer navigation */
 }
 
-/* Minimize footer height */
+/* Global footer navigation styling */
 .global-footer-nav {
-  height: 56px; /* Fixed height to prevent layout shift */
+  height: 64px; /* Fixed height matching the padding */
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .dark {

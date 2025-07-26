@@ -117,7 +117,7 @@ function Router() {
       <StableNavigation />
 
       {/* Main Content Area */}
-      <main>
+      <main className="pb-16">
         <Switch>
           {/* Authentication Routes */}
           <Route path="/login" component={LoginPage} />
