@@ -11,6 +11,7 @@ import {
   Moon, Sun, Shield, Database, Globe, Bell
 } from 'lucide-react';
 import KonsaiChat from './KonsaiChat';
+import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
 import { useLocation, Link } from 'wouter';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
@@ -256,85 +257,9 @@ export default function WaidesKIVisionPortal() {
             </div>
           )
         ) : (
-          /* Wallet Tab Content */
-          <div className="h-full overflow-y-auto space-y-6">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <h2 className="text-2xl font-bold text-purple-300">SmaiSika Wallet</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={fetchWalletData}
-                  disabled={isLoading}
-                  className="text-purple-400 hover:text-purple-300"
-                >
-                  {isLoading ? (
-                    <div className="animate-spin w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full" />
-                  ) : (
-                    "⟳"
-                  )}
-                </Button>
-              </div>
-              
-              {/* Balance Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <Card className="bg-purple-900/30 border-purple-500/30">
-                  <CardContent className="p-4">
-                    <div className="text-center">
-                      {isLoading ? (
-                        <div className="animate-pulse">
-                          <div className="h-8 bg-purple-700/50 rounded mb-2"></div>
-                          <div className="h-4 bg-purple-700/30 rounded mb-1"></div>
-                          <div className="h-3 bg-purple-700/20 rounded"></div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="text-2xl font-bold text-purple-300">ꠄ{smaiBalance?.toLocaleString() || '0'}</div>
-                          <div className="text-sm text-gray-400">SmaiSika Balance</div>
-                          <div className="text-xs text-purple-400">≈ ${((smaiBalance || 0) * 1.2).toLocaleString()}</div>
-                        </>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="bg-blue-900/30 border-blue-500/30">
-                  <CardContent className="p-4">
-                    <div className="text-center">
-                      {isLoading ? (
-                        <div className="animate-pulse">
-                          <div className="h-8 bg-blue-700/50 rounded mb-2"></div>
-                          <div className="h-4 bg-blue-700/30 rounded mb-1"></div>
-                          <div className="h-3 bg-blue-700/20 rounded"></div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="text-2xl font-bold text-blue-300">₦{localBalance?.toLocaleString() || '0'}</div>
-                          <div className="text-sm text-gray-400">Local Currency</div>
-                          <div className="text-xs text-blue-400">≈ ${((localBalance || 0) * 0.0012).toLocaleString()}</div>
-                        </>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg">
-                  <TrendingUp className="w-5 h-5 mr-2" />
-                  Fund Account
-                </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg">
-                  <Activity className="w-5 h-5 mr-2" />
-                  Convert Currency
-                </Button>
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg">
-                  <Settings className="w-5 h-5 mr-2" />
-                  Settings
-                </Button>
-              </div>
-            </div>
+          /* Heart of Waides KI Core Engine Panel */
+          <div className="h-full overflow-hidden bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 rounded-lg p-2">
+            <WaidesKICoreEnginePanel />
           </div>
         )}
       </div>
