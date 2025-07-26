@@ -145,7 +145,7 @@ export default function WaidesKIVisionPortal() {
               }`}
             >
               <Wallet className="w-4 h-4 inline mr-2" />
-              Wallet
+              Heart of Waides KI
             </button>
           </div>
           
