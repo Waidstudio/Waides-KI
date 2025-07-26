@@ -315,6 +315,11 @@ export class VoiceNarrationEngine {
   }
 
   private addToGlobalCommentaryQueue(narration: LiveNarration): void {
+    // Ensure global queue exists
+    if (!global.liveCommentaryQueue) {
+      global.liveCommentaryQueue = [];
+    }
+
     // Add to global queue for story controls access
     const commentaryItem = {
       id: narration.id,

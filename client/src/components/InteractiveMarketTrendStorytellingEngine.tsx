@@ -111,7 +111,7 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const [interactionMode, setInteractionMode] = useState<string>('guided'); // guided, free_explore, quiz
   
   // Live Commentary Integration States
-  const [liveCommentaryMode, setLiveCommentaryMode] = useState(false);
+  const [liveCommentaryMode, setLiveCommentaryMode] = useState(true); // Enable by default to show live commentary
   const [availableLiveCommentary, setAvailableLiveCommentary] = useState<any[]>([]);
   const [isPlayingLiveCommentary, setIsPlayingLiveCommentary] = useState(false);
   
@@ -172,13 +172,12 @@ export default function InteractiveMarketTrendStorytellingEngine() {
     mutationFn: async () => {
       return await apiRequest('/api/market-storytelling/controls/play', {
         method: 'POST',
-        body: JSON.stringify({
+        body: {
           persona: selectedPersona,
           mode: storyMode,
           speed: storytellingState.speed,
           chapter: storytellingState.currentChapter
-        }),
-        headers: { 'Content-Type': 'application/json' }
+        }
       });
     },
     onSuccess: (data) => {
@@ -194,7 +193,8 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const pauseStoryMutation = useMutation({
     mutationFn: async () => {
       return await apiRequest('/api/market-storytelling/controls/pause', {
-        method: 'POST'
+        method: 'POST',
+        body: {}
       });
     },
     onSuccess: () => {
@@ -208,7 +208,8 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const generateVoiceNarration = useMutation({
     mutationFn: async () => {
       return await apiRequest('/api/voice-narration/generate', {
-        method: 'POST'
+        method: 'POST',
+        body: {}
       });
     }
   });
@@ -261,7 +262,8 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const nextChapterMutation = useMutation({
     mutationFn: async () => {
       return await apiRequest('/api/market-storytelling/controls/next', {
-        method: 'POST'
+        method: 'POST',
+        body: {}
       });
     },
     onSuccess: () => {
@@ -281,7 +283,8 @@ export default function InteractiveMarketTrendStorytellingEngine() {
   const previousChapterMutation = useMutation({
     mutationFn: async () => {
       return await apiRequest('/api/market-storytelling/controls/previous', {
-        method: 'POST'
+        method: 'POST',
+        body: {}
       });
     },
     onSuccess: () => {
@@ -543,9 +546,9 @@ export default function InteractiveMarketTrendStorytellingEngine() {
                           Playing Live
                         </Badge>
                       )}
-                      {liveCommentaryData?.count > 0 && (
+                      {liveCommentaryData && typeof liveCommentaryData === 'object' && 'count' in liveCommentaryData && (liveCommentaryData as any).count > 0 && (
                         <Badge variant="outline" className="border-green-400/40 text-green-400">
-                          {liveCommentaryData.count} Available
+                          {(liveCommentaryData as any).count} Available
                         </Badge>
                       )}
                     </h4>

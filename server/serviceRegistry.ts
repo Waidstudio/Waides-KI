@@ -134,6 +134,13 @@ serviceRegistry.register('binanceWebSocket', async () => {
   return new BinanceWebSocketService();
 });
 
+// Register Voice Narration Engine as singleton
+serviceRegistry.register('voiceNarrationEngine', async () => {
+  const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
+  const ethMonitor = await serviceRegistry.get('ethMonitor');
+  return new VoiceNarrationEngine(ethMonitor);
+});
+
 // Register SINGLE unified KonsAi Intelligence Engine
 serviceRegistry.register('konsaiEngine', async () => {
   console.log('Loading service: KonsAi Intelligence Engine - Unified System');

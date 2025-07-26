@@ -5801,11 +5801,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Get available story personas with real market expertise
   app.get('/api/market-storytelling/personas', async (req, res) => {
     try {
-      // Get voice narration engine
-      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
-      
+      const voiceEngine = await serviceRegistry.get('voiceNarrationEngine');
       const personas = await voiceEngine.getVoicePersonas();
       
       res.json({
@@ -5831,10 +5827,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Get current live narration
   app.get('/api/voice-narration/current', async (req, res) => {
     try {
-      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
-      
+      const voiceEngine = await serviceRegistry.get('voiceNarrationEngine');
       const currentNarration = await voiceEngine.getCurrentNarration();
       
       res.json({
@@ -5855,10 +5848,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Get narration queue
   app.get('/api/voice-narration/queue', async (req, res) => {
     try {
-      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
-      
+      const voiceEngine = await serviceRegistry.get('voiceNarrationEngine');
       const queue = await voiceEngine.getNarrationQueue();
       
       res.json({
@@ -5880,11 +5870,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/voice-narration/request/:personaId', async (req, res) => {
     try {
       const { personaId } = req.params;
-      
-      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
-      
+      const voiceEngine = await serviceRegistry.get('voiceNarrationEngine');
       const narration = await voiceEngine.requestPersonaNarration(personaId);
       
       if (!narration) {
@@ -5912,10 +5898,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Generate immediate live commentary
   app.post('/api/voice-narration/generate', async (req, res) => {
     try {
-      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
-      
+      const voiceEngine = await serviceRegistry.get('voiceNarrationEngine');
       const narration = await voiceEngine.generateLiveNarration();
       
       res.json({
@@ -5938,11 +5921,7 @@ export function registerRoutes(app: Express): Promise<Server> {
     try {
       const { personaId } = req.params;
       const { active } = req.body;
-      
-      const { VoiceNarrationEngine } = await import('./services/voiceNarrationEngine.js');
-      const ethMonitor = await serviceRegistry.get('ethMonitor');
-      const voiceEngine = new VoiceNarrationEngine(ethMonitor);
-      
+      const voiceEngine = await serviceRegistry.get('voiceNarrationEngine');
       const success = await voiceEngine.togglePersonaActive(personaId, active);
       
       if (!success) {
