@@ -14,15 +14,16 @@ SmaiSika (ꠄ): An advanced autonomous wealth management platform leveraging cut
   - ✅ **FALLBACK CONSISTENCY**: Fallback authentication also uses 1-year token expiration for consistent behavior
   - ✅ **USER EXPERIENCE**: Users can now stay logged in indefinitely until they choose to logout manually
   - **Authentication Status**: Both database and fallback authentication systems configured for persistent sessions
-- **2025-07-26**: Konsai System Alerts Card Added to WaidBot Engine Complete
-  - ✅ **NEW METRIC CARD**: Added 6th card "Konsai System Alerts" to WaidBot Engine metrics grid
+- **2025-07-26**: Konsai System Alerts Card Fixed in WaidBot Engine Complete
+  - ✅ **ROUTING CORRECTION**: Fixed WaidBot Engine routing to use WaidbotEnginePageNew instead of WaidbotEnginePageEnhanced
+  - ✅ **6TH CARD DISPLAY**: Konsai System Alerts card now properly displays as 6th card in metrics grid
   - ✅ **SYSTEM MONITORING**: Card displays real-time alerts for critical events and performance warnings
   - ✅ **INTELLIGENT ALERTS**: Shows "AI Confidence Low" when confidence drops below 50%, "All Systems Nominal" otherwise
-  - ✅ **GRID LAYOUT UPDATED**: Modified grid from lg:grid-cols-5 to xl:grid-cols-6 to accommodate new card
-  - ✅ **DESIGN CONSISTENCY**: Maintained futuristic styling with red color scheme and Shield icon for alerts
-  - ✅ **REAL-TIME DATA**: Integrated with existing system metrics for dynamic alert generation
-  - ✅ **PRESERVED FUNCTIONALITY**: All existing cards and functionality remain unchanged
-  - **Result**: WaidBot Engine now features comprehensive 6-card system monitoring dashboard
+  - ✅ **GRID LAYOUT**: Uses xl:grid-cols-6 to display all 6 cards properly on larger screens
+  - ✅ **DESIGN CONSISTENCY**: Red color scheme with Shield icon for system alert notifications
+  - ✅ **REAL-TIME FUNCTIONALITY**: Integrated with existing system metrics for dynamic alert generation
+  - ✅ **COMPONENT ALIGNMENT**: Updated App.tsx import to use correct WaidbotEnginePageNew component
+  - **Result**: All 6 metric cards now display correctly in WaidBot Engine interface
 - **2025-07-26**: Portal Interface Simplification Complete
   - ✅ **KONSAI TAB REMOVED**: Successfully removed "Konsai" tab from main portal navigation
   - ✅ **SIMPLIFIED HEADER**: Portal now shows only Time, SmaiSika balance, KI Chat, and Heart of Waides KI
