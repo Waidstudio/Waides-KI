@@ -293,7 +293,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         username,
         email,
         password,
-        role: 'viewer' // Default role for new registrations
+        role: 'user' // Default role for new registrations
       });
 
       if (result.success) {
@@ -1585,7 +1585,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         'SMAI-2024-IJKL-9012': { amount: 75.25, currency: 'SmaiSika', redeemed: true, userId: 'user123' }
       };
 
-      const smaipin = mockSmaipins[smaipinCode as keyof typeof mockSmaipins];
+      const smaipin = mockSmaipins[smaipinCode];
 
       if (!smaipin) {
         return res.status(404).json({
@@ -4314,13 +4314,7 @@ export function registerRoutes(app: Express): Promise<Server> {
   // Enhanced WebSocket status endpoint
   app.get("/api/websocket/status", (req, res) => {
     try {
-      // Mock WebSocket status since tracker is not available
-      const status = {
-        isConnected: true,
-        lastPrice: 3725.08,
-        lastUpdate: new Date().toISOString(),
-        connectionAttempts: 1
-      };
+      const status = waidesKIWebSocketTracker.getConnectionStatus();
       res.json({
         binance: {
           connected: status.isConnected,

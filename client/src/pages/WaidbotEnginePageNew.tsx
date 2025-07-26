@@ -237,7 +237,7 @@ export default function WaidbotEnginePageNew() {
         </div>
 
         {/* Real-time Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {/* ETH Live Price */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-cyan-400/40 backdrop-blur shadow-xl shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all">
             <CardContent className="p-6">
@@ -343,34 +343,6 @@ export default function WaidbotEnginePageNew() {
                     className="bg-gradient-to-r from-orange-400 to-orange-600 h-2 rounded-full transition-all duration-1000"
                     style={{ width: `${averageConfidence}%` }}
                   ></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Konsai System Alerts */}
-          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-red-400/40 backdrop-blur shadow-xl shadow-red-500/20 hover:shadow-red-500/30 transition-all">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-5 h-5 text-red-400" />
-                  <span className="text-xs font-medium text-red-400">SYSTEM ALERTS</span>
-                </div>
-                <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-              </div>
-              <div>
-                <p className="text-lg font-bold text-white mb-1">
-                  {averageConfidence < 50 ? 'AI Confidence Low' : 'All Systems Nominal'}
-                </p>
-                <div className="flex items-center space-x-2">
-                  {averageConfidence < 50 ? (
-                    <Signal className="w-4 h-4 text-red-400" />
-                  ) : (
-                    <Signal className="w-4 h-4 text-green-400" />
-                  )}
-                  <span className={`text-sm ${averageConfidence < 50 ? 'text-red-400' : 'text-green-400'}`}>
-                    {averageConfidence < 50 ? 'Alert Active' : 'Monitoring'}
-                  </span>
                 </div>
               </div>
             </CardContent>

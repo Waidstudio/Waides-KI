@@ -546,8 +546,8 @@ export class AuthService {
           username: userData.username,
           email: userData.email,
           passwordHash,
-          role: userData.role || AdminRoles.VIEWER,
-          permissions: RolePermissions[userData.role as AdminRole] || RolePermissions[AdminRoles.VIEWER],
+          role: userData.role || AdminRoles.USER,
+          permissions: RolePermissions[userData.role as AdminRole] || RolePermissions[AdminRoles.USER],
         })
         .returning();
 
@@ -599,11 +599,6 @@ export class AuthService {
 
       return false;
     } catch (error) {
-      // Handle database connection issues gracefully
-      if (error.message?.includes('endpoint has been disabled')) {
-        console.log('⚠️  Database endpoint disabled - skipping admin initialization');
-        return true; // Don't fail startup due to database issues
-      }
       console.error('Error initializing default admin:', error);
       return false;
     }
