@@ -2154,48 +2154,46 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
             </div>
           )}
           <div ref={messagesEndRef} />
-        </div>
-
-        <div className="relative z-10 p-2 w-full">
-          <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
-            <Input
-              value={currentMessage}
-              onChange={(e) => setCurrentMessage(e.target.value)}
-              placeholder="Ask anything..."
-              className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
-              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-              disabled={isProcessing}
-            />
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`p-2 rounded-full transition-all ${
-                voiceEnabled 
-                  ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                  : speechSupported
-                  ? 'hover:bg-purple-500/20 text-purple-400'
-                  : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
-              }`}
-              onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
-              disabled={isProcessing || !speechSupported}
-            >
-              {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </Button>
-            
-            <Button
-              className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
-              onClick={sendMessage}
-              disabled={!currentMessage.trim() || isProcessing}
-            >
-              <Send className="w-5 h-5" />
-            </Button>
           </div>
-        </div>
+
+          <div className="relative z-10 p-2 w-full">
+            <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+              <Input
+                value={currentMessage}
+                onChange={(e) => setCurrentMessage(e.target.value)}
+                placeholder="Ask anything..."
+                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                disabled={isProcessing}
+              />
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`p-2 rounded-full transition-all ${
+                  voiceEnabled 
+                    ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                    : speechSupported
+                    ? 'hover:bg-purple-500/20 text-purple-400'
+                    : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
+                }`}
+                onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+                disabled={isProcessing || !speechSupported}
+              >
+                {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              </Button>
+              
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+                onClick={sendMessage}
+                disabled={!currentMessage.trim() || isProcessing}
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
         )}
       </div>
-        </>
-      )}
 
       {/* Heart of Waides Ki - Free Display */}
       {activeTab === 'core' && (
