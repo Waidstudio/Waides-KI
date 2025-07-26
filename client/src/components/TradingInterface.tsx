@@ -365,14 +365,16 @@ export default function TradingInterface() {
 
         {/* Main Trading Interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6 bg-slate-800">
-            <TabsTrigger value="execute">Execute Trade</TabsTrigger>
-            <TabsTrigger value="positions">Positions</TabsTrigger>
-            <TabsTrigger value="signals">Signals</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto">
+            <TabsList className="flex w-max min-w-full bg-slate-800 space-x-1">
+              <TabsTrigger value="execute" className="whitespace-nowrap">Execute Trade</TabsTrigger>
+              <TabsTrigger value="positions" className="whitespace-nowrap">Positions</TabsTrigger>
+              <TabsTrigger value="signals" className="whitespace-nowrap">Signals</TabsTrigger>
+              <TabsTrigger value="analytics" className="whitespace-nowrap">Analytics</TabsTrigger>
+              <TabsTrigger value="ai-assistant" className="whitespace-nowrap">AI Assistant</TabsTrigger>
+              <TabsTrigger value="history" className="whitespace-nowrap">History</TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Execute Trade Tab */}
           <TabsContent value="execute" className="space-y-4">
