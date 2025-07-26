@@ -241,7 +241,7 @@ export default function WaidbotEnginePageEnhanced() {
         </div>
 
         {/* Enhanced Metrics Dashboard */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-6 mb-8">
           {/* ETH Live Price */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-green-400/40 backdrop-blur shadow-xl shadow-green-500/20 hover:shadow-green-500/30 transition-all">
             <CardContent className="p-4 lg:p-6">
@@ -342,6 +342,25 @@ export default function WaidbotEnginePageEnhanced() {
                   {Math.round(((waidbotStatus?.confidence || 0) + (waidbotProStatus?.confidence || 0) + (autonomousStatus?.confidence || 0)) / 3)}%
                 </p>
                 <p className="text-sm text-cyan-400">System Average</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Konsai System Alerts */}
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-red-400/40 backdrop-blur shadow-xl shadow-red-500/20 hover:shadow-red-500/30 transition-all">
+            <CardContent className="p-4 lg:p-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-5 h-5 text-red-400" />
+                  <span className="text-sm font-medium text-slate-300">System Alerts</span>
+                </div>
+                <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+              </div>
+              <div>
+                <p className="text-xl lg:text-2xl font-bold text-white mb-1">
+                  {Math.round(((waidbotStatus?.confidence || 0) + (waidbotProStatus?.confidence || 0) + (autonomousStatus?.confidence || 0)) / 3) < 50 ? 'AI Confidence Low' : 'All Systems Nominal'}
+                </p>
+                <p className="text-sm text-red-400">Monitoring Active</p>
               </div>
             </CardContent>
           </Card>
