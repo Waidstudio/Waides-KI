@@ -1,5 +1,5 @@
 import { useUserAuth } from "@/context/UserAuthContext";
-import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
+import SimpleLanding from "@/components/ui/SimpleLanding";
 import UserDashboard from "@/pages/dashboard";
 
 export default function HomePage() {
@@ -19,5 +19,5 @@ export default function HomePage() {
     return <UserDashboard />;
   }
 
-  return <ProfessionalLanding />;
+  return <SimpleLanding />;
 }
