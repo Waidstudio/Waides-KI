@@ -85,10 +85,14 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
       return data;
     },
     onSuccess: (data) => {
-      setToken(data.token);
-      setUser(data.user);
-      localStorage.setItem('waides_user_auth_token', data.token);
-      queryClient.setQueryData(['user_auth', 'me'], data.user);
+      if (data.token && data.user) {
+        setToken(data.token);
+        setUser(data.user);
+        localStorage.setItem('waides_user_auth_token', data.token);
+        queryClient.setQueryData(['user_auth', 'me'], data.user);
+        // Force re-fetch user data to ensure consistency
+        queryClient.invalidateQueries({ queryKey: ['user_auth', 'me'] });
+      }
     },
   });
 
@@ -146,9 +150,11 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
     if (userData) {
       setUser(userData);
     } else if (error && token) {
-      // Only clear token on explicit logout, not on network errors
-      // This prevents automatic logout on temporary connection issues
-      console.log('Authentication error (keeping session active):', error);
+      // On authentication error, clear the invalid token and logout
+      console.log('Authentication error - clearing invalid token:', error);
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem('waides_user_auth_token');
     }
   }, [userData, error, token]);
 

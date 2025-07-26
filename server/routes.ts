@@ -93,19 +93,20 @@ export function registerRoutes(app: Express): Promise<Server> {
       // Try database authentication first
       try {
         const sessionInfo = await userAuthService.verifyToken(token);
-        if (sessionInfo) {
+        if (sessionInfo && sessionInfo.user) {
           user = sessionInfo.user;
         }
       } catch (dbError) {
-        // Fallback to in-memory authentication
+        console.log('Database authentication failed, trying fallback:', dbError.message);
+      }
+      
+      // If database auth failed or returned no user, try fallback
+      if (!user) {
         try {
           const { fallbackAuthService } = await import('./services/fallbackAuthService');
           user = await fallbackAuthService.verifyToken(token);
         } catch (fallbackError) {
-          return res.status(401).json({
-            success: false,
-            message: 'Invalid token'
-          });
+          console.log('Fallback authentication error:', fallbackError);
         }
       }
       
