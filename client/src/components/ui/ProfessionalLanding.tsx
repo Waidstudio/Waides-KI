@@ -564,12 +564,6 @@ const ProfessionalLanding = () => {
                 <Link href="/waidbot-engine" className="bg-emerald-500/20 hover:bg-emerald-500/30 p-3 rounded-lg text-emerald-400 hover:text-emerald-300 transition-all text-sm text-center font-medium">
                   WaidBot Engine
                 </Link>
-                <Link href="/waidbot" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
-                  WaidBot
-                </Link>
-                <Link href="/waidbot-pro" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
-                  WaidBot Pro
-                </Link>
                 <Link href="/strategy-autogen" className="bg-slate-800/50 hover:bg-purple-500/20 p-3 rounded-lg text-slate-400 hover:text-purple-400 transition-all text-sm text-center">
                   Strategy Generator
                 </Link>
