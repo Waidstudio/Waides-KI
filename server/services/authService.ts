@@ -546,8 +546,8 @@ export class AuthService {
           username: userData.username,
           email: userData.email,
           passwordHash,
-          role: userData.role || AdminRoles.USER,
-          permissions: RolePermissions[userData.role as AdminRole] || RolePermissions[AdminRoles.USER],
+          role: userData.role || AdminRoles.VIEWER,
+          permissions: RolePermissions[userData.role as AdminRole] || RolePermissions[AdminRoles.VIEWER],
         })
         .returning();
 
