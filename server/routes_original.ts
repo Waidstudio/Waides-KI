@@ -73,6 +73,9 @@ import { waidesKIClarityRecoveryNode } from './services/waidesKIClarityRecoveryN
 import { WaidesKIDreamLayerVision } from './services/waidesKIDreamLayerVision.js';
 import { waidesKIVisionSpirit } from './services/waidesKIVisionSpirit.js';
 import { waidesKISpiritualRecall } from './services/waidesKISpiritualRecall.js';
+import { realTimeWaidBot } from './services/realTimeWaidBot.js';
+import { realTimeWaidBotPro } from './services/realTimeWaidBotPro.js';
+import { realTimeAutonomousTrader } from './services/realTimeAutonomousTrader.js';
 import { waidesKISeasonalRebirthEngine } from './services/waidesKISeasonalRebirthEngine.js';
 import { waidesKIDreamchain } from './services/waidesKIDreamchain.js';
 import { waidesKIOmniviewOracle } from './services/waidesKIOmniviewOracle.js';
@@ -17199,21 +17202,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   // WaidBot (ETH Uptrend Only) Status
   app.get("/api/waidbot-engine/waidbot/status", (req, res) => {
     try {
-      // Mock data for WaidBot - ETH uptrend only trading
-      const status = {
-        id: 'waidbot',
-        name: 'WaidBot',
-        isActive: false,
-        performance: {
-          totalTrades: 47,
-          winRate: 78,
-          profit: 12.4,
-          todayTrades: 3
-        },
-        currentAction: 'Waiting for ETH uptrend signal',
-        nextAction: 'Monitor for breakout above $2,450',
-        confidence: 73
-      };
+      const status = realTimeWaidBot.getStatus();
       res.json(status);
     } catch (error) {
       console.error('❌ WaidBot Engine status error:', error);
@@ -17224,21 +17213,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   // WaidBot Pro (ETH3L/ETH3S Bidirectional) Status
   app.get("/api/waidbot-engine/waidbot-pro/status", (req, res) => {
     try {
-      // Mock data for WaidBot Pro - bidirectional with ETH3L/ETH3S
-      const status = {
-        id: 'waidbot-pro',
-        name: 'WaidBot Pro',
-        isActive: true,
-        performance: {
-          totalTrades: 89,
-          winRate: 84,
-          profit: 23.7,
-          todayTrades: 7
-        },
-        currentAction: 'Analyzing ETH3L/ETH3S opportunities',
-        nextAction: 'Position for 4-hour directional move',
-        confidence: 91
-      };
+      const status = realTimeWaidBotPro.getStatus();
       res.json(status);
     } catch (error) {
       console.error('❌ WaidBot Pro Engine status error:', error);
@@ -17249,21 +17224,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   // Autonomous Trader (24/7 Scanner) Status
   app.get("/api/waidbot-engine/autonomous/status", (req, res) => {
     try {
-      // Mock data for Autonomous Trader - 24/7 scanning
-      const status = {
-        id: 'autonomous',
-        name: 'Autonomous Trader',
-        isActive: true,
-        performance: {
-          totalTrades: 156,
-          winRate: 82,
-          profit: 34.2,
-          todayTrades: 12
-        },
-        currentAction: 'Scanning 247 market patterns',
-        nextAction: 'Execute on next opportunity',
-        confidence: 88
-      };
+      const status = realTimeAutonomousTrader.getStatus();
       res.json(status);
     } catch (error) {
       console.error('❌ Autonomous Trader Engine status error:', error);
@@ -17272,18 +17233,24 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // Start/Stop WaidBot
-  app.post("/api/waidbot-engine/waidbot/:action", (req, res) => {
+  app.post("/api/waidbot-engine/waidbot/:action", async (req, res) => {
     try {
       const { action } = req.params;
-      const message = action === 'start' 
-        ? 'WaidBot started - monitoring for ETH uptrend signals'
-        : 'WaidBot stopped - no longer monitoring';
+      
+      let result;
+      if (action === 'start') {
+        result = await realTimeWaidBot.start();
+      } else if (action === 'stop') {
+        result = await realTimeWaidBot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
       
       res.json({ 
-        success: true, 
-        message,
+        ...result,
         action,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: realTimeWaidBot.getStatus()
       });
     } catch (error) {
       console.error('❌ WaidBot toggle error:', error);
@@ -17292,18 +17259,24 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // Start/Stop WaidBot Pro
-  app.post("/api/waidbot-engine/waidbot-pro/:action", (req, res) => {
+  app.post("/api/waidbot-engine/waidbot-pro/:action", async (req, res) => {
     try {
       const { action } = req.params;
-      const message = action === 'start'
-        ? 'WaidBot Pro started - scanning for ETH3L/ETH3S opportunities'
-        : 'WaidBot Pro stopped - no longer monitoring';
+      
+      let result;
+      if (action === 'start') {
+        result = await realTimeWaidBotPro.start();
+      } else if (action === 'stop') {
+        result = await realTimeWaidBotPro.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
       
       res.json({ 
-        success: true, 
-        message,
+        ...result,
         action,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: realTimeWaidBotPro.getStatus()
       });
     } catch (error) {
       console.error('❌ WaidBot Pro toggle error:', error);
@@ -17312,18 +17285,24 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
   });
 
   // Start/Stop Autonomous Trader
-  app.post("/api/waidbot-engine/autonomous/:action", (req, res) => {
+  app.post("/api/waidbot-engine/autonomous/:action", async (req, res) => {
     try {
       const { action } = req.params;
-      const message = action === 'start'
-        ? 'Autonomous Trader started - 24/7 market scanning active'
-        : 'Autonomous Trader stopped - scanning disabled';
+      
+      let result;
+      if (action === 'start') {
+        result = await realTimeAutonomousTrader.start();
+      } else if (action === 'stop') {
+        result = await realTimeAutonomousTrader.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
       
       res.json({ 
-        success: true, 
-        message,
+        ...result,
         action,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        status: realTimeAutonomousTrader.getStatus()
       });
     } catch (error) {
       console.error('❌ Autonomous Trader toggle error:', error);

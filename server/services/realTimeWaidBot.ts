@@ -1,0 +1,355 @@
+import { EventEmitter } from 'events';
+
+interface DemoBalance {
+  usdt: number;
+  eth: number;
+  totalValue: number;
+  availableForTrading: number;
+}
+
+interface Trade {
+  id: string;
+  timestamp: number;
+  action: 'BUY' | 'SELL' | 'HOLD';
+  symbol: string;
+  price: number;
+  quantity: number;
+  amount: number;
+  confidence: number;
+  reason: string;
+}
+
+interface WaidBotState {
+  isActive: boolean;
+  isRunning: boolean;
+  currentBalance: DemoBalance;
+  trades: Trade[];
+  performance: {
+    totalTrades: number;
+    winRate: number;
+    profit: number;
+    todayTrades: number;
+  };
+  currentAction: string;
+  nextAction: string;
+  confidence: number;
+  startTime?: number;
+  tradingInterval?: NodeJS.Timeout;
+}
+
+export class RealTimeWaidBot extends EventEmitter {
+  private state: WaidBotState;
+  private readonly DEMO_STARTING_BALANCE = 10000; // $10,000 USDT
+  private readonly MIN_TRADE_AMOUNT = 50; // Minimum $50 per trade
+  private readonly MAX_TRADE_PERCENTAGE = 0.1; // Max 10% of balance per trade
+  private readonly TRADING_INTERVAL = 60000; // 1 minute intervals
+
+  constructor() {
+    super();
+    this.state = this.initializeState();
+  }
+
+  private initializeState(): WaidBotState {
+    return {
+      isActive: false,
+      isRunning: false,
+      currentBalance: {
+        usdt: this.DEMO_STARTING_BALANCE,
+        eth: 0,
+        totalValue: this.DEMO_STARTING_BALANCE,
+        availableForTrading: this.DEMO_STARTING_BALANCE
+      },
+      trades: [],
+      performance: {
+        totalTrades: 0,
+        winRate: 0,
+        profit: 0,
+        todayTrades: 0
+      },
+      currentAction: 'Waiting for activation',
+      nextAction: 'Start monitoring ETH trends',
+      confidence: 0
+    };
+  }
+
+  public async start(): Promise<{ success: boolean; message: string }> {
+    if (this.state.isRunning) {
+      return { success: false, message: 'WaidBot is already running' };
+    }
+
+    try {
+      this.state.isActive = true;
+      this.state.isRunning = true;
+      this.state.startTime = Date.now();
+      this.state.currentAction = 'Initializing real-time trading...';
+      this.state.nextAction = 'Analyzing market conditions';
+
+      // Start the trading loop
+      this.state.tradingInterval = setInterval(() => {
+        this.executeTradeDecision();
+      }, this.TRADING_INTERVAL);
+
+      // Execute first decision immediately
+      setTimeout(() => {
+        this.executeTradeDecision();
+      }, 2000);
+
+      this.emit('started', this.getStatus());
+      
+      console.log('🤖 WaidBot started with real-time trading using demo balance');
+      return { 
+        success: true, 
+        message: `WaidBot started - monitoring ETH uptrends with $${this.state.currentBalance.usdt.toLocaleString()} demo balance` 
+      };
+    } catch (error) {
+      console.error('❌ Error starting WaidBot:', error);
+      return { success: false, message: 'Failed to start WaidBot' };
+    }
+  }
+
+  public async stop(): Promise<{ success: boolean; message: string }> {
+    if (!this.state.isRunning) {
+      return { success: false, message: 'WaidBot is not running' };
+    }
+
+    try {
+      this.state.isActive = false;
+      this.state.isRunning = false;
+      this.state.currentAction = 'Stopped - No longer monitoring';
+      this.state.nextAction = 'Awaiting manual restart';
+
+      if (this.state.tradingInterval) {
+        clearInterval(this.state.tradingInterval);
+        this.state.tradingInterval = undefined;
+      }
+
+      this.emit('stopped', this.getStatus());
+      
+      console.log('🛑 WaidBot stopped');
+      return { success: true, message: 'WaidBot stopped successfully' };
+    } catch (error) {
+      console.error('❌ Error stopping WaidBot:', error);
+      return { success: false, message: 'Failed to stop WaidBot' };
+    }
+  }
+
+  private async executeTradeDecision(): Promise<void> {
+    if (!this.state.isRunning) return;
+
+    try {
+      // Simulate market analysis
+      const marketData = await this.getMarketData();
+      const decision = this.analyzeMarket(marketData);
+
+      this.state.currentAction = `Analyzing ETH at $${marketData.price}`;
+      this.state.confidence = decision.confidence;
+
+      if (decision.action === 'BUY' && this.shouldExecuteTrade(decision)) {
+        await this.executeBuyOrder(marketData, decision);
+      } else if (decision.action === 'SELL' && this.hasEthPosition()) {
+        await this.executeSellOrder(marketData, decision);
+      } else {
+        this.state.nextAction = decision.action === 'HOLD' 
+          ? `Holding position - confidence: ${decision.confidence}%`
+          : `Waiting for ${decision.action} signal - confidence: ${decision.confidence}%`;
+      }
+
+      this.emit('decision', { decision, marketData, status: this.getStatus() });
+    } catch (error) {
+      console.error('❌ Error in trade decision:', error);
+      this.state.currentAction = 'Error in analysis - retrying...';
+    }
+  }
+
+  private async getMarketData() {
+    // Simulate real market data with trending behavior
+    const basePrice = 3200;
+    const trend = Math.sin(Date.now() / 300000) * 100; // 5-minute trend cycle
+    const noise = (Math.random() - 0.5) * 50;
+    const price = basePrice + trend + noise;
+
+    return {
+      price: Math.max(2800, Math.min(3800, price)),
+      volume: 20000000000 + Math.random() * 10000000000,
+      change24h: (Math.random() - 0.5) * 10,
+      timestamp: Date.now()
+    };
+  }
+
+  private analyzeMarket(marketData: any) {
+    // ETH Uptrend Analysis (WaidBot only trades uptrends)
+    const isUptrend = marketData.change24h > 0;
+    const volumeStrong = marketData.volume > 25000000000;
+    const priceLevel = marketData.price;
+    
+    let confidence = 60; // Base confidence
+    
+    if (isUptrend) confidence += 20;
+    if (volumeStrong) confidence += 15;
+    if (priceLevel > 3250) confidence += 10; // Strong resistance break
+    if (priceLevel < 3100) confidence -= 15; // Below support
+    
+    // Add randomness for realistic behavior
+    confidence += (Math.random() - 0.5) * 20;
+    confidence = Math.max(30, Math.min(95, confidence));
+
+    let action: 'BUY' | 'SELL' | 'HOLD' = 'HOLD';
+    let reason = 'Market analysis inconclusive';
+
+    if (isUptrend && confidence > 75 && !this.hasEthPosition()) {
+      action = 'BUY';
+      reason = `Strong uptrend detected. Price: $${priceLevel.toFixed(2)}, Volume: ${(marketData.volume / 1e9).toFixed(1)}B`;
+    } else if (this.hasEthPosition() && (confidence < 50 || marketData.change24h < -3)) {
+      action = 'SELL';
+      reason = `Taking profit or stopping loss. Confidence dropped to ${confidence.toFixed(1)}%`;
+    } else if (isUptrend) {
+      reason = `Uptrend detected but confidence ${confidence.toFixed(1)}% - waiting for stronger signal`;
+    } else {
+      reason = `No uptrend detected. ETH change: ${marketData.change24h.toFixed(2)}%`;
+    }
+
+    return { action, confidence: Math.round(confidence), reason };
+  }
+
+  private shouldExecuteTrade(decision: any): boolean {
+    return decision.confidence > 75 && 
+           this.state.currentBalance.usdt >= this.MIN_TRADE_AMOUNT &&
+           this.state.currentBalance.availableForTrading >= this.MIN_TRADE_AMOUNT;
+  }
+
+  private hasEthPosition(): boolean {
+    return this.state.currentBalance.eth > 0.001; // More than 0.001 ETH
+  }
+
+  private async executeBuyOrder(marketData: any, decision: any): Promise<void> {
+    try {
+      const tradeAmount = Math.min(
+        this.state.currentBalance.availableForTrading * this.MAX_TRADE_PERCENTAGE,
+        this.state.currentBalance.usdt * 0.5 // Max 50% of USDT balance
+      );
+
+      if (tradeAmount < this.MIN_TRADE_AMOUNT) return;
+
+      const quantity = tradeAmount / marketData.price;
+      
+      // Execute trade
+      this.state.currentBalance.usdt -= tradeAmount;
+      this.state.currentBalance.eth += quantity;
+      this.state.currentBalance.availableForTrading = this.state.currentBalance.usdt;
+
+      const trade: Trade = {
+        id: `BUY_${Date.now()}`,
+        timestamp: Date.now(),
+        action: 'BUY',
+        symbol: 'ETH/USDT',
+        price: marketData.price,
+        quantity,
+        amount: tradeAmount,
+        confidence: decision.confidence,
+        reason: decision.reason
+      };
+
+      this.state.trades.unshift(trade);
+      this.state.performance.totalTrades++;
+      this.state.performance.todayTrades++;
+      
+      this.updateTotalValue(marketData.price);
+      
+      this.state.currentAction = `Bought ${quantity.toFixed(4)} ETH at $${marketData.price.toFixed(2)}`;
+      this.state.nextAction = 'Monitoring position for profit taking opportunity';
+
+      console.log(`🟢 WaidBot BUY: ${quantity.toFixed(4)} ETH at $${marketData.price.toFixed(2)} (${decision.confidence}% confidence)`);
+      
+      this.emit('trade', trade);
+    } catch (error) {
+      console.error('❌ Error executing buy order:', error);
+    }
+  }
+
+  private async executeSellOrder(marketData: any, decision: any): Promise<void> {
+    try {
+      const quantity = this.state.currentBalance.eth;
+      const tradeAmount = quantity * marketData.price;
+      
+      // Calculate profit/loss
+      const lastBuyTrade = this.state.trades.find(t => t.action === 'BUY');
+      const profitLoss = lastBuyTrade ? tradeAmount - lastBuyTrade.amount : 0;
+      
+      // Execute trade
+      this.state.currentBalance.usdt += tradeAmount;
+      this.state.currentBalance.eth = 0;
+      this.state.currentBalance.availableForTrading = this.state.currentBalance.usdt;
+
+      const trade: Trade = {
+        id: `SELL_${Date.now()}`,
+        timestamp: Date.now(),
+        action: 'SELL',
+        symbol: 'ETH/USDT',
+        price: marketData.price,
+        quantity,
+        amount: tradeAmount,
+        confidence: decision.confidence,
+        reason: decision.reason
+      };
+
+      this.state.trades.unshift(trade);
+      this.state.performance.totalTrades++;
+      this.state.performance.todayTrades++;
+      this.state.performance.profit += profitLoss;
+      
+      // Update win rate
+      const wins = this.state.trades.filter(t => t.action === 'SELL').length;
+      const totalSells = wins;
+      this.state.performance.winRate = totalSells > 0 ? Math.round((wins / this.state.performance.totalTrades) * 100) : 0;
+      
+      this.updateTotalValue(marketData.price);
+      
+      this.state.currentAction = `Sold ${quantity.toFixed(4)} ETH at $${marketData.price.toFixed(2)} (${profitLoss > 0 ? '+' : ''}$${profitLoss.toFixed(2)})`;
+      this.state.nextAction = 'Scanning for next uptrend entry opportunity';
+
+      console.log(`🔴 WaidBot SELL: ${quantity.toFixed(4)} ETH at $${marketData.price.toFixed(2)} (${decision.confidence}% confidence) PnL: $${profitLoss.toFixed(2)}`);
+      
+      this.emit('trade', trade);
+    } catch (error) {
+      console.error('❌ Error executing sell order:', error);
+    }
+  }
+
+  private updateTotalValue(currentEthPrice: number): void {
+    this.state.currentBalance.totalValue = 
+      this.state.currentBalance.usdt + (this.state.currentBalance.eth * currentEthPrice);
+  }
+
+  public getStatus() {
+    return {
+      id: 'waidbot',
+      name: 'WaidBot',
+      isActive: this.state.isActive,
+      isRunning: this.state.isRunning,
+      currentBalance: this.state.currentBalance,
+      performance: {
+        ...this.state.performance,
+        profit: this.state.currentBalance.totalValue - this.DEMO_STARTING_BALANCE
+      },
+      currentAction: this.state.currentAction,
+      nextAction: this.state.nextAction,
+      confidence: this.state.confidence,
+      recentTrades: this.state.trades.slice(0, 5),
+      uptime: this.state.startTime ? Date.now() - this.state.startTime : 0
+    };
+  }
+
+  public getTradeHistory(): Trade[] {
+    return this.state.trades;
+  }
+
+  public reset(): void {
+    if (this.state.tradingInterval) {
+      clearInterval(this.state.tradingInterval);
+    }
+    this.state = this.initializeState();
+  }
+}
+
+// Create singleton instance
+export const realTimeWaidBot = new RealTimeWaidBot();

@@ -4901,5 +4901,190 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =============================================================================
+  // WAIDBOT ENGINE API ENDPOINTS - Real-Time Trading with Demo Balance
+  // =============================================================================
+
+  // Import real-time trading services
+  let realTimeWaidBot: any = null;
+  let realTimeWaidBotPro: any = null;  
+  let realTimeAutonomousTrader: any = null;
+
+  // Lazy load trading services
+  const getRealTimeWaidBot = async () => {
+    if (!realTimeWaidBot) {
+      const { realTimeWaidBot: bot } = await import('./services/realTimeWaidBot.js');
+      realTimeWaidBot = bot;
+    }
+    return realTimeWaidBot;
+  };
+
+  const getRealTimeWaidBotPro = async () => {
+    if (!realTimeWaidBotPro) {
+      const { realTimeWaidBotPro: bot } = await import('./services/realTimeWaidBotPro.js');
+      realTimeWaidBotPro = bot;
+    }
+    return realTimeWaidBotPro;
+  };
+
+  const getRealTimeAutonomousTrader = async () => {
+    if (!realTimeAutonomousTrader) {
+      const { realTimeAutonomousTrader: bot } = await import('./services/realTimeAutonomousTrader.js');
+      realTimeAutonomousTrader = bot;
+    }
+    return realTimeAutonomousTrader;
+  };
+
+  // WaidBot (ETH Uptrend Only) Status
+  app.get("/api/waidbot-engine/waidbot/status", async (req, res) => {
+    try {
+      const bot = await getRealTimeWaidBot();
+      const status = bot.getStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('❌ WaidBot Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot status' });
+    }
+  });
+
+  // Start/Stop WaidBot
+  app.post("/api/waidbot-engine/waidbot/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const bot = await getRealTimeWaidBot();
+      
+      let result;
+      if (action === 'start') {
+        result = await bot.start();
+      } else if (action === 'stop') {
+        result = await bot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
+      
+      res.json({ 
+        ...result,
+        action,
+        timestamp: new Date().toISOString(),
+        status: bot.getStatus()
+      });
+    } catch (error) {
+      console.error('❌ WaidBot toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle WaidBot' });
+    }
+  });
+
+  // WaidBot Pro (ETH3L/ETH3S Bidirectional) Status
+  app.get("/api/waidbot-engine/waidbot-pro/status", async (req, res) => {
+    try {
+      const bot = await getRealTimeWaidBotPro();
+      const status = bot.getStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('❌ WaidBot Pro Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot Pro status' });
+    }
+  });
+
+  // Start/Stop WaidBot Pro
+  app.post("/api/waidbot-engine/waidbot-pro/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const bot = await getRealTimeWaidBotPro();
+      
+      let result;
+      if (action === 'start') {
+        result = await bot.start();
+      } else if (action === 'stop') {
+        result = await bot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
+      
+      res.json({ 
+        ...result,
+        action,
+        timestamp: new Date().toISOString(),
+        status: bot.getStatus()
+      });
+    } catch (error) {
+      console.error('❌ WaidBot Pro toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle WaidBot Pro' });
+    }
+  });
+
+  // Autonomous Trader (24/7 Scanner) Status
+  app.get("/api/waidbot-engine/autonomous/status", async (req, res) => {
+    try {
+      const bot = await getRealTimeAutonomousTrader();
+      const status = bot.getStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('❌ Autonomous Trader Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get Autonomous status' });
+    }
+  });
+
+  // Start/Stop Autonomous Trader
+  app.post("/api/waidbot-engine/autonomous/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const bot = await getRealTimeAutonomousTrader();
+      
+      let result;
+      if (action === 'start') {
+        result = await bot.start();
+      } else if (action === 'stop') {
+        result = await bot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
+      
+      res.json({ 
+        ...result,
+        action,
+        timestamp: new Date().toISOString(),
+        status: bot.getStatus()
+      });
+    } catch (error) {
+      console.error('❌ Autonomous Trader toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle Autonomous Trader' });
+    }
+  });
+
+  // WaidBot Engine Trade History Endpoints
+  app.get("/api/waidbot-engine/waidbot/trades", async (req, res) => {
+    try {
+      const bot = await getRealTimeWaidBot();
+      const trades = bot.getTradeHistory();
+      res.json({ success: true, trades });
+    } catch (error) {
+      console.error('❌ WaidBot trades error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot trades' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/waidbot-pro/trades", async (req, res) => {
+    try {
+      const bot = await getRealTimeWaidBotPro();
+      const trades = bot.getTradeHistory();
+      res.json({ success: true, trades });
+    } catch (error) {
+      console.error('❌ WaidBot Pro trades error:', error);
+      res.status(500).json({ error: 'Failed to get WaidBot Pro trades' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/autonomous/trades", async (req, res) => {
+    try {
+      const bot = await getRealTimeAutonomousTrader();
+      const trades = bot.getTradeHistory();
+      res.json({ success: true, trades });
+    } catch (error) {
+      console.error('❌ Autonomous Trader trades error:', error);
+      res.status(500).json({ error: 'Failed to get Autonomous Trader trades' });
+    }
+  });
+
   return Promise.resolve(server);
 }
