@@ -187,6 +187,7 @@ export function registerRoutes(app: Express): Promise<Server> {
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('🔍 No auth header or invalid format');
         return res.status(401).json({ success: false, message: 'No token provided' });
       }
 
@@ -196,17 +197,25 @@ export function registerRoutes(app: Express): Promise<Server> {
       try {
         // Try normal database authentication first
         sessionInfo = await userAuthService.verifyToken(token);
+        
+        // If database returned null (no session found), try fallback
+        if (!sessionInfo) {
+          const { fallbackAuthService } = await import('./services/fallbackAuthService');
+          sessionInfo = await fallbackAuthService.verifyToken(token);
+        }
       } catch (dbError) {
-        console.warn('Database token verification failed, using fallback:', dbError);
         // Use fallback authentication when database is unavailable
-        const { fallbackAuthService } = await import('./services/fallbackAuthService');
-        sessionInfo = await fallbackAuthService.verifyToken(token);
+        try {
+          const { fallbackAuthService } = await import('./services/fallbackAuthService');
+          sessionInfo = await fallbackAuthService.verifyToken(token);
+        } catch (fallbackError) {
+          // Both authentication methods failed
+        }
       }
 
       if (!sessionInfo) {
         return res.status(401).json({ success: false, message: 'Invalid token' });
       }
-
       res.json({
         success: true,
         user: sessionInfo

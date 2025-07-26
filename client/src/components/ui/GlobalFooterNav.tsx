@@ -1,9 +1,9 @@
 import { Link } from "wouter";
 import { Home, TrendingUp, Wallet, Bot, Settings, Users, Zap } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useUserAuth } from "@/context/UserAuthContext";
 
 export default function GlobalFooterNav() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useUserAuth();
 
   // Only show footer navigation for authenticated users
   if (!isAuthenticated) {
