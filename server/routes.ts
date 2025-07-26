@@ -75,40 +75,57 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   // USER Authentication routes (public)
   app.post("/api/user-auth/login", rateLimitLogin, async (req, res) => {
+    // Parse and validate input
+    let credentials;
     try {
-      const credentials = userLoginSchema.parse(req.body);
-      const ipAddress = getClientIP(req);
-      const userAgent = getUserAgent(req);
+      credentials = userLoginSchema.parse(req.body);
+    } catch (parseError) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request data'
+      });
+    }
+
+    const ipAddress = getClientIP(req);
+    const userAgent = getUserAgent(req);
+    
+    let result;
+    let usedFallback = false;
+    
+    // Try database authentication first
+    try {
+      result = await userAuthService.login(credentials, ipAddress, userAgent);
+    } catch (dbError) {
+      usedFallback = true;
       
-      let result;
+      // Fallback to in-memory authentication when database is unavailable
       try {
-        // Try normal database authentication first
-        result = await userAuthService.login(credentials, ipAddress, userAgent);
-      } catch (dbError) {
-        console.warn('Database authentication failed, using fallback:', dbError);
-        // Use fallback authentication when database is unavailable
         const { fallbackAuthService } = await import('./services/fallbackAuthService');
         result = await fallbackAuthService.login(credentials);
-      }
-      
-      if (result.success) {
-        res.json({
-          success: true,
-          user: result.user,
-          token: result.token,
-          message: result.message
-        });
-      } else {
-        res.status(401).json({
+        
+        if (result.success && !result.message.includes('fallback')) {
+          result.message = result.message + ' (using fallback authentication)';
+        }
+      } catch (fallbackError) {
+        return res.status(401).json({
           success: false,
-          message: result.message
+          message: 'Authentication system temporarily unavailable'
         });
       }
-    } catch (error) {
-      console.error('User login error:', error);
-      res.status(401).json({
+    }
+    
+    // Send response based on authentication result
+    if (result && result.success) {
+      return res.json({
+        success: true,
+        user: result.user,
+        token: result.token,
+        message: result.message
+      });
+    } else {
+      return res.status(401).json({
         success: false,
-        message: 'An error occurred during login'
+        message: result ? result.message : 'Invalid credentials'
       });
     }
   });

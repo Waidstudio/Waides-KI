@@ -215,6 +215,13 @@ export class UserAuthService {
       };
     } catch (error) {
       console.error('User login error:', error);
+      
+      // Re-throw database connection errors to allow fallback authentication
+      if ((error.message && error.message.includes('The endpoint has been disabled')) || 
+          error.code === 'XX000') {
+        throw error;
+      }
+      
       return {
         success: false,
         message: 'An error occurred during login',

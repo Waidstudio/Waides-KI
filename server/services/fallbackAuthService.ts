@@ -163,7 +163,8 @@ class FallbackAuthService {
   public cleanup() {
     // Remove expired sessions
     const now = new Date();
-    for (const [sessionId, session] of this.sessions.entries()) {
+    const sessionsArray = Array.from(this.sessions.entries());
+    for (const [sessionId, session] of sessionsArray) {
       if (session.expiresAt < now) {
         this.sessions.delete(sessionId);
       }
