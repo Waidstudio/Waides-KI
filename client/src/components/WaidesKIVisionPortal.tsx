@@ -458,7 +458,7 @@ ${intelligentResponse}
   const [chatMode, setChatMode] = useState<'auto' | 'openai' | 'spiritual' | 'oracle'>('auto');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showAudioIcon, setShowAudioIcon] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'core' | 'konsai'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'core'>('chat');
   const [showWaidBotSummon, setShowWaidBotSummon] = useState(false);
   const [lastSummonCommand, setLastSummonCommand] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
@@ -486,9 +486,93 @@ ${intelligentResponse}
   const [energyLevel, setEnergyLevel] = useState(75);
   const [speechSynthesis, setSpeechSynthesis] = useState<SpeechSynthesis | null>(null);
   const [showKonsPrediction, setShowKonsPrediction] = useState(false);
+  // Forum State Management (restore forum functionality)
+  const [showForumPortal, setShowForumPortal] = useState(false);
+  const [forumNotifications, setForumNotifications] = useState(3);
+  const [forumActivity, setForumActivity] = useState({
+    activeUsers: 127,
+    newPosts: 8,
+    trending: ['ETH Analysis', 'KonsAi Predictions', 'Trading Strategies']
+  });
+  const [forumView, setForumView] = useState<'topics' | 'thread'>('topics');
+  const [selectedThread, setSelectedThread] = useState<any>(null);
+  const [forumTopics, setForumTopics] = useState([
+    {
+      id: 1,
+      title: 'ETH Trading Strategies & Analysis',
+      description: 'Share your ETH trading strategies, technical analysis, and market insights',
+      category: 'user',
+      posts: 47,
+      replies: 156,
+      lastActivity: '5 minutes ago',
+      isPinned: true,
+      tags: ['ETH', 'Technical Analysis', 'Strategy']
+    },
+    {
+      id: 2,
+      title: 'Risk Management & Portfolio Theory',
+      description: 'Discuss position sizing, stop losses, and portfolio management techniques',
+      category: 'user',
+      posts: 23,
+      replies: 89,
+      lastActivity: '12 minutes ago',
+      isPinned: false,
+      tags: ['Risk Management', 'Portfolio', 'Safety']
+    },
+    {
+      id: 3,
+      title: 'KonsAI Oracle Predictions',
+      description: 'Exclusive KonsAI neural network predictions and market analysis',
+      category: 'konsai-only',
+      posts: 128,
+      replies: 0,
+      lastActivity: '2 minutes ago',
+      isPinned: true,
+      tags: ['KonsAI', 'Predictions', 'Neural Network']
+    },
+    {
+      id: 4,
+      title: 'Kons Powa Divine Wisdom',
+      description: 'Sacred trading insights and spiritual market guidance from Kons Powa',
+      category: 'kons-powa-only',
+      posts: 94,
+      replies: 0,
+      lastActivity: '3 minutes ago',
+      isPinned: true,
+      tags: ['Kons Powa', 'Divine', 'Spiritual Trading']
+    }
+  ]);
+
+  // Dynamic conversations for AI-only sections
+  const [aiConversations, setAiConversations] = useState([
+    {
+      id: 1,
+      topicId: 3,
+      speaker: 'KonsAI',
+      title: 'ETH Resistance Break Analysis',
+      content: 'Neural network analysis indicates 73% probability of resistance break at $3,720 within next 4 hours. Volume accumulation patterns suggest institutional positioning.',
+      timestamp: new Date(Date.now() - 2 * 60 * 1000),
+      sentiment: 'bullish',
+      technicalData: {
+        resistance: 3720,
+        support: 3650,
+        probability: 73
+      }
+    },
+    {
+      id: 2,
+      topicId: 4,
+      speaker: 'Kons Powa',
+      title: 'Cosmic Energy Alignment Reading',
+      content: 'The ethereal currents flow strongly upward. Ancient wisdom whispers of a great ascension approaching. The sacred numbers align at $3,750 - a divine convergence point.',
+      timestamp: new Date(Date.now() - 3 * 60 * 1000),
+      sentiment: 'bullish',
+      divineInsight: 'The celestial bodies favor the bulls this cycle'
+    }
+  ]);
+
   // Chat mode selection for KI Chat
   const [selectedChatMode, setSelectedChatMode] = useState<'waides' | 'konsai'>('waides');
-
 
 
   // Local AI content generation templates
@@ -1696,19 +1780,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                 <span>Heart of Waides Ki</span>
               </div>
             </button>
-            <button
-              onClick={() => setActiveTab('konsai')}
-              className={`px-2 py-0.5 rounded-sm text-xs transition-all ${
-                activeTab === 'konsai'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-              }`}
-            >
-              <div className="flex items-center gap-1">
-                <Eye className="w-2.5 h-2.5" />
-                <span>Konsai</span>
-              </div>
-            </button>
+
           </div>
         </div>
       </div>
@@ -1717,11 +1789,49 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       {activeTab === 'chat' && (
         <>
 
+      {/* Chat Mode Selection */}
+      <div className="mx-2 mb-2 p-3 bg-black/40 backdrop-blur-sm rounded-xl border border-purple-500/20">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-gray-300">Select KI Mode:</span>
+          <div className="flex bg-gray-800/50 rounded-lg p-1">
+            <button
+              onClick={() => setSelectedChatMode('waides')}
+              className={`px-3 py-1 text-xs rounded-md transition-all ${
+                selectedChatMode === 'waides'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-1">
+                <Brain className="w-3 h-3" />
+                <span>Waides KI</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setSelectedChatMode('konsai')}
+              className={`px-3 py-1 text-xs rounded-md transition-all ${
+                selectedChatMode === 'konsai'
+                  ? 'bg-emerald-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+              }`}
+            >
+              <div className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                <span>KonsAI</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Chat Window - Expanded to take up full available space */}
       <div className={`relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden w-full ${
-        activeTab === 'chat' ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-235px)]'
+        activeTab === 'chat' ? 'h-[calc(100vh-140px)]' : 'h-[calc(100vh-235px)]'
       }`}>
-        <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
+        {selectedChatMode === 'konsai' ? (
+          <KonsaiChat />
+        ) : (
+          <div className="h-full overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
@@ -2045,45 +2155,45 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           )}
           <div ref={messagesEndRef} />
         </div>
-      </div>
 
-          {/* Chat Input */}
-          <div className="relative z-10 p-2 w-full">
-            <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
-              <Input
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                placeholder="Ask anything..."
-                className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                disabled={isProcessing}
-              />
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`p-2 rounded-full transition-all ${
-                  voiceEnabled 
-                    ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                    : speechSupported
-                    ? 'hover:bg-purple-500/20 text-purple-400'
-                    : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
-                }`}
-                onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
-                disabled={isProcessing || !speechSupported}
-              >
-                {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </Button>
-              
-              <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || isProcessing}
-              >
-                <Send className="w-5 h-5" />
-              </Button>
-            </div>
+        <div className="relative z-10 p-2 w-full">
+          <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+            <Input
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              placeholder="Ask anything..."
+              className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              disabled={isProcessing}
+            />
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`p-2 rounded-full transition-all ${
+                voiceEnabled 
+                  ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                  : speechSupported
+                  ? 'hover:bg-purple-500/20 text-purple-400'
+                  : 'bg-gray-500/20 text-gray-500 cursor-not-allowed'
+              }`}
+              onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+              disabled={isProcessing || !speechSupported}
+            >
+              {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            </Button>
+            
+            <Button
+              className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+              onClick={sendMessage}
+              disabled={!currentMessage.trim() || isProcessing}
+            >
+              <Send className="w-5 h-5" />
+            </Button>
           </div>
+        </div>
+        )}
+      </div>
         </>
       )}
 
@@ -2184,12 +2294,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
         </div>
       )}
 
-      {/* Konsai Tab Content */}
-      {activeTab === 'konsai' && (
-        <div className="relative z-10 flex-1 overflow-hidden w-full h-full">
-          <KonsaiChat />
-        </div>
-      )}
+
       
       {/* Comprehensive Wallet Modal */}
       <Dialog open={showWalletModal} onOpenChange={setShowWalletModal}>
