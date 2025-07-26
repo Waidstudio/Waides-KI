@@ -58,6 +58,11 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
     },
     enabled: !!token,
     retry: false,
+    staleTime: Infinity, // Never consider data stale - persistent session
+    cacheTime: Infinity, // Cache indefinitely
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnMount: false, // Don't refetch on component mount
+    refetchOnReconnect: false, // Don't refetch on network reconnect
   });
 
   // Login mutation
@@ -141,9 +146,9 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
     if (userData) {
       setUser(userData);
     } else if (error && token) {
-      // Token is invalid, clear it
-      setToken(null);
-      localStorage.removeItem('waides_user_auth_token');
+      // Only clear token on explicit logout, not on network errors
+      // This prevents automatic logout on temporary connection issues
+      console.log('Authentication error (keeping session active):', error);
     }
   }, [userData, error, token]);
 

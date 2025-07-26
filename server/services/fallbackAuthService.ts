@@ -82,7 +82,7 @@ class FallbackAuthService {
 
       // Generate session token
       const sessionId = crypto.randomUUID();
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year - persistent session
 
       // Store session
       this.sessions.set(sessionId, {
@@ -99,7 +99,7 @@ class FallbackAuthService {
           sessionId
         },
         process.env.JWT_SECRET || 'fallback-secret-key',
-        { expiresIn: '24h' }
+        { expiresIn: '365d' } // 1 year - persistent until manual logout
       );
 
       return {

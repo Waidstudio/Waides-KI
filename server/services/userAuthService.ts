@@ -14,8 +14,8 @@ import {
 
 // Environment variables for user auth (separate from admin)
 const JWT_SECRET = process.env.JWT_SECRET || 'waides-ki-user-secret-2025';
-const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-const REMEMBER_ME_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
+const SESSION_DURATION = 365 * 24 * 60 * 60 * 1000; // 1 year (persistent until manual logout)
+const REMEMBER_ME_DURATION = 365 * 24 * 60 * 60 * 1000; // 1 year
 
 interface AuthenticatedUser {
   id: number;
@@ -62,7 +62,7 @@ export class UserAuthService {
 
   // Generate JWT token
   private generateToken(user: AuthenticatedUser, sessionId: string, rememberMe = false): string {
-    const expiresIn = rememberMe ? '30d' : '24h';
+    const expiresIn = '365d'; // 1 year - persistent until manual logout
     return jwt.sign(
       {
         userId: user.id,
