@@ -97,7 +97,7 @@ export function registerRoutes(app: Express): Promise<Server> {
           user = sessionInfo.user;
         }
       } catch (dbError) {
-        console.log('Database authentication failed, trying fallback:', dbError.message);
+        console.log('Database authentication failed, trying fallback:', (dbError as Error).message);
       }
       
       // If database auth failed or returned no user, try fallback
@@ -465,7 +465,12 @@ export function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/users", requireAuth, requirePermission(AdminPermissions.CREATE_USERS), auditLog, async (req, res) => {
     try {
       const userData = insertAdminUserSchema.parse(req.body);
-      const result = await authService.createAdminUser(userData);
+      const userDataWithPassword = {
+        ...userData,
+        password: userData.passwordHash, // Map passwordHash to password
+        confirmPassword: userData.passwordHash
+      };
+      const result = await authService.createAdminUser(userDataWithPassword);
       
       if (result.success) {
         await authService.logActivity(
@@ -1827,7 +1832,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
       // Mark as redeemed and add to user balance
       smaipin.redeemed = true;
-      smaipin.userId = req.user?.id || 'current_user';
+      smaipin.userId = String(req.user?.id || 'current_user');
 
       res.json({
         success: true,
@@ -1929,7 +1934,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         'GBP': 0.75
       };
 
-      const rate = conversionRates[targetCurrency];
+      const rate = conversionRates[targetCurrency as keyof typeof conversionRates];
       if (!rate) {
         return res.status(400).json({
           success: false,
@@ -2243,17 +2248,25 @@ export function registerRoutes(app: Express): Promise<Server> {
         waidbot_pro: 'WaidBot Pro', 
         autonomous_trader: 'Autonomous Trader',
         full_engine: 'Full Engine'
-      };
+      } as const;
+
+      const botName = botNames[botType as keyof typeof botNames];
+      if (!botName) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid bot type'
+        });
+      }
 
       res.json({
         success: true,
-        message: `Successfully funded ${botNames[botType]} with ꠄ${amount.toFixed(2)}`,
+        message: `Successfully funded ${botName} with ꠄ${amount.toFixed(2)}`,
         transaction,
         newBotBalance: amount + (botType === 'full_engine' ? 0 : 10000), // Existing balance + new funding
         remainingWalletBalance: walletBalance - amount,
         fundingDetails: {
           botType,
-          botName: botNames[botType],
+          botName,
           amountFunded: amount,
           fundingSource: 'SmaiSika Wallet',
           activationStatus: 'ready_to_trade'
@@ -2693,7 +2706,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         'generate smaipin': () => ({ action: 'smaipin_generate', response: 'How much SmaiSika would you like to generate?' })
       };
 
-      const commandHandler = voiceCommands[command.toLowerCase()];
+      const commandHandler = voiceCommands[command.toLowerCase() as keyof typeof voiceCommands];
       const result = commandHandler ? commandHandler() : { 
         action: 'unknown', 
         response: 'I didn\'t understand that command. Try "check balance" or "send money"' 
@@ -2963,7 +2976,7 @@ export function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('SmaiSika conversion error:', error);
       res.status(500).json({ 
-        error: error.message || 'Failed to convert SmaiSika to local currency' 
+        error: (error as Error).message || 'Failed to convert SmaiSika to local currency' 
       });
     }
   });
@@ -3033,7 +3046,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Virtual bank account generation error:', error);
-      res.status(500).json({ error: error.message || 'Failed to generate virtual bank account' });
+      res.status(500).json({ error: (error as Error).message || 'Failed to generate virtual bank account' });
     }
   });
 
@@ -5028,7 +5041,8 @@ export function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Use the enhanced KonsAi Intelligence Engine directly
-      const { konsaiIntelligenceEngine } = await import('./services/konsaiIntelligenceEngine');
+      const konsaiModule = await import('./services/konsaiIntelligenceEngine');
+      const konsaiIntelligenceEngine = konsaiModule.konsaiIntelligenceEngine || konsaiModule.default;
       const response = await konsaiIntelligenceEngine.processQuery(message, {
         marketCondition: 'live',
         priceLevel: 'dynamic',
@@ -5912,7 +5926,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         emotions,
         marketPrice: ethData.price,
         priceChange: ethData.priceChange24h,
-        dominantEmotion: Object.keys(emotions).reduce((a, b) => emotions[a] > emotions[b] ? a : b),
+        dominantEmotion: Object.keys(emotions).reduce((a, b) => emotions[a as keyof typeof emotions] > emotions[b as keyof typeof emotions] ? a : b),
         timestamp: new Date().toISOString(),
         isLive: true
       });
@@ -5972,7 +5986,7 @@ export function registerRoutes(app: Express): Promise<Server> {
         success: true,
         personas,
         totalPersonas: personas.length,
-        activePersonas: personas.filter(p => p.name).length,
+        activePersonas: personas.filter((p: any) => p.name).length,
         voiceEnabled: true
       });
     } catch (error) {
