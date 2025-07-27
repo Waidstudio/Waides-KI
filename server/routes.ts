@@ -5091,6 +5091,46 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Weekly Trading Schedule endpoints
+  app.get("/api/weekly-schedule", async (req, res) => {
+    try {
+      const { weeklyScheduler } = await import('./services/weeklyTradingScheduler.js');
+      const weeklyPlan = weeklyScheduler.getWeeklyTradingPlan();
+      res.json(weeklyPlan);
+    } catch (error) {
+      console.error('Error getting weekly schedule:', error);
+      res.status(500).json({ error: 'Failed to get weekly trading schedule' });
+    }
+  });
+
+  app.get("/api/weekly-schedule/current-day", async (req, res) => {
+    try {
+      const { weeklyScheduler } = await import('./services/weeklyTradingScheduler.js');
+      const currentDay = weeklyScheduler.getCurrentDayInfo();
+      res.json(currentDay);
+    } catch (error) {
+      console.error('Error getting current day info:', error);
+      res.status(500).json({ error: 'Failed to get current day information' });
+    }
+  });
+
+  app.get("/api/weekly-schedule/should-trade", async (req, res) => {
+    try {
+      const { weeklyScheduler } = await import('./services/weeklyTradingScheduler.js');
+      const shouldTrade = weeklyScheduler.shouldAllowTrading();
+      const positionMultiplier = weeklyScheduler.getPositionSizeMultiplier();
+      res.json({
+        shouldAllowTrading: shouldTrade,
+        positionSizeMultiplier: positionMultiplier,
+        recommendation: weeklyScheduler.calculateOverallRecommendation(),
+        activeStrategy: weeklyScheduler.getActiveStrategy()
+      });
+    } catch (error) {
+      console.error('Error checking trading allowance:', error);
+      res.status(500).json({ error: 'Failed to check trading allowance' });
+    }
+  });
+
   // KonsPowa Task Engine endpoints
   app.get("/api/kons-powa/tasks", async (req, res) => {
     try {
