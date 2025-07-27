@@ -257,9 +257,29 @@ export default function WaidesKIVisionPortal() {
             </div>
           )
         ) : (
-          /* Heart of Waides KI Core Engine Panel */
-          <div className="h-full overflow-hidden bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 rounded-lg p-2">
-            <WaidesKICoreEnginePanel />
+          /* Heart of Waides KI - Restored Original Interface */
+          <div className="h-full flex flex-col overflow-hidden bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 rounded-lg">
+            {/* Core Engine Header */}
+            <div className="flex items-center justify-between p-4 border-b border-purple-500/20">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse">
+                  <Brain className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-purple-300">Heart of Waides KI</h2>
+                  <p className="text-xs text-gray-400">Core Engine System</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Badge variant="outline" className="text-green-400 border-green-400 text-xs">Active</Badge>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              </div>
+            </div>
+
+            {/* Core Engine Content */}
+            <div className="flex-1 overflow-hidden p-4">
+              <WaidesKICoreEnginePanel />
+            </div>
           </div>
         )}
       </div>
