@@ -93,56 +93,49 @@ export default function WaidesKIVisionPortal() {
   }, []);
 
   return (
-    <div className={konsmikMode ? 
-      "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 text-white font-inter relative overflow-hidden" :
-      "min-h-screen bg-black text-white font-inter relative overflow-hidden"}>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 text-white font-inter relative overflow-hidden">
       
-      {/* Background Effects */}
-      {konsmikMode ? (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse opacity-60"></div>
-          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-300 rounded-full animate-ping opacity-40"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-purple-300 rounded-full animate-pulse opacity-30"></div>
-        </div>
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(120,119,198,0.1),transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,119,198,0.1),transparent_50%)]"></div>
-        </div>
-      )}
+      {/* Background Effects - Original Design */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white rounded-full animate-pulse opacity-60"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-pink-300 rounded-full animate-ping opacity-40"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-purple-300 rounded-full animate-pulse opacity-30"></div>
+        <div className="absolute top-2/3 right-1/4 w-1.5 h-1.5 bg-indigo-300 rounded-full animate-ping opacity-50"></div>
+        <div className="absolute bottom-1/3 left-1/5 w-2 h-2 bg-violet-300 rounded-full animate-pulse opacity-40"></div>
+      </div>
 
-      {/* Top Status Bar */}
-      <div className="relative z-10 flex items-center justify-center px-4 py-0.5 bg-gray-900/30 backdrop-blur-sm border-b border-purple-500/10">
+      {/* Top Status Bar - Original Purple Theme */}
+      <div className="relative z-10 flex items-center justify-center px-4 py-0.5 bg-purple-900/40 backdrop-blur-sm border-b border-pink-500/30">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-purple-300 font-medium">{formatTime(currentTime)}</span>
-          <span className="text-xs text-gray-400">•</span>
+          <span className="text-xs text-pink-300 font-medium">{formatTime(currentTime)}</span>
+          <span className="text-xs text-indigo-400">•</span>
           <span className="text-xs text-green-400">System Health: {98.7}%</span>
-          <span className="text-xs text-gray-400">•</span>
-          <span className="text-xs text-blue-400">ꠄ{smaiBalance?.toLocaleString() || '0'} SmaiSika</span>
+          <span className="text-xs text-indigo-400">•</span>
+          <span className="text-xs text-pink-400">ꠄ{smaiBalance?.toLocaleString() || '0'} SmaiSika</span>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Tabs - Original Purple/Pink Theme */}
       <div className="relative z-10 px-2 py-2">
-        <div className="flex items-center justify-between bg-gray-900/30 backdrop-blur-sm rounded-xl border border-purple-500/20 p-2">
+        <div className="flex items-center justify-between bg-purple-900/40 backdrop-blur-sm rounded-xl border border-pink-500/30 p-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('chat')}
               className={`px-4 py-2 text-sm rounded-lg transition-all ${
                 activeTab === 'chat'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 text-white'
+                  : 'text-pink-300 hover:text-white hover:bg-purple-700/50'
               }`}
             >
               <MessageCircle className="w-4 h-4 inline mr-2" />
-              Chat
+              KI Chat
             </button>
             <button
               onClick={() => setActiveTab('wallet')}
               className={`px-4 py-2 text-sm rounded-lg transition-all ${
                 activeTab === 'wallet'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 text-white'
+                  : 'text-pink-300 hover:text-white hover:bg-purple-700/50'
               }`}
             >
               <Wallet className="w-4 h-4 inline mr-2" />
@@ -261,15 +254,15 @@ export default function WaidesKIVisionPortal() {
         ) : (
           /* Heart of Waides KI - Mobile Responsive Full Screen Interface */
           <div className="h-full w-full flex flex-col overflow-hidden">
-            {/* Core Engine Header - Mobile Friendly */}
-            <div className="flex-shrink-0 flex items-center justify-between p-3 sm:p-4 border-b border-purple-500/20 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
+            {/* Core Engine Header - Original Purple/Pink Theme */}
+            <div className="flex-shrink-0 flex items-center justify-between p-3 sm:p-4 border-b border-pink-500/30 bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-indigo-900/40">
               <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500 flex items-center justify-center animate-pulse">
                   <Brain className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-lg font-bold text-purple-300">Heart of Waides KI</h2>
-                  <p className="text-xs text-gray-400">Core Engine System</p>
+                  <h2 className="text-sm sm:text-lg font-bold text-pink-300">Heart of Waides KI</h2>
+                  <p className="text-xs text-indigo-300">Core Engine System</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -278,8 +271,8 @@ export default function WaidesKIVisionPortal() {
               </div>
             </div>
 
-            {/* Core Engine Content - Full Height Scrollable */}
-            <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50">
+            {/* Core Engine Content - Original Purple/Pink Scrollbar */}
+            <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-pink-600/80 scrollbar-track-purple-800/50">
               <WaidesKICoreEnginePanel />
             </div>
           </div>

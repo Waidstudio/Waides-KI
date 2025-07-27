@@ -306,39 +306,39 @@ export function WaidesKICoreEnginePanel() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* Simplified Header - No Card Wrapper */}
-      <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-6 mb-6">
+      {/* Simplified Header - Original Colors */}
+      <div className="bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-indigo-900/30 border border-pink-500/40 rounded-lg p-6 mb-6">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500">
+            <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
               <Brain className="w-6 h-6 text-white" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              Waides KI Core Intelligence Engine
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+              Heart of Waides KI Core Engine
             </h2>
-            <div className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
+            <div className="p-2 rounded-full bg-gradient-to-r from-indigo-500 via-pink-500 to-purple-500">
               <Heart className="w-6 h-6 text-white animate-pulse" />
             </div>
           </div>
-          <p className="text-purple-300">
-            The Heart of Waides Ki - Autonomous spiritual trading intelligence
+          <p className="text-pink-300">
+            The Sacred Heart of Waides Ki - Autonomous spiritual trading intelligence
           </p>
         </div>
       </div>
 
       <Tabs defaultValue="dashboard" className="flex-1 flex flex-col">
         <div className="w-full overflow-x-auto">
-          <TabsList className="flex w-max min-w-full bg-gray-800/50 p-1">
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
-            <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
-            <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
-            <TabsTrigger value="kons-powa" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Kons Powa AI</TabsTrigger>
-            <TabsTrigger value="konsai" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Konsai Network</TabsTrigger>
-            <TabsTrigger value="konsmik" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
-            <TabsTrigger value="biometric" className="data-[state=active]:bg-orange-600 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
-            <TabsTrigger value="temporal" className="data-[state=active]:bg-indigo-600 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
-            <TabsTrigger value="humanity" className="data-[state=active]:bg-green-600 whitespace-nowrap px-4 py-2">Humanity Service</TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Engine Settings</TabsTrigger>
+          <TabsList className="flex w-max min-w-full bg-purple-900/30 border border-pink-500/20 p-1">
+            <TabsTrigger value="dashboard" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
+            <TabsTrigger value="intelligence" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
+            <TabsTrigger value="trading" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
+            <TabsTrigger value="kons-powa" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Kons Powa AI</TabsTrigger>
+            <TabsTrigger value="konsai" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Konsai Network</TabsTrigger>
+            <TabsTrigger value="konsmik" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
+            <TabsTrigger value="biometric" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
+            <TabsTrigger value="temporal" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
+            <TabsTrigger value="humanity" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Humanity Service</TabsTrigger>
+            <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Engine Settings</TabsTrigger>
           </TabsList>
         </div>
 
@@ -456,17 +456,17 @@ export function WaidesKICoreEnginePanel() {
             </Card>
           </div>
 
-          {/* Spiritual Guidance */}
+          {/* Spiritual Guidance - Original Colors */}
           {marketAnalysis?.spiritualGuidance && (
-            <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
+            <Card className="bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-indigo-900/30 border-pink-500/40">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-purple-400" />
-                  Spiritual Guidance
+                  <Shield className="w-5 h-5 text-pink-400" />
+                  Sacred Spiritual Guidance
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-purple-300 text-center italic">
+                <p className="text-pink-300 text-center italic">
                   "{marketAnalysis.spiritualGuidance}"
                 </p>
               </CardContent>
@@ -662,17 +662,17 @@ export function WaidesKICoreEnginePanel() {
             </Card>
           </div>
 
-          {/* Trading Reasoning */}
+          {/* Trading Reasoning - Original Colors */}
           {marketAnalysis?.decision.reasoning && (
-            <Card className="bg-gradient-to-r from-gray-900/50 to-purple-900/20 border-purple-500/30">
+            <Card className="bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-indigo-900/40 border-pink-500/40">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Cpu className="w-5 h-5 text-cyan-400" />
-                  AI Reasoning
+                  <Cpu className="w-5 h-5 text-indigo-400" />
+                  Sacred AI Reasoning
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-cyan-300 italic">
+                <p className="text-indigo-300 italic">
                   {marketAnalysis.decision.reasoning}
                 </p>
               </CardContent>
@@ -715,14 +715,14 @@ export function WaidesKICoreEnginePanel() {
               </CardContent>
             </Card>
 
-            {/* Parallel Universe Analysis */}
-            <Card className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 border-purple-500/30">
+            {/* Parallel Universe Analysis - Original Colors */}
+            <Card className="bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-indigo-900/40 border-pink-500/40">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500">
+                  <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
                     <Globe className="w-5 h-5 text-white animate-spin" />
                   </div>
-                  Multiverse Trading
+                  Sacred Multiverse Trading
                 </CardTitle>
               </CardHeader>
               <CardContent>
