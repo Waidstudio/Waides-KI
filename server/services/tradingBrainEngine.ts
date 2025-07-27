@@ -213,6 +213,192 @@ export class TradingBrainEngine {
       category: "SPIRITUAL",
       difficulty: "ADVANCED", 
       tags: ["greed", "humility", "cycles"]
+    },
+
+    // ADDITIONAL MINDSET & PSYCHOLOGY ENTRIES
+    {
+      section: "Mindset & Psychology",
+      question: "What separates professional traders from amateurs mentally?",
+      answer: "Professionals view trading as a business with statistical edges, not gambling. They focus on process over outcomes, maintain detailed records, and accept losses as business expenses. Amateurs chase quick profits and blame external factors.",
+      category: "MINDSET",
+      difficulty: "EXPERT",
+      tags: ["professional", "business", "statistics"]
+    },
+    {
+      section: "Mindset & Psychology",
+      question: "How do I develop unshakeable confidence in my trading system?",
+      answer: "Through extensive backtesting, forward testing with small positions, and keeping detailed performance records. Confidence comes from knowing your system's exact win rate, drawdown periods, and edge size.",
+      category: "MINDSET",
+      difficulty: "ADVANCED",
+      tags: ["confidence", "backtesting", "system"]
+    },
+    {
+      section: "Mindset & Psychology",
+      question: "Why do I get paralyzed when perfect setups appear?",
+      answer: "Fear of success can be as paralyzing as fear of failure. You may subconsciously fear the responsibility that comes with consistent profits. Practice with smaller positions until pulling the trigger becomes automatic.",
+      category: "MINDSET",
+      difficulty: "EXPERT",
+      tags: ["fear-of-success", "paralysis", "psychology"]
+    },
+
+    // ADDITIONAL TECHNICAL ANALYSIS ENTRIES
+    {
+      section: "Technical Analysis",
+      question: "How do I identify when a breakout is fake vs real?",
+      answer: "Real breakouts have: 3x normal volume, clean price action without wicks, follow-through after first 15 minutes, and occur during active trading sessions. Fake breakouts lack volume and quickly reverse.",
+      category: "TECHNICAL",
+      difficulty: "ADVANCED",
+      tags: ["breakouts", "volume", "validation"]
+    },
+    {
+      section: "Technical Analysis",
+      question: "What's the most reliable candlestick pattern for entries?",
+      answer: "Pin bars (hammer/shooting star) at key support/resistance with long wicks show strong rejection. Enter on break of pin bar high/low with stop beyond the wick. Works best on 4H+ timeframes.",
+      category: "TECHNICAL",
+      difficulty: "INTERMEDIATE",
+      tags: ["candlesticks", "pin-bars", "rejection"]
+    },
+    {
+      section: "Technical Analysis",
+      question: "How do I read market structure like institutional traders?",
+      answer: "Focus on swing highs/lows, order blocks (areas where institutions entered), and fair value gaps (imbalances). Institutions leave footprints - learn to read where they entered and predict their exits.",
+      category: "TECHNICAL",
+      difficulty: "EXPERT",
+      tags: ["market-structure", "institutions", "order-blocks"]
+    },
+
+    // ADDITIONAL TIMING ENTRIES
+    {
+      section: "Timing & Market Sessions",
+      question: "Why do most breakouts fail during Asian session?",
+      answer: "Lower volume means less institutional participation. Breakouts need volume to sustain. Asian session often sees range-bound trading. Wait for London (3 AM EST) or New York (8 AM EST) open for meaningful moves.",
+      category: "TIMING",
+      difficulty: "INTERMEDIATE",
+      tags: ["asian-session", "volume", "institutions"]
+    },
+    {
+      section: "Timing & Market Sessions",
+      question: "How do news events affect intraday trading strategies?",
+      answer: "Major news creates volatility spikes that can trigger stop-losses prematurely. Check economic calendar daily. Reduce position sizes or stay flat during FOMC, CPI, NFP releases. Price often reverses after initial reaction.",
+      category: "TIMING",
+      difficulty: "ADVANCED",
+      tags: ["news", "volatility", "economic-calendar"]
+    },
+
+    // ADDITIONAL RISK MANAGEMENT ENTRIES
+    {
+      section: "Risk Management",
+      question: "What's the optimal risk-reward ratio for swing trading?",
+      answer: "Target minimum 1:2 risk-reward, but 1:3 is better for long-term success. With 1:3 R:R, you can be wrong 70% of the time and still be profitable. Quality setups should offer at least 1:2.",
+      category: "RISK",
+      difficulty: "INTERMEDIATE",
+      tags: ["risk-reward", "swing-trading", "profitability"]
+    },
+    {
+      section: "Risk Management",
+      question: "How do I size positions when trading multiple timeframes?",
+      answer: "Allocate total risk across all positions. If you risk 2% total and have 4 positions, risk 0.5% each. Never exceed your total risk limit regardless of how many 'perfect' setups you see.",
+      category: "RISK",
+      difficulty: "ADVANCED",
+      tags: ["position-sizing", "multiple-positions", "allocation"]
+    },
+    {
+      section: "Risk Management",
+      question: "When should I use trailing stops vs fixed stops?",
+      answer: "Fixed stops for swing trades with clear invalidation levels. Trailing stops for trend-following strategies or when trend is accelerating. Never trail stops closer than your original risk in first 24 hours.",
+      category: "RISK",
+      difficulty: "EXPERT",
+      tags: ["trailing-stops", "stop-management", "trends"]
+    },
+
+    // ADDITIONAL STRATEGY BUILDING ENTRIES
+    {
+      section: "Strategy Building",
+      question: "How many strategies should I trade simultaneously?",
+      answer: "Master ONE strategy completely before adding others. Most professionals use 2-3 strategies maximum. It's better to be excellent at one approach than mediocre at many. Complexity kills consistency.",
+      category: "STRATEGY",
+      difficulty: "INTERMEDIATE",
+      tags: ["focus", "mastery", "simplicity"]
+    },
+    {
+      section: "Strategy Building",
+      question: "How do I backtest a strategy properly?",
+      answer: "Use at least 2 years of data, include commission costs, test on multiple assets, account for slippage, and simulate realistic entry/exit timing. If it doesn't work in backtesting, it won't work live.",
+      category: "STRATEGY",
+      difficulty: "ADVANCED",
+      tags: ["backtesting", "validation", "realism"]
+    },
+
+    // ADDITIONAL AUTOMATION ENTRIES
+    {
+      section: "Grid Bots & Automation",
+      question: "How do I optimize grid bot settings for maximum profit?",
+      answer: "Use dynamic grids that adjust to volatility. In low volatility, tighten grids to 0.5-1%. In high volatility, widen to 2-3%. Always set upper/lower bounds to prevent runaway losses.",
+      category: "AUTOMATION",
+      difficulty: "EXPERT",
+      tags: ["grid-optimization", "volatility", "dynamic"]
+    },
+    {
+      section: "Grid Bots & Automation",
+      question: "What's the biggest mistake in algorithmic trading?",
+      answer: "Over-optimization (curve fitting) to historical data. A strategy that works perfectly on past data but fails live was over-fitted. Keep strategies simple and test on out-of-sample data.",
+      category: "AUTOMATION",
+      difficulty: "EXPERT",
+      tags: ["over-optimization", "curve-fitting", "validation"]
+    },
+
+    // ADDITIONAL ADVANCED TOOLS ENTRIES
+    {
+      section: "Advanced Technical Tools",
+      question: "How do I use options flow data for crypto trading?",
+      answer: "Large options positions create magnetic price levels. When massive calls expire at $4000 ETH, price often gravitates there. Monitor options open interest and max pain levels for directional bias.",
+      category: "ADVANCED",
+      difficulty: "EXPERT",
+      tags: ["options-flow", "max-pain", "directional-bias"]
+    },
+    {
+      section: "Advanced Technical Tools",
+      question: "What is the most reliable volume indicator?",
+      answer: "On-Balance Volume (OBV) shows smart money accumulation/distribution. If price makes new highs but OBV doesn't, expect reversal. OBV divergences often predict price movements by days or weeks.",
+      category: "ADVANCED",
+      difficulty: "ADVANCED",
+      tags: ["obv", "divergences", "smart-money"]
+    },
+
+    // ADDITIONAL FUNDAMENTALS ENTRIES
+    {
+      section: "News & Fundamentals",
+      question: "How do ETF approvals affect crypto prices?",
+      answer: "ETF approvals create massive institutional demand waves. Bitcoin ETF approvals historically pump price 3-6 months before, dump on news, then resume uptrend as institutions slowly accumulate.",
+      category: "FUNDAMENTALS",
+      difficulty: "ADVANCED",
+      tags: ["etf", "institutions", "cycles"]
+    },
+    {
+      section: "News & Fundamentals",
+      question: "Why do crypto prices often ignore good news during bear markets?",
+      answer: "Markets are forward-looking. Good news is often already priced in, or overshadowed by macro conditions. In bear markets, even great news gets sold. Focus on price action, not headlines.",
+      category: "FUNDAMENTALS",
+      difficulty: "INTERMEDIATE",
+      tags: ["news-trading", "bear-markets", "price-action"]
+    },
+
+    // ADDITIONAL DISCIPLINE ENTRIES
+    {
+      section: "Self-Discipline",
+      question: "How do I stick to my trading plan during FOMO moments?",
+      answer: "Write down the cost of breaking your rules vs missing one opportunity. Missing one trade costs nothing. Breaking rules can destroy months of progress. FOMO is expensive - discipline is profitable.",
+      category: "DISCIPLINE",
+      difficulty: "INTERMEDIATE",
+      tags: ["fomo", "discipline", "opportunity-cost"]
+    },
+    {
+      section: "Self-Discipline",
+      question: "What's the best way to handle a losing streak?",
+      answer: "Reduce position sizes by 50%, review your journal for patterns, take a few days off, and return with fresh perspective. Losing streaks test discipline - those who survive them become profitable long-term.",
+      category: "DISCIPLINE",
+      difficulty: "ADVANCED",
+      tags: ["losing-streaks", "recovery", "position-sizing"]
     }
   ];
 
