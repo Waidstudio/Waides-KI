@@ -197,10 +197,35 @@ export function WaidesKICoreEnginePanel() {
     queryKey: ['/api/waides-ki/settings']
   });
 
-  // Update settings when data is loaded
+  // Update settings when data is loaded with proper defaults
   useEffect(() => {
     if (loadedSettings) {
-      setSettings(loadedSettings);
+      // Merge loaded settings with default settings to ensure all properties exist
+      setSettings(prev => ({
+        ...prev,
+        ...loadedSettings,
+        // Ensure nested objects have proper defaults
+        alertChannels: {
+          email: true,
+          sms: false,
+          push: true,
+          voice: false,
+          ...loadedSettings.alertChannels
+        },
+        alertThresholds: {
+          profitAlert: 5,
+          lossAlert: -3,
+          volatilityAlert: 15,
+          ...loadedSettings.alertThresholds
+        },
+        tradingHours: {
+          enabled: true,
+          startHour: 6,
+          endHour: 22,
+          timezone: 'UTC',
+          ...loadedSettings.tradingHours
+        }
+      }));
     }
   }, [loadedSettings]);
 
@@ -2010,28 +2035,28 @@ export function WaidesKICoreEnginePanel() {
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <Switch
-                            checked={settings.alertChannels.email}
+                            checked={settings?.alertChannels?.email || false}
                             onCheckedChange={(checked) => handleNestedSettingChange('alertChannels', 'email', checked)}
                           />
                           <span className="text-sm">Email Notifications</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Switch
-                            checked={settings.alertChannels.sms}
+                            checked={settings?.alertChannels?.sms || false}
                             onCheckedChange={(checked) => handleNestedSettingChange('alertChannels', 'sms', checked)}
                           />
                           <span className="text-sm">SMS Alerts</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Switch
-                            checked={settings.alertChannels.push}
+                            checked={settings?.alertChannels?.push || false}
                             onCheckedChange={(checked) => handleNestedSettingChange('alertChannels', 'push', checked)}
                           />
                           <span className="text-sm">Push Notifications</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Switch
-                            checked={settings.alertChannels.voice}
+                            checked={settings?.alertChannels?.voice || false}
                             onCheckedChange={(checked) => handleNestedSettingChange('alertChannels', 'voice', checked)}
                           />
                           <span className="text-sm">Voice Alerts</span>
@@ -2043,38 +2068,38 @@ export function WaidesKICoreEnginePanel() {
                     <div>
                       <label className="text-sm font-medium text-gray-300">Profit Alert Threshold (%)</label>
                       <Slider
-                        value={[settings.alertThresholds.profitAlert]}
+                        value={[(settings?.alertThresholds?.profitAlert || 5)]}
                         onValueChange={(value) => handleNestedSettingChange('alertThresholds', 'profitAlert', value[0])}
                         min={1}
                         max={20}
                         step={0.5}
                         className="mt-2"
                       />
-                      <span className="text-xs text-gray-400">{settings.alertThresholds.profitAlert}% profit triggers alert</span>
+                      <span className="text-xs text-gray-400">{(settings?.alertThresholds?.profitAlert || 5)}% profit triggers alert</span>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-300">Loss Alert Threshold (%)</label>
                       <Slider
-                        value={[Math.abs(settings.alertThresholds.lossAlert)]}
+                        value={[Math.abs(settings?.alertThresholds?.lossAlert || -3)]}
                         onValueChange={(value) => handleNestedSettingChange('alertThresholds', 'lossAlert', -value[0])}
                         min={1}
                         max={10}
                         step={0.5}
                         className="mt-2"
                       />
-                      <span className="text-xs text-gray-400">{Math.abs(settings.alertThresholds.lossAlert)}% loss triggers alert</span>
+                      <span className="text-xs text-gray-400">{Math.abs(settings?.alertThresholds?.lossAlert || -3)}% loss triggers alert</span>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-300">Volatility Alert (%)</label>
                       <Slider
-                        value={[settings.alertThresholds.volatilityAlert]}
+                        value={[(settings?.alertThresholds?.volatilityAlert || 15)]}
                         onValueChange={(value) => handleNestedSettingChange('alertThresholds', 'volatilityAlert', value[0])}
                         min={5}
                         max={50}
                         step={1}
                         className="mt-2"
                       />
-                      <span className="text-xs text-gray-400">{settings.alertThresholds.volatilityAlert}% price movement triggers alert</span>
+                      <span className="text-xs text-gray-400">{(settings?.alertThresholds?.volatilityAlert || 15)}% price movement triggers alert</span>
                     </div>
                   </div>
                 </div>
