@@ -182,15 +182,17 @@ export default function WaidesKIVisionPortal() {
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-4 overflow-hidden h-[calc(100vh-140px)]">
+      {/* Main Content Area - Mobile Responsive */}
+      <div className="relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 overflow-hidden min-h-0">
         {activeTab === 'chat' ? (
           selectedChatMode === 'konsai' ? (
-            <KonsaiChat />
+            <div className="h-full p-4">
+              <KonsaiChat />
+            </div>
           ) : (
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col p-4">
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4">
+              <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4 min-h-0">
                 {messages.length === 0 && (
                   <div className="flex flex-col items-center justify-center h-full text-center">
                     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
@@ -220,7 +222,7 @@ export default function WaidesKIVisionPortal() {
               </div>
 
               {/* Input Area */}
-              <div className="relative z-10 p-2 w-full">
+              <div className="flex-shrink-0 p-2 w-full">
                 <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
                   <Input
                     value={currentMessage}
@@ -257,16 +259,16 @@ export default function WaidesKIVisionPortal() {
             </div>
           )
         ) : (
-          /* Heart of Waides KI - Restored Original Interface */
-          <div className="h-full flex flex-col overflow-hidden bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 rounded-lg">
-            {/* Core Engine Header */}
-            <div className="flex items-center justify-between p-4 border-b border-purple-500/20">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse">
-                  <Brain className="w-6 h-6 text-white" />
+          /* Heart of Waides KI - Mobile Responsive Full Screen Interface */
+          <div className="h-full w-full flex flex-col overflow-hidden">
+            {/* Core Engine Header - Mobile Friendly */}
+            <div className="flex-shrink-0 flex items-center justify-between p-3 sm:p-4 border-b border-purple-500/20 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse">
+                  <Brain className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-purple-300">Heart of Waides KI</h2>
+                  <h2 className="text-sm sm:text-lg font-bold text-purple-300">Heart of Waides KI</h2>
                   <p className="text-xs text-gray-400">Core Engine System</p>
                 </div>
               </div>
@@ -276,8 +278,8 @@ export default function WaidesKIVisionPortal() {
               </div>
             </div>
 
-            {/* Core Engine Content */}
-            <div className="flex-1 overflow-hidden p-4">
+            {/* Core Engine Content - Full Height Scrollable */}
+            <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50">
               <WaidesKICoreEnginePanel />
             </div>
           </div>

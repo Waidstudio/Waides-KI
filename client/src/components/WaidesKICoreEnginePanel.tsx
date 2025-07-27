@@ -203,28 +203,7 @@ export function WaidesKICoreEnginePanel() {
       // Merge loaded settings with default settings to ensure all properties exist
       setSettings(prev => ({
         ...prev,
-        ...loadedSettings,
-        // Ensure nested objects have proper defaults
-        alertChannels: {
-          email: true,
-          sms: false,
-          push: true,
-          voice: false,
-          ...loadedSettings.alertChannels
-        },
-        alertThresholds: {
-          profitAlert: 5,
-          lossAlert: -3,
-          volatilityAlert: 15,
-          ...loadedSettings.alertThresholds
-        },
-        tradingHours: {
-          enabled: true,
-          startHour: 6,
-          endHour: 22,
-          timezone: 'UTC',
-          ...loadedSettings.tradingHours
-        }
+        ...loadedSettings
       }));
     }
   }, [loadedSettings]);
