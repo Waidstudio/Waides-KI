@@ -52,60 +52,61 @@ const UserDashboard = () => {
   const { user, logout } = useUserAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Fetch user-specific data
-  const { data: walletData } = useQuery({
-    queryKey: ['/api/wallet/balance'],
-    refetchInterval: 10000
+  // Fetch comprehensive real-time dashboard data
+  const { data: dashboardData, isLoading: dashboardLoading } = useQuery({
+    queryKey: ['/api/dashboard/comprehensive-data'],
+    refetchInterval: 5000, // Refresh every 5 seconds for real-time updates
+    staleTime: 0, // Always consider data stale for fresh updates
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
   });
 
+  // Legacy endpoints for fallback compatibility
   const { data: transactions } = useQuery({
     queryKey: ['/api/wallet/transactions'],
     refetchInterval: 30000
   });
 
-  const { data: konsaiStatus } = useQuery({
-    queryKey: ['/api/chat/oracle/status'],
-    refetchInterval: 15000
-  });
-
-  const { data: liveStats } = useQuery({
-    queryKey: ['/api/platform/live-stats'],
-    refetchInterval: 30000
+  // Real-time trading bot data
+  const { data: tradingBotData } = useQuery({
+    queryKey: ['/api/waidbot-engine/autonomous/status'],
+    refetchInterval: 3000
   });
 
   const handleLogout = async () => {
     await logout();
   };
 
+  // Real-time dashboard statistics from comprehensive data
   const dashboardStats = [
     {
       title: 'Portfolio Value',
-      value: `$${(walletData as any)?.balance?.toLocaleString() || '0'}`,
-      change: '+12.5%',
-      trend: 'up',
+      value: `$${(dashboardData as any)?.portfolio?.totalValue?.toLocaleString() || '0'}`,
+      change: `${(dashboardData as any)?.portfolio?.profitLossPercent >= 0 ? '+' : ''}${(dashboardData as any)?.portfolio?.profitLossPercent?.toFixed(2) || '0.00'}%`,
+      trend: (dashboardData as any)?.portfolio?.profitLossPercent >= 0 ? 'up' : 'down',
       icon: Wallet,
-      color: 'text-green-400'
+      color: (dashboardData as any)?.portfolio?.profitLossPercent >= 0 ? 'text-green-400' : 'text-red-400'
     },
     {
       title: 'Active Trades',
-      value: (liveStats as any)?.stats?.activeTrades || '0',
-      change: '+3 today',
+      value: (dashboardData as any)?.tradingStats?.activeTrades?.toString() || '0',
+      change: `${(dashboardData as any)?.tradingStats?.totalTrades || 0} total`,
       trend: 'up',
       icon: Activity,
       color: 'text-blue-400'
     },
     {
       title: 'AI Confidence',
-      value: `${(liveStats as any)?.stats?.aiConfidence || 85}%`,
-      change: 'High',
+      value: `${Math.round((dashboardData as any)?.aiStatus?.aiConfidence || 85)}%`,
+      change: (dashboardData as any)?.aiStatus?.neurNetworkStatus || 'Optimal',
       trend: 'up',
       icon: Brain,
       color: 'text-purple-400'
     },
     {
       title: 'Success Rate',
-      value: `${(liveStats as any)?.stats?.successRate || 78}%`,
-      change: '+5.2%',
+      value: `${Math.round((dashboardData as any)?.tradingStats?.successRate || 78)}%`,
+      change: `${(dashboardData as any)?.tradingStats?.winRate?.toFixed(1) || '0.0'}% win rate`,
       trend: 'up',
       icon: Target,
       color: 'text-emerald-400'
@@ -189,8 +190,11 @@ const UserDashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="text-green-400 border-green-400">
-                {(konsaiStatus as any)?.status === 'active' ? 'KonsAI Online' : 'KonsAI Offline'}
+              <Badge variant="outline" className={`${(dashboardData as any)?.aiStatus?.konsaiOnline ? 'text-green-400 border-green-400' : 'text-red-400 border-red-400'}`}>
+                {(dashboardData as any)?.aiStatus?.konsaiOnline ? 'KonsAI Online' : 'KonsAI Offline'}
+              </Badge>
+              <Badge variant="outline" className="text-blue-400 border-blue-400">
+                ETH ${(dashboardData as any)?.marketData?.ethPrice?.toFixed(2) || '0.00'}
               </Badge>
               
               <DropdownMenu>
@@ -362,50 +366,38 @@ const UserDashboard = () => {
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
                   <Brain className="mr-2 h-5 w-5 text-purple-400" />
-                  Waides KI Insights
+                  Live AI Insights
+                  {dashboardLoading && <div className="ml-2 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 bg-purple-500/10 border border-purple-500/20 rounded-lg hover:bg-purple-500/15 transition-colors">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Zap className="h-4 w-4 text-purple-400" />
-                      <span className="text-purple-400 font-medium text-sm">Neural Signal</span>
+                  {(dashboardData as any)?.aiInsights?.map((insight: any, index: number) => (
+                    <div key={index} className={`p-4 bg-${insight.color}-500/10 border border-${insight.color}-500/20 rounded-lg hover:bg-${insight.color}-500/15 transition-colors`}>
+                      <div className="flex items-center space-x-2 mb-2">
+                        {insight.type === 'neural_signal' && <Zap className={`h-4 w-4 text-${insight.color}-400`} />}
+                        {insight.type === 'quantum_analysis' && <Cpu className={`h-4 w-4 text-${insight.color}-400`} />}
+                        {insight.type === 'performance_boost' && <Network className={`h-4 w-4 text-${insight.color}-400`} />}
+                        {insight.type === 'risk_alert' && <Shield className={`h-4 w-4 text-${insight.color}-400`} />}
+                        <span className={`text-${insight.color}-400 font-medium text-sm capitalize`}>
+                          {insight.type.replace('_', ' ')}
+                        </span>
+                        <Badge variant="outline" className="text-xs">
+                          {insight.confidence}%
+                        </Badge>
+                      </div>
+                      <h4 className="text-white text-sm font-medium mb-1">{insight.title}</h4>
+                      <p className="text-white text-sm">{insight.description}</p>
                     </div>
-                    <p className="text-white text-sm">Advanced AI detecting bullish momentum. Confidence: 87%</p>
-                  </div>
-                  
-                  <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg hover:bg-blue-500/15 transition-colors">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Cpu className="h-4 w-4 text-blue-400" />
-                      <span className="text-blue-400 font-medium text-sm">Quantum Analysis</span>
+                  )) || (
+                    <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Cpu className="h-4 w-4 text-blue-400" />
+                        <span className="text-blue-400 font-medium text-sm">System Status</span>
+                      </div>
+                      <p className="text-white text-sm">AI systems are analyzing market conditions...</p>
                     </div>
-                    <p className="text-white text-sm">Multi-dimensional market patterns suggest upward trend.</p>
-                  </div>
-
-                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/15 transition-colors">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Network className="h-4 w-4 text-emerald-400" />
-                      <span className="text-emerald-400 font-medium text-sm">Deep Learning</span>
-                    </div>
-                    <p className="text-white text-sm">Neural network identified 94% success probability pattern.</p>
-                  </div>
-
-                  <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg hover:bg-orange-500/15 transition-colors">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Shield className="h-4 w-4 text-orange-400" />
-                      <span className="text-orange-400 font-medium text-sm">Risk Matrix</span>
-                    </div>
-                    <p className="text-white text-sm">Advanced risk assessment: Optimal portfolio balance detected.</p>
-                  </div>
-
-                  <div className="p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-lg hover:bg-cyan-500/15 transition-colors">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Target className="h-4 w-4 text-cyan-400" />
-                      <span className="text-cyan-400 font-medium text-sm">Precision Trading</span>
-                    </div>
-                    <p className="text-white text-sm">WaidBot AI calculated 15% gain opportunity with low risk.</p>
-                  </div>
+                  )}
                 </div>
 
                 <Separator className="my-4 bg-slate-600" />
