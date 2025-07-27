@@ -441,25 +441,25 @@ Please try asking your question again, or select one of the quick options below.
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+    <div className="flex-1 flex flex-col text-white min-h-0">
+      {/* Header - Compact */}
+      <div className="flex-shrink-0 p-4 border-b border-emerald-500/20">
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <Eye className="w-8 h-8 text-emerald-400" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+            <Eye className="w-6 h-6 text-emerald-400" />
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
           </div>
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-              Konsai
+            <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+              KonsAI Oracle
             </h1>
-            <p className="text-sm text-slate-400">Advanced KI Trading Assistant</p>
+            <p className="text-xs text-slate-400">Advanced KI Trading Assistant</p>
           </div>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages - Full Height Flexible */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {showWelcome && (
           <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 backdrop-blur-sm">
             <div className="flex items-start space-x-3">
@@ -607,26 +607,26 @@ Please try asking your question again, or select one of the quick options below.
         )}
       </div>
 
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-slate-700 bg-slate-800/50 backdrop-blur-sm">
-        <div className="flex space-x-2">
+      {/* Input - Fixed at Bottom */}
+      <div className="flex-shrink-0 p-4 border-t border-emerald-500/20">
+        <form onSubmit={handleSubmit} className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-emerald-500/20 p-3">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask me anything about trading, market analysis, or strategy..."
-            className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+            className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+            disabled={isTyping}
           />
           <button
             type="submit"
             disabled={!input.trim() || isTyping}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg px-6 py-3 transition-colors flex items-center space-x-2"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
           >
-            <Send className="w-4 h-4" />
-            <span>Send</span>
+            <Send className="w-5 h-5" />
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
