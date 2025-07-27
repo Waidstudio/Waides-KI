@@ -194,11 +194,15 @@ export function WaidesKICoreEnginePanel() {
 
   // Load settings on component mount
   const { data: loadedSettings } = useQuery<UserSettings>({
-    queryKey: ['/api/waides-ki/settings'],
-    onSuccess: (data) => {
-      if (data) setSettings(data);
-    },
+    queryKey: ['/api/waides-ki/settings']
   });
+
+  // Update settings when data is loaded
+  useEffect(() => {
+    if (loadedSettings) {
+      setSettings(loadedSettings);
+    }
+  }, [loadedSettings]);
 
   const handleSettingChange = <K extends keyof UserSettings>(
     key: K,
@@ -214,7 +218,7 @@ export function WaidesKICoreEnginePanel() {
   ) => {
     setSettings(prev => ({
       ...prev,
-      [key]: { ...prev[key], [nestedKey]: value }
+      [key]: { ...(prev[key] as object), [nestedKey]: value }
     }));
   };
 
@@ -428,19 +432,19 @@ export function WaidesKICoreEnginePanel() {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">ETH Price</span>
                     <span className="text-blue-400 font-mono">
-                      ${marketAnalysis?.marketData.price?.toFixed(2) || '0.00'}
+                      ${marketAnalysis?.marketData?.price?.toFixed(2) || '0.00'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">24h Change</span>
-                    <span className={`font-mono ${(marketAnalysis?.marketData.change || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {(marketAnalysis?.marketData.change || 0) >= 0 ? '+' : ''}{marketAnalysis?.marketData.change?.toFixed(2) || '0.00'}%
+                    <span className={`font-mono ${(marketAnalysis?.marketData?.change || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {(marketAnalysis?.marketData?.change || 0) >= 0 ? '+' : ''}{marketAnalysis?.marketData?.change?.toFixed(2) || '0.00'}%
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-300">AI Decision</span>
                     <span className={`font-mono ${getDecisionColor(marketAnalysis?.decision || { shouldTrade: false, confidence: 0, reasoning: '' })}`}>
-                      {marketAnalysis?.decision.shouldTrade ? marketAnalysis.decision.type : 'HOLD'}
+                      {marketAnalysis?.decision?.shouldTrade ? marketAnalysis.decision.type : 'HOLD'}
                     </span>
                   </div>
                 </div>

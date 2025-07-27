@@ -16,9 +16,13 @@ export class WaidesKICore {
 
   async predictETH(userId: string = 'user123'): Promise<string> {
     try {
-      // Get current ETH price (mock for now)
-      const currentPrice = 2400 + Math.random() * 100 - 50;
-      const priceChange = (Math.random() - 0.5) * 10;
+      // Get real ETH price from service registry
+      const serviceRegistry = await import('../serviceRegistry.js');
+      const ethMonitor = await serviceRegistry.serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      const currentPrice = ethData.price;
+      const priceChange = ethData.priceChange24h;
       const confidence = 65 + Math.random() * 30;
       
       // Generate prediction
@@ -56,10 +60,14 @@ Please try again in a few moments.`;
 
   async quickMarketAnalysis(): Promise<string> {
     try {
-      // Mock market data for analysis
-      const ethPrice = 2400 + Math.random() * 100 - 50;
-      const volume = 1200000 + Math.random() * 500000;
-      const rsi = 30 + Math.random() * 40;
+      // Get real market data from service registry
+      const serviceRegistry = await import('../serviceRegistry.js');
+      const ethMonitor = await serviceRegistry.serviceRegistry.get('ethMonitor');
+      const ethData = await ethMonitor.fetchEthData();
+      
+      const ethPrice = ethData.price;
+      const volume = ethData.volume;
+      const rsi = 30 + Math.random() * 40; // RSI would come from technical analysis service
       
       const trend = rsi > 50 ? "bullish" : "bearish";
       const volatility = Math.random() > 0.5 ? "high" : "moderate";
