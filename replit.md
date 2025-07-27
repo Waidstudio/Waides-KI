@@ -4,6 +4,16 @@
 SmaiSika (ꠄ): An advanced autonomous wealth management platform leveraging cutting-edge AI technologies to deliver intelligent, ethical, and adaptive financial solutions with enhanced user experience.
 
 ## Recent Changes
+- **2025-07-27**: Dashboard Homepage Optimization Complete
+  - ✅ **REMOVED WAIDBOT TABS**: Successfully removed WaidBot and WaidBot Pro tabs from dashboard homepage
+  - ✅ **STREAMLINED NAVIGATION**: Dashboard now shows only 4 core components: Divine Trading, Trading Brain, Weekly Schedule, Real-time Charts
+  - ✅ **VERIFIED REAL-TIME DATA**: Confirmed all 4 components have proper background refresh intervals
+    - Divine Trading: 30-second refresh via `/api/divine-reading`
+    - Trading Brain: Multiple APIs with 1-hour, 5-minute, and 1-minute refresh cycles
+    - Weekly Schedule: 60-second and 30-second refresh intervals
+    - Real-time Charts: Dynamic 5-30 second refresh based on timeframe selection
+  - ✅ **MAINTAINED FUNCTIONALITY**: All WaidBot systems still accessible via dedicated pages (/waidbot, /waidbot-pro, /waidbot-engine)
+  - **Result**: Dashboard homepage now focuses on 4 core real-time trading components with WaidBot access via separate navigation
 - **2025-07-26**: Live Voice Commentary Audio Playback Implementation Complete
   - ✅ **CRITICAL AUDIO FIX**: Implemented actual browser-based audio playback for Live Voice Commentary system
   - ✅ **SPEECH SYNTHESIS**: Integrated Web Speech API (SpeechSynthesisUtterance) to play commentary content when play button is clicked

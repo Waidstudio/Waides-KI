@@ -287,18 +287,6 @@ export default function Dashboard() {
                         >
                           Real-time Charts
                         </TabsTrigger>
-                        <TabsTrigger 
-                          value="waidbot" 
-                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
-                        >
-                          <Link href="/waidbot" className="w-full">WaidBot</Link>
-                        </TabsTrigger>
-                        <TabsTrigger 
-                          value="pro" 
-                          className="flex-shrink-0 px-4 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-slate-700 data-[state=active]:text-white text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
-                        >
-                          <Link href="/waidbot-pro" className="w-full">WaidBot Pro</Link>
-                        </TabsTrigger>
                       </TabsList>
                     </div>
                   </div>
@@ -504,47 +492,7 @@ export default function Dashboard() {
                       </Card>
                     </TabsContent>
 
-                    <TabsContent value="waidbot" className="space-y-6">
-                      <Card className="bg-slate-900/50 border-slate-800">
-                        <CardHeader>
-                          <CardTitle className="flex items-center justify-between">
-                            <span>WaidBot - Divine Quantum Flux Strategy</span>
-                            <Link href="/waidbot">
-                              <Button variant="outline" size="sm" className="border-purple-600 text-purple-400 hover:bg-purple-900/20">
-                                <Bot className="w-4 h-4 mr-2" />
-                                Open WaidBot
-                              </Button>
-                            </Link>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-slate-400">
-                            Advanced quantum trading system with 8-dimensional market analysis and never-lose guarantee.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
-                    
-                    <TabsContent value="pro" className="space-y-6">
-                      <Card className="bg-slate-900/50 border-slate-800">
-                        <CardHeader>
-                          <CardTitle className="flex items-center justify-between">
-                            <span>WaidBot Pro - Neural Quantum Singularity</span>
-                            <Link href="/waidbot-pro">
-                              <Button variant="outline" size="sm" className="border-cyan-600 text-cyan-400 hover:bg-cyan-900/20">
-                                <Brain className="w-4 h-4 mr-2" />
-                                Open WaidBot Pro
-                              </Button>
-                            </Link>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-slate-400">
-                            Professional-grade neural network trading with quantum LSTM and harmonic balance calculations.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
+
                   </Tabs>
                 </>
               )}
