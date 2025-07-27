@@ -174,37 +174,37 @@ const UserDashboard = () => {
   const recentTransactions = (transactions as any)?.slice(0, 5) || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      {/* Header */}
-      <div className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white pb-20">
+      {/* Header - Mobile Responsive */}
+      <div className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-xl sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Brain className="h-6 w-6 text-white" />
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Brain className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Waides KI Dashboard</h1>
-                <p className="text-slate-400">Welcome back, {user?.username}</p>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">Waides KI Dashboard</h1>
+                <p className="text-xs sm:text-sm text-slate-400 hidden sm:block">Welcome back, {user?.username}</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className={`${(dashboardData as any)?.aiStatus?.konsaiOnline ? 'text-green-400 border-green-400' : 'text-red-400 border-red-400'}`}>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Badge variant="outline" className={`text-xs hidden sm:inline-flex ${(dashboardData as any)?.aiStatus?.konsaiOnline ? 'text-green-400 border-green-400' : 'text-red-400 border-red-400'}`}>
                 {(dashboardData as any)?.aiStatus?.konsaiOnline ? 'KonsAI Online' : 'KonsAI Offline'}
               </Badge>
-              <Badge variant="outline" className="text-blue-400 border-blue-400">
+              <Badge variant="outline" className="text-xs text-blue-400 border-blue-400">
                 ETH ${(dashboardData as any)?.marketData?.ethPrice?.toFixed(2) || '0.00'}
               </Badge>
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2">
-                    <User className="h-5 w-5" />
-                    <span>{user?.username}</span>
+                  <Button variant="ghost" className="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-2">
+                    <User className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="hidden sm:inline text-sm">{user?.username}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700">
+                <DropdownMenuContent align="end" className="w-48 sm:w-56 bg-slate-800 border-slate-700">
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
@@ -229,23 +229,23 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      {/* Dashboard Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      {/* Dashboard Content - Mobile Responsive */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        {/* Stats Grid - Mobile Responsive */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
           {dashboardStats.map((stat, index) => (
-            <Card key={index} className="bg-slate-800/50 border-slate-700 backdrop-blur-xl">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-400 text-sm font-medium">{stat.title}</p>
-                    <p className="text-2xl font-bold text-white mt-1">{stat.value}</p>
-                    <p className={`text-sm mt-1 ${stat.color}`}>
+            <Card key={index} className="bg-slate-800/50 border-slate-700 backdrop-blur-xl hover:bg-slate-800/70 transition-all duration-300">
+              <CardContent className="p-3 sm:p-4 lg:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-slate-400 text-xs sm:text-sm font-medium truncate">{stat.title}</p>
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white mt-1 truncate">{stat.value}</p>
+                    <p className={`text-xs sm:text-sm mt-1 ${stat.color} truncate`}>
                       {stat.trend === 'up' ? '↗ ' : '↘ '}{stat.change}
                     </p>
                   </div>
-                  <div className={`p-3 rounded-lg bg-slate-700/50`}>
-                    <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                  <div className={`p-2 sm:p-3 rounded-lg bg-slate-700/50 mt-2 sm:mt-0 sm:ml-2 self-start sm:self-center`}>
+                    <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 ${stat.color}`} />
                   </div>
                 </div>
               </CardContent>
@@ -253,21 +253,21 @@ const UserDashboard = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
-            <Zap className="mr-2 h-5 w-5 text-yellow-400" />
+        {/* Quick Actions - Mobile Responsive */}
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4 flex items-center">
+            <Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
             Quick Actions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action, index) => (
               <Link key={index} href={action.href}>
                 <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-700/50 hover:border-slate-600 transition-all duration-200 cursor-pointer backdrop-blur-xl group">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-12 h-12 ${action.color} rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-200`}>
-                      <action.icon className="h-6 w-6 text-white" />
+                  <CardContent className="p-3 sm:p-4 lg:p-6 text-center">
+                    <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 ${action.color} rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-200`}>
+                      <action.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                     </div>
-                    <p className="text-white font-medium group-hover:text-blue-300 transition-colors">{action.title}</p>
+                    <p className="text-sm sm:text-base text-white font-medium group-hover:text-blue-300 transition-colors">{action.title}</p>
                   </CardContent>
                 </Card>
               </Link>
@@ -275,20 +275,20 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* Futuristic Features */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
-            <Rocket className="mr-2 h-5 w-5 text-purple-400" />
+        {/* Futuristic Features - Mobile Responsive */}
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-white mb-3 sm:mb-4 flex items-center">
+            <Rocket className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
             Advanced AI Features
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {futuristicFeatures.map((feature, index) => (
               <Link key={index} href={feature.href}>
                 <Card className="bg-slate-800/30 border-slate-700 hover:bg-slate-700/40 hover:border-slate-600 transition-all duration-300 cursor-pointer backdrop-blur-xl group overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                        <feature.icon className="h-6 w-6 text-white" />
+                  <CardContent className="p-4 sm:p-5 lg:p-6">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${feature.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                        <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                       </div>
                       <Badge variant="secondary" className={`text-xs font-bold ${
                         feature.badge === 'NEW' ? 'bg-green-500/20 text-green-400' :
@@ -301,8 +301,8 @@ const UserDashboard = () => {
                         {feature.badge}
                       </Badge>
                     </div>
-                    <h3 className="text-white font-semibold mb-2 group-hover:text-blue-300 transition-colors">{feature.title}</h3>
-                    <p className="text-slate-400 text-sm mb-4 group-hover:text-slate-300 transition-colors">{feature.description}</p>
+                    <h3 className="text-white font-semibold mb-2 group-hover:text-blue-300 transition-colors text-sm sm:text-base">{feature.title}</h3>
+                    <p className="text-slate-400 text-xs sm:text-sm mb-3 sm:mb-4 group-hover:text-slate-300 transition-colors">{feature.description}</p>
                     <div className="flex items-center text-blue-400 text-sm font-medium group-hover:text-blue-300 transition-colors">
                       <span>Explore</span>
                       <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
@@ -314,45 +314,45 @@ const UserDashboard = () => {
           </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content Grid - Mobile Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Recent Activity */}
           <div className="lg:col-span-2">
             <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Activity className="mr-2 h-5 w-5" />
+                <CardTitle className="text-white flex items-center text-base sm:text-lg">
+                  <Activity className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Recent Transactions
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {recentTransactions.length > 0 ? (
                     recentTransactions.map((transaction: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      <div key={index} className="flex items-center justify-between p-3 sm:p-4 bg-slate-700/30 rounded-lg">
+                        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                          <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                             transaction.type === 'deposit' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                           }`}>
-                            {transaction.type === 'deposit' ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+                            {transaction.type === 'deposit' ? <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" /> : <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4" />}
                           </div>
-                          <div>
-                            <p className="text-white font-medium capitalize">{transaction.type}</p>
-                            <p className="text-slate-400 text-sm">{transaction.timestamp}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-medium capitalize text-sm sm:text-base truncate">{transaction.type}</p>
+                            <p className="text-slate-400 text-xs sm:text-sm truncate">{transaction.timestamp}</p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`font-medium ${transaction.type === 'deposit' ? 'text-green-400' : 'text-red-400'}`}>
+                        <div className="text-right flex-shrink-0">
+                          <p className={`font-medium text-sm sm:text-base ${transaction.type === 'deposit' ? 'text-green-400' : 'text-red-400'}`}>
                             {transaction.type === 'deposit' ? '+' : '-'}${transaction.amount}
                           </p>
-                          <p className="text-slate-400 text-sm">{transaction.currency}</p>
+                          <p className="text-slate-400 text-xs sm:text-sm">{transaction.currency}</p>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8">
-                      <Activity className="h-12 w-12 text-slate-500 mx-auto mb-4" />
-                      <p className="text-slate-400">No recent transactions</p>
+                    <div className="text-center py-6 sm:py-8">
+                      <Activity className="h-8 w-8 sm:h-12 sm:w-12 text-slate-500 mx-auto mb-3 sm:mb-4" />
+                      <p className="text-slate-400 text-sm sm:text-base">No recent transactions</p>
                     </div>
                   )}
                 </div>
@@ -360,59 +360,59 @@ const UserDashboard = () => {
             </Card>
           </div>
 
-          {/* AI Insights Sidebar */}
+          {/* AI Insights Sidebar - Mobile Responsive */}
           <div>
-            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-xl mb-6">
+            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-xl mb-4 sm:mb-6">
               <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Brain className="mr-2 h-5 w-5 text-purple-400" />
+                <CardTitle className="text-white flex items-center text-base sm:text-lg">
+                  <Brain className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
                   Live AI Insights
                   {dashboardLoading && <div className="ml-2 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {(dashboardData as any)?.aiInsights?.map((insight: any, index: number) => (
-                    <div key={index} className={`p-4 bg-${insight.color}-500/10 border border-${insight.color}-500/20 rounded-lg hover:bg-${insight.color}-500/15 transition-colors`}>
+                    <div key={index} className={`p-3 sm:p-4 bg-${insight.color}-500/10 border border-${insight.color}-500/20 rounded-lg hover:bg-${insight.color}-500/15 transition-colors`}>
                       <div className="flex items-center space-x-2 mb-2">
-                        {insight.type === 'neural_signal' && <Zap className={`h-4 w-4 text-${insight.color}-400`} />}
-                        {insight.type === 'quantum_analysis' && <Cpu className={`h-4 w-4 text-${insight.color}-400`} />}
-                        {insight.type === 'performance_boost' && <Network className={`h-4 w-4 text-${insight.color}-400`} />}
-                        {insight.type === 'risk_alert' && <Shield className={`h-4 w-4 text-${insight.color}-400`} />}
-                        <span className={`text-${insight.color}-400 font-medium text-sm capitalize`}>
+                        {insight.type === 'neural_signal' && <Zap className={`h-3 w-3 sm:h-4 sm:w-4 text-${insight.color}-400`} />}
+                        {insight.type === 'quantum_analysis' && <Cpu className={`h-3 w-3 sm:h-4 sm:w-4 text-${insight.color}-400`} />}
+                        {insight.type === 'performance_boost' && <Network className={`h-3 w-3 sm:h-4 sm:w-4 text-${insight.color}-400`} />}
+                        {insight.type === 'risk_alert' && <Shield className={`h-3 w-3 sm:h-4 sm:w-4 text-${insight.color}-400`} />}
+                        <span className={`text-${insight.color}-400 font-medium text-xs sm:text-sm capitalize`}>
                           {insight.type.replace('_', ' ')}
                         </span>
                         <Badge variant="outline" className="text-xs">
                           {insight.confidence}%
                         </Badge>
                       </div>
-                      <h4 className="text-white text-sm font-medium mb-1">{insight.title}</h4>
-                      <p className="text-white text-sm">{insight.description}</p>
+                      <h4 className="text-white text-xs sm:text-sm font-medium mb-1">{insight.title}</h4>
+                      <p className="text-white text-xs sm:text-sm">{insight.description}</p>
                     </div>
                   )) || (
-                    <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                    <div className="p-3 sm:p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
-                        <Cpu className="h-4 w-4 text-blue-400" />
-                        <span className="text-blue-400 font-medium text-sm">System Status</span>
+                        <Cpu className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400" />
+                        <span className="text-blue-400 font-medium text-xs sm:text-sm">System Status</span>
                       </div>
-                      <p className="text-white text-sm">AI systems are analyzing market conditions...</p>
+                      <p className="text-white text-xs sm:text-sm">AI systems are analyzing market conditions...</p>
                     </div>
                   )}
                 </div>
 
-                <Separator className="my-4 bg-slate-600" />
+                <Separator className="my-3 sm:my-4 bg-slate-600" />
 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <Link href="/portal">
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
-                      <Brain className="mr-2 h-4 w-4" />
+                    <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm h-8 sm:h-10">
+                      <Brain className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Waides KI Chat Portal
                     </Button>
                   </Link>
                   
                   <Link href="/learning">
-                    <Button variant="outline" className="w-full border-blue-500 text-blue-400 hover:bg-blue-500/10">
-                      <BookOpen className="mr-2 h-4 w-4" />
+                    <Button variant="outline" className="w-full border-blue-500 text-blue-400 hover:bg-blue-500/10 text-sm h-8 sm:h-10">
+                      <BookOpen className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       AI Learning Center
                     </Button>
                   </Link>
@@ -420,27 +420,27 @@ const UserDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* System Status */}
+            {/* System Status - Mobile Responsive */}
             <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Monitor className="mr-2 h-5 w-5" />
+                <CardTitle className="text-white flex items-center text-base sm:text-lg">
+                  <Monitor className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   System Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Trading Engine</span>
-                    <Badge variant="outline" className="text-green-400 border-green-400">Online</Badge>
+                    <span className="text-slate-300 text-xs sm:text-sm">Trading Engine</span>
+                    <Badge variant="outline" className="text-green-400 border-green-400 text-xs">Online</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Waides KI Oracle</span>
-                    <Badge variant="outline" className="text-green-400 border-green-400">Active</Badge>
+                    <span className="text-slate-300 text-xs sm:text-sm">Waides KI Oracle</span>
+                    <Badge variant="outline" className="text-green-400 border-green-400 text-xs">Active</Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Market Data</span>
-                    <Badge variant="outline" className="text-green-400 border-green-400">Live</Badge>
+                    <span className="text-slate-300 text-xs sm:text-sm">Market Data</span>
+                    <Badge variant="outline" className="text-green-400 border-green-400 text-xs">Live</Badge>
                   </div>
                 </div>
               </CardContent>
