@@ -30,7 +30,6 @@ export default function WaidesKIVisionPortal() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedChatMode, setSelectedChatMode] = useState('waides');
   const [activeTab, setActiveTab] = useState('chat');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -115,9 +114,9 @@ export default function WaidesKIVisionPortal() {
         </div>
       </div>
 
-      {/* Navigation Tabs - Original Purple/Pink Theme */}
+      {/* Navigation Tabs - Restored Original Three-Tab Structure */}
       <div className="relative z-10 px-2 py-2">
-        <div className="flex items-center justify-between bg-purple-900/40 backdrop-blur-sm rounded-xl border border-pink-500/30 p-2">
+        <div className="flex items-center justify-center bg-purple-900/40 backdrop-blur-sm rounded-xl border border-pink-500/30 p-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab('chat')}
@@ -131,6 +130,17 @@ export default function WaidesKIVisionPortal() {
               KI Chat
             </button>
             <button
+              onClick={() => setActiveTab('konsai')}
+              className={`px-4 py-2 text-sm rounded-lg transition-all ${
+                activeTab === 'konsai'
+                  ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white'
+                  : 'text-pink-300 hover:text-white hover:bg-purple-700/50'
+              }`}
+            >
+              <Eye className="w-4 h-4 inline mr-2" />
+              KonsAI
+            </button>
+            <button
               onClick={() => setActiveTab('wallet')}
               className={`px-4 py-2 text-sm rounded-lg transition-all ${
                 activeTab === 'wallet'
@@ -142,115 +152,83 @@ export default function WaidesKIVisionPortal() {
               Heart of Waides KI
             </button>
           </div>
-          
-          {/* Chat Mode Toggle */}
-          <div className="flex items-center gap-1 bg-gray-800/50 rounded-lg p-1">
-            <button
-              onClick={() => setSelectedChatMode('waides')}
-              className={`px-3 py-1 text-xs rounded-md transition-all ${
-                selectedChatMode === 'waides'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-              }`}
-            >
-              <div className="flex items-center gap-1">
-                <Brain className="w-3 h-3" />
-                <span>Waides KI</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setSelectedChatMode('konsai')}
-              className={`px-3 py-1 text-xs rounded-md transition-all ${
-                selectedChatMode === 'konsai'
-                  ? 'bg-emerald-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-              }`}
-            >
-              <div className="flex items-center gap-1">
-                <Eye className="w-3 h-3" />
-                <span>KonsAI</span>
-              </div>
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Main Content Area - Mobile Responsive */}
       <div className="relative z-10 flex-1 mx-2 mb-2 bg-black/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 overflow-hidden min-h-0">
         {activeTab === 'chat' ? (
-          selectedChatMode === 'konsai' ? (
-            <div className="h-full p-4">
-              <KonsaiChat />
-            </div>
-          ) : (
-            <div className="h-full flex flex-col p-4">
-              {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4 min-h-0">
-                {messages.length === 0 && (
-                  <div className="flex flex-col items-center justify-center h-full text-center">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
-                      <Brain className="w-10 h-10 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
-                    <p className="text-gray-400 max-w-md mb-4">
-                      Your next-generation KI trading oracle. Ask anything about markets, strategies, or trading insights.
-                    </p>
+          <div className="h-full flex flex-col p-4">
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-purple-600/80 scrollbar-track-gray-800/50 scroll-smooth mb-4 min-h-0">
+              {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-4 animate-pulse">
+                    <Brain className="w-10 h-10 text-white" />
                   </div>
-                )}
-                
-                {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-2xl ${
-                      message.isBot 
-                        ? 'bg-gray-800/60 border border-purple-500/20 text-gray-100'
-                        : 'bg-purple-600/80 text-white'
-                    }`}>
-                      <div className="whitespace-pre-wrap leading-relaxed">
-                        {message.content}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-
-              {/* Input Area */}
-              <div className="flex-shrink-0 p-2 w-full">
-                <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
-                  <Input
-                    value={currentMessage}
-                    onChange={(e) => setCurrentMessage(e.target.value)}
-                    placeholder="Ask anything..."
-                    className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
-                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                    disabled={isProcessing}
-                  />
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`p-2 rounded-full transition-all ${
-                      voiceEnabled 
-                        ? 'bg-red-500/20 text-red-400 animate-pulse' 
-                        : 'hover:bg-purple-500/20 text-purple-400'
-                    }`}
-                    onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
-                    disabled={isProcessing}
-                  >
-                    {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                  </Button>
-                  
-                  <Button
-                    className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
-                    onClick={sendMessage}
-                    disabled={!currentMessage.trim() || isProcessing}
-                  >
-                    <Send className="w-5 h-5" />
-                  </Button>
+                  <h3 className="text-xl font-bold text-purple-300 mb-2">Welcome to Waides KI</h3>
+                  <p className="text-gray-400 max-w-md mb-4">
+                    Your next-generation KI trading oracle. Ask anything about markets, strategies, or trading insights.
+                  </p>
                 </div>
+              )}
+              
+              {messages.map((message) => (
+                <div key={message.id} className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
+                  <div className={`max-w-[80%] p-4 rounded-2xl ${
+                    message.isBot 
+                      ? 'bg-gray-800/60 border border-purple-500/20 text-gray-100'
+                      : 'bg-purple-600/80 text-white'
+                  }`}>
+                    <div className="whitespace-pre-wrap leading-relaxed">
+                      {message.content}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Area */}
+            <div className="flex-shrink-0 p-2 w-full">
+              <div className="flex items-center gap-3 bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-3">
+                <Input
+                  value={currentMessage}
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  placeholder="Ask anything..."
+                  className="flex-1 bg-transparent border-none text-white placeholder-gray-400 focus:ring-0 focus:outline-none text-base"
+                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                  disabled={isProcessing}
+                />
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`p-2 rounded-full transition-all ${
+                    voiceEnabled 
+                      ? 'bg-red-500/20 text-red-400 animate-pulse' 
+                      : 'hover:bg-purple-500/20 text-purple-400'
+                  }`}
+                  onClick={voiceEnabled ? stopVoiceRecognition : startVoiceCommandRecognition}
+                  disabled={isProcessing}
+                >
+                  {voiceEnabled ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                </Button>
+                
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-all disabled:opacity-50"
+                  onClick={sendMessage}
+                  disabled={!currentMessage.trim() || isProcessing}
+                >
+                  <Send className="w-5 h-5" />
+                </Button>
               </div>
             </div>
-          )
+          </div>
+        ) : activeTab === 'konsai' ? (
+          <div className="h-full p-4">
+            <KonsaiChat />
+          </div>
         ) : (
           /* Heart of Waides KI - Mobile Responsive Full Screen Interface */
           <div className="h-full w-full flex flex-col overflow-hidden">
