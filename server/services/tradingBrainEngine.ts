@@ -415,69 +415,147 @@ export class TradingBrainEngine {
     );
   }
 
-  getAdviceForSituation(situation: string, marketCondition: string): TradingAdvice {
+  // Enhanced KI Advisor functionality
+  getKIAdviceForSituation(situation: string, marketCondition: string = "neutral"): TradingAdvice {
     const situation_lower = situation.toLowerCase();
     
     if (situation_lower.includes('loss') || situation_lower.includes('losing')) {
       return {
-        topic: "Handling Trading Losses",
-        advice: "Losses are part of trading business. The key is limiting them and learning from them.",
+        topic: "KI Advisor: Handling Trading Losses",
+        advice: "The KI understands that losses are inevitable in trading. The key is transforming them into learning opportunities while preserving capital for future success.",
         actionItems: [
-          "Review your entry and exit rules",
-          "Check if you followed your stop-loss plan", 
-          "Take a 30-minute break before next trade",
-          "Journal what went wrong objectively",
-          "Never increase position size after a loss"
+          "Review your entry and exit rules systematically",
+          "Verify if you followed your stop-loss plan correctly", 
+          "Take a 30-minute mental break before your next trade",
+          "Journal what went wrong with objective analysis",
+          "Never increase position size after a loss - this is critical",
+          "Analyze market conditions that led to the loss"
         ],
-        riskWarning: "Avoid revenge trading - it leads to bigger losses",
-        marketContext: marketCondition
+        riskWarning: "Avoid revenge trading - it destroys accounts faster than market crashes",
+        marketContext: `Current market: ${marketCondition}. KI recommends extra caution during volatile periods.`
       };
     }
     
     if (situation_lower.includes('profit') || situation_lower.includes('winning')) {
       return {
-        topic: "Managing Winning Trades",
-        advice: "Winning trades need management too. Protect profits while letting winners run.",
+        topic: "KI Advisor: Managing Winning Trades",
+        advice: "The KI recognizes that winning trades require just as much discipline as losing ones. Protecting profits while allowing room for growth is an art form.",
         actionItems: [
-          "Move stop-loss to breakeven after 1:1 profit",
-          "Consider taking partial profits at key resistance",
-          "Trail your stop-loss as price moves in your favor",
-          "Don't get greedy - stick to your target",
-          "Journal what made this trade successful"
+          "Move stop-loss to breakeven after achieving 1:1 risk-reward",
+          "Consider taking 25-50% profits at first resistance level",
+          "Implement trailing stops to capture extended moves",
+          "Resist greed - stick to predetermined targets",
+          "Document what made this trade successful for future reference",
+          "Scale out positions gradually to maximize profit potential"
         ],
-        marketContext: marketCondition
+        marketContext: `Market context: ${marketCondition}. KI suggests profit-taking strategies based on current volatility.`
       };
     }
     
     if (situation_lower.includes('emotional') || situation_lower.includes('fear') || situation_lower.includes('fomo')) {
       return {
-        topic: "Emotional Trading Management", 
-        advice: "Emotions are the biggest enemy of traders. Develop systems to control them.",
+        topic: "KI Advisor: Emotional Trading Management", 
+        advice: "The KI recognizes that emotions are the silent account killers. Developing systematic approaches to emotional control separates profitable traders from the rest.",
         actionItems: [
-          "Step away from charts for 15 minutes",
-          "Read your trading rules out loud",
-          "Use smaller position sizes when emotional",
-          "Set predetermined entry and exit points",
-          "Consider stopping trading for the day"
+          "Step away from charts for minimum 15 minutes to reset",
+          "Read your trading rules aloud to reinforce discipline",
+          "Reduce position sizes by 50% when experiencing strong emotions",
+          "Use predetermined entry and exit points - no exceptions",
+          "Consider stopping trading for the entire session if emotions persist",
+          "Practice deep breathing or meditation before re-entering",
+          "Review past emotional trades and their outcomes"
         ],
-        riskWarning: "Emotional decisions often lead to losses",
-        marketCondition: marketCondition
+        riskWarning: "Emotional decisions have destroyed more trading accounts than market crashes",
+        marketContext: `Current conditions: ${marketCondition}. KI advises heightened emotional awareness during volatile periods.`
       };
     }
 
-    // Default advice
+    // Enhanced situation-specific KI advice
+    if (situation_lower.includes('entry') || situation_lower.includes('setup')) {
+      return {
+        topic: "KI Advisor: Perfect Entry Timing",
+        advice: "The KI emphasizes that perfect entries are built on patience, confluence, and systematic validation of multiple factors.",
+        actionItems: [
+          "Wait for 3+ confluences before entering (trend, support/resistance, indicator alignment)",
+          "Use smaller position sizes on less-than-perfect setups",
+          "Always define your stop-loss before entering the trade",
+          "Check multiple timeframes for trend alignment",
+          "Ensure adequate risk-reward ratio (minimum 1:2)",
+          "Avoid entering during low-volume periods"
+        ],
+        marketContext: `Entry conditions for ${marketCondition}: KI suggests heightened selectivity during current market phase.`
+      };
+    }
+
+    if (situation_lower.includes('exit') || situation_lower.includes('close')) {
+      return {
+        topic: "KI Advisor: Strategic Exit Management",
+        advice: "The KI teaches that knowing when to exit is more important than knowing when to enter. Perfect exits preserve capital and maximize gains.",
+        actionItems: [
+          "Honor your predetermined exit targets without exception",
+          "Use partial position closures at key resistance levels",
+          "Trail stops once in 2:1 profit territory",
+          "Exit immediately if trade thesis is invalidated",
+          "Don't hold losing positions hoping for recovery",
+          "Take profits during emotional market extremes"
+        ],
+        marketContext: `Exit strategy for ${marketCondition}: KI recommends adaptive exit techniques based on volatility.`
+      };
+    }
+
+    // Default KI advice
     return {
-      topic: "General Trading Wisdom",
-      advice: "Successful trading requires discipline, patience, and continuous learning.",
+      topic: "KI Advisor: Universal Trading Wisdom",
+      advice: "The KI understands that successful trading is a marathon, not a sprint. Every decision should serve your long-term wealth-building mission.",
       actionItems: [
-        "Follow your trading plan strictly",
-        "Risk only 1-2% per trade",
-        "Use proper position sizing",
-        "Keep detailed trading journal",
-        "Focus on process, not profits"
+        "Follow your systematically tested trading plan without deviation",
+        "Risk only 1-2% per trade to ensure account survival",
+        "Use precise position sizing based on stop-loss distance",
+        "Maintain detailed trading journal with emotional notes",
+        "Focus on process perfection rather than profit maximization",
+        "Continuously educate yourself on market dynamics"
       ],
-      marketContext: marketCondition
+      marketContext: `General guidance for ${marketCondition}: KI maintains consistent principles regardless of market conditions.`
     };
+  }
+
+  // Enhanced Knowledge Base structure with better organization
+  getKnowledgeBaseByCategory(category: string): TradingKnowledge[] {
+    const filteredKnowledge = this.knowledgeBase.filter(k => k.category === category);
+    return filteredKnowledge.sort((a, b) => {
+      // Sort by difficulty: BEGINNER -> INTERMEDIATE -> ADVANCED -> EXPERT
+      const difficultyOrder = { 'BEGINNER': 1, 'INTERMEDIATE': 2, 'ADVANCED': 3, 'EXPERT': 4 };
+      return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
+    });
+  }
+
+  // Advanced search with ranking
+  searchKnowledgeAdvanced(query: string): TradingKnowledge[] {
+    const searchTerm = query.toLowerCase();
+    const results = this.knowledgeBase.filter(k => 
+      k.question.toLowerCase().includes(searchTerm) ||
+      k.answer.toLowerCase().includes(searchTerm) ||
+      k.tags.some(tag => tag.includes(searchTerm))
+    );
+    
+    // Rank results by relevance
+    return results.sort((a, b) => {
+      let scoreA = 0, scoreB = 0;
+      
+      // Higher score for exact matches in question
+      if (a.question.toLowerCase().includes(searchTerm)) scoreA += 10;
+      if (b.question.toLowerCase().includes(searchTerm)) scoreB += 10;
+      
+      // Medium score for matches in tags
+      if (a.tags.some(tag => tag.includes(searchTerm))) scoreA += 5;
+      if (b.tags.some(tag => tag.includes(searchTerm))) scoreB += 5;
+      
+      // Lower score for matches in answer
+      if (a.answer.toLowerCase().includes(searchTerm)) scoreA += 2;
+      if (b.answer.toLowerCase().includes(searchTerm)) scoreB += 2;
+      
+      return scoreB - scoreA; // Sort by highest score first
+    });
   }
 
   generateDailyTradingWisdom(): string {

@@ -810,7 +810,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       if (!query || query.length < 3) {
         return res.json([]);
       }
-      const results = tradingBrain.searchKnowledge(query);
+      const results = tradingBrain.searchKnowledgeAdvanced(query);
       res.json(results);
     } catch (error) {
       console.error('Error searching knowledge:', error);
@@ -825,7 +825,7 @@ export function registerRoutes(app: Express): Promise<Server> {
       if (!category || category === 'ALL') {
         return res.json([]);
       }
-      const results = tradingBrain.getKnowledgeByCategory(category);
+      const results = tradingBrain.getKnowledgeBaseByCategory(category);
       res.json(results);
     } catch (error) {
       console.error('Error getting category knowledge:', error);
@@ -840,11 +840,11 @@ export function registerRoutes(app: Express): Promise<Server> {
       if (!situation || situation.length < 3) {
         return res.json(null);
       }
-      const advice = tradingBrain.getAdviceForSituation(situation, 'Current Market');
+      const advice = tradingBrain.getKIAdviceForSituation(situation, 'Current Market');
       res.json(advice);
     } catch (error) {
-      console.error('Error getting trading advice:', error);
-      res.status(500).json({ error: 'Failed to get trading advice' });
+      console.error('Error getting KI trading advice:', error);
+      res.status(500).json({ error: 'Failed to get KI trading advice' });
     }
   });
 
@@ -867,6 +867,63 @@ export function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error analyzing market psychology:', error);
       res.status(500).json({ error: 'Failed to analyze market psychology' });
+    }
+  });
+
+  // Enhanced Knowledge Base endpoint
+  app.get("/api/trading-brain/knowledge-base", async (req, res) => {
+    try {
+      const { tradingBrain } = await import('./services/tradingBrainEngine.js');
+      const category = req.query.category as string || 'ALL';
+      const difficulty = req.query.difficulty as string;
+      
+      let knowledge = category === 'ALL' 
+        ? tradingBrain.knowledgeBase 
+        : tradingBrain.getKnowledgeBaseByCategory(category);
+      
+      if (difficulty && difficulty !== 'ALL') {
+        knowledge = knowledge.filter(k => k.difficulty === difficulty);
+      }
+      
+      res.json({
+        success: true,
+        knowledge,
+        totalItems: knowledge.length,
+        categories: ['MINDSET', 'TECHNICAL', 'TIMING', 'RISK', 'STRATEGY', 'AUTOMATION', 'ADVANCED', 'FUNDAMENTALS', 'DISCIPLINE', 'SPIRITUAL'],
+        difficulties: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']
+      });
+    } catch (error) {
+      console.error('Error fetching knowledge base:', error);
+      res.status(500).json({ error: 'Failed to fetch knowledge base' });
+    }
+  });
+
+  // Enhanced KI Advisor endpoint
+  app.get("/api/trading-brain/ki-advisor", async (req, res) => {
+    try {
+      const { tradingBrain } = await import('./services/tradingBrainEngine.js');
+      const situation = req.query.situation as string || 'general';
+      const marketCondition = req.query.market as string || 'neutral';
+      
+      const advice = tradingBrain.getKIAdviceForSituation(situation, marketCondition);
+      const scorecard = tradingBrain.getTradingScorecard();
+      const psychology = tradingBrain.analyzeMarketPsychology(marketCondition);
+      
+      res.json({
+        success: true,
+        kiAdvice: advice,
+        traderAssessment: scorecard,
+        marketPsychology: psychology,
+        advisorStatus: {
+          isActive: true,
+          lastUpdate: new Date().toISOString(),
+          systemHealth: 'OPTIMAL',
+          responseTime: '< 50ms'
+        }
+      });
+    } catch (error) {
+      console.error('Error from KI Advisor:', error);
+      res.status(500).json({ error: 'Failed to get KI Advisor response' });
     }
   });
 

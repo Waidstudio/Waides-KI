@@ -40,6 +40,7 @@ export interface IStorage {
   addToUserBalance(userId: string, amount: number, currency: string): Promise<void>;
   deductFromUserBalance(userId: string, amount: number, currency: string): Promise<void>;
   getUserBalance(userId: string, currency: string): Promise<number>;
+  getWalletBalance(userId: string): Promise<{ balance: number; currency: string; usdValue: number }>;
   addToSmaiSikaBalance(userId: string, amount: number): Promise<void>;
   getSmaiSikaBalance(userId: string): Promise<number>;
   createConversion(conversion: any): Promise<any>;
@@ -321,6 +322,24 @@ export class DatabaseStorage implements IStorage {
     const balances = this.walletData.get('balances') || {};
     const userKey = `${userId}_${currency}`;
     return balances[userKey] || 0;
+  }
+
+  async getWalletBalance(userId: string): Promise<{ balance: number; currency: string; usdValue: number }> {
+    const balances = this.walletData.get('balances') || {};
+    const smaiBalances = this.walletData.get('smaiBalances') || {};
+    
+    // Get primary USD balance
+    const usdBalance = balances[`${userId}_USD`] || 0;
+    
+    // Get SmaiSika balance and convert to USD equivalent
+    const smaiBalance = smaiBalances[userId] || 0;
+    const smaiToUsd = smaiBalance * 0.85; // SmaiSika conversion rate
+    
+    return {
+      balance: usdBalance + smaiToUsd,
+      currency: 'USD',
+      usdValue: usdBalance + smaiToUsd
+    };
   }
 
   async addToSmaiSikaBalance(userId: string, amount: number): Promise<void> {
