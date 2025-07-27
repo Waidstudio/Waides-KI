@@ -6222,7 +6222,7 @@ export function registerRoutes(app: Express): Promise<Server> {
 
   const getWaidesFullEngine = async () => {
     if (!waidesFullEngine) {
-      const { waidesFullEngine: engine } = await import('./services/waidesFullEngine.js');
+      const { waidesFullEngine: engine } = await import('./services/waidesFullEngine');
       waidesFullEngine = engine;
     }
     return waidesFullEngine;
