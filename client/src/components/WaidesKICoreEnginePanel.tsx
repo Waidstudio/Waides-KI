@@ -351,37 +351,17 @@ export function WaidesKICoreEnginePanel() {
         <div className="w-full overflow-x-auto">
           <TabsList className="flex w-max min-w-full bg-gray-800/50 p-1">
             <TabsTrigger value="dashboard" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
-            <TabsTrigger value="divine-trading" className="data-[state=active]:bg-yellow-600 whitespace-nowrap px-4 py-2">Divine Trading</TabsTrigger>
-            <TabsTrigger value="trading-brain" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Trading Brain</TabsTrigger>
-            <TabsTrigger value="weekly-schedule" className="data-[state=active]:bg-green-600 whitespace-nowrap px-4 py-2">Weekly Schedule</TabsTrigger>
-            <TabsTrigger value="realtime-charts" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Real-time Charts</TabsTrigger>
             <TabsTrigger value="intelligence" className="data-[state=active]:bg-blue-600 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
             <TabsTrigger value="trading" className="data-[state=active]:bg-emerald-600 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
             <TabsTrigger value="kons-powa" className="data-[state=active]:bg-cyan-600 whitespace-nowrap px-4 py-2">Kons Powa AI</TabsTrigger>
             <TabsTrigger value="konsai" className="data-[state=active]:bg-teal-600 whitespace-nowrap px-4 py-2">Konsai Network</TabsTrigger>
+            <TabsTrigger value="konsmik" className="data-[state=active]:bg-pink-600 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
+            <TabsTrigger value="biometric" className="data-[state=active]:bg-orange-600 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
+            <TabsTrigger value="temporal" className="data-[state=active]:bg-indigo-600 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
+            <TabsTrigger value="humanity" className="data-[state=active]:bg-green-600 whitespace-nowrap px-4 py-2">Humanity Service</TabsTrigger>
             <TabsTrigger value="settings" className="data-[state=active]:bg-purple-600 whitespace-nowrap px-4 py-2">Engine Settings</TabsTrigger>
           </TabsList>
         </div>
-
-        {/* Divine Trading Tab - Sacred Signals & Communication */}
-        <TabsContent value="divine-trading" className="flex-1 overflow-y-auto space-y-6 p-1">
-          <DivineTrading />
-        </TabsContent>
-
-        {/* Trading Brain Tab - AI Knowledge & Analytics */}
-        <TabsContent value="trading-brain" className="flex-1 overflow-y-auto space-y-6 p-1">
-          <TradingBrainPanel />
-        </TabsContent>
-
-        {/* Weekly Schedule Tab - Time-Based Analysis */}
-        <TabsContent value="weekly-schedule" className="flex-1 overflow-y-auto space-y-6 p-1">
-          <WeeklyTradingSchedule />
-        </TabsContent>
-
-        {/* Real-time Charts Tab - Live Market Data */}
-        <TabsContent value="realtime-charts" className="flex-1 overflow-y-auto space-y-6 p-1">
-          <RealTimeCharts />
-        </TabsContent>
 
         {/* AI Dashboard Tab - Core Status & Performance */}
         <TabsContent value="dashboard" className="flex-1 overflow-y-auto space-y-6 p-1">
