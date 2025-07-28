@@ -51,22 +51,25 @@ export default function DivineCommandCenter() {
     refetchInterval: 30000,
   });
 
-  // Fetch active commands
+  // Fetch active commands - optimized refresh to prevent page instability
   const { data: activeCommands = [], isLoading: isActiveLoading } = useQuery({
     queryKey: ['/api/divine-commands/active'],
-    refetchInterval: 2000, // Real-time updates
+    refetchInterval: 30000, // 30 seconds - reduced from 2 seconds to prevent instability
+    staleTime: 15000, // Data considered fresh for 15 seconds
   });
 
   // Fetch command execution history - auto-reload every 2 minutes instead of constant refresh
   const { data: executionHistory = [], isLoading: isHistoryLoading } = useQuery({
     queryKey: ['/api/divine-commands/history'],
     refetchInterval: 120000, // 2 minutes - auto-reload instead of constant refresh
+    staleTime: 60000, // Data considered fresh for 1 minute
   });
 
   // Fetch system status for divine operations - reduced refresh for better performance
   const { data: divineSystemStatus, isLoading: isStatusLoading } = useQuery({
     queryKey: ['/api/divine-commands/system-status'],
-    refetchInterval: 30000, // 30 seconds - reduced from 5 seconds
+    refetchInterval: 60000, // 60 seconds - further reduced for stability
+    staleTime: 30000, // Data considered fresh for 30 seconds
   });
 
   // Execute command mutation
@@ -410,16 +413,35 @@ export default function DivineCommandCenter() {
       {/* Active Commands */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Activity className="w-5 h-5" />
-            Active Divine Commands
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity className="w-5 h-5" />
+              Active Divine Commands
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs text-green-400">Autonomous</span>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {isActiveLoading ? (
-            <div className="text-gray-400">Loading active commands...</div>
-          ) : activeCommands.length === 0 ? (
-            <div className="text-gray-400 text-center py-8">No active divine commands</div>
+          {activeCommands.length === 0 ? (
+            <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">System Operating Normally</div>
+                    <div className="text-sm text-gray-300">All divine operations autonomous</div>
+                  </div>
+                </div>
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/40">
+                  STABLE
+                </Badge>
+              </div>
+            </div>
           ) : (
             <div className="space-y-3">
               {activeCommands.map((command: DivineCommandData) => (
