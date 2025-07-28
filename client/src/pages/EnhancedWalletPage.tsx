@@ -224,74 +224,124 @@ export default function NextGenWalletPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* Header */}
-      <div className="border-b border-slate-700/50 bg-black/20 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400">
-                <Wallet className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-300 bg-clip-text text-transparent">
-                  SmaiSika Neural Vault
-                </h1>
-                <p className="text-slate-300 font-medium">Revolutionary Next-Gen Financial Reality</p>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" />
-                  <span className="text-xs text-yellow-400">Quantum-Enhanced • AI-Powered • Future-Ready</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-white relative overflow-hidden pb-20 sm:pb-24">
+      {/* Enhanced Futuristic Background Effects - Same as Market Storytelling */}
+      <div className="absolute inset-0 opacity-30">
+        <div 
+          className="w-full h-full"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.4) 0%, transparent 60%),
+              radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.3) 0%, transparent 60%),
+              radial-gradient(circle at 40% 90%, rgba(168, 85, 247, 0.3) 0%, transparent 60%),
+              conic-gradient(from 0deg at 50% 50%, rgba(139, 92, 246, 0.1) 0deg, transparent 60deg, rgba(59, 130, 246, 0.1) 120deg, transparent 180deg, rgba(168, 85, 247, 0.1) 240deg, transparent 300deg)
+            `,
+            animation: 'float 25s ease-in-out infinite, pulse 8s ease-in-out infinite alternate'
+          }}
+        ></div>
+      </div>
+
+      {/* Neural Network Grid Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="w-full h-full" style={{
+          backgroundImage: `
+            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+          animation: 'gridShift 30s linear infinite'
+        }}></div>
+      </div>
+
+      {/* Floating Quantum Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-purple-400/20 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 2}s`,
+              animationDuration: `${4 + i}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="border-b border-slate-700/50 bg-black/20 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="p-2 sm:p-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400">
+                  <Wallet className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                 </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              {/* Neural Interface Controls */}
-              <div className="flex items-center space-x-2 px-3 py-2 bg-black/30 rounded-full border border-purple-500/30">
-                <div className="flex items-center space-x-1">
-                  <span className="text-xs text-purple-300">Hologram</span>
-                  <Switch 
-                    checked={hologramMode} 
-                    onCheckedChange={setHologramMode}
-                    className="scale-75"
-                  />
-                </div>
-                <div className="w-px h-4 bg-purple-500/30" />
-                <div className="flex items-center space-x-1">
-                  <span className="text-xs text-emerald-300">Quantum</span>
-                  <Switch 
-                    checked={quantumSecurity} 
-                    onCheckedChange={setQuantumSecurity}
-                    className="scale-75"
-                  />
+                <div>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-300 bg-clip-text text-transparent">
+                    SmaiSika Neural Vault
+                  </h1>
+                  <p className="text-slate-300 font-medium text-sm sm:text-base">Revolutionary Next-Gen Financial Reality</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 animate-pulse" />
+                    <span className="text-xs text-yellow-400">Quantum-Enhanced • AI-Powered • Future-Ready</span>
+                  </div>
                 </div>
               </div>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setBalancesVisible(!balancesVisible)}
-                className="text-slate-300 hover:text-white p-2 rounded-full bg-black/20"
-              >
-                {balancesVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-              </Button>
-              
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-                  <div className="absolute inset-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-30"></div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                {/* Mobile-Responsive Neural Interface Controls */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="flex items-center space-x-2 px-2 sm:px-3 py-1 sm:py-2 bg-black/30 rounded-full border border-purple-500/30">
+                    <div className="flex items-center space-x-1">
+                      <span className="text-xs text-purple-300">Hologram</span>
+                      <Switch 
+                        checked={hologramMode} 
+                        onCheckedChange={setHologramMode}
+                        className="scale-75"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 px-2 sm:px-3 py-1 sm:py-2 bg-black/30 rounded-full border border-emerald-500/30">
+                    <div className="flex items-center space-x-1">
+                      <span className="text-xs text-emerald-300">Quantum</span>
+                      <Switch 
+                        checked={quantumSecurity} 
+                        onCheckedChange={setQuantumSecurity}
+                        className="scale-75"
+                      />
+                    </div>
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setBalancesVisible(!balancesVisible)}
+                    className="text-slate-300 hover:text-white p-2 rounded-full bg-black/20"
+                  >
+                    {balancesVisible ? <Eye className="h-3 w-3 sm:h-4 sm:w-4" /> : <EyeOff className="h-3 w-3 sm:h-4 sm:w-4" />}
+                  </Button>
                 </div>
-                <Badge variant="outline" className="border-emerald-500 text-emerald-400 bg-emerald-500/10">
-                  Neural Active
-                </Badge>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="relative">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-2 h-2 sm:w-3 sm:h-3 bg-emerald-400 rounded-full animate-ping opacity-30"></div>
+                  </div>
+                  <Badge variant="outline" className="border-emerald-500 text-emerald-400 bg-emerald-500/10 text-xs">
+                    Neural Active
+                  </Badge>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Balance Overview */}
-      {balancesVisible && walletBalance && (
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Balance Overview */}
+        {balancesVisible && walletBalance && (
+          <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card className="bg-gradient-to-br from-blue-900/50 to-blue-800/30 border-blue-700/50">
               <CardContent className="p-6">
@@ -349,42 +399,43 @@ export default function NextGenWalletPage() {
               </CardContent>
             </Card>
           </div>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 pb-8">
-        {/* Revolutionary Neural Tab Navigation */}
-        <div className="w-full overflow-x-auto mb-8">
-          <div className="flex space-x-3 p-3 bg-gradient-to-r from-slate-900/80 via-purple-900/50 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-purple-500/20 min-w-max">
-            {neuralTabs.map((tab) => {
-              const IconComponent = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative group inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 min-w-fit ${
-                    activeTab === tab.id
-                      ? `bg-gradient-to-r ${tab.color} text-white shadow-2xl transform scale-105`
-                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50 hover:scale-102'
-                  }`}
-                >
-                  {activeTab === tab.id && (
-                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
-                  )}
-                  <IconComponent className="h-4 w-4 mr-2 relative z-10" />
-                  <span className="relative z-10">{tab.label}</span>
-                  {activeTab === tab.id && (
-                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full animate-pulse" />
-                  )}
-                </button>
-              );
-            })}
           </div>
-        </div>
+        )}
 
-        {/* Revolutionary Tab Contents */}
-        <div className="space-y-8">
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 pb-8">
+          {/* Mobile-Responsive Neural Tab Navigation */}
+          <div className="w-full overflow-x-auto mb-8">
+            <div className="flex space-x-2 sm:space-x-3 p-2 sm:p-3 bg-gradient-to-r from-slate-900/80 via-purple-900/50 to-slate-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-purple-500/20 min-w-max">
+              {neuralTabs.map((tab) => {
+                const IconComponent = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative group inline-flex items-center justify-center whitespace-nowrap rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-300 min-w-fit ${
+                      activeTab === tab.id
+                        ? `bg-gradient-to-r ${tab.color} text-white shadow-lg sm:shadow-2xl transform scale-105`
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50 hover:scale-102'
+                    }`}
+                  >
+                    {activeTab === tab.id && (
+                      <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                    )}
+                    <IconComponent className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 relative z-10" />
+                    <span className="relative z-10 hidden sm:inline">{tab.label}</span>
+                    <span className="relative z-10 sm:hidden">{tab.label.split(' ')[0]}</span>
+                    {activeTab === tab.id && (
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 sm:w-2 sm:h-2 bg-white rounded-full animate-pulse" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Revolutionary Tab Contents */}
+          <div className="space-y-6 sm:space-y-8">
             {/* Neural Core Overview Tab */}
             <div className={activeTab === 'neural-overview' ? 'block space-y-8' : 'hidden'}>
               {/* Quantum Balance Grid with Hologram Effects */}
@@ -1122,6 +1173,7 @@ export default function NextGenWalletPage() {
               </Card>
             </div>
 
+          </div>
         </div>
       </div>
     </div>
