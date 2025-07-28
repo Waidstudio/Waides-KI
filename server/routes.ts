@@ -20,6 +20,8 @@ import {
 } from "./middleware/authMiddleware.js";
 import { AdminPermissions, loginSchema, insertAdminUserSchema, userLoginSchema, userRegisterSchema } from "@shared/schema.js";
 import jwt from 'jsonwebtoken';
+import { smaiTrustAuthService } from "./services/smaiTrustAuthService.js";
+import { shavokaAuthService } from "./services/shavokaAuthService.js";
 
 // WebSocket setup for real-time features
 let wss: any = null;
@@ -590,6 +592,252 @@ export function registerRoutes(app: Express): Promise<Server> {
       memory: memoryStats,
       uptime: process.uptime()
     });
+  });
+
+  // =======================================
+  // SMAITRUST & SHAVOKA AUTHENTICATION API
+  // =======================================
+
+  // Initialize SmaiTrust profile for a user
+  app.post("/api/smaitrust/initialize", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.body.userId;
+      if (!userId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'User ID required for SmaiTrust initialization' 
+        });
+      }
+
+      const behaviorData = req.body.behaviorData || {};
+      const profile = await smaiTrustAuthService.initializeSmaiTrust(userId, behaviorData);
+
+      res.json({
+        success: true,
+        profile,
+        message: 'SmaiTrust profile initialized successfully'
+      });
+    } catch (error) {
+      console.error('SmaiTrust initialization error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to initialize SmaiTrust profile'
+      });
+    }
+  });
+
+  // Verify user identity using SmaiTrust
+  app.post("/api/smaitrust/verify", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.body.userId;
+      if (!userId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'User ID required for SmaiTrust verification' 
+        });
+      }
+
+      const currentBehaviorData = {
+        ...req.body.behaviorData,
+        ipAddress: getClientIP(req),
+        userAgent: getUserAgent(req)
+      };
+
+      const verification = await smaiTrustAuthService.verifySmaiTrust(userId, currentBehaviorData);
+
+      res.json({
+        success: true,
+        verification,
+        message: verification.isAuthentic ? 'SmaiTrust verification successful' : 'SmaiTrust verification failed'
+      });
+    } catch (error) {
+      console.error('SmaiTrust verification error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'SmaiTrust verification system error'
+      });
+    }
+  });
+
+  // Get SmaiTrust status
+  app.get("/api/smaitrust/status/:userId", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const status = smaiTrustAuthService.getSmaiTrustStatus(userId);
+      
+      res.json({
+        success: true,
+        status
+      });
+    } catch (error) {
+      console.error('SmaiTrust status error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get SmaiTrust status'
+      });
+    }
+  });
+
+  // Initialize Shavoka profile for a user
+  app.post("/api/shavoka/initialize", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.body.userId;
+      if (!userId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'User ID required for Shavoka initialization' 
+        });
+      }
+
+      const profile = await shavokaAuthService.initializeShavoka(userId);
+
+      res.json({
+        success: true,
+        profile,
+        message: 'Shavoka divine profile initialized successfully'
+      });
+    } catch (error) {
+      console.error('Shavoka initialization error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to initialize Shavoka profile'
+      });
+    }
+  });
+
+  // Perform Shavoka verification (divine judgment)
+  app.post("/api/shavoka/verify", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.body.userId;
+      const requestedAction = req.body.action || 'general_access';
+      const accessLevel = req.body.accessLevel || 'BASIC';
+
+      if (!userId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'User ID required for Shavoka verification' 
+        });
+      }
+
+      const verification = await shavokaAuthService.performShavokaVerification(
+        userId, 
+        requestedAction, 
+        accessLevel
+      );
+
+      res.json({
+        success: true,
+        verification,
+        message: verification.accessGranted ? 
+          `Divine judgment: ${verification.divineJudgment} - Access granted` : 
+          `Divine judgment: ${verification.divineJudgment} - Access denied`
+      });
+    } catch (error) {
+      console.error('Shavoka verification error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Shavoka verification system error'
+      });
+    }
+  });
+
+  // Record karmic action
+  app.post("/api/shavoka/karma", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.body.userId;
+      const action = req.body.action;
+
+      if (!userId || !action) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'User ID and action required for karmic recording' 
+        });
+      }
+
+      await shavokaAuthService.recordKarmicAction(userId, action);
+
+      res.json({
+        success: true,
+        message: 'Karmic action recorded successfully'
+      });
+    } catch (error) {
+      console.error('Karmic action recording error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to record karmic action'
+      });
+    }
+  });
+
+  // Get Shavoka status and karmic history
+  app.get("/api/shavoka/status/:userId", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const status = shavokaAuthService.getShavokaStatus(userId);
+      const karmicHistory = shavokaAuthService.getKarmicHistory(userId, 10);
+      
+      res.json({
+        success: true,
+        status,
+        karmicHistory
+      });
+    } catch (error) {
+      console.error('Shavoka status error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to get Shavoka status'
+      });
+    }
+  });
+
+  // Combined SmaiTrust + Shavoka verification endpoint
+  app.post("/api/metaphysical-auth/verify", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.body.userId;
+      const requestedAction = req.body.action || 'general_access';
+      const accessLevel = req.body.accessLevel || 'BASIC';
+      const behaviorData = {
+        ...req.body.behaviorData,
+        ipAddress: getClientIP(req),
+        userAgent: getUserAgent(req)
+      };
+
+      if (!userId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'User ID required for metaphysical authentication' 
+        });
+      }
+
+      // Perform both SmaiTrust and Shavoka verifications
+      const [smaiTrustResult, shavokaResult] = await Promise.all([
+        smaiTrustAuthService.verifySmaiTrust(userId, behaviorData),
+        shavokaAuthService.performShavokaVerification(userId, requestedAction, accessLevel)
+      ]);
+
+      // Combined access decision (both must pass for full access)
+      const combinedAccess = smaiTrustResult.isAuthentic && shavokaResult.accessGranted;
+      const overallConfidence = Math.round((smaiTrustResult.confidenceScore + shavokaResult.karmicScore) / 2);
+
+      res.json({
+        success: true,
+        metaphysicalAuth: {
+          accessGranted: combinedAccess,
+          overallConfidence,
+          smaiTrust: smaiTrustResult,
+          shavoka: shavokaResult,
+          combinedGuidance: combinedAccess ? 
+            'Metaphysical authentication successful - both essence and karma align' :
+            'Metaphysical authentication requires improvement in spiritual or behavioral alignment'
+        }
+      });
+    } catch (error) {
+      console.error('Metaphysical authentication error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Metaphysical authentication system error'
+      });
+    }
   });
 
   // Core ETH data endpoints
