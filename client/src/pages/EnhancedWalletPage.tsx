@@ -71,7 +71,6 @@ import {
   Building,
   Copy,
   Heart,
-  Bell,
   BellRing
 } from "lucide-react";
 
@@ -408,18 +407,6 @@ export default function EnhancedWalletPage() {
                   >
                     {balancesVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
-                  <div className="relative">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-slate-300 hover:text-white relative"
-                    >
-                      <Bell className="h-4 w-4" />
-                      <span className="absolute -top-1 -right-1 bg-orange-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                        3
-                      </span>
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>

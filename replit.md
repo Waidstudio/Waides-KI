@@ -6,7 +6,7 @@ SmaiSika (ꠄ): An advanced autonomous wealth management platform leveraging cut
 ## Recent Changes
 - **2025-07-28**: Enhanced Wallet Interface Optimization Complete
   - ✅ **HEART OF WAIDES KI TAB REMOVED**: Successfully removed "Heart of Waides KI" tab from second tab group as requested
-  - ✅ **NOTIFICATIONS ICON ADDED**: Added notifications bell icon with badge (3) to wallet header next to balance visibility toggle
+  - ✅ **NOTIFICATIONS ICON REMOVED**: Removed notifications bell icon with badge from wallet header as requested
   - ✅ **TRANSACTION HISTORY INTEGRATION**: Added comprehensive transaction history section to Overview tab showing recent transactions with:
     - Real transaction data from `/api/wallet/transactions` endpoint
     - Color-coded transaction types (deposit: green, withdrawal: red, transfer: blue)
