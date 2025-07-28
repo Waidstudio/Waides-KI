@@ -57,16 +57,16 @@ export default function DivineCommandCenter() {
     refetchInterval: 2000, // Real-time updates
   });
 
-  // Fetch command execution history
+  // Fetch command execution history - auto-reload every 2 minutes instead of constant refresh
   const { data: executionHistory = [], isLoading: isHistoryLoading } = useQuery({
     queryKey: ['/api/divine-commands/history'],
-    refetchInterval: 10000,
+    refetchInterval: 120000, // 2 minutes - auto-reload instead of constant refresh
   });
 
-  // Fetch system status for divine operations
+  // Fetch system status for divine operations - reduced refresh for better performance
   const { data: divineSystemStatus, isLoading: isStatusLoading } = useQuery({
     queryKey: ['/api/divine-commands/system-status'],
-    refetchInterval: 5000,
+    refetchInterval: 30000, // 30 seconds - reduced from 5 seconds
   });
 
   // Execute command mutation
