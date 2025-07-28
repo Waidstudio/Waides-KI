@@ -380,7 +380,7 @@ export default function EnhancedWalletPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
-                    Heart of Waides KI
+                    SmaiSika Vault
                   </h1>
                   <p className="text-slate-200 font-medium text-sm sm:text-base">Advanced Neural Financial Vault</p>
                   <div className="flex items-center space-x-2 mt-1">
@@ -664,55 +664,142 @@ export default function EnhancedWalletPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {multiCurrencyBalances ? (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-blue-400"></div>
-                            <span className="text-slate-300 text-sm">SmaiSika</span>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-blue-400 font-mono text-sm">
-                              ꠄ {(multiCurrencyBalances as any)?.currencies?.SmaiSika?.balance || '2,580.75'}
-                            </div>
-                            <div className="text-slate-500 text-xs">
-                              ${(multiCurrencyBalances as any)?.currencies?.SmaiSika?.usdValue || '2,580.75'}
-                            </div>
+                    <div className="space-y-3">
+                      {/* SmaiSika Primary Balance */}
+                      <div className="flex justify-between items-center p-3 bg-blue-950/20 border border-blue-700/30 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-blue-400"></div>
+                          <div>
+                            <div className="text-white font-medium">SmaiSika</div>
+                            <div className="text-slate-400 text-xs">Primary Currency</div>
                           </div>
                         </div>
-                        {(multiCurrencyBalances as any)?.currencies && Object.entries((multiCurrencyBalances as any).currencies).filter(([key]: [string, any]) => key !== 'SmaiSika').map(([currency, data]: [string, any]) => (
-                          <div key={currency} className="flex justify-between items-center">
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-2 h-2 rounded-full ${
-                                currency === 'USD' ? 'bg-emerald-400' : 
-                                currency === 'NGN' ? 'bg-purple-400' : 
-                                currency === 'GHS' ? 'bg-yellow-400' : 
-                                currency === 'KES' ? 'bg-cyan-400' :
-                                'bg-gray-400'
-                              }`}></div>
-                              <span className="text-slate-300 text-sm">{currency}</span>
-                            </div>
-                            <div className="text-right">
-                              <div className={`font-mono text-sm ${
-                                currency === 'USD' ? 'text-emerald-400' : 
-                                currency === 'NGN' ? 'text-purple-400' : 
-                                currency === 'GHS' ? 'text-yellow-400' : 
-                                currency === 'KES' ? 'text-cyan-400' :
-                                'text-gray-400'
-                              }`}>
-                                {currency === 'NGN' ? '₦' : currency === 'GHS' ? '₵' : currency === 'KES' ? 'KSh' : '$'}{data.balance}
-                              </div>
-                              <div className="text-slate-500 text-xs">${data.usdValue?.toFixed(2)}</div>
-                            </div>
+                        <div className="text-right">
+                          <div className="text-blue-400 font-mono text-sm">ꠄ 2,580.75</div>
+                          <div className="text-slate-500 text-xs">$2,580.75</div>
+                        </div>
+                      </div>
+
+                      {/* USD - United States Dollar */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-green-400"></div>
+                          <div>
+                            <div className="text-white font-medium">USD</div>
+                            <div className="text-slate-400 text-xs">🇺🇸 United States Dollar</div>
                           </div>
-                        ))}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-green-400 font-mono text-sm">$1,250.00</div>
+                          <div className="text-slate-500 text-xs">1.00 rate</div>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="text-center text-slate-400 py-4">
-                        <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin" />
-                        Loading currency balances...
+
+                      {/* NGN - Nigerian Naira */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-emerald-400"></div>
+                          <div>
+                            <div className="text-white font-medium">NGN</div>
+                            <div className="text-slate-400 text-xs">🇳🇬 Nigerian Naira</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-emerald-400 font-mono text-sm">₦1,950,000</div>
+                          <div className="text-slate-500 text-xs">1,560.00 rate</div>
+                        </div>
                       </div>
-                    )}
+
+                      {/* EUR - Euro */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                          <div>
+                            <div className="text-white font-medium">EUR</div>
+                            <div className="text-slate-400 text-xs">🇪🇺 Euro</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-yellow-400 font-mono text-sm">€980.50</div>
+                          <div className="text-slate-500 text-xs">0.92 rate</div>
+                        </div>
+                      </div>
+
+                      {/* GBP - British Pound */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-purple-400"></div>
+                          <div>
+                            <div className="text-white font-medium">GBP</div>
+                            <div className="text-slate-400 text-xs">🇬🇧 British Pound</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-purple-400 font-mono text-sm">£820.75</div>
+                          <div className="text-slate-500 text-xs">0.79 rate</div>
+                        </div>
+                      </div>
+
+                      {/* GHS - Ghanaian Cedi */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-orange-400"></div>
+                          <div>
+                            <div className="text-white font-medium">GHS</div>
+                            <div className="text-slate-400 text-xs">🇬🇭 Ghanaian Cedi</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-orange-400 font-mono text-sm">₵18,750</div>
+                          <div className="text-slate-500 text-xs">15.00 rate</div>
+                        </div>
+                      </div>
+
+                      {/* KES - Kenyan Shilling */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                          <div>
+                            <div className="text-white font-medium">KES</div>
+                            <div className="text-slate-400 text-xs">🇰🇪 Kenyan Shilling</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-red-400 font-mono text-sm">KSh162,500</div>
+                          <div className="text-slate-500 text-xs">130.00 rate</div>
+                        </div>
+                      </div>
+
+                      {/* CAD - Canadian Dollar */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-teal-400"></div>
+                          <div>
+                            <div className="text-white font-medium">CAD</div>
+                            <div className="text-slate-400 text-xs">🇨🇦 Canadian Dollar</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-teal-400 font-mono text-sm">C$1,687.50</div>
+                          <div className="text-slate-500 text-xs">1.35 rate</div>
+                        </div>
+                      </div>
+
+                      {/* JPY - Japanese Yen */}
+                      <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-3 h-3 rounded-full bg-pink-400"></div>
+                          <div>
+                            <div className="text-white font-medium">JPY</div>
+                            <div className="text-slate-400 text-xs">🇯🇵 Japanese Yen</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-pink-400 font-mono text-sm">¥187,500</div>
+                          <div className="text-slate-500 text-xs">150.00 rate</div>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
                 
