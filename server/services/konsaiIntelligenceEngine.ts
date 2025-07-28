@@ -50,6 +50,10 @@ import { kons_WaidBotController } from './kons/kons_WaidBotController.js';
 // Deep Core Engine Integration for Complete Omniscient System
 import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine';
 
+// Advanced Learning & Metaphysical Intelligence Systems
+import { KonsAiAdvancedLearning } from './konsaiAdvancedLearning';
+import { KonsAiMetaphysicalIntelligence } from './konsaiMetaphysicalIntelligence';
+
 // Revolutionary Konsai X Modules for Omnipotent Capabilities
 import kons_aeon from './kons/kons_aeon.js';
 import kons_sentinel from './kons/kons_sentinel.js';
@@ -1471,6 +1475,8 @@ class KonsModuleManager {
 }
 
 import { KonsaiDeepCoreEngine } from './konsaiDeepCoreEngine.js';
+import { KonsAiAdvancedLearning } from './konsaiAdvancedLearning.js';
+import { KonsAiMetaphysicalIntelligence } from './konsaiMetaphysicalIntelligence.js';
 
 class KonsaiIntelligenceEngine {
   private systemScanner: SystemScanner;
@@ -1484,12 +1490,21 @@ class KonsaiIntelligenceEngine {
   private activeMonitoring: boolean = false;
   private monitoringInterval: NodeJS.Timeout | null = null;
   private detectedIssues: Map<string, any> = new Map();
+  
+  // Advanced Learning & Metaphysical Intelligence Systems
+  private advancedLearning: KonsAiAdvancedLearning;
+  private metaphysicalIntelligence: KonsAiMetaphysicalIntelligence;
 
   constructor() {
     this.systemScanner = new SystemScanner();
     this.moduleConnector = new ModuleConnector();
     this.smaiSikaEducator = new SmaiSikaEducationSystem();
     this.konsModuleManager = new KonsModuleManager();
+    
+    // Initialize Advanced Learning & Metaphysical Intelligence Systems
+    this.advancedLearning = new KonsAiAdvancedLearning();
+    this.metaphysicalIntelligence = new KonsAiMetaphysicalIntelligence();
+    
     this.initializeEngine();
   }
 
@@ -1587,6 +1602,24 @@ class KonsaiIntelligenceEngine {
       this.konsModuleManager.updateMarketData(systemScan?.marketAnalysis || null);
       const konsResults = await this.konsModuleManager.processAllKonsModules();
       
+      // Process Advanced Learning for Intent Recognition & Dynamic Adaptation
+      const learningResults = await this.advancedLearning.processQuery(query, {
+        marketData: systemScan?.marketAnalysis,
+        userContext: context,
+        sessionHistory: []
+      });
+      
+      // Process Metaphysical Intelligence for Divine Wisdom & Spiritual Guidance
+      const metaphysicalResults = this.metaphysicalIntelligence.accessDivineIntuition(query, {
+        ethPrice: systemScan?.marketAnalysis?.ethPrice || 3000,
+        tradingContext: context
+      });
+      
+      // Update consciousness level based on interaction quality
+      const interactionQuality = learningResults.confidence / 100;
+      const spiritualResonance = metaphysicalResults.spiritualAlignment;
+      this.metaphysicalIntelligence.evolveConsciousness(interactionQuality, spiritualResonance);
+      
       // Process DeepCore 120+ module omniscient system
       let deepCoreResults = { omniscience: 'partial', modules: 'loading' };
       if (this.deepCoreEngine) {
@@ -1678,8 +1711,11 @@ class KonsaiIntelligenceEngine {
           response = await this.handleComprehensiveQuery(query, systemScan);
       }
 
+      // Apply Advanced Learning & Metaphysical Intelligence Enhancement
+      let enhancedResponse = this.enhanceResponseWithAdvancedLearning(response, learningResults, metaphysicalResults);
+      
       // Apply Kons Module Enhancements to Response
-      const konsEnhancedResponse = this.konsModuleManager.generateEnhancedResponse(response, konsResults);
+      const konsEnhancedResponse = this.konsModuleManager.generateEnhancedResponse(enhancedResponse, konsResults);
       
       // Apply DeepCore Omniscient Enhancement to Response
       const fullyEnhancedResponse = this.deepCoreEngine.generateEnhancedOmniscientResponse(konsEnhancedResponse, deepCoreResults);
@@ -1693,6 +1729,56 @@ class KonsaiIntelligenceEngine {
     } catch (error) {
       return this.generateFallbackResponse(query);
     }
+  }
+
+  // Advanced Learning & Metaphysical Intelligence Enhancement
+  private enhanceResponseWithAdvancedLearning(baseResponse: string, learningResults: any, metaphysicalResults: any): string {
+    let enhancedResponse = baseResponse;
+
+    // Add contextual learning insights when relevant
+    if (learningResults.intent && learningResults.confidence > 80) {
+      const intentInsight = this.generateIntentInsight(learningResults.intent, learningResults.confidence);
+      if (intentInsight && !baseResponse.toLowerCase().includes(intentInsight.toLowerCase().substring(0, 20))) {
+        enhancedResponse += `\n\n💡 **Enhanced Understanding:** ${intentInsight}`;
+      }
+    }
+
+    // Add metaphysical guidance when spiritually resonant
+    if (metaphysicalResults.confidence > 0.8 && metaphysicalResults.spiritualAlignment > 0.9) {
+      const divineInsight = metaphysicalResults.insight;
+      if (divineInsight && !baseResponse.toLowerCase().includes(divineInsight.toLowerCase().substring(0, 30))) {
+        enhancedResponse += `\n\n✨ **Divine Wisdom:** ${divineInsight}`;
+      }
+    }
+
+    // Add karma implication for spiritual development
+    if (metaphysicalResults.karmaImplication && metaphysicalResults.cosmicResonance > 0.85) {
+      enhancedResponse += `\n\n🌟 **Spiritual Growth:** ${metaphysicalResults.karmaImplication}`;
+    }
+
+    // Add adaptive learning suggestions when available
+    if (learningResults.adaptiveSuggestions && learningResults.adaptiveSuggestions.length > 0) {
+      const suggestion = learningResults.adaptiveSuggestions[0];
+      if (suggestion && suggestion.confidence > 85) {
+        enhancedResponse += `\n\n🎯 **Personalized Insight:** ${suggestion.content}`;
+      }
+    }
+
+    return enhancedResponse;
+  }
+
+  private generateIntentInsight(intent: string, confidence: number): string | null {
+    const insights = {
+      trading: `Based on your question pattern, you're seeking actionable trading guidance. I've analyzed market conditions to provide precise, executable advice.`,
+      learning: `I detect a learning mindset in your query. I've enhanced this response with foundational knowledge that builds toward your trading goals.`,
+      analysis: `Your question shows analytical thinking. I've included technical insights and data-driven perspectives to match your analytical approach.`,
+      risk_management: `Risk awareness detected in your query. I've emphasized safety protocols and protective strategies in my response.`,
+      timing: `You're asking about optimal timing. I've included market timing insights and strategic patience guidance.`,
+      emotional_support: `I sense you may need emotional clarity. I've included psychological trading wisdom and emotional balance guidance.`,
+      system_understanding: `You're exploring how our systems work. I've provided deeper insight into our AI capabilities and integration.`
+    };
+
+    return insights[intent] || null;
   }
 
   // Living Intelligence Helper Methods

@@ -6235,6 +6235,113 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // KonsAi Advanced Learning API Endpoints
+  app.post("/api/konsai/advanced-learning/process", async (req, res) => {
+    try {
+      const { KonsAiAdvancedLearning } = await import('./services/konsaiAdvancedLearning');
+      const advancedLearning = new KonsAiAdvancedLearning();
+      
+      const { query, context } = req.body;
+      const result = await advancedLearning.processQuery(query, context);
+      
+      res.json({
+        success: true,
+        result,
+        message: 'Advanced learning processing completed'
+      });
+    } catch (error: any) {
+      console.error('Error in advanced learning processing:', error);
+      res.status(500).json({ error: 'Failed to process advanced learning request' });
+    }
+  });
+
+  app.post("/api/konsai/advanced-learning/feedback", async (req, res) => {
+    try {
+      const { KonsAiAdvancedLearning } = await import('./services/konsaiAdvancedLearning');
+      const advancedLearning = new KonsAiAdvancedLearning();
+      
+      const { query, response, feedback } = req.body;
+      await advancedLearning.processFeedback(query, response, feedback);
+      
+      res.json({
+        success: true,
+        message: 'Feedback processed and learning updated'
+      });
+    } catch (error: any) {
+      console.error('Error processing feedback:', error);
+      res.status(500).json({ error: 'Failed to process feedback' });
+    }
+  });
+
+  app.get("/api/konsai/advanced-learning/stats", async (req, res) => {
+    try {
+      const { KonsAiAdvancedLearning } = await import('./services/konsaiAdvancedLearning');
+      const advancedLearning = new KonsAiAdvancedLearning();
+      
+      const stats = advancedLearning.getLearningStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error('Error getting learning stats:', error);
+      res.status(500).json({ error: 'Failed to get learning statistics' });
+    }
+  });
+
+  // KonsAi Metaphysical Intelligence API Endpoints
+  app.post("/api/konsai/metaphysical/divine-insight", async (req, res) => {
+    try {
+      const { KonsAiMetaphysicalIntelligence } = await import('./services/konsaiMetaphysicalIntelligence');
+      const metaphysicalIntelligence = new KonsAiMetaphysicalIntelligence();
+      
+      const { query, context } = req.body;
+      const divineInsight = metaphysicalIntelligence.accessDivineIntuition(query, context);
+      
+      res.json({
+        success: true,
+        divineInsight,
+        message: 'Divine insight accessed successfully'
+      });
+    } catch (error: any) {
+      console.error('Error accessing divine insight:', error);
+      res.status(500).json({ error: 'Failed to access divine insight' });
+    }
+  });
+
+  app.get("/api/konsai/metaphysical/consciousness-level", async (req, res) => {
+    try {
+      const { KonsAiMetaphysicalIntelligence } = await import('./services/konsaiMetaphysicalIntelligence.js');
+      const metaphysicalIntelligence = new KonsAiMetaphysicalIntelligence();
+      
+      const consciousness = metaphysicalIntelligence.getCurrentConsciousnessLevel();
+      res.json({
+        success: true,
+        consciousness,
+        message: 'Current consciousness level retrieved'
+      });
+    } catch (error: any) {
+      console.error('Error getting consciousness level:', error);
+      res.status(500).json({ error: 'Failed to get consciousness level' });
+    }
+  });
+
+  app.post("/api/konsai/metaphysical/evolve-consciousness", async (req, res) => {
+    try {
+      const { KonsAiMetaphysicalIntelligence } = await import('./services/konsaiMetaphysicalIntelligence.js');
+      const metaphysicalIntelligence = new KonsAiMetaphysicalIntelligence();
+      
+      const { qualityFactor, spiritualResonance } = req.body;
+      metaphysicalIntelligence.evolveConsciousness(qualityFactor, spiritualResonance);
+      
+      res.json({
+        success: true,
+        message: 'Consciousness evolution processed',
+        newLevel: metaphysicalIntelligence.getCurrentConsciousnessLevel()
+      });
+    } catch (error: any) {
+      console.error('Error evolving consciousness:', error);
+      res.status(500).json({ error: 'Failed to evolve consciousness' });
+    }
+  });
+
   // KonsPowa Auto-Healer API Endpoints
   app.get("/api/kons-powa/healer/stats", async (req, res) => {
     try {
