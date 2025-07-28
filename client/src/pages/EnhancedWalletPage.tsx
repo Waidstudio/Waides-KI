@@ -70,7 +70,9 @@ import {
   Ticket,
   Building,
   Copy,
-  Heart
+  Heart,
+  Bell,
+  BellRing
 } from "lucide-react";
 
 // Enhanced Heart of Waides KI Wallet - Advanced Features
@@ -125,6 +127,11 @@ export default function EnhancedWalletPage() {
 
   const { data: predictions } = useQuery({
     queryKey: ["/api/wallet/analytics/predictions"],
+  });
+
+  const { data: transactions } = useQuery({
+    queryKey: ["/api/wallet/transactions"],
+    refetchInterval: 30000, // Refetch every 30 seconds for live updates
   });
 
   // Smaipin redemption mutation
@@ -344,7 +351,7 @@ export default function EnhancedWalletPage() {
     { id: "biometric-portal", label: "Bio Portal", icon: Fingerprint, color: "from-pink-500 to-rose-400" },
     { id: "reality-analytics", label: "Reality Analytics", icon: Activity, color: "from-violet-500 to-purple-400" },
     { id: "infinite-rules", label: "Infinite Rules", icon: Infinity, color: "from-cyan-500 to-blue-400" },
-    { id: "heart-waides", label: "Heart of Waides", icon: Heart, color: "from-rose-500 to-pink-400" }
+
   ];
 
   return (
@@ -384,7 +391,7 @@ export default function EnhancedWalletPage() {
                 </div>
               </div>
               
-              {/* Balance Display */}
+              {/* Balance Display & Notifications */}
               <div className="flex items-center space-x-4">
                 <div className="text-right">
                   <p className="text-slate-300 text-sm">Total Balance</p>
@@ -392,14 +399,28 @@ export default function EnhancedWalletPage() {
                     {balancesVisible ? `₦${(walletBalance as any)?.smaiSika?.available?.toLocaleString() || '2,580.75'}` : '••••••'}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setBalancesVisible(!balancesVisible)}
-                  className="text-slate-300 hover:text-white"
-                >
-                  {balancesVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setBalancesVisible(!balancesVisible)}
+                    className="text-slate-300 hover:text-white"
+                  >
+                    {balancesVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                  <div className="relative">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-slate-300 hover:text-white relative"
+                    >
+                      <Bell className="h-4 w-4" />
+                      <span className="absolute -top-1 -right-1 bg-orange-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                        3
+                      </span>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -456,10 +477,6 @@ export default function EnhancedWalletPage() {
               <TabsTrigger value="infinite" className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white text-slate-300">
                 <Infinity className="w-4 h-4 mr-2" />
                 Infinite
-              </TabsTrigger>
-              <TabsTrigger value="heart-waides" className="data-[state=active]:bg-rose-600 data-[state=active]:text-white text-slate-300">
-                <Heart className="w-4 h-4 mr-2" />
-                Heart of Waides
               </TabsTrigger>
               </TabsList>
             </div>
@@ -1528,6 +1545,64 @@ export default function EnhancedWalletPage() {
                 )}
               </div>
               
+              {/* Transaction History */}
+              <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-white">
+                    <History className="h-5 w-5 text-blue-400" />
+                    <span>Recent Transactions</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {transactions ? (
+                    <div className="space-y-3">
+                      {transactions.slice(0, 5).map((transaction: any) => (
+                        <div key={transaction.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className={`p-2 rounded-full ${
+                              transaction.type === 'deposit' ? 'bg-emerald-600/20' :
+                              transaction.type === 'withdrawal' ? 'bg-red-600/20' :
+                              'bg-blue-600/20'
+                            }`}>
+                              {transaction.type === 'deposit' ? (
+                                <ArrowDownLeft className="w-4 h-4 text-emerald-400" />
+                              ) : transaction.type === 'withdrawal' ? (
+                                <ArrowUpRight className="w-4 h-4 text-red-400" />
+                              ) : (
+                                <RefreshCw className="w-4 h-4 text-blue-400" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-white font-medium capitalize">{transaction.type}</p>
+                              <p className="text-slate-400 text-sm">{transaction.description}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-mono font-medium ${
+                              transaction.type === 'deposit' ? 'text-emerald-400' :
+                              transaction.type === 'withdrawal' ? 'text-red-400' :
+                              'text-blue-400'
+                            }`}>
+                              {transaction.type === 'withdrawal' ? '-' : '+'}₦{transaction.amount.toLocaleString()}
+                            </p>
+                            <p className="text-slate-500 text-xs">{new Date(transaction.timestamp).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                      <Button variant="outline" className="w-full mt-4 border-slate-600 text-slate-300 hover:bg-slate-800">
+                        <FileText className="w-4 h-4 mr-2" />
+                        View All Transactions
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center text-slate-400 py-4">
+                      <History className="w-6 h-6 mx-auto mb-2 animate-pulse" />
+                      Loading transaction history...
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Quick Actions */}
               <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-sm">
                 <CardHeader>
@@ -1556,12 +1631,7 @@ export default function EnhancedWalletPage() {
               </Card>
             </TabsContent>
 
-            {/* 11. Heart of Waides Tab - Original Wallet Content from Portal */}
-            <TabsContent value="heart-waides" className="h-full flex flex-col min-h-0">
-              <div className="h-full">
-                <WaidesKICoreEnginePanel />
-              </div>
-            </TabsContent>
+
 
           </Tabs>
         </div>
