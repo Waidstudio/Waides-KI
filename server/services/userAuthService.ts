@@ -62,7 +62,6 @@ export class UserAuthService {
 
   // Generate JWT token
   private generateToken(user: AuthenticatedUser, sessionId: string, rememberMe = false): string {
-    const expiresIn = '365d'; // 1 year - persistent until manual logout
     return jwt.sign(
       {
         userId: user.id,
@@ -72,8 +71,7 @@ export class UserAuthService {
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + (365 * 24 * 60 * 60) // 1 year
       },
-      JWT_SECRET,
-      { expiresIn }
+      JWT_SECRET
     );
   }
 
@@ -222,12 +220,12 @@ export class UserAuthService {
         sessionId,
         message: 'Login successful',
       };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('User login error:', error);
       
       // Re-throw database connection errors to allow fallback authentication
-      if ((error.message && error.message.includes('The endpoint has been disabled')) || 
-          error.code === 'XX000') {
+      if ((error as any).message && (error as any).message.includes('The endpoint has been disabled') || 
+          (error as any).code === 'XX000') {
         throw error;
       }
       
