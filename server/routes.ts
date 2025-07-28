@@ -7583,6 +7583,137 @@ export function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =============================================================================
+  // WALLET TRADING BALANCE MANAGEMENT - Lock/Unlock SmaiSika for Trading
+  // =============================================================================
+
+  // Get Trading Balance Status
+  app.get("/api/wallet/trading-balance", (req, res) => {
+    res.json({
+      success: true,
+      trading_balance: {
+        total_smaisika: 2580.75,
+        available_for_trading: 150.25,
+        locked_for_trading: 150.25,
+        unlocked_balance: 2430.50,
+        is_trading_enabled: true,
+        max_daily_trading: 500.00,
+        current_daily_used: 75.50,
+        profit_growth: {
+          daily_profit: 125.80,
+          total_profit_this_week: 847.20,
+          unlimited_growth: true
+        }
+      },
+      last_updated: new Date().toISOString()
+    });
+  });
+
+  // Lock SmaiSika Balance for Trading
+  app.post("/api/wallet/lock-trading-balance", (req, res) => {
+    try {
+      const { amount, duration } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid lock amount'
+        });
+      }
+
+      // Simulate locking balance for trading
+      const lockedAmount = parseFloat(amount);
+      const currentTime = new Date().toISOString();
+      
+      res.json({
+        success: true,
+        message: `Successfully locked ꠄ${lockedAmount.toFixed(2)} for trading`,
+        locked_balance: {
+          amount: lockedAmount,
+          locked_at: currentTime,
+          duration: duration || 'unlimited',
+          trading_enabled: true,
+          can_unlock: true
+        },
+        new_available: 2580.75 - lockedAmount,
+        trading_status: 'ACTIVE'
+      });
+    } catch (error) {
+      console.error('Lock trading balance error:', error);
+      res.status(500).json({ error: 'Failed to lock trading balance' });
+    }
+  });
+
+  // Unlock SmaiSika Balance from Trading
+  app.post("/api/wallet/unlock-trading-balance", (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid unlock amount'
+        });
+      }
+
+      // Simulate unlocking balance from trading
+      const unlockedAmount = parseFloat(amount);
+      const currentTime = new Date().toISOString();
+      
+      res.json({
+        success: true,
+        message: `Successfully unlocked ꠄ${unlockedAmount.toFixed(2)} from trading`,
+        unlocked_balance: {
+          amount: unlockedAmount,
+          unlocked_at: currentTime,
+          available_for_withdrawal: true,
+          profit_included: Math.random() > 0.5 ? (unlockedAmount * 0.05) : 0
+        },
+        new_locked: Math.max(0, 150.25 - unlockedAmount),
+        trading_status: 'UPDATED'
+      });
+    } catch (error) {
+      console.error('Unlock trading balance error:', error);
+      res.status(500).json({ error: 'Failed to unlock trading balance' });
+    }
+  });
+
+  // Get Trading Profit History
+  app.get("/api/wallet/trading-profits", (req, res) => {
+    const profits = [
+      {
+        date: new Date().toISOString().split('T')[0],
+        profit: 125.80,
+        trades: 8,
+        bot: 'Divine Trading Engine',
+        locked_balance_used: 150.25
+      },
+      {
+        date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+        profit: 89.40,
+        trades: 12,
+        bot: 'WaidBot α',
+        locked_balance_used: 120.00
+      },
+      {
+        date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
+        profit: 156.75,
+        trades: 15,
+        bot: 'Autonomous Trader γ',
+        locked_balance_used: 180.50
+      }
+    ];
+
+    res.json({
+      success: true,
+      profits,
+      total_profit_this_week: 847.20,
+      average_daily_profit: 121.03,
+      profit_growth_rate: 15.8,
+      unlimited_growth_active: true
+    });
+  });
+
+  // =============================================================================
   // FULL ENGINE INTEGRATION - Smart Risk Management System
   // =============================================================================
 

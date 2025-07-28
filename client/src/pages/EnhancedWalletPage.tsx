@@ -53,6 +53,7 @@ import {
   Server,
   Wifi,
   Lock,
+  Unlock,
   ShieldCheck,
   FileText,
   Calendar,
@@ -77,11 +78,16 @@ import {
 // Enhanced Heart of Waides KI Wallet - Advanced Features
 export default function EnhancedWalletPage() {
   // State management for advanced features
-  const [activeTab, setActiveTab] = useState("smaipin");
+  const [activeTab, setActiveTab] = useState("trading");
   const [smaipinCode, setSmaipinCode] = useState("");
   const [convertAmount, setConvertAmount] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const [balancesVisible, setBalancesVisible] = useState(true);
+  
+  // Trading balance management states
+  const [lockAmount, setLockAmount] = useState("");
+  const [unlockAmount, setUnlockAmount] = useState("");
+  const [tradingDuration, setTradingDuration] = useState("unlimited");
   
   // Advanced feature states
   const [neuralMode, setNeuralMode] = useState(true);
@@ -122,6 +128,63 @@ export default function EnhancedWalletPage() {
 
   const { data: autoRules } = useQuery({
     queryKey: ["/api/wallet/auto-conversion/rules"],
+  });
+
+  // Trading balance management queries
+  const { data: tradingBalance, refetch: refetchTradingBalance } = useQuery({
+    queryKey: ["/api/wallet/trading-balance"],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const { data: tradingProfits } = useQuery({
+    queryKey: ["/api/wallet/trading-profits"],
+    refetchInterval: 60000, // Refresh every minute
+  });
+
+  // Lock balance for trading mutation
+  const lockTradingBalance = useMutation({
+    mutationFn: async (data: { amount: number; duration?: string }) => {
+      return await apiRequest('/api/wallet/lock-trading-balance', 'POST', data);
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Balance Locked for Trading",
+        description: data.message,
+        variant: "default",
+      });
+      setLockAmount("");
+      refetchTradingBalance();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Lock Failed",
+        description: error.message || "Failed to lock balance for trading",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Unlock balance from trading mutation
+  const unlockTradingBalance = useMutation({
+    mutationFn: async (data: { amount: number }) => {
+      return await apiRequest('/api/wallet/unlock-trading-balance', 'POST', data);
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Balance Unlocked from Trading",
+        description: data.message,
+        variant: "default",
+      });
+      setUnlockAmount("");
+      refetchTradingBalance();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Unlock Failed",
+        description: error.message || "Failed to unlock balance from trading",
+        variant: "destructive",
+      });
+    },
   });
 
   const { data: predictions } = useQuery({
@@ -419,6 +482,10 @@ export default function EnhancedWalletPage() {
             {/* Tab Navigation - Scrollable */}
             <div className="w-full mb-6 overflow-x-auto scrollbar-hide">
               <TabsList className="inline-flex w-max min-w-full bg-slate-900/50 p-1 rounded-xl">
+              <TabsTrigger value="trading" className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-slate-300">
+                <Lock className="w-4 h-4 mr-2" />
+                Trading Balance
+              </TabsTrigger>
               <TabsTrigger value="smaipin" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-300">
                 <Gift className="w-4 h-4 mr-2" />
                 SmaiPin
@@ -468,7 +535,191 @@ export default function EnhancedWalletPage() {
               </TabsList>
             </div>
 
-            {/* Tab Content - All 10 Advanced Features */}
+            {/* Tab Content - All Advanced Features */}
+
+            {/* Trading Balance Management Tab */}
+            <TabsContent value="trading" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Trading Balance Status */}
+                <Card className="bg-slate-900/50 border-green-700/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-white">
+                      <Lock className="h-5 w-5 text-green-400" />
+                      <span>Trading Balance Status</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {tradingBalance ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                          <span className="text-slate-300">Total SmaiSika</span>
+                          <span className="text-white font-mono">ꠄ{tradingBalance.trading_balance.total_smaisika.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-green-900/30 rounded-lg border border-green-700/30">
+                          <span className="text-slate-300">Locked for Trading</span>
+                          <span className="text-green-400 font-mono">ꠄ{tradingBalance.trading_balance.locked_for_trading.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg">
+                          <span className="text-slate-300">Available Balance</span>
+                          <span className="text-blue-400 font-mono">ꠄ{tradingBalance.trading_balance.unlocked_balance.toFixed(2)}</span>
+                        </div>
+                        <div className="p-3 bg-green-900/20 rounded-lg border border-green-700/30">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Sparkles className="h-4 w-4 text-green-400" />
+                            <span className="text-green-400 font-medium">Unlimited Growth Active</span>
+                          </div>
+                          <div className="text-xs text-slate-300">
+                            Daily Profit: ꠄ{tradingBalance.trading_balance.profit_growth.daily_profit.toFixed(2)} | 
+                            Weekly: ꠄ{tradingBalance.trading_balance.profit_growth.total_profit_this_week.toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <RefreshCw className="h-8 w-8 mx-auto text-slate-400 animate-spin" />
+                        <p className="text-slate-400 mt-2">Loading trading balance...</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Lock/Unlock Controls */}
+                <Card className="bg-slate-900/50 border-green-700/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-white">
+                      <ArrowUpDown className="h-5 w-5 text-green-400" />
+                      <span>Lock/Unlock Controls</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Lock Balance Section */}
+                    <div className="space-y-3">
+                      <h4 className="text-green-400 font-medium">Lock Balance for Trading</h4>
+                      <div className="space-y-2">
+                        <label className="text-sm text-slate-300">Amount to Lock (SmaiSika)</label>
+                        <Input
+                          value={lockAmount}
+                          onChange={(e) => setLockAmount(e.target.value)}
+                          placeholder="Enter amount to lock"
+                          className="bg-slate-800/50 border-slate-600 text-white"
+                          type="number"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm text-slate-300">Duration</label>
+                        <Select value={tradingDuration} onValueChange={setTradingDuration}>
+                          <SelectTrigger className="bg-slate-800/50 border-slate-600 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unlimited">Unlimited (Recommended)</SelectItem>
+                            <SelectItem value="1day">1 Day</SelectItem>
+                            <SelectItem value="1week">1 Week</SelectItem>
+                            <SelectItem value="1month">1 Month</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button 
+                        onClick={() => lockTradingBalance.mutate({ 
+                          amount: parseFloat(lockAmount), 
+                          duration: tradingDuration 
+                        })}
+                        disabled={lockTradingBalance.isPending || !lockAmount}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {lockTradingBalance.isPending ? (
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                          <Lock className="w-4 h-4 mr-2" />
+                        )}
+                        Lock for Trading
+                      </Button>
+                    </div>
+
+                    <div className="border-t border-slate-700 pt-4">
+                      {/* Unlock Balance Section */}
+                      <div className="space-y-3">
+                        <h4 className="text-orange-400 font-medium">Unlock Balance from Trading</h4>
+                        <div className="space-y-2">
+                          <label className="text-sm text-slate-300">Amount to Unlock (SmaiSika)</label>
+                          <Input
+                            value={unlockAmount}
+                            onChange={(e) => setUnlockAmount(e.target.value)}
+                            placeholder="Enter amount to unlock"
+                            className="bg-slate-800/50 border-slate-600 text-white"
+                            type="number"
+                          />
+                        </div>
+                        <Button 
+                          onClick={() => unlockTradingBalance.mutate({ 
+                            amount: parseFloat(unlockAmount)
+                          })}
+                          disabled={unlockTradingBalance.isPending || !unlockAmount}
+                          className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                        >
+                          {unlockTradingBalance.isPending ? (
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <Unlock className="w-4 h-4 mr-2" />
+                          )}
+                          Unlock from Trading
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Trading Profit History */}
+              <Card className="bg-slate-900/50 border-green-700/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-white">
+                    <TrendingUp className="h-5 w-5 text-green-400" />
+                    <span>Trading Profit History</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {tradingProfits ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div className="p-4 bg-green-900/20 rounded-lg border border-green-700/30">
+                          <div className="text-green-400 font-medium">Total Weekly Profit</div>
+                          <div className="text-xl font-bold text-white">ꠄ{tradingProfits.total_profit_this_week.toFixed(2)}</div>
+                        </div>
+                        <div className="p-4 bg-blue-900/20 rounded-lg border border-blue-700/30">
+                          <div className="text-blue-400 font-medium">Average Daily</div>
+                          <div className="text-xl font-bold text-white">ꠄ{tradingProfits.average_daily_profit.toFixed(2)}</div>
+                        </div>
+                        <div className="p-4 bg-purple-900/20 rounded-lg border border-purple-700/30">
+                          <div className="text-purple-400 font-medium">Growth Rate</div>
+                          <div className="text-xl font-bold text-white">{tradingProfits.profit_growth_rate.toFixed(1)}%</div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {tradingProfits.profits.map((profit: any, index: number) => (
+                          <div key={index} className="flex justify-between items-center p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
+                            <div>
+                              <div className="text-white font-medium">{profit.date}</div>
+                              <div className="text-sm text-slate-400">{profit.bot} • {profit.trades} trades</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-green-400 font-mono">+ꠄ{profit.profit.toFixed(2)}</div>
+                              <div className="text-xs text-slate-400">Balance: ꠄ{profit.locked_balance_used.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <RefreshCw className="h-8 w-8 mx-auto text-slate-400 animate-spin" />
+                      <p className="text-slate-400 mt-2">Loading profit history...</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* 1. SmaiPin Tab */}
             <TabsContent value="smaipin" className="space-y-6">
