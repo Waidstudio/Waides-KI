@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import WaidesKICoreEnginePanel from "@/components/WaidesKICoreEnginePanel";
+import { WaidesKICoreEnginePanel } from "@/components/WaidesKICoreEnginePanel";
 import { 
   Wallet, 
   CreditCard, 
@@ -97,6 +97,10 @@ export default function EnhancedWalletPage() {
   const [generatedAccount, setGeneratedAccount] = useState<any>(null);
   const [generatedSmaipin, setGeneratedSmaipin] = useState<any>(null);
   const [smaipinAmount, setSmaipinAmount] = useState("");
+  const [convertFromAmount, setConvertFromAmount] = useState("");
+  const [convertFromCurrency, setConvertFromCurrency] = useState("SmaiSika");
+  const [convertToCurrency, setConvertToCurrency] = useState("USD");
+  const [convertToAmount, setConvertToAmount] = useState("");
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -404,8 +408,9 @@ export default function EnhancedWalletPage() {
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Tab Navigation - High Contrast */}
-            <TabsList className="grid grid-cols-2 lg:grid-cols-5 w-full mb-6 bg-slate-900/50 p-1 rounded-xl">
+            {/* Tab Navigation - Scrollable */}
+            <div className="w-full mb-6 overflow-x-auto scrollbar-hide">
+              <TabsList className="inline-flex w-max min-w-full bg-slate-900/50 p-1 rounded-xl">
               <TabsTrigger value="smaipin" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-slate-300">
                 <Gift className="w-4 h-4 mr-2" />
                 SmaiPin
@@ -426,10 +431,12 @@ export default function EnhancedWalletPage() {
                 <Brain className="w-4 h-4 mr-2" />
                 AI Insights
               </TabsTrigger>
-            </TabsList>
+              </TabsList>
+            </div>
 
-            {/* Secondary Tab Navigation */}
-            <TabsList className="grid grid-cols-2 lg:grid-cols-5 w-full mb-6 bg-slate-900/50 p-1 rounded-xl">
+            {/* Secondary Tab Navigation - Scrollable */}
+            <div className="w-full mb-6 overflow-x-auto scrollbar-hide">
+              <TabsList className="inline-flex w-max min-w-full bg-slate-900/50 p-1 rounded-xl">
               <TabsTrigger value="cosmic" className="data-[state=active]:bg-teal-600 data-[state=active]:text-white text-slate-300">
                 <Orbit className="w-4 h-4 mr-2" />
                 Cosmic
@@ -450,7 +457,12 @@ export default function EnhancedWalletPage() {
                 <BarChart3 className="w-4 h-4 mr-2" />
                 Overview
               </TabsTrigger>
-            </TabsList>
+              <TabsTrigger value="heart-waides" className="data-[state=active]:bg-rose-600 data-[state=active]:text-white text-slate-300">
+                <Heart className="w-4 h-4 mr-2" />
+                Heart of Waides
+              </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Tab Content - All 10 Advanced Features */}
 
