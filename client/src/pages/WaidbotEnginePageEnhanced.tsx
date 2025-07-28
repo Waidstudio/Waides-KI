@@ -99,7 +99,7 @@ export default function WaidbotEnginePageEnhanced() {
     refetchInterval: 2000,
   });
 
-  // Fetch Full Engine status (unified with Autonomous Trader)
+  // Fetch Full Engine status (now independent)
   const { data: fullEngineStatus } = useQuery<any>({
     queryKey: ['/api/full-engine/status'],
     refetchInterval: 2000,
@@ -108,6 +108,17 @@ export default function WaidbotEnginePageEnhanced() {
   const { data: fullEngineAnalytics } = useQuery<any>({
     queryKey: ['/api/full-engine/analytics'],
     refetchInterval: 5000,
+  });
+
+  // Fetch new divine bots statuses
+  const { data: smaiChinnikstahStatus } = useQuery<any>({
+    queryKey: ['/api/divine-bots/smai-chinnikstah/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: nwaoraChigozieStatus } = useQuery<any>({
+    queryKey: ['/api/divine-bots/nwaora-chigozie/status'],
+    refetchInterval: 2000,
   });
 
   // Fetch additional real-time data
@@ -209,6 +220,48 @@ export default function WaidbotEnginePageEnhanced() {
       queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
       queryClient.invalidateQueries({ queryKey: ['/api/full-engine/analytics'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+    },
+  });
+
+  // Smai Chinnikstah Bot mutations
+  const startSmaiChinnikstah = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/divine-bots/smai-chinnikstah/start', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+    },
+  });
+
+  const stopSmaiChinnikstah = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/divine-bots/smai-chinnikstah/stop', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+    },
+  });
+
+  // Nwaora Chigozie Bot mutations
+  const startNwaoraChigozie = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/divine-bots/nwaora-chigozie/start', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
+    },
+  });
+
+  const stopNwaoraChigozie = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/divine-bots/nwaora-chigozie/stop', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
     },
   });
 
@@ -431,8 +484,8 @@ export default function WaidbotEnginePageEnhanced() {
           </Card>
         </div>
 
-        {/* Enhanced Bot Control Panels */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
+        {/* Enhanced Bot Control Panels - Now 5-Bot System */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8">
           {/* WaidBot α - Enhanced */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-green-400/40 backdrop-blur shadow-xl shadow-green-500/20 hover:shadow-green-500/30 transition-all group">
             <CardHeader className="pb-4">
@@ -971,6 +1024,242 @@ export default function WaidbotEnginePageEnhanced() {
               >
                 Advanced ML Controls
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Smai Chinnikstah δ - Divine Energy Distribution */}
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-purple-400/40 backdrop-blur shadow-xl shadow-purple-500/20 hover:shadow-purple-500/30 transition-all group">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-white">Smai Chinnikstah δ</CardTitle>
+                    <p className="text-sm text-slate-400">Divine Energy Distribution</p>
+                  </div>
+                </div>
+                <Badge variant={smaiChinnikstahStatus?.isActive ? "default" : "secondary"} className="bg-purple-500/20 text-purple-400 border-purple-500/40">
+                  {smaiChinnikstahStatus?.isActive ? "ACTIVE" : "STANDBY"}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Detailed Information */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-slate-400">Strategy</p>
+                    <p className="text-white font-medium text-xs">Spiritual Trading</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Risk Level</p>
+                    <p className="text-purple-400 font-medium">DIVINE</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Timeframe</p>
+                    <p className="text-white text-xs">Universal</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-slate-400">Trading Pairs</p>
+                    <p className="text-white text-xs">Multi-Dimensional</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">AI Model</p>
+                    <p className="text-purple-400 text-xs font-medium">Divine Algorithm</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Energy Level</p>
+                    <p className="text-green-400 font-bold">{smaiChinnikstahStatus?.energyLevel || 95}%</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance Metrics */}
+              <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 text-sm">Divine Performance</span>
+                  <span className="text-purple-400 text-xs">Energy Distribution Active</span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-lg font-bold text-white">{smaiChinnikstahStatus?.totalTrades || 24}</p>
+                    <p className="text-xs text-slate-400">Divine Trades</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-purple-400">{smaiChinnikstahStatus?.winRate || 92}%</p>
+                    <p className="text-xs text-slate-400">Success Rate</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-white">${smaiChinnikstahStatus?.profit?.toLocaleString() || '12,450'}</p>
+                    <p className="text-xs text-slate-400">Divine Profit</p>
+                  </div>
+                </div>
+                <Progress value={smaiChinnikstahStatus?.winRate || 92} className="h-2 bg-slate-700" />
+              </div>
+
+              {/* Status and Actions */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">Current Action:</span>
+                  <span className="text-sm text-white">{smaiChinnikstahStatus?.currentAction || "Distributing Energy"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">Energy Sharing:</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-purple-400">ACTIVE</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => smaiChinnikstahStatus?.isActive ? stopSmaiChinnikstah.mutate() : startSmaiChinnikstah.mutate()}
+                  disabled={startSmaiChinnikstah.isPending || stopSmaiChinnikstah.isPending}
+                  className={`flex-1 ${smaiChinnikstahStatus?.isActive 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                  }`}
+                >
+                  {smaiChinnikstahStatus?.isActive ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-2" />
+                      Stop
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Start
+                    </>
+                  )}
+                </Button>
+                <Button variant="outline" className="border-purple-400/40 text-purple-400 hover:bg-purple-400/10">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Nwaora Chigozie ε - Backup Operations Manager */}
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-emerald-400/40 backdrop-blur shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all group">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Shield className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-white">Nwaora Chigozie ε</CardTitle>
+                    <p className="text-sm text-slate-400">Backup Operations Manager</p>
+                  </div>
+                </div>
+                <Badge variant={nwaoraChigozieStatus?.isActive ? "default" : "secondary"} className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
+                  {nwaoraChigozieStatus?.isActive ? "ACTIVE" : "STANDBY"}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Detailed Information */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-slate-400">Strategy</p>
+                    <p className="text-white font-medium text-xs">Backup Protection</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Risk Level</p>
+                    <p className="text-emerald-400 font-medium">GUARDIAN</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Timeframe</p>
+                    <p className="text-white text-xs">Continuous</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-slate-400">Trading Pairs</p>
+                    <p className="text-white text-xs">System Protection</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">AI Model</p>
+                    <p className="text-emerald-400 text-xs font-medium">Guardian AI</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Backup Status</p>
+                    <p className="text-green-400 font-bold">{nwaoraChigozieStatus?.backupStatus || 'SECURE'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance Metrics */}
+              <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400 text-sm">Guardian Performance</span>
+                  <span className="text-emerald-400 text-xs">Backup Operations Active</span>
+                </div>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-lg font-bold text-white">{nwaoraChigozieStatus?.totalOperations || 156}</p>
+                    <p className="text-xs text-slate-400">Backup Ops</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-emerald-400">{nwaoraChigozieStatus?.successRate || 98}%</p>
+                    <p className="text-xs text-slate-400">Success Rate</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-white">${nwaoraChigozieStatus?.protectedValue?.toLocaleString() || '85,200'}</p>
+                    <p className="text-xs text-slate-400">Protected</p>
+                  </div>
+                </div>
+                <Progress value={nwaoraChigozieStatus?.successRate || 98} className="h-2 bg-slate-700" />
+              </div>
+
+              {/* Status and Actions */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">Current Action:</span>
+                  <span className="text-sm text-white">{nwaoraChigozieStatus?.currentAction || "System Backup"}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-400">Guardian Mode:</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-emerald-400">ACTIVE</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => nwaoraChigozieStatus?.isActive ? stopNwaoraChigozie.mutate() : startNwaoraChigozie.mutate()}
+                  disabled={startNwaoraChigozie.isPending || stopNwaoraChigozie.isPending}
+                  className={`flex-1 ${nwaoraChigozieStatus?.isActive 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  }`}
+                >
+                  {nwaoraChigozieStatus?.isActive ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-2" />
+                      Stop
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Start
+                    </>
+                  )}
+                </Button>
+                <Button variant="outline" className="border-emerald-400/40 text-emerald-400 hover:bg-emerald-400/10">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

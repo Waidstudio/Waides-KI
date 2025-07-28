@@ -7025,6 +7025,155 @@ export function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =============================================================================
+  // NEW DIVINE TRADING BOTS - Smai Chinnikstah & Nwaora Chigozie
+  // =============================================================================
+
+  // Lazy load new bot instances
+  const getSmaiChinnikstahBot = async () => {
+    const { getSmaiChinnikstahBot } = await import('./services/smaiChinnikstahBot');
+    return getSmaiChinnikstahBot();
+  };
+
+  const getNwaoraChigozieBot = async () => {
+    const { getNwaoraChigozieBot } = await import('./services/nwaoraChigozieBot');
+    return getNwaoraChigozieBot();
+  };
+
+  // Smai Chinnikstah Bot Status
+  app.get("/api/divine-bots/smai-chinnikstah/status", async (req, res) => {
+    try {
+      const bot = await getSmaiChinnikstahBot();
+      const status = bot.getStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('❌ Smai Chinnikstah status error:', error);
+      res.status(500).json({ error: 'Failed to get Smai Chinnikstah status' });
+    }
+  });
+
+  // Start/Stop Smai Chinnikstah Bot
+  app.post("/api/divine-bots/smai-chinnikstah/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const bot = await getSmaiChinnikstahBot();
+      
+      let result;
+      if (action === 'start') {
+        result = bot.start();
+      } else if (action === 'stop') {
+        result = bot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
+      
+      res.json({ 
+        ...result,
+        action,
+        timestamp: new Date().toISOString(),
+        status: bot.getStatus()
+      });
+    } catch (error) {
+      console.error('❌ Smai Chinnikstah toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle Smai Chinnikstah Bot' });
+    }
+  });
+
+  // Smai Chinnikstah Energy Distribution
+  app.get("/api/divine-bots/smai-chinnikstah/energy-distribution", async (req, res) => {
+    try {
+      const bot = await getSmaiChinnikstahBot();
+      const distribution = bot.distributeEnergy();
+      res.json({
+        success: true,
+        energy_distribution: distribution,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ Smai Chinnikstah energy distribution error:', error);
+      res.status(500).json({ error: 'Failed to get energy distribution' });
+    }
+  });
+
+  // Nwaora Chigozie Bot Status
+  app.get("/api/divine-bots/nwaora-chigozie/status", async (req, res) => {
+    try {
+      const bot = await getNwaoraChigozieBot();
+      const status = bot.getStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('❌ Nwaora Chigozie status error:', error);
+      res.status(500).json({ error: 'Failed to get Nwaora Chigozie status' });
+    }
+  });
+
+  // Start/Stop Nwaora Chigozie Bot
+  app.post("/api/divine-bots/nwaora-chigozie/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const bot = await getNwaoraChigozieBot();
+      
+      let result;
+      if (action === 'start') {
+        result = bot.start();
+      } else if (action === 'stop') {
+        result = bot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
+      
+      res.json({ 
+        ...result,
+        action,
+        timestamp: new Date().toISOString(),
+        status: bot.getStatus()
+      });
+    } catch (error) {
+      console.error('❌ Nwaora Chigozie toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle Nwaora Chigozie Bot' });
+    }
+  });
+
+  // Nwaora Chigozie Backup Operations
+  app.post("/api/divine-bots/nwaora-chigozie/backup-operation", async (req, res) => {
+    try {
+      const bot = await getNwaoraChigozieBot();
+      const operation = bot.executeBackupOperation();
+      res.json({
+        success: true,
+        backup_operation: operation,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ Nwaora Chigozie backup operation error:', error);
+      res.status(500).json({ error: 'Failed to execute backup operation' });
+    }
+  });
+
+  // Smai Chinnikstah Trade History
+  app.get("/api/divine-bots/smai-chinnikstah/trades", async (req, res) => {
+    try {
+      const bot = await getSmaiChinnikstahBot();
+      const trades = bot.getTradeHistory();
+      res.json({ success: true, trades });
+    } catch (error) {
+      console.error('❌ Smai Chinnikstah trades error:', error);
+      res.status(500).json({ error: 'Failed to get Smai Chinnikstah trades' });
+    }
+  });
+
+  // Nwaora Chigozie Trade History
+  app.get("/api/divine-bots/nwaora-chigozie/trades", async (req, res) => {
+    try {
+      const bot = await getNwaoraChigozieBot();
+      const trades = bot.getTradeHistory();
+      res.json({ success: true, trades });
+    } catch (error) {
+      console.error('❌ Nwaora Chigozie trades error:', error);
+      res.status(500).json({ error: 'Failed to get Nwaora Chigozie trades' });
+    }
+  });
+
+  // =============================================================================
   // FULL ENGINE INTEGRATION - Smart Risk Management System
   // =============================================================================
 
@@ -7048,37 +7197,30 @@ export function registerRoutes(app: Express): Promise<Server> {
     return waidesFullEngine;
   };
 
-  // Full Engine Status - Unified with Autonomous Trader (Fallback Implementation)
+  // Full Engine Status - Now Independent from Autonomous Trader
   app.get('/api/full-engine/status', async (req, res) => {
     try {
-      const autonomousBot = await getRealTimeAutonomousTrader();
-      const botStatus = autonomousBot.getStatus();
+      const fullEngine = await getWaidesFullEngine();
+      const engineStatus = fullEngine.getStatus();
       
-      // Create unified status with fallback engine data
-      const unifiedStatus = {
-        is_active: botStatus.isActive,
-        is_running: botStatus.isRunning,
+      // Create independent engine status
+      const independentStatus = {
+        is_active: engineStatus.is_active,
+        is_running: engineStatus.is_running,
         emergency_stop_active: false,
-        active_trades: botStatus.activePositions || 0,
-        total_trades: botStatus.performance.totalTrades,
+        active_trades: engineStatus.active_trades || 0,
+        total_trades: engineStatus.total_trades || 0,
         current_strategy: 'SMART_RISK_MANAGEMENT',
         last_tuning: Date.now() - 300000,
         next_evaluation: Date.now() + 300000,
         risk_level: 'MEDIUM',
-        autonomous_trader: {
-          isActive: botStatus.isActive,
-          currentBalance: botStatus.currentBalance,
-          performance: botStatus.performance,
-          activeStrategies: botStatus.activeStrategies,
-          scanningPairs: botStatus.scanningPairs,
-          recentTrades: botStatus.recentTrades.slice(0, 3)
-        },
-        integration_mode: 'unified_trading_system'
+        connection_status: 'DISCONNECTED',
+        operation_mode: 'INDEPENDENT'
       };
 
       res.json({
         success: true,
-        engine_status: unifiedStatus,
+        engine_status: independentStatus,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -7087,23 +7229,23 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Start Full Engine with Autonomous Trader Integration (Fallback Implementation)
+  // Start Full Engine - Now Independent from Autonomous Trader
   app.post('/api/full-engine/start', async (req, res) => {
     try {
-      const autonomousBot = await getRealTimeAutonomousTrader();
+      const fullEngine = await getWaidesFullEngine();
       
-      // Start autonomous bot as unified system
-      const botResult = await autonomousBot.start();
+      // Start Full Engine independently
+      const engineResult = fullEngine.start();
       
       res.json({
-        success: botResult.success,
-        message: `Full Engine unified with Autonomous Trader ${botResult.success ? 'started' : 'failed'} - Smart Risk Management active`,
+        success: engineResult.success,
+        message: `Full Engine ${engineResult.success ? 'started' : 'failed'} - Independent Smart Risk Management active`,
         engine_status: {
-          is_active: botResult.success,
+          is_active: engineResult.success,
           current_strategy: 'SMART_RISK_MANAGEMENT',
-          risk_level: 'MEDIUM'
-        },
-        autonomous_status: autonomousBot.getStatus()
+          risk_level: 'MEDIUM',
+          connection_status: 'DISCONNECTED'
+        }
       });
     } catch (error) {
       console.error('❌ Full Engine start error:', error);
@@ -7111,21 +7253,21 @@ export function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stop Full Engine with Autonomous Trader Integration
+  // Stop Full Engine - Now Independent from Autonomous Trader
   app.post('/api/full-engine/stop', async (req, res) => {
     try {
       const fullEngine = await getWaidesFullEngine();
-      const autonomousBot = await getRealTimeAutonomousTrader();
       
-      // Stop both systems
+      // Stop Full Engine independently
       const engineResult = fullEngine.stop();
-      const botResult = await autonomousBot.stop();
-      
-      const combinedMessage = `Full Engine ${engineResult.success ? 'stopped' : 'failed'}, Autonomous Trader ${botResult.success ? 'stopped' : 'failed'}`;
       
       res.json({
-        success: engineResult.success && botResult.success,
-        message: combinedMessage
+        success: engineResult.success,
+        message: `Full Engine ${engineResult.success ? 'stopped' : 'failed'} - Independent operation complete`,
+        engine_status: {
+          is_active: false,
+          connection_status: 'DISCONNECTED'
+        }
       });
     } catch (error) {
       console.error('❌ Full Engine stop error:', error);
