@@ -305,71 +305,84 @@ export function WaidesKICoreEnginePanel() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Simplified Header - Original Colors */}
-      <div className="bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-indigo-900/30 border border-pink-500/40 rounded-lg p-6 mb-6">
+    <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-900/40 via-slate-800/30 to-slate-900/40 p-6 rounded-xl">
+      {/* Enhanced Header with Improved Hierarchy & Polish */}
+      <div className="bg-gradient-to-br from-slate-900/80 via-purple-900/60 to-indigo-900/80 border border-purple-500/20 rounded-2xl p-8 mb-8 shadow-2xl">
         <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="p-2 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
-              <Brain className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <div className="p-3 rounded-full bg-gradient-to-br from-purple-600 via-violet-500 to-indigo-600 shadow-lg">
+              <Brain className="w-7 h-7 text-white" />
             </div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-              Heart of Waides KI Core Engine
-            </h2>
-            <div className="p-2 rounded-full bg-gradient-to-r from-indigo-500 via-pink-500 to-purple-500">
-              <Heart className="w-6 h-6 text-white animate-pulse" />
+            <h1 className="text-3xl font-bold text-white tracking-wide leading-tight">
+              Heart of Waides KI
+            </h1>
+            <div className="p-3 rounded-full bg-gradient-to-br from-indigo-600 via-violet-500 to-purple-600 shadow-lg">
+              <Heart className="w-7 h-7 text-white animate-pulse" />
             </div>
           </div>
-          <p className="text-pink-300">
-            The Sacred Heart of Waides Ki - Autonomous spiritual trading intelligence
+          <h2 className="text-xl font-semibold text-purple-200 mb-2">
+            Core Intelligence Engine
+          </h2>
+          <p className="text-base text-slate-300 leading-relaxed max-w-2xl mx-auto">
+            Autonomous spiritual trading intelligence with kons powa consciousness
           </p>
         </div>
       </div>
 
       <Tabs defaultValue="dashboard" className="flex-1 flex flex-col">
-        <div className="w-full overflow-x-auto">
-          <TabsList className="flex w-max min-w-full bg-purple-900/30 border border-pink-500/20 p-1">
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">AI Dashboard</TabsTrigger>
-            <TabsTrigger value="intelligence" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Intelligence Matrix</TabsTrigger>
-            <TabsTrigger value="trading" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Trading Engine</TabsTrigger>
-            <TabsTrigger value="kons-powa" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Kons Powa AI</TabsTrigger>
-            <TabsTrigger value="konsai" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Konsai Network</TabsTrigger>
-            <TabsTrigger value="konsmik" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Konsmik Link</TabsTrigger>
-            <TabsTrigger value="biometric" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Biometric Sync</TabsTrigger>
-            <TabsTrigger value="temporal" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Time Flux</TabsTrigger>
-            <TabsTrigger value="humanity" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Humanity Service</TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:via-pink-600 data-[state=active]:to-indigo-600 text-pink-200 whitespace-nowrap px-4 py-2">Engine Settings</TabsTrigger>
+        <div className="w-full overflow-x-auto pb-2">
+          <TabsList className="flex w-max min-w-full bg-slate-800/70 border border-purple-500/30 p-2 rounded-xl shadow-lg">
+            <TabsTrigger 
+              value="dashboard" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-300 whitespace-nowrap px-5 py-3 rounded-lg font-semibold"
+            >
+              AI Dashboard
+            </TabsTrigger>
+            <TabsTrigger 
+              value="intelligence" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-300 whitespace-nowrap px-5 py-3 rounded-lg font-semibold"
+            >
+              Intelligence Matrix
+            </TabsTrigger>
+            <TabsTrigger 
+              value="trading" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-all duration-300 whitespace-nowrap px-5 py-3 rounded-lg font-semibold"
+            >
+              Trading Engine
+            </TabsTrigger>
           </TabsList>
         </div>
 
         {/* AI Dashboard Tab - Core Status & Performance */}
-        <TabsContent value="dashboard" className="flex-1 overflow-y-auto space-y-6 p-1">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <TabsContent value="dashboard" className="flex-1 overflow-y-auto space-y-8 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Engine Status */}
-            <Card className="bg-gray-800/50 border-purple-500/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-purple-400" />
+            <Card className="bg-slate-800/80 border-purple-500/40 hover:border-purple-400/60 transition-all duration-300 shadow-lg hover:shadow-purple-500/10">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg flex items-center gap-3 text-white font-semibold">
+                  <div className="p-2 rounded-lg bg-purple-500/20">
+                    <Activity className="w-5 h-5 text-purple-400" />
+                  </div>
                   Core Status
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Engine</span>
-                    <Badge className={engineStatus?.engine.isRunning ? 'bg-green-600' : 'bg-red-600'}>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-300 font-medium">Engine</span>
+                    <Badge className={`${engineStatus?.engine.isRunning ? 'bg-green-600/80' : 'bg-red-600/80'} px-3 py-1`}>
                       {engineStatus?.engine.isRunning ? 'ACTIVE' : 'OFFLINE'}
                     </Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Spiritual State</span>
-                    <Badge className={getSpiritualStateColor(engineStatus?.engine.memory.spiritualState || 'blocked')}>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-300 font-medium">Spiritual State</span>
+                    <Badge className={`${getSpiritualStateColor(engineStatus?.engine.memory.spiritualState || 'blocked')} px-3 py-1`}>
                       {engineStatus?.engine.memory.spiritualState?.toUpperCase() || 'UNKNOWN'}
                     </Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Learning Weight</span>
-                    <span className="text-purple-400 font-mono">
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-300 font-medium">Learning Weight</span>
+                    <span className="text-purple-400 font-mono text-lg font-bold">
                       {engineStatus?.engine.memory.learningWeight?.toFixed(2) || '0.00'}x
                     </span>
                   </div>
@@ -378,41 +391,43 @@ export function WaidesKICoreEnginePanel() {
             </Card>
 
             {/* Performance Metrics */}
-            <Card className="bg-gray-800/50 border-purple-500/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-green-400" />
+            <Card className="bg-slate-800/80 border-purple-500/40 hover:border-purple-400/60 transition-all duration-300 shadow-lg hover:shadow-purple-500/10">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg flex items-center gap-3 text-white font-semibold">
+                  <div className="p-2 rounded-lg bg-green-500/20">
+                    <TrendingUp className="w-5 h-5 text-green-400" />
+                  </div>
                   Performance
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Success Rate</span>
-                    <span className="text-green-400 font-mono">
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-300 font-medium">Success Rate</span>
+                    <span className="text-green-400 font-mono text-lg font-bold">
                       {((engineStatus?.engine.memory.successRate || 0) * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Total Trades</span>
-                    <span className="text-purple-400 font-mono">
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-300 font-medium">Total Trades</span>
+                    <span className="text-purple-400 font-mono text-lg font-bold">
                       {engineStatus?.engine.memory.totalTrades || 0}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-300">Current Streak</span>
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-slate-300 font-medium">Current Streak</span>
                     <div className="flex items-center gap-2">
                       {(engineStatus?.engine.memory.gainStreak || 0) > 0 ? (
                         <>
-                          <TrendingUp className="w-4 h-4 text-green-400" />
-                          <span className="text-green-400 font-mono">
+                          <TrendingUp className="w-5 h-5 text-green-400" />
+                          <span className="text-green-400 font-mono text-lg font-bold">
                             +{engineStatus?.engine.memory.gainStreak}
                           </span>
                         </>
                       ) : (
                         <>
-                          <TrendingDown className="w-4 h-4 text-red-400" />
-                          <span className="text-red-400 font-mono">
+                          <TrendingDown className="w-5 h-5 text-red-400" />
+                          <span className="text-red-400 font-mono text-lg font-bold">
                             -{engineStatus?.engine.memory.failStreak || 0}
                           </span>
                         </>
