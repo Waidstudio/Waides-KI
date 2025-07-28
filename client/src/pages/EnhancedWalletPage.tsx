@@ -61,7 +61,8 @@ import {
   Hexagon,
   Crown,
   Diamond,
-  Infinity
+  Infinity,
+  DollarSign
 } from "lucide-react";
 
 // Enhanced Heart of Waides KI Wallet - Advanced Features
@@ -177,14 +178,14 @@ export default function EnhancedWalletPage() {
 
   // Crypto wallet generation mutation
   const generateCryptoMutation = useMutation({
-    mutationFn: async (currency: string) => {
-      return await apiRequest("/api/wallet/crypto/generate", "POST", { currency });
+    mutationFn: async (cryptoType: string) => {
+      return await apiRequest("/api/wallet/crypto/generate", "POST", { cryptoType });
     },
     onSuccess: (data: any) => {
       setCryptoWallet(data.wallet);
       toast({
         title: "Crypto Wallet Generated",
-        description: `Successfully created ${data.wallet.currency} wallet`,
+        description: `Successfully created ${data.cryptoType} wallet`,
       });
     },
     onError: (error: any) => {
@@ -196,8 +197,8 @@ export default function EnhancedWalletPage() {
     },
   });
 
-  const generateCryptoWallet = (currency: string) => {
-    generateCryptoMutation.mutate(currency);
+  const generateCryptoWallet = (cryptoType: string) => {
+    generateCryptoMutation.mutate(cryptoType);
   };
 
   const copyToClipboard = async (text: string) => {
@@ -701,7 +702,7 @@ export default function EnhancedWalletPage() {
                     {cryptoWallet && (
                       <div className="space-y-3 p-3 bg-slate-800/50 rounded-lg">
                         <div className="flex items-center justify-between">
-                          <span className="text-amber-300 font-medium">{cryptoWallet.currency} Wallet</span>
+                          <span className="text-amber-300 font-medium">{cryptoWallet.network || 'Crypto'} Wallet</span>
                           <Badge className="bg-amber-600 text-white">Active</Badge>
                         </div>
                         <div className="space-y-2">
