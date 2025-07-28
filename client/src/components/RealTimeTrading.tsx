@@ -9,7 +9,7 @@ interface DivineTradingStatus {
   divine_engine: {
     isActive: boolean;
     engine_status: string;
-    full_engine_connected: boolean;
+    smai_chinnikstah_connected: boolean;
     autonomous_trader_connected: boolean;
     unified_system: boolean;
     last_refresh: string;
@@ -57,9 +57,10 @@ interface DivineTradingMetrics {
     risk_score: number;
   };
   engine_coordination: {
-    full_engine_sync: boolean;
+    smai_chinnikstah_sync: boolean;
     autonomous_trader_sync: boolean;
     divine_harmony: boolean;
+    energy_distribution_active: boolean;
     sync_quality: number;
   };
   autonomous_refresh: {
@@ -75,12 +76,12 @@ export default function RealTimeTrading() {
   
   const { data: status, isLoading } = useQuery<DivineTradingStatus>({
     queryKey: ['/api/divine-trading/status'],
-    refetchInterval: 10000, // Refresh every 10 seconds for status
+    refetchInterval: 60000, // Refresh every 60 seconds for status (reduced from 10s)
   });
 
   const { data: metrics } = useQuery<DivineTradingMetrics>({
     queryKey: ['/api/divine-trading/metrics'],
-    refetchInterval: 30000, // Autonomous refresh every 30 seconds
+    refetchInterval: 120000, // Autonomous refresh every 2 minutes (reduced from 30s)
   });
 
   const startTradingMutation = useMutation({
@@ -189,16 +190,16 @@ export default function RealTimeTrading() {
           <div className="space-y-2">
             <div className="text-sm waides-text-secondary flex items-center space-x-1">
               <Brain className="w-3 h-3" />
-              <span>Full Engine</span>
+              <span>Smai Chinnikstah</span>
             </div>
             <div className="flex items-center space-x-2">
-              {status?.divine_engine?.full_engine_connected ? (
+              {status?.divine_engine?.smai_chinnikstah_connected ? (
                 <CheckCircle className="w-4 h-4 text-blue-400" />
               ) : (
                 <XCircle className="w-4 h-4 text-red-400" />
               )}
-              <span className={`text-sm font-medium ${status?.divine_engine?.full_engine_connected ? 'text-blue-400' : 'text-red-400'}`}>
-                {status?.divine_engine?.full_engine_connected ? 'Connected' : 'Disconnected'}
+              <span className={`text-sm font-medium ${status?.divine_engine?.smai_chinnikstah_connected ? 'text-blue-400' : 'text-red-400'}`}>
+                {status?.divine_engine?.smai_chinnikstah_connected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
           </div>
@@ -320,15 +321,15 @@ export default function RealTimeTrading() {
             </Button>
           </div>
           
-          {!status?.divine_engine?.full_engine_connected && (
+          {!status?.divine_engine?.smai_chinnikstah_connected && (
             <div className="text-xs text-orange-400 text-center">
-              ⚠️ Full Engine connection required for divine trading
+              ⚠️ Smai Chinnikstah connection required for divine trading
             </div>
           )}
           
           {isActive && (
             <div className="text-xs text-purple-400 text-center">
-              ✨ Divine Trading Engine active - Autonomous refresh every 30 seconds
+              ✨ Divine Trading Engine active - Smai Chinnikstah distributing energy
             </div>
           )}
         </div>
