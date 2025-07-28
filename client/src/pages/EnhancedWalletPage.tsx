@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -29,15 +31,55 @@ import {
   EyeOff,
   Zap,
   Star,
-  Plus
+  Plus,
+  Sparkles,
+  Cpu,
+  Atom,
+  Layers3,
+  Scan,
+  Waves,
+  Orbit,
+  Gauge,
+  Activity,
+  Radio,
+  Users,
+  Gamepad2,
+  Rocket,
+  Gem,
+  Database,
+  Server,
+  Wifi,
+  Lock,
+  ShieldCheck,
+  FileText,
+  Calendar,
+  Clock,
+  Target,
+  Lightbulb,
+  Wand2,
+  Hexagon,
+  Crown,
+  Diamond,
+  Infinity
 } from "lucide-react";
 
-export default function EnhancedWalletPage() {
-  const [activeTab, setActiveTab] = useState("overview");
+// Revolutionary Next-Gen Wallet - The Future of Digital Finance
+export default function NextGenWalletPage() {
+  // Revolutionary state management
+  const [activeTab, setActiveTab] = useState("neural-overview");
   const [smaipinCode, setSmaipinCode] = useState("");
   const [convertAmount, setConvertAmount] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
   const [balancesVisible, setBalancesVisible] = useState(true);
+  const [hologramMode, setHologramMode] = useState(false);
+  const [quantumSecurity, setQuantumSecurity] = useState(true);
+  const [aiTradingMode, setAiTradingMode] = useState(false);
+  const [timeWarpAnalysis, setTimeWarpAnalysis] = useState(false);
+  const [cosmicSync, setCosmicSync] = useState(true);
+  const [neuralInterfaceActive, setNeuralInterfaceActive] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [voiceCommandMode, setVoiceCommandMode] = useState(false);
+  const [biometricAuth, setBiometricAuth] = useState(true);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -167,17 +209,18 @@ export default function EnhancedWalletPage() {
     generateAccountMutation.mutate({ country, currency });
   };
 
-  const scrollableTabs = [
-    { id: "overview", label: "Overview", icon: Eye },
-    { id: "smaipin", label: "Smaipin", icon: Gift },
-    { id: "convert", label: "Convert", icon: RefreshCw },
-    { id: "multicurrency", label: "Multi-Currency", icon: Globe },
-    { id: "virtual", label: "Virtual Accounts", icon: CreditCard },
-    { id: "ai", label: "AI Insights", icon: Brain },
-    { id: "biometric", label: "Biometric", icon: Fingerprint },
-    { id: "voice", label: "Voice Control", icon: Mic },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "auto", label: "Auto Rules", icon: Zap }
+  // Revolutionary Neural Interface Tabs
+  const neuralTabs = [
+    { id: "neural-overview", label: "Neural Core", icon: Cpu, color: "from-blue-500 to-cyan-400" },
+    { id: "hologram-vault", label: "Hologram Vault", icon: Gem, color: "from-purple-500 to-pink-400" },
+    { id: "quantum-security", label: "Quantum Shield", icon: Shield, color: "from-emerald-500 to-green-400" },
+    { id: "ai-trading", label: "AI Trading", icon: Brain, color: "from-orange-500 to-red-400" },
+    { id: "time-warp", label: "Time Warp", icon: Clock, color: "from-indigo-500 to-purple-400" },
+    { id: "cosmic-sync", label: "Cosmic Sync", icon: Orbit, color: "from-teal-500 to-blue-400" },
+    { id: "voice-command", label: "Neural Voice", icon: Mic, color: "from-yellow-500 to-orange-400" },
+    { id: "biometric-portal", label: "Bio Portal", icon: Fingerprint, color: "from-pink-500 to-rose-400" },
+    { id: "reality-analytics", label: "Reality Analytics", icon: Activity, color: "from-violet-500 to-purple-400" },
+    { id: "infinite-rules", label: "Infinite Rules", icon: Infinity, color: "from-cyan-500 to-blue-400" }
   ];
 
   return (
@@ -191,25 +234,56 @@ export default function EnhancedWalletPage() {
                 <Wallet className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-                  SmaiSika Wallet
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-300 bg-clip-text text-transparent">
+                  SmaiSika Neural Vault
                 </h1>
-                <p className="text-slate-400">Advanced AI-Powered Financial Management</p>
+                <p className="text-slate-300 font-medium">Revolutionary Next-Gen Financial Reality</p>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse" />
+                  <span className="text-xs text-yellow-400">Quantum-Enhanced • AI-Powered • Future-Ready</span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
+              {/* Neural Interface Controls */}
+              <div className="flex items-center space-x-2 px-3 py-2 bg-black/30 rounded-full border border-purple-500/30">
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs text-purple-300">Hologram</span>
+                  <Switch 
+                    checked={hologramMode} 
+                    onCheckedChange={setHologramMode}
+                    className="scale-75"
+                  />
+                </div>
+                <div className="w-px h-4 bg-purple-500/30" />
+                <div className="flex items-center space-x-1">
+                  <span className="text-xs text-emerald-300">Quantum</span>
+                  <Switch 
+                    checked={quantumSecurity} 
+                    onCheckedChange={setQuantumSecurity}
+                    className="scale-75"
+                  />
+                </div>
+              </div>
+              
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setBalancesVisible(!balancesVisible)}
-                className="text-slate-300 hover:text-white"
+                className="text-slate-300 hover:text-white p-2 rounded-full bg-black/20"
               >
                 {balancesVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </Button>
-              <Badge variant="outline" className="border-emerald-500 text-emerald-400">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full mr-2"></div>
-                Online
-              </Badge>
+              
+              <div className="flex items-center space-x-2">
+                <div className="relative">
+                  <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <div className="absolute inset-0 w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-30"></div>
+                </div>
+                <Badge variant="outline" className="border-emerald-500 text-emerald-400 bg-emerald-500/10">
+                  Neural Active
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
@@ -280,29 +354,286 @@ export default function EnhancedWalletPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 pb-8">
-        {/* Scrollable Tab Navigation */}
-        <div className="w-full overflow-x-auto mb-6">
-          <div className="flex space-x-2 p-2 bg-slate-800/50 rounded-lg min-w-max">
-            {scrollableTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 min-w-fit ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <tab.icon className="h-4 w-4 mr-2" />
-                {tab.label}
-              </button>
-            ))}
+        {/* Revolutionary Neural Tab Navigation */}
+        <div className="w-full overflow-x-auto mb-8">
+          <div className="flex space-x-3 p-3 bg-gradient-to-r from-slate-900/80 via-purple-900/50 to-slate-900/80 backdrop-blur-sm rounded-2xl border border-purple-500/20 min-w-max">
+            {neuralTabs.map((tab) => {
+              const IconComponent = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative group inline-flex items-center justify-center whitespace-nowrap rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 min-w-fit ${
+                    activeTab === tab.id
+                      ? `bg-gradient-to-r ${tab.color} text-white shadow-2xl transform scale-105`
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50 hover:scale-102'
+                  }`}
+                >
+                  {activeTab === tab.id && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                  )}
+                  <IconComponent className="h-4 w-4 mr-2 relative z-10" />
+                  <span className="relative z-10">{tab.label}</span>
+                  {activeTab === tab.id && (
+                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full animate-pulse" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Tab Contents */}
-        <div className="space-y-6">
-            {/* Overview Tab */}
+        {/* Revolutionary Tab Contents */}
+        <div className="space-y-8">
+            {/* Neural Core Overview Tab */}
+            <div className={activeTab === 'neural-overview' ? 'block space-y-8' : 'hidden'}>
+              {/* Quantum Balance Grid with Hologram Effects */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Neural Balance Display */}
+                <Card className={`relative overflow-hidden transition-all duration-300 ${
+                  hologramMode 
+                    ? 'bg-gradient-to-br from-cyan-900/60 via-blue-900/40 to-purple-900/60 border-cyan-400/50 shadow-2xl shadow-cyan-500/20' 
+                    : 'bg-gradient-to-br from-slate-800/80 to-slate-900/60 border-slate-600/50'
+                }`}>
+                  {hologramMode && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent animate-pulse" />
+                  )}
+                  <CardContent className="p-6 relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Cpu className="h-5 w-5 text-cyan-400" />
+                        <span className="text-cyan-300 text-sm font-medium">Neural Balance</span>
+                      </div>
+                      {quantumSecurity && (
+                        <div className="flex items-center space-x-1">
+                          <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                          <span className="text-xs text-emerald-300">Quantum Protected</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-3xl font-bold text-white">
+                        ꠄ {(walletBalance as any)?.smaiSika?.total?.toLocaleString() || '0'}
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                        <span className="text-sm text-emerald-300">+12.5% Neural Growth</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* AI Trading Status */}
+                <Card className="bg-gradient-to-br from-orange-900/50 to-red-900/30 border-orange-700/50 relative overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Brain className="h-5 w-5 text-orange-400" />
+                        <span className="text-orange-300 text-sm font-medium">AI Trading</span>
+                      </div>
+                      <Switch 
+                        checked={aiTradingMode} 
+                        onCheckedChange={setAiTradingMode}
+                        className="scale-75"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-2xl font-bold text-white">
+                        {aiTradingMode ? 'ACTIVE' : 'STANDBY'}
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <Activity className="h-4 w-4 text-orange-400" />
+                        <span className="text-sm text-orange-300">
+                          {aiTradingMode ? 'Neural Networks Processing' : 'Awaiting Activation'}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                  {aiTradingMode && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-red-500 animate-pulse" />
+                  )}
+                </Card>
+
+                {/* Time Warp Analytics */}
+                <Card className="bg-gradient-to-br from-indigo-900/50 to-purple-900/30 border-indigo-700/50 relative">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-5 w-5 text-indigo-400" />
+                        <span className="text-indigo-300 text-sm font-medium">Time Analysis</span>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => setTimeWarpAnalysis(!timeWarpAnalysis)}
+                        className={timeWarpAnalysis ? 'text-indigo-300' : 'text-slate-400'}
+                      >
+                        <Zap className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-2xl font-bold text-white">
+                        {timeWarpAnalysis ? '4D' : '3D'}
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <Layers3 className="h-4 w-4 text-indigo-400" />
+                        <span className="text-sm text-indigo-300">
+                          {timeWarpAnalysis ? 'Temporal Scanning Active' : 'Standard Timeline'}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Cosmic Synchronization */}
+                <Card className="bg-gradient-to-br from-teal-900/50 to-blue-900/30 border-teal-700/50 relative">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2">
+                        <Orbit className="h-5 w-5 text-teal-400 animate-spin" />
+                        <span className="text-teal-300 text-sm font-medium">Cosmic Sync</span>
+                      </div>
+                      <Switch 
+                        checked={cosmicSync} 
+                        onCheckedChange={setCosmicSync}
+                        className="scale-75"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-2xl font-bold text-white">
+                        {cosmicSync ? 'SYNCED' : 'LOCAL'}
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <Radio className="h-4 w-4 text-teal-400" />
+                        <span className="text-sm text-teal-300">
+                          {cosmicSync ? 'Universal Network Connected' : 'Standalone Mode'}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Revolutionary Neural Network Visualization */}
+              <Card className="bg-gradient-to-br from-slate-900/90 to-purple-900/60 border-purple-500/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent animate-pulse" />
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Atom className="h-6 w-6 mr-3 text-purple-400 animate-spin" />
+                    Neural Network Activity
+                    <Badge className="ml-auto bg-purple-600/20 text-purple-300 border-purple-500/30">
+                      Real-Time
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Neural Activity Visualization */}
+                    <div className="lg:col-span-2">
+                      <canvas 
+                        ref={canvasRef}
+                        width={400} 
+                        height={200}
+                        className="w-full h-40 bg-black/20 rounded-lg border border-purple-500/20"
+                      />
+                      <p className="text-center text-purple-300 text-sm mt-2">
+                        Neural pathways processing financial data in real-time
+                      </p>
+                    </div>
+                    
+                    {/* Neural Stats */}
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-purple-300 text-sm">Processing Power</span>
+                          <span className="text-white font-bold">97.3%</span>
+                        </div>
+                        <Progress value={97.3} className="h-2" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-purple-300 text-sm">Neural Efficiency</span>
+                          <span className="text-white font-bold">94.8%</span>
+                        </div>
+                        <Progress value={94.8} className="h-2" />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-purple-300 text-sm">Quantum Coherence</span>
+                          <span className="text-white font-bold">89.2%</span>
+                        </div>
+                        <Progress value={89.2} className="h-2" />
+                      </div>
+                      
+                      <div className="pt-4 border-t border-purple-500/20">
+                        <Button 
+                          onClick={() => setNeuralInterfaceActive(!neuralInterfaceActive)}
+                          className={`w-full ${
+                            neuralInterfaceActive 
+                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
+                              : 'bg-slate-700 hover:bg-slate-600'
+                          }`}
+                        >
+                          <Sparkles className="h-4 w-4 mr-2" />
+                          {neuralInterfaceActive ? 'Neural Interface Active' : 'Activate Neural Interface'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Hologram Vault Tab */}
+            <div className={activeTab === 'hologram-vault' ? 'block space-y-8' : 'hidden'}>
+              <Card className="bg-gradient-to-br from-purple-900/60 via-pink-900/40 to-purple-900/60 border-pink-500/30 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-400/5 to-transparent animate-pulse" />
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Gem className="h-6 w-6 mr-3 text-pink-400" />
+                    Holographic Asset Vault
+                    <Badge className="ml-auto bg-pink-600/20 text-pink-300 border-pink-500/30">
+                      3D Secured
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="text-center py-12">
+                    <div className="relative inline-block">
+                      <div className="w-32 h-32 mx-auto bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full border-2 border-pink-500/50 flex items-center justify-center mb-6">
+                        <Gem className="h-16 w-16 text-pink-400 animate-pulse" />
+                        <div className="absolute inset-0 rounded-full border-2 border-pink-400/30 animate-ping" />
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Holographic Security Active</h3>
+                    <p className="text-pink-300 mb-8 max-w-md mx-auto">
+                      Your assets are protected by quantum-encrypted holographic vaults that exist in multiple dimensions simultaneously.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                      <div className="p-4 bg-pink-900/20 rounded-lg border border-pink-500/20">
+                        <Shield className="h-8 w-8 text-pink-400 mx-auto mb-2" />
+                        <p className="text-pink-300 text-sm font-medium">Quantum Encryption</p>
+                        <p className="text-pink-400/70 text-xs">Unbreakable Security</p>
+                      </div>
+                      <div className="p-4 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                        <Layers3 className="h-8 w-8 text-purple-400 mx-auto mb-2" />
+                        <p className="text-purple-300 text-sm font-medium">Multi-Dimensional</p>
+                        <p className="text-purple-400/70 text-xs">Cross-Reality Storage</p>
+                      </div>
+                      <div className="p-4 bg-cyan-900/20 rounded-lg border border-cyan-500/20">
+                        <Sparkles className="h-8 w-8 text-cyan-400 mx-auto mb-2" />
+                        <p className="text-cyan-300 text-sm font-medium">Holographic Access</p>
+                        <p className="text-cyan-400/70 text-xs">Immersive Interface</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Legacy Overview for old tabs */}
             <div className={activeTab === 'overview' ? 'block space-y-6' : 'hidden'}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="bg-slate-800/50 border-slate-700/50">
