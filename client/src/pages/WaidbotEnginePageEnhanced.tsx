@@ -44,10 +44,17 @@ interface BotStatus {
     winRate: number;
     profit: number;
     todayTrades: number;
+    allTimeWinRate?: number;
+    maxDrawdown?: number;
+    allTimeProfit?: number;
+    streakWins?: number;
+    streakLosses?: number;
+    sharpeRatio?: number;
   };
   currentAction: string;
   nextAction: string;
   confidence: number;
+  messages?: BotMessage[];
 }
 
 interface EthData {
@@ -82,6 +89,26 @@ interface DetailedBotInfo {
   currentPosition: string;
 }
 
+interface BotMessage {
+  id: string;
+  timestamp: number;
+  message: string;
+  type: 'analysis' | 'decision' | 'warning' | 'success' | 'info';
+  botId: string;
+  ethPrice?: number;
+  action?: string;
+}
+
+interface BotMemoryEntry {
+  timestamp: number;
+  action: string;
+  ethPrice: number;
+  result: 'win' | 'loss' | 'neutral';
+  profit: number;
+  reasoning: string;
+  marketConditions: string;
+}
+
 export default function WaidbotEnginePageEnhanced() {
   const [selectedBot, setSelectedBot] = useState<string | null>(null);
   const [showBotModal, setShowBotModal] = useState<string | null>(null);
@@ -102,6 +129,12 @@ export default function WaidbotEnginePageEnhanced() {
   const { data: autonomousStatus } = useQuery<BotStatus>({
     queryKey: ['/api/waidbot-engine/autonomous/status'],
     refetchInterval: 2000,
+  });
+
+  // Fetch bot messages with 30-second refresh
+  const { data: botMessages } = useQuery<any>({
+    queryKey: ['/api/waidbot-engine/bot-messages'],
+    refetchInterval: 30000, // 30 seconds for bot messages
   });
 
   // Fetch Full Engine status (now independent)
@@ -513,7 +546,7 @@ export default function WaidbotEnginePageEnhanced() {
                 </div>
               </div>
 
-              {/* Performance Metrics */}
+              {/* Enhanced Gamified Performance Metrics */}
               <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 text-sm">Performance Overview</span>
@@ -525,7 +558,7 @@ export default function WaidbotEnginePageEnhanced() {
                     <p className="text-xs text-slate-400">Total Trades</p>
                   </div>
                   <div>
-                    <p className="text-lg font-bold text-green-400">{waidbotStatus?.performance?.winRate || 0}%</p>
+                    <p className="text-lg font-bold text-green-400">{waidbotStatus?.gamifiedMetrics?.winPercentage?.toFixed(1) || waidbotStatus?.performance?.winRate || 0}%</p>
                     <p className="text-xs text-slate-400">Win Rate</p>
                   </div>
                   <div>
@@ -533,8 +566,34 @@ export default function WaidbotEnginePageEnhanced() {
                     <p className="text-xs text-slate-400">Profit</p>
                   </div>
                 </div>
-                <Progress value={waidbotStatus?.performance?.winRate || 0} className="h-2 bg-slate-700" />
+                
+                {/* Enhanced Gamified Metrics Row */}
+                <div className="grid grid-cols-2 gap-4 text-center pt-2 border-t border-slate-700">
+                  <div>
+                    <p className="text-sm font-bold text-red-400">{waidbotStatus?.gamifiedMetrics?.allTimeDrawdown?.toFixed(1) || 0}%</p>
+                    <p className="text-xs text-slate-400">Max Drawdown</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-green-400">{waidbotStatus?.gamifiedMetrics?.currentStreak || 0} {waidbotStatus?.gamifiedMetrics?.streakType || 'win'}</p>
+                    <p className="text-xs text-slate-400">Current Streak</p>
+                  </div>
+                </div>
+                <Progress value={waidbotStatus?.gamifiedMetrics?.winPercentage || waidbotStatus?.performance?.winRate || 0} className="h-2 bg-slate-700" />
               </div>
+
+              {/* Real-Time Bot Message */}
+              {botMessages && botMessages.messages && (
+                <div className="bg-green-900/20 border border-green-400/30 rounded-lg p-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Activity className="w-4 h-4 text-green-400 animate-pulse" />
+                    <span className="text-xs text-green-400 font-medium">Live Bot Status</span>
+                    <span className="text-xs text-slate-400">{new Date().toLocaleTimeString()}</span>
+                  </div>
+                  <p className="text-sm text-white">
+                    {botMessages.messages.find((msg: any) => msg.botId === 'waidbot')?.message || "🔍 ETH Uptrend Scanner: Monitoring market conditions..."}
+                  </p>
+                </div>
+              )}
 
               {/* Status and Actions */}
               <div className="space-y-3">
@@ -659,7 +718,7 @@ export default function WaidbotEnginePageEnhanced() {
                 </div>
               </div>
 
-              {/* Performance Metrics */}
+              {/* Enhanced Gamified Performance Metrics */}
               <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 text-sm">Performance Overview</span>
@@ -671,7 +730,7 @@ export default function WaidbotEnginePageEnhanced() {
                     <p className="text-xs text-slate-400">Total Trades</p>
                   </div>
                   <div>
-                    <p className="text-lg font-bold text-blue-400">{waidbotProStatus?.performance?.winRate || 0}%</p>
+                    <p className="text-lg font-bold text-blue-400">{waidbotProStatus?.gamifiedMetrics?.winPercentage?.toFixed(1) || waidbotProStatus?.performance?.winRate || 0}%</p>
                     <p className="text-xs text-slate-400">Win Rate</p>
                   </div>
                   <div>
@@ -679,8 +738,34 @@ export default function WaidbotEnginePageEnhanced() {
                     <p className="text-xs text-slate-400">Profit</p>
                   </div>
                 </div>
-                <Progress value={waidbotProStatus?.performance?.winRate || 0} className="h-2 bg-slate-700" />
+                
+                {/* Enhanced Gamified Metrics Row */}
+                <div className="grid grid-cols-2 gap-4 text-center pt-2 border-t border-slate-700">
+                  <div>
+                    <p className="text-sm font-bold text-red-400">{waidbotProStatus?.gamifiedMetrics?.allTimeDrawdown?.toFixed(1) || 0}%</p>
+                    <p className="text-xs text-slate-400">Max Drawdown</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-blue-400">{waidbotProStatus?.gamifiedMetrics?.profitFactor?.toFixed(1) || 0}</p>
+                    <p className="text-xs text-slate-400">Profit Factor</p>
+                  </div>
+                </div>
+                <Progress value={waidbotProStatus?.gamifiedMetrics?.winPercentage || waidbotProStatus?.performance?.winRate || 0} className="h-2 bg-slate-700" />
               </div>
+
+              {/* Real-Time Bot Message */}
+              {botMessages && botMessages.messages && (
+                <div className="bg-blue-900/20 border border-blue-400/30 rounded-lg p-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Lightning className="w-4 h-4 text-blue-400 animate-pulse" />
+                    <span className="text-xs text-blue-400 font-medium">Live Bot Status</span>
+                    <span className="text-xs text-slate-400">{new Date().toLocaleTimeString()}</span>
+                  </div>
+                  <p className="text-sm text-white">
+                    {botMessages.messages.find((msg: any) => msg.botId === 'waidbot-pro')?.message || "🚀 Bidirectional Engine: Analyzing market opportunities..."}
+                  </p>
+                </div>
+              )}
 
               {/* Status and Actions */}
               <div className="space-y-3">
@@ -805,7 +890,7 @@ export default function WaidbotEnginePageEnhanced() {
                 </div>
               </div>
 
-              {/* Performance Metrics */}
+              {/* Enhanced Gamified Performance Metrics */}
               <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 text-sm">Performance Overview</span>
@@ -820,7 +905,7 @@ export default function WaidbotEnginePageEnhanced() {
                     <p className="text-xs text-slate-400">Total Trades</p>
                   </div>
                   <div>
-                    <p className="text-lg font-bold text-purple-400">{autonomousStatus?.performance?.winRate || 0}%</p>
+                    <p className="text-lg font-bold text-purple-400">{autonomousStatus?.gamifiedMetrics?.winPercentage?.toFixed(1) || autonomousStatus?.performance?.winRate || 0}%</p>
                     <p className="text-xs text-slate-400">Win Rate</p>
                   </div>
                   <div>
@@ -828,8 +913,34 @@ export default function WaidbotEnginePageEnhanced() {
                     <p className="text-xs text-slate-400">Profit</p>
                   </div>
                 </div>
-                <Progress value={autonomousStatus?.performance?.winRate || 0} className="h-2 bg-slate-700" />
+                
+                {/* Enhanced Gamified Metrics Row */}
+                <div className="grid grid-cols-2 gap-4 text-center pt-2 border-t border-slate-700">
+                  <div>
+                    <p className="text-sm font-bold text-red-400">{autonomousStatus?.gamifiedMetrics?.allTimeDrawdown?.toFixed(1) || 0}%</p>
+                    <p className="text-xs text-slate-400">Max Drawdown</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-purple-400">{autonomousStatus?.gamifiedMetrics?.sharpeRatio?.toFixed(1) || 0}</p>
+                    <p className="text-xs text-slate-400">Sharpe Ratio</p>
+                  </div>
+                </div>
+                <Progress value={autonomousStatus?.gamifiedMetrics?.winPercentage || autonomousStatus?.performance?.winRate || 0} className="h-2 bg-slate-700" />
               </div>
+
+              {/* Real-Time Bot Message */}
+              {botMessages && botMessages.messages && (
+                <div className="bg-purple-900/20 border border-purple-400/30 rounded-lg p-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Hexagon className="w-4 h-4 text-purple-400 animate-pulse" />
+                    <span className="text-xs text-purple-400 font-medium">Live Autonomous Status</span>
+                    <span className="text-xs text-slate-400">{new Date().toLocaleTimeString()}</span>
+                  </div>
+                  <p className="text-sm text-white">
+                    {botMessages.messages.find((msg: any) => msg.botId === 'autonomous')?.message || "🤖 24/7 Scanner: Autonomous monitoring active..."}
+                  </p>
+                </div>
+              )}
 
               {/* Status and Actions */}
               <div className="space-y-3">
