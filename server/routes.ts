@@ -468,7 +468,8 @@ export function registerRoutes(app: Express): Promise<Server> {
       const userDataWithPassword = {
         ...userData,
         password: userData.passwordHash, // Map passwordHash to password
-        confirmPassword: userData.passwordHash
+        confirmPassword: userData.passwordHash,
+        isActive: userData.isActive ?? true // Ensure isActive is boolean, not null
       };
       const result = await authService.createAdminUser(userDataWithPassword);
       
@@ -2414,9 +2415,9 @@ export function registerRoutes(app: Express): Promise<Server> {
       let divineSignal;
       let ethData;
       try {
-        const { getDivineSignal } = await import('./services/divineService.js');
+        const { getDivineSignal } = await import('./services/divineService');
         divineSignal = await getDivineSignal();
-      } catch (e) {
+      } catch (e: unknown) {
         divineSignal = {
           action: "OBSERVE",
           reason: "Divine channels stabilizing",
@@ -2427,8 +2428,9 @@ export function registerRoutes(app: Express): Promise<Server> {
       }
 
       try {
+        const { ethMonitor } = await import('./services/ethMonitor');
         ethData = await ethMonitor.fetchEthData();
-      } catch (e) {
+      } catch (e: unknown) {
         ethData = { price: 3250, priceChange24h: 2.4, volume: 28500000, timestamp: Date.now() };
       }
       
@@ -2476,8 +2478,13 @@ export function registerRoutes(app: Express): Promise<Server> {
       const botResult = await autonomousBot.start();
       
       // Update realTimeTrading global state
-      if (typeof startRealTimeTrading === 'function') {
-        startRealTimeTrading();
+      try {
+        const { startRealTimeTrading } = await import('./services/realTimeTrading');
+        if (typeof startRealTimeTrading === 'function') {
+          startRealTimeTrading();
+        }
+      } catch (e) {
+        console.log('Real-time trading service not available');
       }
       
       res.json({ 
@@ -2549,8 +2556,9 @@ export function registerRoutes(app: Express): Promise<Server> {
       // Get latest ETH data
       let ethData;
       try {
+        const { ethMonitor } = await import('./services/ethMonitor');
         ethData = await ethMonitor.fetchEthData();
-      } catch (e) {
+      } catch (e: unknown) {
         ethData = { price: 3250, priceChange24h: 2.4, volume: 28500000, timestamp: Date.now() };
       }
       

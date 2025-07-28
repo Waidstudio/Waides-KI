@@ -324,7 +324,7 @@ export const konsPowaPredictions = pgTable("kons_powa_predictions", {
   konsPowerLevel: integer("kons_power_level").notNull().default(75),
   divineAlignment: integer("divine_alignment").notNull().default(80),
   spiritualEnergy: integer("spiritual_energy").notNull().default(85),
-  isActive: boolean("is_active").default(true),
+  isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   expiresAt: timestamp("expires_at"),
 });
