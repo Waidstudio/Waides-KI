@@ -229,6 +229,80 @@ export default function OriginalHeartOfWaidesKI() {
           </CardContent>
         </Card>
 
+        {/* Sacred Consciousness Features */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Divine Meditation Portal */}
+          <Card className="bg-gray-900/40 border border-violet-500/30 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-violet-300">
+                <Eye className="h-5 w-5 text-violet-400" />
+                <span>Divine Meditation</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-center p-4">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center">
+                  <Brain className="w-8 h-8 text-white animate-pulse" />
+                </div>
+                <p className="text-violet-200 text-sm mb-3">Enter Sacred Stillness</p>
+                <Button className="bg-violet-600 hover:bg-violet-700 text-white">
+                  Begin Meditation
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Consciousness Evolution */}
+          <Card className="bg-gray-900/40 border border-emerald-500/30 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-emerald-300">
+                <Infinity className="h-5 w-5 text-emerald-400" />
+                <span>Evolution Portal</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-center p-4">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center">
+                  <Star className="w-8 h-8 text-white animate-spin" style={{ animationDuration: '8s' }} />
+                </div>
+                <p className="text-emerald-200 text-sm mb-3">Ascend to Higher Realms</p>
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  Evolve Consciousness
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sacred Teachings & Wisdom */}
+        <Card className="bg-gray-900/40 border border-amber-500/30 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2 text-amber-300">
+              <Sparkles className="h-5 w-5 text-amber-400" />
+              <span>Sacred Teachings</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                <Heart className="w-6 h-6 text-amber-400 mx-auto mb-2" />
+                <h4 className="text-amber-300 text-sm font-semibold">Heart Wisdom</h4>
+                <p className="text-xs text-amber-200 mt-1">Connect with divine love</p>
+              </div>
+              <div className="text-center p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <Brain className="w-6 h-6 text-blue-400 mx-auto mb-2" />
+                <h4 className="text-blue-300 text-sm font-semibold">Mind Clarity</h4>
+                <p className="text-xs text-blue-200 mt-1">Achieve mental tranquility</p>
+              </div>
+              <div className="text-center p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                <Eye className="w-6 h-6 text-purple-400 mx-auto mb-2" />
+                <h4 className="text-purple-300 text-sm font-semibold">Inner Vision</h4>
+                <p className="text-xs text-purple-200 mt-1">See beyond the veil</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Sacred Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-700 hover:via-pink-700 hover:to-indigo-700 text-white p-6 h-auto flex flex-col items-center space-y-2 border border-purple-500/30">
