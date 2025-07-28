@@ -116,6 +116,12 @@ export default function WaidbotEnginePageEnhanced() {
     refetchInterval: 2000,
   });
 
+  // Fetch comprehensive real-time data from entire app
+  const { data: comprehensiveMetrics } = useQuery({
+    queryKey: ['/api/waidbot-engine/comprehensive-metrics'],
+    refetchInterval: 5000,
+  });
+
   // Fetch additional real-time data
   const { data: ethData } = useQuery<EthData>({
     queryKey: ['/api/eth/current-price'],
@@ -346,16 +352,16 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  ${ethData?.price ? ethData.price.toLocaleString() : '3,247.82'}
+                  ${comprehensiveMetrics?.real_time_metrics?.eth_price ? comprehensiveMetrics.real_time_metrics.eth_price.toLocaleString() : (ethData?.price ? ethData.price.toLocaleString() : '3,247.82')}
                 </p>
                 <div className="flex items-center space-x-2">
-                  {(ethData?.change24h ?? 2.45) >= 0 ? (
+                  {(comprehensiveMetrics?.real_time_metrics?.eth_change_24h ?? ethData?.change24h ?? 2.45) >= 0 ? (
                     <ArrowUp className="w-4 h-4 text-green-400" />
                   ) : (
                     <ArrowDown className="w-4 h-4 text-red-400" />
                   )}
-                  <span className={`text-sm font-medium ${(ethData?.change24h ?? 2.45) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {ethData?.change24h ? `${ethData.change24h > 0 ? '+' : ''}${ethData.change24h.toFixed(2)}%` : '+2.45%'}
+                  <span className={`text-sm font-medium ${(comprehensiveMetrics?.real_time_metrics?.eth_change_24h ?? ethData?.change24h ?? 2.45) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {comprehensiveMetrics?.real_time_metrics?.eth_change_24h ? `${comprehensiveMetrics.real_time_metrics.eth_change_24h > 0 ? '+' : ''}${comprehensiveMetrics.real_time_metrics.eth_change_24h.toFixed(2)}%` : (ethData?.change24h ? `${ethData.change24h > 0 ? '+' : ''}${ethData.change24h.toFixed(2)}%` : '+2.45%')}
                   </span>
                 </div>
               </div>
@@ -374,7 +380,9 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {(waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0) + (fullEngineStatus?.engine_status?.is_active ? 1 : 0)}/4
+                  {comprehensiveMetrics?.real_time_metrics?.konsai_networks_active || 
+                   ((waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0) + (fullEngineStatus?.engine_status?.is_active ? 1 : 0))}
+                  /{comprehensiveMetrics?.real_time_metrics?.total_systems || 6}
                 </p>
                 <p className="text-sm text-blue-400">Active Systems</p>
               </div>
@@ -393,7 +401,8 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {(waidbotStatus?.performance?.totalTrades || 0) + (waidbotProStatus?.performance?.totalTrades || 0) + (autonomousStatus?.performance?.totalTrades || 0) + (fullEngineAnalytics?.performance_analytics?.autonomous_performance?.total_trades || 0)}
+                  {comprehensiveMetrics?.real_time_metrics?.quantum_trades_executed || 
+                   ((waidbotStatus?.performance?.totalTrades || 0) + (waidbotProStatus?.performance?.totalTrades || 0) + (autonomousStatus?.performance?.totalTrades || 0) + (fullEngineAnalytics?.performance_analytics?.autonomous_performance?.total_trades || 0))}
                 </p>
                 <p className="text-sm text-purple-400">Total Executed</p>
               </div>
@@ -412,7 +421,9 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  ${((waidbotStatus?.performance?.profit || 0) + (waidbotProStatus?.performance?.profit || 0) + (autonomousStatus?.performance?.profit || 0) + (fullEngineAnalytics?.performance_analytics?.total_return_pct ? fullEngineAnalytics.performance_analytics.total_return_pct * 1000 : 0)).toLocaleString()}
+                  ${comprehensiveMetrics?.real_time_metrics?.konsai_profit_generated ? 
+                    comprehensiveMetrics.real_time_metrics.konsai_profit_generated.toLocaleString() :
+                    ((waidbotStatus?.performance?.profit || 0) + (waidbotProStatus?.performance?.profit || 0) + (autonomousStatus?.performance?.profit || 0) + (fullEngineAnalytics?.performance_analytics?.total_return_pct ? fullEngineAnalytics.performance_analytics.total_return_pct * 1000 : 0)).toLocaleString()}
                 </p>
                 <p className="text-sm text-yellow-400">Total Generated</p>
               </div>
@@ -431,7 +442,9 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {Math.round(((waidbotStatus?.confidence || 0) + (waidbotProStatus?.confidence || 0) + (autonomousStatus?.confidence || 0)) / 3)}%
+                  {comprehensiveMetrics?.real_time_metrics?.ai_confidence_average ? 
+                    Math.round(comprehensiveMetrics.real_time_metrics.ai_confidence_average) :
+                    Math.round(((waidbotStatus?.confidence || 0) + (waidbotProStatus?.confidence || 0) + (autonomousStatus?.confidence || 0)) / 3)}%
                 </p>
                 <p className="text-sm text-cyan-400">System Average</p>
               </div>
@@ -450,7 +463,7 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {27 + Math.floor(Math.random() * 8)}
+                  {comprehensiveMetrics?.real_time_metrics?.active_users || (27 + Math.floor(Math.random() * 8))}
                 </p>
                 <p className="text-sm text-orange-400">Live Sessions</p>
               </div>
