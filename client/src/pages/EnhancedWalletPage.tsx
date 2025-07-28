@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import WaidesKICoreEnginePanel from "@/components/WaidesKICoreEnginePanel";
 import { 
   Wallet, 
   CreditCard, 
@@ -68,7 +69,8 @@ import {
   ArrowDownUp,
   Ticket,
   Building,
-  Copy
+  Copy,
+  Heart
 } from "lucide-react";
 
 // Enhanced Heart of Waides KI Wallet - Advanced Features
@@ -337,7 +339,8 @@ export default function EnhancedWalletPage() {
     { id: "voice-command", label: "Neural Voice", icon: Mic, color: "from-yellow-500 to-orange-400" },
     { id: "biometric-portal", label: "Bio Portal", icon: Fingerprint, color: "from-pink-500 to-rose-400" },
     { id: "reality-analytics", label: "Reality Analytics", icon: Activity, color: "from-violet-500 to-purple-400" },
-    { id: "infinite-rules", label: "Infinite Rules", icon: Infinity, color: "from-cyan-500 to-blue-400" }
+    { id: "infinite-rules", label: "Infinite Rules", icon: Infinity, color: "from-cyan-500 to-blue-400" },
+    { id: "heart-waides", label: "Heart of Waides", icon: Heart, color: "from-rose-500 to-pink-400" }
   ];
 
   return (
@@ -1350,6 +1353,13 @@ export default function EnhancedWalletPage() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* 11. Heart of Waides Tab - Original Wallet Content from Portal */}
+            <TabsContent value="heart-waides" className="h-full flex flex-col min-h-0">
+              <div className="h-full">
+                <WaidesKICoreEnginePanel />
+              </div>
             </TabsContent>
 
           </Tabs>

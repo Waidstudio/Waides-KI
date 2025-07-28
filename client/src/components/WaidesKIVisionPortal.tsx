@@ -13,7 +13,7 @@ import {
   Download, RefreshCw, AlertTriangle, CheckCircle
 } from 'lucide-react';
 import KonsaiChat from './KonsaiChat';
-import { WaidesKICoreEnginePanel } from './WaidesKICoreEnginePanel';
+import OriginalHeartOfWaidesKI from './OriginalHeartOfWaidesKI';
 import { useLocation, Link } from 'wouter';
 import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
@@ -912,9 +912,9 @@ ${prediction.reasoning || 'The cosmic forces align favorably. ETH demonstrates s
               </div>
             </div>
 
-            {/* Core Engine Content - Full Height */}
+            {/* Original Heart of Waides KI - Full Height */}
             <div className="flex-1 min-h-0">
-              <WaidesKICoreEnginePanel />
+              <OriginalHeartOfWaidesKI />
             </div>
           </div>
         )}
