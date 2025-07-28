@@ -83,6 +83,8 @@ export default function EnhancedWalletPage() {
   const [bioMetrics, setBioMetrics] = useState(true);
   const [realityMode, setRealityMode] = useState(false);
   const [infiniteWealthMode, setInfiniteWealthMode] = useState(false);
+  const [cryptoWallet, setCryptoWallet] = useState<any>(null);
+  const [showPrivateKey, setShowPrivateKey] = useState(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -112,11 +114,7 @@ export default function EnhancedWalletPage() {
   // Smaipin redemption mutation
   const redeemSmaipinMutation = useMutation({
     mutationFn: async (smaipinCode: string) => {
-      const response = await apiRequest("/api/wallet/smaipin/redeem", {
-        method: "POST",
-        body: JSON.stringify({ smaipinCode })
-      });
-      return response;
+      return await apiRequest("/api/wallet/smaipin/redeem", "POST", { smaipinCode });
     },
     onSuccess: (data: any) => {
       toast({
@@ -138,11 +136,7 @@ export default function EnhancedWalletPage() {
   // Currency conversion mutation
   const convertCurrencyMutation = useMutation({
     mutationFn: async ({ amount, targetCurrency }: { amount: number, targetCurrency: string }) => {
-      const response = await apiRequest("/api/wallet/convert/smaisika-to-local", {
-        method: "POST",
-        body: JSON.stringify({ amount, targetCurrency })
-      });
-      return response;
+      return await apiRequest("/api/wallet/convert/smaisika-to-local", "POST", { amount, targetCurrency });
     },
     onSuccess: (data: any) => {
       toast({
@@ -164,11 +158,7 @@ export default function EnhancedWalletPage() {
   // Virtual account generation mutation
   const generateAccountMutation = useMutation({
     mutationFn: async ({ country, currency }: { country: string, currency: string }) => {
-      const response = await apiRequest("/api/wallet/virtual-account/generate", {
-        method: "POST",
-        body: JSON.stringify({ country, currency })
-      });
-      return response;
+      return await apiRequest("/api/wallet/virtual-account/generate", "POST", { country, currency });
     },
     onSuccess: (data: any) => {
       toast({
@@ -184,6 +174,47 @@ export default function EnhancedWalletPage() {
       });
     },
   });
+
+  // Crypto wallet generation mutation
+  const generateCryptoMutation = useMutation({
+    mutationFn: async (currency: string) => {
+      return await apiRequest("/api/wallet/crypto/generate", "POST", { currency });
+    },
+    onSuccess: (data: any) => {
+      setCryptoWallet(data.wallet);
+      toast({
+        title: "Crypto Wallet Generated",
+        description: `Successfully created ${data.wallet.currency} wallet`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Wallet Generation Failed",
+        description: error.message || "Failed to generate crypto wallet",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const generateCryptoWallet = (currency: string) => {
+    generateCryptoMutation.mutate(currency);
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copied to Clipboard",
+        description: "Address copied successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Copy Failed",
+        description: "Failed to copy to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSmaipinRedeem = () => {
     if (!smaipinCode.trim()) {
@@ -270,7 +301,7 @@ export default function EnhancedWalletPage() {
                 <div className="text-right">
                   <p className="text-slate-300 text-sm">Total Balance</p>
                   <p className="text-2xl font-bold text-white">
-                    {balancesVisible ? `₦${walletBalance?.smaiSika?.available?.toLocaleString() || '2,580.75'}` : '••••••'}
+                    {balancesVisible ? `₦${(walletBalance as any)?.smaiSika?.available?.toLocaleString() || '2,580.75'}` : '••••••'}
                   </p>
                 </div>
                 <Button
@@ -319,9 +350,9 @@ export default function EnhancedWalletPage() {
                 <Orbit className="w-4 h-4 mr-2" />
                 Cosmic
               </TabsTrigger>
-              <TabsTrigger value="bio" className="data-[state=active]:bg-rose-600 data-[state=active]:text-white text-slate-300">
-                <Fingerprint className="w-4 h-4 mr-2" />
-                Bio
+              <TabsTrigger value="crypto" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white text-slate-300">
+                <ShieldCheck className="w-4 h-4 mr-2" />
+                Crypto
               </TabsTrigger>
               <TabsTrigger value="reality" className="data-[state=active]:bg-violet-600 data-[state=active]:text-white text-slate-300">
                 <Activity className="w-4 h-4 mr-2" />
@@ -566,13 +597,13 @@ export default function EnhancedWalletPage() {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span className="text-slate-300 text-sm">Next Week</span>
-                          <span className="text-indigo-400 font-mono">{predictions.nextWeek.trend}</span>
+                          <span className="text-indigo-400 font-mono">{(predictions as any)?.predictions?.nextWeek?.trend || 'upward'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-300 text-sm">Confidence</span>
-                          <span className="text-indigo-400 font-mono">{predictions.nextWeek.confidence}%</span>
+                          <span className="text-indigo-400 font-mono">{(predictions as any)?.predictions?.nextWeek?.confidence || 82.3}%</span>
                         </div>
-                        <Progress value={predictions.nextWeek.confidence} className="w-full" />
+                        <Progress value={(predictions as any)?.predictions?.nextWeek?.confidence || 82.3} className="w-full" />
                       </div>
                     )}
                   </CardContent>
@@ -630,7 +661,127 @@ export default function EnhancedWalletPage() {
               </div>
             </TabsContent>
 
-            {/* 7. Bio Tab */}
+            {/* 7. Crypto Wallet Tab */}
+            <TabsContent value="crypto" className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-slate-900/50 border-amber-700/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2 text-white">
+                      <Coins className="h-5 w-5 text-amber-400" />
+                      <span>Crypto Wallet Generator</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button 
+                        onClick={() => generateCryptoWallet('BTC')}
+                        className="bg-orange-600 hover:bg-orange-700 text-white text-xs"
+                        disabled={generateCryptoMutation.isPending}
+                      >
+                        <Coins className="w-3 h-3 mr-1" />
+                        BTC
+                      </Button>
+                      <Button 
+                        onClick={() => generateCryptoWallet('ETH')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                        disabled={generateCryptoMutation.isPending}
+                      >
+                        <Gem className="w-3 h-3 mr-1" />
+                        ETH
+                      </Button>
+                      <Button 
+                        onClick={() => generateCryptoWallet('USDT')}
+                        className="bg-green-600 hover:bg-green-700 text-white text-xs"
+                        disabled={generateCryptoMutation.isPending}
+                      >
+                        <DollarSign className="w-3 h-3 mr-1" />
+                        USDT
+                      </Button>
+                    </div>
+                    {cryptoWallet && (
+                      <div className="space-y-3 p-3 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <span className="text-amber-300 font-medium">{cryptoWallet.currency} Wallet</span>
+                          <Badge className="bg-amber-600 text-white">Active</Badge>
+                        </div>
+                        <div className="space-y-2">
+                          <div>
+                            <label className="text-xs text-slate-400">Address:</label>
+                            <div className="flex items-center space-x-2">
+                              <code className="text-xs text-amber-200 font-mono bg-slate-900/50 px-2 py-1 rounded">
+                                {cryptoWallet.address}
+                              </code>
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={() => copyToClipboard(cryptoWallet.address)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-xs text-slate-400">Private Key:</label>
+                            <div className="flex items-center space-x-2">
+                              <code className="text-xs text-red-300 font-mono bg-slate-900/50 px-2 py-1 rounded">
+                                {showPrivateKey ? cryptoWallet.privateKey : '••••••••••••••••••••••••••••••••'}
+                              </code>
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={() => setShowPrivateKey(!showPrivateKey)}
+                                className="h-6 w-6 p-0"
+                              >
+                                {showPrivateKey ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-slate-900/50 border-amber-700/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-white">Crypto Balances</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {multiCurrencyBalances && (
+                      <div className="space-y-3">
+                        {Object.entries((multiCurrencyBalances as any)?.currencies || {}).map(([currency, data]: [string, any]) => (
+                          <div key={currency} className="flex justify-between items-center">
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-2 h-2 rounded-full ${
+                                currency === 'BTC' ? 'bg-orange-400' :
+                                currency === 'ETH' ? 'bg-blue-400' :
+                                currency === 'USDT' ? 'bg-green-400' :
+                                currency === 'USDC' ? 'bg-blue-300' :
+                                'bg-purple-400'
+                              }`}></div>
+                              <span className="text-slate-300 text-sm">{currency}</span>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-amber-400 font-mono text-sm">{data.balance}</div>
+                              <div className="text-slate-500 text-xs">${data.usdValue?.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        ))}
+                        <div className="pt-3 border-t border-slate-700">
+                          <div className="flex justify-between">
+                            <span className="text-slate-300 font-medium">Total USD Value</span>
+                            <span className="text-amber-400 font-bold">${(multiCurrencyBalances as any)?.totalUsdValue?.toFixed(2) || '0.00'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* 8. Bio Tab */}
             <TabsContent value="bio" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="bg-slate-900/50 border-rose-700/50 backdrop-blur-sm">

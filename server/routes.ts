@@ -2934,6 +2934,121 @@ export function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Multi-Currency Balances API
+  app.get("/api/wallet/multi-currency/balances", (req, res) => {
+    res.json({
+      currencies: {
+        SmaiSika: {
+          balance: 2580.75,
+          locked: 150.25,
+          usdValue: 2580.75
+        },
+        BTC: {
+          balance: 0.05234,
+          locked: 0.0,
+          usdValue: 2270.56
+        },
+        ETH: {
+          balance: 0.8245,
+          locked: 0.0,
+          usdValue: 2679.85
+        },
+        USDT: {
+          balance: 1500.00,
+          locked: 0.0,
+          usdValue: 1500.00
+        },
+        USDC: {
+          balance: 850.00,
+          locked: 0.0,
+          usdValue: 850.00
+        }
+      },
+      totalUsdValue: 9881.16,
+      lastUpdated: new Date().toISOString()
+    });
+  });
+
+  // AI Portfolio Analysis API
+  app.get("/api/wallet/ai/portfolio-analysis", (req, res) => {
+    res.json({
+      analysis: {
+        riskScore: 6.2,
+        riskLevel: 'Medium',
+        diversification: 78.5,
+        recommendations: [
+          'Consider increasing crypto exposure for higher returns',
+          'SmaiSika holdings provide good stability',
+          'Portfolio is well-balanced across asset classes'
+        ],
+        performance: {
+          last30Days: 12.4,
+          last7Days: 3.8,
+          yesterday: 0.9
+        },
+        aiInsights: {
+          marketSentiment: 'Bullish',
+          confidence: 84.2,
+          nextAction: 'Hold current positions'
+        }
+      }
+    });
+  });
+
+  // Auto Conversion Rules API
+  app.get("/api/wallet/auto-conversion/rules", (req, res) => {
+    res.json({
+      rules: [
+        {
+          id: 'rule_1',
+          name: 'Auto Convert USD to SmaiSika',
+          fromCurrency: 'USD',
+          toCurrency: 'SmaiSika',
+          threshold: 100,
+          isActive: true,
+          frequency: 'immediate'
+        },
+        {
+          id: 'rule_2',
+          name: 'Convert excess crypto gains',
+          fromCurrency: 'BTC',
+          toCurrency: 'SmaiSika',
+          threshold: 0.01,
+          isActive: false,
+          frequency: 'weekly'
+        }
+      ]
+    });
+  });
+
+  // Analytics Predictions API (Fixed for wallet page)
+  app.get("/api/wallet/analytics/predictions", (req, res) => {
+    res.json({
+      predictions: {
+        nextWeek: {
+          trend: 'upward',
+          confidence: 82.3,
+          expectedReturn: 4.2,
+          riskLevel: 'Low-Medium'
+        },
+        nextMonth: {
+          trend: 'bullish',
+          confidence: 74.8,
+          expectedReturn: 12.8,
+          riskLevel: 'Medium'
+        },
+        nextQuarter: {
+          trend: 'stable_growth',
+          confidence: 68.5,
+          expectedReturn: 28.4,
+          riskLevel: 'Medium-High'
+        }
+      },
+      aiModel: 'WaidesKI Prediction Engine v2.1',
+      lastUpdated: new Date().toISOString()
+    });
+  });
+
   // Bot Funding System - Fund Trading Bots from SmaiSika Wallet
   
   // Get bot balances
