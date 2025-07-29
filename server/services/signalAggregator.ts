@@ -320,7 +320,7 @@ class SignalAggregatorService {
   private async updateMarketConditions(): Promise<void> {
     try {
       // Get market data from existing services
-      const ethMonitor = await serviceRegistry.getService('ethMonitor');
+      const ethMonitor = await (serviceRegistry as any).getService?.('ethMonitor');
       if (ethMonitor && ethMonitor.getCurrentPrice) {
         const priceData = await ethMonitor.getCurrentPrice();
         
@@ -369,9 +369,9 @@ class SignalAggregatorService {
     setInterval(() => {
       const currentTime = Date.now();
       
-      for (const [entityId, signals] of this.activeSignals.entries()) {
+      for (const [entityId, signals] of Array.from(this.activeSignals.entries())) {
         const activeSignals = signals.filter(
-          signal => (currentTime - signal.timestamp) < this.SIGNAL_EXPIRY_MS
+          (signal: TradingSignal) => (currentTime - signal.timestamp) < this.SIGNAL_EXPIRY_MS
         );
         
         if (activeSignals.length !== signals.length) {

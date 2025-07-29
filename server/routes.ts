@@ -8926,16 +8926,29 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // Individual trading entities with layered signal processing
   // =============================================================================
 
-  // Import the advanced services
-  const { signalAggregatorService } = await import('./services/signalAggregator.js');
-  const { advancedDecisionEngine } = await import('./services/advancedDecisionEngine.js');
-  const { advancedTriggerMechanism } = await import('./services/advancedTriggerMechanism.js');
+  // Initialize advanced services lazily to avoid circular dependencies
+  let signalAggregatorService: any = null;
+  let advancedDecisionEngine: any = null;
+  let advancedTriggerMechanism: any = null;
 
-  console.log('🔍 Advanced trigger monitoring started');
+  const initializeAdvancedServices = async () => {
+    if (!signalAggregatorService) {
+      const { signalAggregatorService: sas } = require('./services/signalAggregator');
+      const { advancedDecisionEngine: ade } = require('./services/advancedDecisionEngine');
+      const { advancedTriggerMechanism: atm } = require('./services/advancedTriggerMechanism');
+      
+      signalAggregatorService = sas;
+      advancedDecisionEngine = ade;
+      advancedTriggerMechanism = atm;
+      
+      console.log('🔍 Advanced trigger monitoring started');
+    }
+  };
 
   // Get all trading entities
   app.get("/api/advanced-entities", async (req, res) => {
     try {
+      await initializeAdvancedServices();
       const entities = advancedDecisionEngine.getAllEntities();
       res.json({
         success: true,
@@ -8951,6 +8964,7 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // Get specific entity details
   app.get("/api/advanced-entities/:entityId", async (req, res) => {
     try {
+      await initializeAdvancedServices();
       const { entityId } = req.params;
       const entity = advancedDecisionEngine.getEntity(entityId);
       
@@ -8981,6 +8995,7 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // Submit signals for entity processing
   app.post("/api/advanced-entities/:entityId/signals", async (req, res) => {
     try {
+      await initializeAdvancedServices();
       const { entityId } = req.params;
       const { signals } = req.body;
 
@@ -9006,6 +9021,7 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // Make trading decision for entity
   app.post("/api/advanced-entities/:entityId/decision", async (req, res) => {
     try {
+      await initializeAdvancedServices();
       const { entityId } = req.params;
       const { signals, context } = req.body;
 
@@ -9040,6 +9056,7 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // Setup time trigger for entity
   app.post("/api/advanced-entities/:entityId/trigger/time", async (req, res) => {
     try {
+      await initializeAdvancedServices();
       const { entityId } = req.params;
       const { decision, delayMinutes, timeWindowMinutes } = req.body;
 
