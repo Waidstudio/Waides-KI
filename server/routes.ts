@@ -8921,5 +8921,339 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // =============================================================================
+  // ADVANCED SIGNAL VERIFICATION AND DECISION-MAKING ARCHITECTURE
+  // Individual trading entities with layered signal processing
+  // =============================================================================
+
+  // Import the advanced services
+  const { signalAggregatorService } = await import('./services/signalAggregator.js');
+  const { advancedDecisionEngine } = await import('./services/advancedDecisionEngine.js');
+  const { advancedTriggerMechanism } = await import('./services/advancedTriggerMechanism.js');
+
+  console.log('🔍 Advanced trigger monitoring started');
+
+  // Get all trading entities
+  app.get("/api/advanced-entities", async (req, res) => {
+    try {
+      const entities = advancedDecisionEngine.getAllEntities();
+      res.json({
+        success: true,
+        entities,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Get entities error:', error);
+      res.status(500).json({ error: 'Failed to get trading entities' });
+    }
+  });
+
+  // Get specific entity details
+  app.get("/api/advanced-entities/:entityId", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const entity = advancedDecisionEngine.getEntity(entityId);
+      
+      if (!entity) {
+        return res.status(404).json({ error: 'Entity not found' });
+      }
+
+      const signalStats = signalAggregatorService.getSignalStats(entityId);
+      const recentDecisions = advancedDecisionEngine.getDecisionHistory(entityId, 5);
+      const activeTriggers = advancedTriggerMechanism.getEntityTriggers(entityId);
+      const executionHistory = advancedTriggerMechanism.getExecutionHistory(entityId, 10);
+
+      res.json({
+        success: true,
+        entity,
+        signalStats,
+        recentDecisions,
+        activeTriggers,
+        executionHistory,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Get entity details error:', error);
+      res.status(500).json({ error: 'Failed to get entity details' });
+    }
+  });
+
+  // Submit signals for entity processing
+  app.post("/api/advanced-entities/:entityId/signals", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const { signals } = req.body;
+
+      if (!Array.isArray(signals)) {
+        return res.status(400).json({ error: 'Signals must be an array' });
+      }
+
+      // Process signals through aggregator
+      const aggregationResult = await signalAggregatorService.aggregateSignals(entityId, signals);
+
+      res.json({
+        success: true,
+        entityId,
+        aggregationResult,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Submit signals error:', error);
+      res.status(500).json({ error: 'Failed to process signals' });
+    }
+  });
+
+  // Make trading decision for entity
+  app.post("/api/advanced-entities/:entityId/decision", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const { signals, context } = req.body;
+
+      if (!Array.isArray(signals)) {
+        return res.status(400).json({ error: 'Signals must be an array' });
+      }
+
+      // Default context if not provided
+      const decisionContext = {
+        currentPrice: context?.currentPrice || 3500,
+        marketConditions: context?.marketConditions || {},
+        entityBalance: context?.entityBalance || 10000,
+        existingPositions: context?.existingPositions || [],
+        recentPerformance: context?.recentPerformance || {}
+      };
+
+      // Make decision
+      const decision = await advancedDecisionEngine.makeDecision(entityId, signals, decisionContext);
+
+      res.json({
+        success: true,
+        entityId,
+        decision,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Make decision error:', error);
+      res.status(500).json({ error: 'Failed to make trading decision' });
+    }
+  });
+
+  // Setup time trigger for entity
+  app.post("/api/advanced-entities/:entityId/trigger/time", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const { decision, delayMinutes, timeWindowMinutes } = req.body;
+
+      if (!decision) {
+        return res.status(400).json({ error: 'Decision object is required' });
+      }
+
+      const triggerId = await advancedTriggerMechanism.setupTimeTrigger(
+        entityId,
+        decision,
+        delayMinutes || 5,
+        timeWindowMinutes || 10
+      );
+
+      res.json({
+        success: true,
+        triggerId,
+        entityId,
+        message: `Time trigger set for ${entityId}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Setup time trigger error:', error);
+      res.status(500).json({ error: 'Failed to setup time trigger' });
+    }
+  });
+
+  // Setup event trigger for entity
+  app.post("/api/advanced-entities/:entityId/trigger/event", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const { decision, eventType, eventConditions, expirationHours } = req.body;
+
+      if (!decision || !eventType) {
+        return res.status(400).json({ error: 'Decision and eventType are required' });
+      }
+
+      const triggerId = await advancedTriggerMechanism.setupEventTrigger(
+        entityId,
+        decision,
+        eventType,
+        eventConditions || {},
+        expirationHours || 24
+      );
+
+      res.json({
+        success: true,
+        triggerId,
+        entityId,
+        eventType,
+        message: `Event trigger set for ${entityId}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Setup event trigger error:', error);
+      res.status(500).json({ error: 'Failed to setup event trigger' });
+    }
+  });
+
+  // Get trigger status
+  app.get("/api/advanced-triggers/:triggerId", async (req, res) => {
+    try {
+      const { triggerId } = req.params;
+      const triggerStatus = advancedTriggerMechanism.getTriggerStatus(triggerId);
+
+      if (!triggerStatus) {
+        return res.status(404).json({ error: 'Trigger not found' });
+      }
+
+      res.json({
+        success: true,
+        trigger: triggerStatus,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Get trigger status error:', error);
+      res.status(500).json({ error: 'Failed to get trigger status' });
+    }
+  });
+
+  // Cancel trigger
+  app.delete("/api/advanced-triggers/:triggerId", async (req, res) => {
+    try {
+      const { triggerId } = req.params;
+      const cancelled = advancedTriggerMechanism.cancelTrigger(triggerId);
+
+      if (!cancelled) {
+        return res.status(404).json({ error: 'Trigger not found' });
+      }
+
+      res.json({
+        success: true,
+        message: `Trigger ${triggerId} cancelled`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Cancel trigger error:', error);
+      res.status(500).json({ error: 'Failed to cancel trigger' });
+    }
+  });
+
+  // Get market conditions
+  app.get("/api/advanced-market/conditions", async (req, res) => {
+    try {
+      const conditions = signalAggregatorService.getMarketConditions();
+      
+      res.json({
+        success: true,
+        marketConditions: conditions,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Get market conditions error:', error);
+      res.status(500).json({ error: 'Failed to get market conditions' });
+    }
+  });
+
+  // Get system statistics
+  app.get("/api/advanced-system/stats", async (req, res) => {
+    try {
+      const triggerStats = advancedTriggerMechanism.getSystemStats();
+      const entities = advancedDecisionEngine.getAllEntities();
+      const activeEntities = entities.filter(e => e.enabled).length;
+
+      res.json({
+        success: true,
+        systemStats: {
+          totalEntities: entities.length,
+          activeEntities,
+          ...triggerStats
+        },
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Get system stats error:', error);
+      res.status(500).json({ error: 'Failed to get system statistics' });
+    }
+  });
+
+  // Update entity configuration
+  app.patch("/api/advanced-entities/:entityId/config", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const updates = req.body;
+
+      const success = advancedDecisionEngine.updateEntityConfig(entityId, updates);
+
+      if (!success) {
+        return res.status(404).json({ error: 'Entity not found' });
+      }
+
+      const updatedEntity = advancedDecisionEngine.getEntity(entityId);
+
+      res.json({
+        success: true,
+        entity: updatedEntity,
+        message: `Entity ${entityId} configuration updated`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Update entity config error:', error);
+      res.status(500).json({ error: 'Failed to update entity configuration' });
+    }
+  });
+
+  // Complete signal processing pipeline for entity
+  app.post("/api/advanced-entities/:entityId/process", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const { signals, context, autoTrigger } = req.body;
+
+      if (!Array.isArray(signals)) {
+        return res.status(400).json({ error: 'Signals must be an array' });
+      }
+
+      // Step 1: Aggregate signals
+      const aggregationResult = await signalAggregatorService.aggregateSignals(entityId, signals);
+
+      // Step 2: Make decision
+      const decisionContext = {
+        currentPrice: context?.currentPrice || 3500,
+        marketConditions: context?.marketConditions || {},
+        entityBalance: context?.entityBalance || 10000,
+        existingPositions: context?.existingPositions || [],
+        recentPerformance: context?.recentPerformance || {}
+      };
+
+      const decision = await advancedDecisionEngine.makeDecision(entityId, signals, decisionContext);
+
+      // Step 3: Setup trigger if auto-trigger is enabled and decision is actionable
+      let triggerId = null;
+      if (autoTrigger && (decision.action === 'BUY' || decision.action === 'SELL') && decision.confidence > 0.6) {
+        triggerId = await advancedTriggerMechanism.setupTimeTrigger(
+          entityId,
+          decision,
+          autoTrigger.delayMinutes || 5,
+          autoTrigger.timeWindowMinutes || 10
+        );
+      }
+
+      res.json({
+        success: true,
+        entityId,
+        aggregationResult,
+        decision,
+        triggerId,
+        pipeline: 'complete',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Process entity pipeline error:', error);
+      res.status(500).json({ error: 'Failed to process entity pipeline' });
+    }
+  });
+
   return Promise.resolve(server);
 }
