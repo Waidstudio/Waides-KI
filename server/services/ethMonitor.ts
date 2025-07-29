@@ -87,3 +87,6 @@ export class EthMonitor {
     }
   }
 }
+
+// Export singleton instance
+export const ethMonitor = new EthMonitor();
