@@ -71,6 +71,7 @@ import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 import SMSConfigPage from "@/pages/SMSConfigPage";
 import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import KonsPowaPage from "@/pages/KonsPowaPage";
+import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
@@ -123,6 +124,7 @@ function Router() {
     { path: "/expanded-config", label: "Expanded Config" },
     { path: "/config", label: "Configuration" },
     { path: "/api-docs", label: "API Docs" },
+    { path: "/system-validation", label: "System Validation" },
   ];
 
   return (
@@ -492,6 +494,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <AutonomousWealthEngine />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/system-validation">
+            {() => (
+              <ProtectedRoute>
+                <SystemValidationDashboard />
               </ProtectedRoute>
             )}
           </Route>

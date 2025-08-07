@@ -11300,5 +11300,50 @@ Ask me about specific market conditions, upload files for analysis, or request K
     });
   });
 
+  // System validation routes
+  app.get('/api/system-validation/run', async (req, res) => {
+    try {
+      const { systemValidationService } = await import('./services/systemValidationService.js');
+      const results = await systemValidationService.runFullValidation();
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error('System validation failed:', error);
+      res.status(500).json({ success: false, error: 'Validation failed' });
+    }
+  });
+
+  app.get('/api/system-validation/section/:sectionId', async (req, res) => {
+    try {
+      const { systemValidationService } = await import('./services/systemValidationService.js');
+      const results = await systemValidationService.runSectionValidation(req.params.sectionId);
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error('Section validation failed:', error);
+      res.status(500).json({ success: false, error: 'Validation failed' });
+    }
+  });
+
+  app.get('/api/system-validation/summary', async (req, res) => {
+    try {
+      const { systemValidationService } = await import('./services/systemValidationService.js');
+      const summary = await systemValidationService.getValidationSummary();
+      res.json({ success: true, summary });
+    } catch (error) {
+      console.error('Validation summary failed:', error);
+      res.status(500).json({ success: false, error: 'Summary failed' });
+    }
+  });
+
+  app.get('/api/system-validation/sections', async (req, res) => {
+    try {
+      const { systemValidationService } = await import('./services/systemValidationService.js');
+      const sections = systemValidationService.getValidationSections();
+      res.json({ success: true, sections });
+    } catch (error) {
+      console.error('Get sections failed:', error);
+      res.status(500).json({ success: false, error: 'Failed to get sections' });
+    }
+  });
+
   return Promise.resolve(server);
 }
