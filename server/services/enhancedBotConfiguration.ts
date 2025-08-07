@@ -359,6 +359,40 @@ class EnhancedBotConfiguration {
     return true;
   }
 
+  public updateBotSetting(botId: string, settingKey: string, settingValue: any): boolean {
+    const currentSettings = this.botSettings.get(botId);
+    if (!currentSettings) return false;
+
+    // Handle nested settings like 'advanced.confidenceThreshold'
+    if (settingKey.includes('.')) {
+      const keys = settingKey.split('.');
+      let target = currentSettings.settings as any;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!target[keys[i]]) target[keys[i]] = {};
+        target = target[keys[i]];
+      }
+      
+      target[keys[keys.length - 1]] = settingValue;
+    } else {
+      (currentSettings.settings as any)[settingKey] = settingValue;
+    }
+
+    currentSettings.lastUpdated = new Date();
+    this.botSettings.set(botId, currentSettings);
+    return true;
+  }
+
+  public resetBotSettings(botId: string): boolean {
+    const defaultSettings = this.createDefaultBotSettings(botId);
+    this.botSettings.set(botId, {
+      botId,
+      settings: defaultSettings,
+      lastUpdated: new Date()
+    });
+    return true;
+  }
+
   // Profit/Loss Tracking
   public recordTrade(trade: TradeResult): void {
     const tracker = this.profitLossTrackers.get(trade.botId);

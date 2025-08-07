@@ -30,43 +30,144 @@ interface EnhancedBotManagementProps {
   onClose: () => void;
 }
 
+interface BotSettings {
+  settings?: {
+    id: string;
+    name: string;
+    riskLevel: string;
+    maxPositionSize: number;
+    stopLoss: number;
+    takeProfit: number;
+    activeStrategy: string;
+    autoTrading: boolean;
+    maxDailyTrades: number;
+    tradingPairs: string[];
+    timeframes: string[];
+    activeTimeframe: string;
+    strategies: string[];
+    notifications: {
+      email: boolean;
+      sms: boolean;
+      inApp: boolean;
+      profitThreshold: number;
+      lossThreshold: number;
+    };
+    emergencyStop: {
+      enabled: boolean;
+      maxDailyLoss: number;
+      consecutiveLossLimit: number;
+    };
+    advanced: {
+      aiModel: string;
+      confidenceThreshold: number;
+      signalFilters: string[];
+      backtestPeriod: number;
+      paperTrading: boolean;
+    };
+  };
+}
+
+interface ProfitLossData {
+  profitLoss?: {
+    netProfitLoss: number;
+    isCurrentlyProfiting: boolean;
+    isCurrentlyLosing: boolean;
+    winRate: number;
+    winningTrades: number;
+    totalTrades: number;
+    consecutiveWins: number;
+    consecutiveLosses: number;
+    totalProfit: number;
+    totalLoss: number;
+    largestWin: number;
+    largestLoss: number;
+    averageWin: number;
+    averageLoss: number;
+    profitFactor: number;
+    sharpeRatio: number;
+  };
+}
+
+interface PerformanceData {
+  performance?: {
+    overallScore: number;
+    strengths: string[];
+    weaknesses: string[];
+  };
+}
+
+interface SignalsData {
+  signals?: Array<{
+    timestamp: number;
+    signal: string;
+    confidence: number;
+    price: number;
+    symbol: string;
+  }>;
+}
+
+interface TradesData {
+  trades?: Array<{
+    id: string;
+    timestamp: number;
+    symbol: string;
+    side: string;
+    quantity: number;
+    price: number;
+    status: string;
+    profit?: number;
+  }>;
+}
+
+interface AnalysisData {
+  analysis?: {
+    recommendations: string[];
+    riskAssessment: string;
+    marketConditions: string;
+    optimizationSuggestions: string[];
+  };
+}
+
 export default function EnhancedBotManagement({ botId, botName, onClose }: EnhancedBotManagementProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Check if this is Nwaora Chigozie for special configuration
+  const isNwaoraChigozie = botId === 'nwaora-chigozie';
+
   // Fetch bot settings
-  const { data: settings, isLoading: settingsLoading } = useQuery({
+  const { data: settings, isLoading: settingsLoading } = useQuery<BotSettings>({
     queryKey: [`/api/waidbot-engine/${botId}/settings`],
     refetchInterval: 30000,
   });
 
   // Fetch profit/loss data
-  const { data: profitLoss, isLoading: profitLossLoading } = useQuery({
+  const { data: profitLoss, isLoading: profitLossLoading } = useQuery<ProfitLossData>({
     queryKey: [`/api/waidbot-engine/${botId}/profit-loss`],
     refetchInterval: 10000,
   });
 
   // Fetch performance metrics
-  const { data: performance, isLoading: performanceLoading } = useQuery({
+  const { data: performance, isLoading: performanceLoading } = useQuery<PerformanceData>({
     queryKey: [`/api/waidbot-engine/${botId}/performance`],
     refetchInterval: 30000,
   });
 
   // Fetch trading signals
-  const { data: signals } = useQuery({
+  const { data: signals } = useQuery<SignalsData>({
     queryKey: [`/api/waidbot-engine/${botId}/signals`],
     refetchInterval: 15000,
   });
 
   // Fetch trade history
-  const { data: trades } = useQuery({
+  const { data: trades } = useQuery<TradesData>({
     queryKey: [`/api/waidbot-engine/${botId}/trades`],
     refetchInterval: 20000,
   });
 
   // Fetch advanced analysis
-  const { data: analysis } = useQuery({
+  const { data: analysis } = useQuery<AnalysisData>({
     queryKey: [`/api/waidbot-engine/${botId}/advanced-analysis`],
     refetchInterval: 60000,
   });
@@ -178,34 +279,52 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden">
-        <div className="p-6 border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-lg max-w-7xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
+        <div className={`p-4 sm:p-6 border-b ${isNwaoraChigozie 
+          ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600' 
+          : 'bg-gradient-to-r from-blue-600 to-purple-600'} text-white`}>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold">{botName} Enhanced Management</h2>
-              <p className="text-blue-100">Comprehensive bot configuration and monitoring</p>
+              <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                {botName} Enhanced Management
+                {isNwaoraChigozie && <span className="text-yellow-300">✨</span>}
+              </h2>
+              <p className="text-xs sm:text-sm text-blue-100">
+                {isNwaoraChigozie 
+                  ? "Cosmic Intelligence Configuration & Divine Monitoring" 
+                  : "Comprehensive bot configuration and monitoring"}
+              </p>
             </div>
             <Button onClick={onClose} variant="ghost" size="sm" className="text-white hover:bg-white/20">
-              <XCircle className="w-5 h-5" />
+              <XCircle className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
           </div>
         </div>
 
-        <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6 sticky top-0 bg-white z-10">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-              <TabsTrigger value="performance">Performance</TabsTrigger>
-              <TabsTrigger value="signals">Signals</TabsTrigger>
-              <TabsTrigger value="trades">Trades</TabsTrigger>
-              <TabsTrigger value="advanced">Advanced</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 sticky top-0 bg-white dark:bg-gray-800 z-10 text-xs sm:text-sm">
+              <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
+              <TabsTrigger value="performance" className="text-xs sm:text-sm hidden sm:block">Performance</TabsTrigger>
+              <TabsTrigger value="signals" className="text-xs sm:text-sm hidden sm:block">Signals</TabsTrigger>
+              <TabsTrigger value="trades" className="text-xs sm:text-sm hidden sm:block">Trades</TabsTrigger>
+              <TabsTrigger value="advanced" className="text-xs sm:text-sm">Advanced</TabsTrigger>
             </TabsList>
+            
+            {/* Mobile-only secondary tab navigation */}
+            <div className="sm:hidden bg-gray-50 dark:bg-gray-800 px-2 py-1">
+              <TabsList className="grid w-full grid-cols-3 h-8">
+                <TabsTrigger value="performance" className="text-xs">Performance</TabsTrigger>
+                <TabsTrigger value="signals" className="text-xs">Signals</TabsTrigger>
+                <TabsTrigger value="trades" className="text-xs">Trades</TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Overview Tab */}
-            <TabsContent value="overview" className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="overview" className="p-3 sm:p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                 {/* Profit/Loss Summary */}
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -351,15 +470,110 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
             </TabsContent>
 
             {/* Settings Tab */}
-            <TabsContent value="settings" className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TabsContent value="settings" className="p-3 sm:p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {/* Special Cosmic Intelligence Settings for Nwaora Chigozie */}
+                {isNwaoraChigozie && (
+                  <Card className="col-span-full border-purple-300 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        🌌 Cosmic Intelligence Configuration
+                        <span className="text-purple-500">✨</span>
+                      </CardTitle>
+                      <CardDescription>Divine and spiritual trading parameters</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="divineIntuition">Divine Intuition Level</Label>
+                          <Select defaultValue="high">
+                            <SelectTrigger className="text-xs sm:text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="low">Low (Earth-based)</SelectItem>
+                              <SelectItem value="medium">Medium (Celestial)</SelectItem>
+                              <SelectItem value="high">High (Divine)</SelectItem>
+                              <SelectItem value="cosmic">Cosmic (Universal)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="spiritualAlignment">Spiritual Alignment</Label>
+                          <Select defaultValue="balanced">
+                            <SelectTrigger className="text-xs sm:text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="aggressive">Aggressive (Fire)</SelectItem>
+                              <SelectItem value="balanced">Balanced (Harmony)</SelectItem>
+                              <SelectItem value="conservative">Conservative (Earth)</SelectItem>
+                              <SelectItem value="transcendent">Transcendent (Light)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="cosmicFrequency">Cosmic Frequency (Hz)</Label>
+                          <Input
+                            id="cosmicFrequency"
+                            type="number"
+                            min="432"
+                            max="963"
+                            defaultValue="528"
+                            className="text-xs sm:text-sm"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="chakraAlignment">Chakra Focus</Label>
+                          <Select defaultValue="crown">
+                            <SelectTrigger className="text-xs sm:text-sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="root">Root (Security)</SelectItem>
+                              <SelectItem value="sacral">Sacral (Creativity)</SelectItem>
+                              <SelectItem value="solar">Solar Plexus (Power)</SelectItem>
+                              <SelectItem value="heart">Heart (Balance)</SelectItem>
+                              <SelectItem value="throat">Throat (Communication)</SelectItem>
+                              <SelectItem value="third-eye">Third Eye (Intuition)</SelectItem>
+                              <SelectItem value="crown">Crown (Divine Connection)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-4 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <Switch id="astralProjection" defaultChecked />
+                          <Label htmlFor="astralProjection" className="text-xs sm:text-sm">Enable Astral Projection Trading</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Switch id="moonPhaseSync" defaultChecked />
+                          <Label htmlFor="moonPhaseSync" className="text-xs sm:text-sm">Synchronize with Moon Phases</Label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <Switch id="crystalEnergy" />
+                          <Label htmlFor="crystalEnergy" className="text-xs sm:text-sm">Crystal Energy Amplification</Label>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Basic Settings */}
-                <Card>
+                <Card className={isNwaoraChigozie ? "border-purple-200" : ""}>
                   <CardHeader>
-                    <CardTitle>Basic Settings</CardTitle>
-                    <CardDescription>Core trading parameters</CardDescription>
+                    <CardTitle className="text-sm sm:text-base">
+                      {isNwaoraChigozie ? "Earthly Trading Parameters" : "Basic Settings"}
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Core trading parameters</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3 sm:space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="autoTrading">Auto Trading</Label>
                       <Switch
@@ -423,12 +637,16 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                 </Card>
 
                 {/* Advanced Settings */}
-                <Card>
+                <Card className={isNwaoraChigozie ? "border-purple-200" : ""}>
                   <CardHeader>
-                    <CardTitle>Advanced Settings</CardTitle>
-                    <CardDescription>AI and strategy configuration</CardDescription>
+                    <CardTitle className="text-sm sm:text-base">
+                      {isNwaoraChigozie ? "Divine AI Configuration" : "Advanced Settings"}
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      {isNwaoraChigozie ? "Spiritual AI and cosmic strategy configuration" : "AI and strategy configuration"}
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-3 sm:space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="activeStrategy">Active Strategy</Label>
                       <Select 
@@ -607,16 +825,16 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
             </TabsContent>
 
             {/* Performance Tab */}
-            <TabsContent value="performance" className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="performance" className="p-3 sm:p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
                 {/* Performance Metrics */}
-                <Card className="md:col-span-2">
+                <Card className="lg:col-span-2">
                   <CardHeader>
-                    <CardTitle>Performance Metrics</CardTitle>
-                    <CardDescription>Comprehensive performance analysis</CardDescription>
+                    <CardTitle className="text-sm sm:text-base">Performance Metrics</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Comprehensive performance analysis</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                       {['efficiency', 'adaptability', 'consistency', 'riskManagement', 'learningProgress'].map((metric) => (
                         <div key={metric} className="text-center">
                           <div className={`text-2xl font-bold ${getPerformanceColor(performance?.performance?.[metric] || 0)}`}>
