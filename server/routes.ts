@@ -3115,6 +3115,388 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // =============================================================================
+  // ENHANCED BOT CONFIGURATION, PROFIT/LOSS TRACKING & ADVANCED FEATURES API
+  // =============================================================================
+
+  // Get comprehensive bot settings
+  app.get("/api/waidbot-engine/:botId/settings", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const settings = enhancedBotConfiguration.getBotSettings(botId);
+      
+      if (!settings) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      res.json({
+        success: true,
+        settings,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching settings for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch bot settings' });
+    }
+  });
+
+  // Update bot settings
+  app.put("/api/waidbot-engine/:botId/settings", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const updates = req.body;
+      
+      const success = enhancedBotConfiguration.updateBotSettings(botId, updates);
+      
+      if (!success) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      const updatedSettings = enhancedBotConfiguration.getBotSettings(botId);
+      
+      res.json({
+        success: true,
+        message: `Settings updated for ${botId}`,
+        settings: updatedSettings,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error updating settings for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to update bot settings' });
+    }
+  });
+
+  // Get comprehensive profit/loss tracking
+  app.get("/api/waidbot-engine/:botId/profit-loss", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const tracker = enhancedBotConfiguration.getProfitLossTracker(botId);
+      
+      if (!tracker) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      const performanceAnalysis = enhancedBotConfiguration.analyzePerformance(botId);
+      
+      res.json({
+        success: true,
+        profitLoss: tracker,
+        analysis: performanceAnalysis,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching profit/loss for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch profit/loss data' });
+    }
+  });
+
+  // Get bot trade history with advanced filtering
+  app.get("/api/waidbot-engine/:botId/trades", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const { limit = 50, offset = 0, filter } = req.query;
+      
+      let trades = enhancedBotConfiguration.getTradeHistory(botId, parseInt(limit) + parseInt(offset));
+      
+      // Apply filters if provided
+      if (filter) {
+        const filterObj = JSON.parse(filter);
+        if (filterObj.result) {
+          trades = trades.filter(trade => 
+            filterObj.result === 'win' ? trade.isWin : 
+            filterObj.result === 'loss' ? !trade.isWin && trade.netResult < 0 : 
+            true
+          );
+        }
+        if (filterObj.strategy) {
+          trades = trades.filter(trade => trade.strategy === filterObj.strategy);
+        }
+        if (filterObj.symbol) {
+          trades = trades.filter(trade => trade.symbol === filterObj.symbol);
+        }
+      }
+      
+      // Apply pagination
+      const paginatedTrades = trades.slice(parseInt(offset), parseInt(offset) + parseInt(limit));
+      
+      res.json({
+        success: true,
+        trades: paginatedTrades,
+        total: trades.length,
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching trades for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch trade history' });
+    }
+  });
+
+  // Record a new trade (for testing and manual entry)
+  app.post("/api/waidbot-engine/:botId/trades", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const tradeData = req.body;
+      
+      // Validate required fields
+      const requiredFields = ['action', 'symbol', 'entryPrice', 'quantity', 'profit', 'loss', 'netResult'];
+      const missingFields = requiredFields.filter(field => !(field in tradeData));
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({ 
+          error: `Missing required fields: ${missingFields.join(', ')}` 
+        });
+      }
+      
+      const trade = {
+        id: `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        botId,
+        timestamp: Date.now(),
+        isWin: tradeData.netResult > 0,
+        confidence: tradeData.confidence || 0.7,
+        strategy: tradeData.strategy || 'manual',
+        reason: tradeData.reason || 'Manual trade entry',
+        fees: tradeData.fees || 0,
+        slippage: tradeData.slippage || 0,
+        executionTime: tradeData.executionTime || 100,
+        marketConditions: tradeData.marketConditions || {
+          trend: 'SIDEWAYS',
+          volatility: 50,
+          volume: 500000
+        },
+        ...tradeData
+      };
+      
+      enhancedBotConfiguration.recordTrade(trade);
+      
+      // Check emergency conditions after recording trade
+      enhancedBotConfiguration.checkEmergencyConditions(botId);
+      
+      res.json({
+        success: true,
+        message: 'Trade recorded successfully',
+        trade,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error recording trade for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to record trade' });
+    }
+  });
+
+  // Get bot memory and learning data
+  app.get("/api/waidbot-engine/:botId/memory", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const memory = enhancedBotConfiguration.getBotMemory(botId);
+      
+      if (!memory) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      res.json({
+        success: true,
+        memory,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching memory for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch bot memory' });
+    }
+  });
+
+  // Update bot memory and learning data
+  app.put("/api/waidbot-engine/:botId/memory", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const memoryUpdates = req.body;
+      
+      const success = enhancedBotConfiguration.updateBotMemory(botId, memoryUpdates);
+      
+      if (!success) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      const updatedMemory = enhancedBotConfiguration.getBotMemory(botId);
+      
+      res.json({
+        success: true,
+        message: `Memory updated for ${botId}`,
+        memory: updatedMemory,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error updating memory for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to update bot memory' });
+    }
+  });
+
+  // Generate trading signal with advanced analysis
+  app.post("/api/waidbot-engine/:botId/generate-signal", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const { symbol = 'ETH/USDT', marketConditions } = req.body;
+      
+      const signal = await botAdvancedFeatures.generateTradingSignal(botId, symbol, marketConditions);
+      
+      res.json({
+        success: true,
+        signal,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error generating signal for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to generate trading signal' });
+    }
+  });
+
+  // Get signal history
+  app.get("/api/waidbot-engine/:botId/signals", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const { limit = 50 } = req.query;
+      
+      const signals = botAdvancedFeatures.getSignalHistory(botId, parseInt(limit));
+      
+      res.json({
+        success: true,
+        signals,
+        count: signals.length,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching signals for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch signal history' });
+    }
+  });
+
+  // Get performance metrics
+  app.get("/api/waidbot-engine/:botId/performance", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      
+      const metrics = botAdvancedFeatures.getPerformanceMetrics(botId);
+      const marketConditions = await botAdvancedFeatures.analyzeMarketConditions();
+      
+      res.json({
+        success: true,
+        performance: metrics,
+        marketConditions,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching performance for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch performance metrics' });
+    }
+  });
+
+  // Auto-optimize bot settings
+  app.post("/api/waidbot-engine/:botId/auto-optimize", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      
+      const optimization = await botAdvancedFeatures.autoOptimizeBot(botId);
+      
+      res.json({
+        success: true,
+        optimization,
+        message: `Generated ${optimization.optimizations.length} optimization suggestions for ${botId}`,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error auto-optimizing ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to auto-optimize bot' });
+    }
+  });
+
+  // Get comprehensive advanced analysis
+  app.get("/api/waidbot-engine/:botId/advanced-analysis", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      
+      const analysis = await botAdvancedFeatures.getAdvancedAnalysis(botId);
+      
+      res.json({
+        success: true,
+        analysis,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error fetching advanced analysis for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to fetch advanced analysis' });
+    }
+  });
+
+  // Emergency stop bot
+  app.post("/api/waidbot-engine/:botId/emergency-stop", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const { reason = 'Manual emergency stop' } = req.body;
+      
+      const success = enhancedBotConfiguration.triggerEmergencyStop(botId, reason);
+      
+      if (!success) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      res.json({
+        success: true,
+        message: `Emergency stop activated for ${botId}`,
+        reason,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error triggering emergency stop for ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to trigger emergency stop' });
+    }
+  });
+
+  // Get all bots overview
+  app.get("/api/waidbot-engine/overview", async (req, res) => {
+    try {
+      const bots = ['maibot', 'waidbot', 'waidbot-pro', 'autonomous-trader', 'full-engine', 'nwaora-chigozie'];
+      const overview = {};
+      
+      for (const botId of bots) {
+        const settings = enhancedBotConfiguration.getBotSettings(botId);
+        const tracker = enhancedBotConfiguration.getProfitLossTracker(botId);
+        const metrics = botAdvancedFeatures.getPerformanceMetrics(botId);
+        
+        overview[botId] = {
+          settings: {
+            name: settings?.name,
+            isActive: settings?.autoTrading,
+            riskLevel: settings?.riskLevel,
+            strategy: settings?.activeStrategy
+          },
+          performance: {
+            totalTrades: tracker?.totalTrades || 0,
+            winRate: tracker?.winRate || 0,
+            netProfitLoss: tracker?.netProfitLoss || 0,
+            isCurrentlyProfiting: tracker?.isCurrentlyProfiting || false,
+            consecutiveWins: tracker?.consecutiveWins || 0,
+            consecutiveLosses: tracker?.consecutiveLosses || 0
+          },
+          metrics: {
+            overallScore: metrics?.overallScore || 50,
+            strengths: metrics?.strengths || [],
+            weaknesses: metrics?.weaknesses || []
+          }
+        };
+      }
+      
+      res.json({
+        success: true,
+        overview,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Error fetching bots overview:', error);
+      res.status(500).json({ error: 'Failed to fetch bots overview' });
+    }
+  });
+
+  // =============================================================================
   // ENHANCED DIVINE TRADING REAL-TIME ENGINE API ENDPOINTS  
   // =============================================================================
 
@@ -6992,6 +7374,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { subscriptionService } = await import('./services/subscriptionService.js');
   const { monetizationService } = await import('./services/monetizationService.js');
   const { BotTier, botTierDefinitions } = await import('@shared/subscriptions.js');
+  
+  // Import enhanced bot services
+  const { enhancedBotConfiguration } = await import('./services/enhancedBotConfiguration.js');
+  const { botAdvancedFeatures } = await import('./services/botAdvancedFeatures.js');
 
   // WaidBot (ETH Uptrend Only) Status - Enhanced with Gamified Metrics
   app.get("/api/waidbot-engine/waidbot/status", async (req, res) => {

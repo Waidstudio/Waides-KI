@@ -40,6 +40,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import EnhancedBotManagement from "@/components/EnhancedBotManagement";
 
 interface BotStatus {
   id: string;
@@ -123,9 +124,110 @@ interface BotMemoryEntry {
   ethPrice: number;
   result: 'win' | 'loss' | 'neutral';
   profit: number;
-  reasoning: string;
-  marketConditions: string;
 }
+
+interface EnhancedBotSettings {
+  id: string;
+  name: string;
+  riskLevel: 'conservative' | 'moderate' | 'aggressive';
+  maxPositionSize: number;
+  stopLoss: number;
+  takeProfit: number;
+  tradingPairs: string[];
+  strategies: string[];
+  activeStrategy: string;
+  autoTrading: boolean;
+  notifications: {
+    email: boolean;
+    sms: boolean;
+    inApp: boolean;
+    profitThreshold: number;
+    lossThreshold: number;
+  };
+  timeframes: string[];
+  activeTimeframe: string;
+  maxDailyTrades: number;
+  emergencyStop: {
+    enabled: boolean;
+    maxDailyLoss: number;
+    consecutiveLossLimit: number;
+  };
+  advanced: {
+    aiModel: string;
+    confidenceThreshold: number;
+    signalFilters: string[];
+    backtestPeriod: number;
+    paperTrading: boolean;
+  };
+}
+
+interface EnhancedProfitLossTracker {
+  botId: string;
+  totalProfit: number;
+  totalLoss: number;
+  netProfitLoss: number;
+  winRate: number;
+  totalTrades: number;
+  winningTrades: number;
+  losingTrades: number;
+  averageWin: number;
+  averageLoss: number;
+  largestWin: number;
+  largestLoss: number;
+  profitFactor: number;
+  sharpeRatio: number;
+  maxDrawdown: number;
+  currentDrawdown: number;
+  consecutiveWins: number;
+  consecutiveLosses: number;
+  dailyProfitLoss: number;
+  weeklyProfitLoss: number;
+  monthlyProfitLoss: number;
+  yearlyProfitLoss: number;
+  isCurrentlyProfiting: boolean;
+  isCurrentlyLosing: boolean;
+  lastTradeResult: 'win' | 'loss' | 'neutral';
+  riskAdjustedReturns: number;
+}
+
+interface TradingSignal {
+  botId: string;
+  action: 'BUY' | 'SELL' | 'HOLD';
+  confidence: number;
+  strength: number;
+  symbol: string;
+  targetPrice: number;
+  stopLoss: number;
+  takeProfit: number;
+  reasoning: string[];
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  timeframe: string;
+  strategy: string;
+  timestamp: number;
+}
+
+interface PerformanceMetrics {
+  botId: string;
+  efficiency: number;
+  adaptability: number;
+  consistency: number;
+  riskManagement: number;
+  learningProgress: number;
+  overallScore: number;
+  strengths: string[];
+  weaknesses: string[];
+  improvementAreas: string[];
+}
+
+// Bot entities for enhanced management
+const BOT_ENTITIES = [
+  { id: 'maibot', name: 'Maibot' },
+  { id: 'waidbot', name: 'WaidBot α' },
+  { id: 'waidbot-pro', name: 'WaidBot Pro β' },
+  { id: 'autonomous', name: 'Autonomous Trader γ' },
+  { id: 'full-engine', name: 'Full Engine Ω' },
+  { id: 'nwaora-chigozie', name: 'Nwaora Chigozie ε' }
+];
 
 export default function WaidbotEnginePageEnhanced() {
   const [selectedBot, setSelectedBot] = useState<string | null>(null);
@@ -1626,161 +1728,13 @@ export default function WaidbotEnginePageEnhanced() {
           </Card>
         </div>
 
-        {/* Individual Bot Funding Modal */}
+        {/* Enhanced Bot Management Modal */}
         {showBotModal && (
-          <Dialog open={!!showBotModal} onOpenChange={() => setShowBotModal(null)}>
-            <DialogContent className="bg-slate-900 border-slate-700 max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-white flex items-center space-x-2">
-                  <Wallet className="w-5 h-5 text-cyan-400" />
-                  <span>Bot Settings & Funding</span>
-                </DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-6">
-                {/* Bot Information */}
-                <div className="bg-slate-800/50 rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      showBotModal === 'waidbot' ? 'bg-green-500' :
-                      showBotModal === 'waidbot-pro' ? 'bg-blue-500' :
-                      showBotModal === 'autonomous' ? 'bg-purple-500' :
-                      showBotModal === 'full-engine' ? 'bg-orange-500' :
-                      'bg-emerald-500'
-                    }`}>
-                      {showBotModal === 'waidbot' && <TrendingUp className="w-4 h-4 text-white" />}
-                      {showBotModal === 'waidbot-pro' && <Lightning className="w-4 h-4 text-white" />}
-                      {showBotModal === 'autonomous' && <Hexagon className="w-4 h-4 text-white" />}
-                      {showBotModal === 'full-engine' && <Brain className="w-4 h-4 text-white" />}
-                      {showBotModal === 'nwaora-chigozie' && <Shield className="w-4 h-4 text-white" />}
-                    </div>
-                    <div>
-                      <h3 className="text-white font-bold">
-                        {showBotModal === 'waidbot' && 'WaidBot α'}
-                        {showBotModal === 'waidbot-pro' && 'WaidBot Pro β'}
-                        {showBotModal === 'autonomous' && 'Autonomous Trader γ'}
-                        {showBotModal === 'full-engine' && 'Full Engine Ω'}
-                        {showBotModal === 'nwaora-chigozie' && 'Nwaora Chigozie ε'}
-                      </h3>
-                      <p className="text-slate-400 text-sm">
-                        {showBotModal === 'waidbot' && 'ETH Uptrend Specialist'}
-                        {showBotModal === 'waidbot-pro' && 'Advanced Multi-Strategy'}
-                        {showBotModal === 'autonomous' && 'Autonomous Decision Engine'}
-                        {showBotModal === 'full-engine' && 'Smart Risk Management + ML'}
-                        {showBotModal === 'nwaora-chigozie' && 'Backup Operations Manager'}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Live Bot Information */}
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <p className="text-slate-400">Status</p>
-                      <p className="text-green-400 font-medium">
-                        {showBotModal === 'maibot' && 'AVAILABLE'}
-                        {showBotModal === 'waidbot' && (waidbotStatus?.isActive ? 'ACTIVE' : 'STANDBY')}
-                        {showBotModal === 'waidbot-pro' && (waidbotProStatus?.isActive ? 'ACTIVE' : 'STANDBY')}
-                        {showBotModal === 'autonomous' && (autonomousStatus?.isActive ? 'ACTIVE' : 'STANDBY')}
-                        {showBotModal === 'full-engine' && (fullEngineStatus?.engine_status?.is_active ? 'ACTIVE' : 'STANDBY')}
-                        {showBotModal === 'nwaora-chigozie' && (nwaoraChigozieStatus?.isActive ? 'ACTIVE' : 'STANDBY')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-400">Balance</p>
-                      <p className="text-white font-medium">$8,500.00</p>
-                    </div>
-                    <div>
-                      <p className="text-slate-400">24h Profit</p>
-                      <p className="text-green-400 font-medium">
-                        {showBotModal === 'maibot' && '$0'}
-                        {showBotModal === 'waidbot' && `$${waidbotStatus?.performance?.profit?.toLocaleString() || '0'}`}
-                        {showBotModal === 'waidbot-pro' && `$${waidbotProStatus?.performance?.profit?.toLocaleString() || '0'}`}
-                        {showBotModal === 'autonomous' && `$${autonomousStatus?.performance?.profit?.toLocaleString() || '0'}`}
-                        {showBotModal === 'full-engine' && `$${fullEngineAnalytics?.performance_analytics?.total_return_pct ? (fullEngineAnalytics.performance_analytics.total_return_pct * 1000).toLocaleString() : '0'}`}
-                        {showBotModal === 'nwaora-chigozie' && `$${nwaoraChigozieStatus?.protectedValue?.toLocaleString() || '0'}`}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-slate-400">Win Rate</p>
-                      <p className="text-cyan-400 font-medium">
-                        {showBotModal === 'maibot' && 'Manual Only'}
-                        {showBotModal === 'waidbot' && `${waidbotStatus?.performance?.winRate || 0}%`}
-                        {showBotModal === 'waidbot-pro' && `${waidbotProStatus?.performance?.winRate || 0}%`}
-                        {showBotModal === 'autonomous' && `${autonomousStatus?.performance?.winRate || 0}%`}
-                        {showBotModal === 'full-engine' && `${fullEngineAnalytics?.performance_analytics?.win_rate || 0}%`}
-                        {showBotModal === 'nwaora-chigozie' && `${nwaoraChigozieStatus?.successRate || 0}%`}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Funding Section */}
-                <div className="space-y-4">
-                  <h4 className="text-white font-medium">Fund Bot</h4>
-                  <div>
-                    <Label htmlFor="fundAmount" className="text-slate-400">Amount (USD)</Label>
-                    <Input
-                      id="fundAmount"
-                      type="number"
-                      placeholder="Enter amount"
-                      value={fundAmount}
-                      onChange={(e) => setFundAmount(e.target.value)}
-                      className="bg-slate-800 border-slate-600 text-white mt-1"
-                    />
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <Button 
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => {
-                        // Handle fund bot logic
-                        console.log(`Funding ${showBotModal} with $${fundAmount}`);
-                        setFundAmount('');
-                        setShowBotModal(null);
-                      }}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Fund Bot
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 border-red-400/40 text-red-400 hover:bg-red-400/10"
-                      onClick={() => {
-                        // Handle withdraw logic
-                        console.log(`Withdrawing from ${showBotModal}`);
-                        setShowBotModal(null);
-                      }}
-                    >
-                      <Minus className="w-4 h-4 mr-2" />
-                      Withdraw
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Live Messages */}
-                <div className="bg-slate-800/30 rounded-lg p-3">
-                  <h5 className="text-slate-400 text-sm mb-2">Live Bot Messages</h5>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span className="text-slate-300">
-                        {showBotModal === 'maibot' && 'Ready for manual trading assistance...'}
-                        {showBotModal === 'waidbot' && 'Monitoring ETH uptrend signals...'}
-                        {showBotModal === 'waidbot-pro' && 'Multi-strategy analysis in progress...'}
-                        {showBotModal === 'autonomous' && 'Autonomous decision engine active...'}
-                        {showBotModal === 'full-engine' && 'ML risk assessment running...'}
-                        {showBotModal === 'nwaora-chigozie' && 'Backup protection protocols active...'}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <span className="text-slate-300">Last action: 2 minutes ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <EnhancedBotManagement
+            botId={showBotModal}
+            botName={BOT_ENTITIES.find(bot => bot.id === showBotModal)?.name || showBotModal}
+            onClose={() => setShowBotModal(null)}
+          />
         )}
 
         {/* Integrated Advanced Engine Systems - Unused Components Integration */}
