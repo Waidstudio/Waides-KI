@@ -54,6 +54,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Import admin exchange pool service
   const { adminExchangePoolService } = await import('./services/adminExchangePoolService.js');
+  
+  // Import chat routes
+  const chatRoutes = await import('./routes/chat.js');
 
   // Import authentication middleware
   const requireAuth = (req: any, res: any, next: any) => {
@@ -11567,6 +11570,10 @@ Ask me about specific market conditions, upload files for analysis, or request K
       res.status(500).json({ success: false, error: 'Failed to get sections' });
     }
   });
+
+  // === CHAT SYSTEM ROUTES ===
+  app.use('/api/chat', chatRoutes.default);
+  console.log('💬 Chat system routes registered');
 
   return Promise.resolve(server);
 }

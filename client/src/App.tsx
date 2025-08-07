@@ -21,7 +21,8 @@ import { UserAuthProvider, useUserAuth } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
-import EnhancedHeader from "@/components/ui/EnhancedHeader";
+import ModernNavigationHeader from "@/components/ui/ModernNavigationHeader";
+import AdminChatSystem from "@/components/AdminChatSystem";
 import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import HomePage from "@/components/HomePage";
@@ -131,7 +132,7 @@ function Router() {
   return (
     <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
       {/* Enhanced Header with Comprehensive Navigation */}
-      <EnhancedHeader />
+      <ModernNavigationHeader />
 
       {/* Main Content Area */}
       <main className="pb-16">
@@ -518,6 +519,14 @@ function Router() {
 
       {/* Global Footer Navigation */}
       <GlobalFooterNav />
+      
+      {/* Admin Chat System - Available for all authenticated users */}
+      {isAuthenticated && (
+        <AdminChatSystem 
+          isAdmin={user?.role === 'admin' || user?.role === 'super_admin'} 
+          userId={user?.id || '1'} 
+        />
+      )}
     </div>
   );
 }
