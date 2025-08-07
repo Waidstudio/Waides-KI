@@ -1,0 +1,80 @@
+I am trying to 
+KonsMesh, KonsAi & Internal Communication and understand my questions to know where to work on and which of the entitiy each question represent
+
+Is KonsMesh message routing encrypted end-to-end?
+
+Are bots authenticated by KonsAi for signal mastery?
+
+Can KonsAi broadcast system-wide alerts?
+
+Are mesh signals timestamped and ordered?
+
+Can KonsAi intervene mid-trade?
+
+Is KonsMesh messaging retried on failure?
+
+Are bots able to detect mesh timeouts?
+
+Are heartbeat checks active across mesh peers?
+
+Is mesh overload handled gracefully?
+
+Are signal latencies tracked?
+
+Can KonsAi dynamically redeploy compromised bots?
+
+Is mesh governance versioned?
+
+Are communication contracts defined in KonsLang?
+
+Are mesh logs linked to prediction outcomes?
+
+Can bots broadcast partial profit gains to mesh?
+
+Does KonsAi use feedback loops from trade outcomes?
+
+Can KonsAi veto trades that fail spiritual guidelines?
+
+Is mesh node discovery secure?
+
+Are bots isolated if misbehaving?
+
+Are mesh signals idempotent?
+
+
+in /waidbot-engine
+
+
+
+---
+- Research my codebase first
+
+- Find related files and functions
+
+- Assess if changes are possible without restructuring existing code
+
+- Develop a plan that builds on existing code
+- understand the question i am asking
+
+- Write the plan in Instructions.md
+
+
+INSTRUCTION FOR DEVELOPER:
+
+• DO NOT remove or overwrite any existing files or functions unless explicitly told.
+
+• If updating an existing file (e.g., routes/user.js), EDIT it in place — do not create a duplicate like routes/user1.js.
+
+• Maintain current file/folder structure. No rearrangement.
+
+• Keep all routing paths unchanged unless specified or needed to be.
+
+• Only build or enhance what I request. Do not improvise beyond instructions.
+
+• Every component or function added should have inline comments and must integrate with the current system.
+
+• ⚠️ Submit a changelog showing what files you modified and what was added.
+
+
+
+

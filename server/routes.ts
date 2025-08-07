@@ -9697,5 +9697,107 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // AI Model System API Routes
+  app.get('/api/ai/test-data/stats', async (req, res) => {
+    try {
+      const { getTestDataManager } = await import('./services/ai/testDataManager.js');
+      const testDataManager = getTestDataManager();
+      const stats = testDataManager.getTestDatasetStats();
+      res.json({ success: true, stats });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  app.post('/api/ai/validate-input', async (req, res) => {
+    try {
+      const { getInputValidator } = await import('./services/ai/inputValidator.js');
+      const inputValidator = getInputValidator();
+      const result = inputValidator.validateTradingSignal(req.body);
+      res.json({ success: true, validation: result });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  app.get('/api/ai/models/training-stats', async (req, res) => {
+    try {
+      const { getModelTrainer } = await import('./services/ai/modelTrainer.js');
+      const modelTrainer = getModelTrainer();
+      const stats = modelTrainer.getTrainingStats();
+      res.json({ success: true, stats });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Risk Management API Routes
+  app.post('/api/risk/ethical-assessment', async (req, res) => {
+    try {
+      const { getEthicalDecisionEngine } = await import('./services/risk/ethicalDecisionEngine.js');
+      const ethicalEngine = getEthicalDecisionEngine();
+      const { decision, marketContext } = req.body;
+      const assessment = await ethicalEngine.assessTradingDecision(decision, marketContext);
+      res.json({ success: true, assessment });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Psychology Analysis API Routes
+  app.get('/api/psychology/fear-greed', async (req, res) => {
+    try {
+      const { getPsychologyIndicators } = await import('./services/analysis/psychologyIndicators.js');
+      const psychologyIndicators = getPsychologyIndicators();
+      const marketData = {
+        volatility: parseFloat(req.query.volatility as string) || 0.02,
+        volume: parseFloat(req.query.volume as string) || 100000,
+        price: parseFloat(req.query.price as string) || 3000,
+        momentum: parseFloat(req.query.momentum as string) || 0.1
+      };
+      const fearGreed = psychologyIndicators.calculateFearGreedIndex(marketData);
+      res.json({ success: true, fearGreed });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Spiritual AI API Routes
+  app.post('/api/spiritual/reading', async (req, res) => {
+    try {
+      const { getIntuitionLayer } = await import('./services/spiritual/intuitionLayer.js');
+      const intuitionLayer = getIntuitionLayer();
+      const { entity, marketData } = req.body;
+      const reading = intuitionLayer.generateSpiritualReading(entity, marketData);
+      res.json({ success: true, reading });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Entity Integration API Routes
+  app.get('/api/integration/system-health', async (req, res) => {
+    try {
+      const { getEntityIntegrator } = await import('./services/integration/entityIntegrator.js');
+      const entityIntegrator = getEntityIntegrator();
+      const report = await entityIntegrator.generateSystemHealthReport();
+      res.json({ success: true, report });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  app.post('/api/integration/process-signal', async (req, res) => {
+    try {
+      const { getEntityIntegrator } = await import('./services/integration/entityIntegrator.js');
+      const entityIntegrator = getEntityIntegrator();
+      const { entityId, signal, marketData } = req.body;
+      const integratedSignal = await entityIntegrator.processIntegratedTradingSignal(entityId, signal, marketData);
+      res.json({ success: true, integratedSignal });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
   return Promise.resolve(server);
 }
