@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, real, timestamp, bigint, numeric, jsonb } from "drizzle-orm/pg-core";
+import { sql } from 'drizzle-orm';
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -938,3 +939,22 @@ export const RolePermissions: Record<AdminRole, AdminPermission[]> = {
     AdminPermissions.VIEW_FINANCIAL_DATA,
   ],
 };
+
+// Exchange connections table for multi-exchange integration
+export const exchangeConnections = pgTable("exchange_connections", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: integer("user_id").notNull().references(() => users.id),
+  exchangeCode: text("exchange_code").notNull(), // BIN, COI, KRA, etc.
+  exchangeName: text("exchange_name").notNull(),
+  apiKeyEncrypted: text("api_key_encrypted").notNull(),
+  apiSecretEncrypted: text("api_secret_encrypted").notNull(),
+  passphraseEncrypted: text("passphrase_encrypted"), // For exchanges like OKX
+  permissions: jsonb("permissions").notNull(), // JSON object with permission details
+  isActive: boolean("is_active").default(true),
+  lastVerified: timestamp("last_verified"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ExchangeConnection = typeof exchangeConnections.$inferSelect;
+export type InsertExchangeConnection = typeof exchangeConnections.$inferInsert;

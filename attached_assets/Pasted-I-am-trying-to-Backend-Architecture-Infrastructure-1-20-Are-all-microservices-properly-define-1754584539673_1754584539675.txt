@@ -1,0 +1,76 @@
+I am trying to 
+Backend Architecture & Infrastructure (1–20)
+Are all microservices properly defined and connected?
+
+Does each service have a documented API contract?
+
+Are environment variables securely managed?
+
+Is there documentation of proper service dependencies?
+
+Are health-check endpoints implemented for each service?
+
+Has load testing been conducted on core services?
+
+Is horizontal scaling configured for high-traffic conditions?
+
+Are unused files or deprecated modules removed?
+
+Are Docker or containerization layers appropriately built?
+
+Does CI/CD handle successful builds and rollback on failure?
+
+Are schema migrations version-controlled and production-ready?
+
+Is WebSocket traffic authentication applied?
+
+Are version checks enforced across services?
+
+Are services deployed across multiple availability zones for resilience?
+
+Is there auto-scaling logic based on traffic?
+
+Are basic performance metrics (CPU, memory, latency) monitored?
+
+Is API rate limiting in place for user requests?
+
+Are logs centralized and searchable?
+
+Are secrets (e.g. API keys, wallet keys) encrypted?
+
+Is service discovery and failure fallback operational?
+
+
+
+---
+- Research my codebase first
+
+- Find related files and functions
+
+- Assess if changes are possible without restructuring existing code
+
+- Develop a plan that builds on existing code
+- understand the question i am asking
+
+- Write the plan in Instructions.md
+
+
+INSTRUCTION FOR DEVELOPER:
+
+• DO NOT remove or overwrite any existing files or functions unless explicitly told.
+
+• If updating an existing file (e.g., routes/user.js), EDIT it in place — do not create a duplicate like routes/user1.js.
+
+• Maintain current file/folder structure. No rearrangement.
+
+• Keep all routing paths unchanged unless specified or needed to be.
+
+• Only build or enhance what I request. Do not improvise beyond instructions.
+
+• Every component or function added should have inline comments and must integrate with the current system.
+
+• ⚠️ Submit a changelog showing what files you modified and what was added.
+
+
+
+

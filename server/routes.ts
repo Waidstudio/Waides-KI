@@ -26,8 +26,14 @@ import { shavokaAuthService } from "./services/shavokaAuthService.js";
 // WebSocket setup for real-time features
 let wss: any = null;
 
-export function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<Server> {
   const server = createServer(app);
+
+  // Import exchange services at the top
+  const { APIKeyManager } = await import("./services/exchanges/apiKeyManager.js");
+  const { ExchangeVerificationService } = await import("./services/exchanges/exchangeVerificationService.js");
+  const { ExchangeManager, getExchangeManager } = await import("./services/exchanges/exchangeManager.js");
+  const { getAllExchangeConfigs, getExchangeConfig, validateExchangeCode, getAllExchangeCodes } = await import("./services/exchanges/exchangeConfig.js");
 
   // Apply security headers to all requests
   app.use(securityHeaders);
@@ -9269,6 +9275,427 @@ Ask me about specific market conditions, upload files for analysis, or request K
     } catch (error) {
       console.error('Process entity pipeline error:', error);
       res.status(500).json({ error: 'Failed to process entity pipeline' });
+    }
+  });
+
+  // ===== EXCHANGE INTEGRATION ENDPOINTS =====
+
+  // Get all supported exchanges
+  app.get("/api/exchanges", async (req, res) => {
+    try {
+      const exchanges = getAllExchangeConfigs();
+      res.json({
+        success: true,
+        exchanges: exchanges.map(exchange => ({
+          code: exchange.code,
+          name: exchange.name,
+          websocketSupported: !!exchange.websocketUrl,
+          supportedPairs: exchange.tradingPairs,
+          fees: exchange.fees
+        }))
+      });
+    } catch (error) {
+      console.error('Error fetching exchanges:', error);
+      res.status(500).json({ success: false, error: 'Failed to fetch exchanges' });
+    }
+  });
+
+  // Get user's connected exchanges
+  app.get("/api/exchanges/user-connections", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const connections = await APIKeyManager.getUserExchanges(userId);
+      res.json({
+        success: true,
+        connections: connections.map(conn => ({
+          id: conn.id,
+          exchangeCode: conn.exchangeCode,
+          exchangeName: conn.exchangeName,
+          isActive: conn.isActive,
+          lastVerified: conn.lastVerified,
+          permissions: conn.permissions
+        }))
+      });
+    } catch (error) {
+      console.error('Error fetching user connections:', error);
+      res.status(500).json({ success: false, error: 'Failed to fetch user connections' });
+    }
+  });
+
+  // Connect exchange (store API credentials)
+  app.post("/api/exchanges/connect", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { exchangeCode, apiKey, apiSecret, passphrase } = req.body;
+
+      if (!exchangeCode || !apiKey || !apiSecret) {
+        return res.status(400).json({
+          success: false,
+          error: 'Exchange code, API key, and API secret are required'
+        });
+      }
+
+      if (!validateExchangeCode(exchangeCode)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid exchange code'
+        });
+      }
+
+      const result = await APIKeyManager.storeCredentials(userId, {
+        exchangeCode,
+        apiKey,
+        apiSecret,
+        passphrase
+      });
+
+      if (result.success) {
+        res.json({
+          success: true,
+          message: `Successfully connected to ${exchangeCode}`,
+          connectionId: result.connectionId
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: result.error || 'Failed to connect exchange'
+        });
+      }
+    } catch (error) {
+      console.error('Exchange connection error:', error);
+      res.status(500).json({ success: false, error: 'Failed to connect exchange' });
+    }
+  });
+
+  // Disconnect exchange
+  app.delete("/api/exchanges/:exchangeCode/disconnect", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { exchangeCode } = req.params;
+
+      const success = await APIKeyManager.revokeConnection(userId, exchangeCode);
+      
+      if (success) {
+        res.json({
+          success: true,
+          message: `Successfully disconnected from ${exchangeCode}`
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: 'Failed to disconnect exchange'
+        });
+      }
+    } catch (error) {
+      console.error('Exchange disconnection error:', error);
+      res.status(500).json({ success: false, error: 'Failed to disconnect exchange' });
+    }
+  });
+
+  // Verify single exchange
+  app.post("/api/exchanges/:exchangeCode/verify", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { exchangeCode } = req.params;
+
+      const verificationResult = await ExchangeVerificationService.verifyExchange(userId, exchangeCode);
+      
+      res.json({
+        success: true,
+        verification: verificationResult
+      });
+    } catch (error) {
+      console.error('Exchange verification error:', error);
+      res.status(500).json({ success: false, error: 'Failed to verify exchange' });
+    }
+  });
+
+  // Verify all user exchanges
+  app.post("/api/exchanges/verify-all", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      
+      const verificationResults = await ExchangeVerificationService.verifyAllUserExchanges(userId);
+      const summary = await ExchangeVerificationService.getVerificationSummary(userId);
+      
+      res.json({
+        success: true,
+        verifications: verificationResults,
+        summary
+      });
+    } catch (error) {
+      console.error('All exchanges verification error:', error);
+      res.status(500).json({ success: false, error: 'Failed to verify exchanges' });
+    }
+  });
+
+  // Get verification summary
+  app.get("/api/exchanges/verification-summary", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      
+      const summary = await ExchangeVerificationService.getVerificationSummary(userId);
+      
+      res.json({
+        success: true,
+        summary
+      });
+    } catch (error) {
+      console.error('Verification summary error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get verification summary' });
+    }
+  });
+
+  // Get verification questions for an exchange
+  app.get("/api/exchanges/:exchangeCode/verification-questions", async (req, res) => {
+    try {
+      const { exchangeCode } = req.params;
+      
+      const questions = ExchangeVerificationService.generateVerificationQuestions(exchangeCode);
+      
+      res.json({
+        success: true,
+        exchangeCode,
+        questions: questions.map(q => ({
+          id: q.id,
+          question: q.question,
+          category: q.category,
+          priority: q.priority
+          // Don't send expectedAnswer to client
+        }))
+      });
+    } catch (error) {
+      console.error('Verification questions error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get verification questions' });
+    }
+  });
+
+  // Exchange Manager Routes
+  
+  // Initialize exchange manager for user
+  app.post("/api/exchanges/manager/init", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      
+      const manager = getExchangeManager({ userId });
+      const connectionResults = await manager.connectAllUserExchanges();
+      
+      res.json({
+        success: true,
+        message: 'Exchange manager initialized',
+        connections: connectionResults
+      });
+    } catch (error) {
+      console.error('Exchange manager init error:', error);
+      res.status(500).json({ success: false, error: 'Failed to initialize exchange manager' });
+    }
+  });
+
+  // Get exchange manager status
+  app.get("/api/exchanges/manager/status", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      
+      const manager = getExchangeManager({ userId });
+      const statuses = manager.getExchangeStatuses();
+      const connected = manager.getConnectedExchanges();
+      
+      res.json({
+        success: true,
+        connected,
+        statuses,
+        totalConnections: connected.length
+      });
+    } catch (error) {
+      console.error('Exchange manager status error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get exchange manager status' });
+    }
+  });
+
+  // Get aggregated market data
+  app.get("/api/exchanges/market-data/:symbol", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { symbol } = req.params;
+      const { exchange } = req.query;
+      
+      const manager = getExchangeManager({ userId });
+      
+      if (exchange && typeof exchange === 'string') {
+        // Get data from specific exchange
+        const data = await manager.getMarketData(symbol, exchange);
+        res.json({
+          success: true,
+          symbol,
+          exchange,
+          data
+        });
+      } else {
+        // Get aggregated data from all exchanges
+        const aggregatedData = await manager.getAggregatedMarketData(symbol);
+        res.json({
+          success: true,
+          symbol,
+          aggregated: true,
+          data: aggregatedData
+        });
+      }
+    } catch (error) {
+      console.error('Market data error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get market data' });
+    }
+  });
+
+  // Execute order through exchange manager
+  app.post("/api/exchanges/orders", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { symbol, side, type, amount, price, exchangeCode, params } = req.body;
+      
+      if (!symbol || !side || !type || !amount) {
+        return res.status(400).json({
+          success: false,
+          error: 'Symbol, side, type, and amount are required'
+        });
+      }
+
+      const manager = getExchangeManager({ userId });
+      const result = await manager.executeOrder(
+        symbol,
+        side,
+        type,
+        amount,
+        price,
+        exchangeCode,
+        params
+      );
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          order: result.order,
+          message: 'Order executed successfully'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: result.error || 'Failed to execute order'
+        });
+      }
+    } catch (error) {
+      console.error('Order execution error:', error);
+      res.status(500).json({ success: false, error: 'Failed to execute order' });
+    }
+  });
+
+  // Route trading signal through exchange manager
+  app.post("/api/exchanges/route-signal", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { type, symbol, amount, confidence, exchangePreference, strategy } = req.body;
+      
+      if (!type || !symbol || !amount) {
+        return res.status(400).json({
+          success: false,
+          error: 'Signal type, symbol, and amount are required'
+        });
+      }
+
+      const manager = getExchangeManager({ userId });
+      const result = await manager.routeSignal({
+        type,
+        symbol,
+        amount,
+        confidence: confidence || 70,
+        exchangePreference,
+        strategy
+      });
+      
+      res.json({
+        success: result.success,
+        executedOrders: result.executedOrders,
+        errors: result.errors,
+        message: result.success ? 'Signal routed successfully' : 'Signal routing completed with errors'
+      });
+    } catch (error) {
+      console.error('Signal routing error:', error);
+      res.status(500).json({ success: false, error: 'Failed to route signal' });
+    }
+  });
+
+  // Get aggregated balances
+  app.get("/api/exchanges/balances", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      
+      const manager = getExchangeManager({ userId });
+      const balances = await manager.getAggregatedBalances();
+      
+      res.json({
+        success: true,
+        balances: Object.values(balances),
+        totalAssets: Object.keys(balances).length
+      });
+    } catch (error) {
+      console.error('Balances error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get balances' });
+    }
+  });
+
+  // Find arbitrage opportunities
+  app.get("/api/exchanges/arbitrage", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { symbols } = req.query;
+      
+      const symbolList = symbols ? 
+        (Array.isArray(symbols) ? symbols : symbols.split(',')) : 
+        ['ETHUSDT', 'BTCUSDT'];
+      
+      const manager = getExchangeManager({ userId });
+      const opportunities = await manager.findArbitrageOpportunities(symbolList);
+      
+      res.json({
+        success: true,
+        opportunities,
+        count: opportunities.length,
+        symbols: symbolList
+      });
+    } catch (error) {
+      console.error('Arbitrage opportunities error:', error);
+      res.status(500).json({ success: false, error: 'Failed to find arbitrage opportunities' });
+    }
+  });
+
+  // Test exchange connection
+  app.post("/api/exchanges/:exchangeCode/test", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id?.toString() || '1'; // Default for testing
+      const { exchangeCode } = req.params;
+      
+      // Check if credentials exist
+      const credentials = await APIKeyManager.getCredentials(userId, exchangeCode);
+      if (!credentials) {
+        return res.status(400).json({
+          success: false,
+          error: 'No credentials found for this exchange'
+        });
+      }
+
+      // Try to connect with the exchange manager
+      const manager = getExchangeManager({ userId });
+      const result = await manager.connectExchange(exchangeCode);
+      
+      res.json({
+        success: result.success,
+        message: result.success ? 
+          `Successfully tested connection to ${exchangeCode}` : 
+          result.error,
+        exchangeCode
+      });
+    } catch (error) {
+      console.error('Exchange test error:', error);
+      res.status(500).json({ success: false, error: 'Failed to test exchange connection' });
     }
   });
 
