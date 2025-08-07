@@ -21,7 +21,7 @@ import { UserAuthProvider, useUserAuth } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
-import ModernNavigationHeader from "@/components/ui/ModernNavigationHeader";
+import FuturisticHeader from "@/components/ui/FuturisticHeader";
 import AdminChatSystem from "@/components/AdminChatSystem";
 import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
@@ -131,8 +131,8 @@ function Router() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
-      {/* Enhanced Header with Comprehensive Navigation */}
-      <ModernNavigationHeader />
+      {/* Futuristic Header with Advanced Navigation */}
+      <FuturisticHeader />
 
       {/* Main Content Area */}
       <main className="pb-16">
