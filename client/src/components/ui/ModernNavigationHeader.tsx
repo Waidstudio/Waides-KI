@@ -290,15 +290,22 @@ const ModernNavigationHeader: React.FC = () => {
   };
 
   const NavigationDropdown = ({ category }: { category: NavigationCategory }) => (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center space-x-2 text-white hover:text-blue-300">
+        <Button 
+          variant="ghost" 
+          className="flex items-center space-x-2 text-white hover:text-blue-300 focus:bg-gray-800/50 data-[state=open]:bg-gray-800/50"
+        >
           {category.icon}
           <span>{category.label}</span>
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 bg-gray-900/95 border-gray-700 backdrop-blur-sm">
+      <DropdownMenuContent 
+        className="w-80 bg-gray-900/95 border-gray-700 backdrop-blur-sm"
+        sideOffset={5}
+        alignOffset={-5}
+      >
         <DropdownMenuLabel className="text-blue-300 font-semibold">
           {category.label}
         </DropdownMenuLabel>
@@ -452,7 +459,7 @@ const ModernNavigationHeader: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-white hover:text-blue-300">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={user?.profileImageUrl} />
+            <AvatarImage src={user?.profileImage} />
             <AvatarFallback className="bg-blue-600 text-white">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </AvatarFallback>
