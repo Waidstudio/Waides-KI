@@ -652,93 +652,96 @@ export default function CommunityForum() {
           {filteredTopics.map((topic) => (
             <Card 
               key={topic.id} 
-              className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-colors cursor-pointer"
+              className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-colors cursor-pointer overflow-hidden"
               onClick={() => setSelectedTopic(topic)}
             >
               <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      {topic.isPinned && <Pin className="w-4 h-4 text-yellow-400" />}
-                      <Badge variant="outline" className={`${getAvatarColor(topic.authorType, topic.aiEntity)} text-white border-0`}>
-                        {topic.category}
+                <div className="w-full">
+                  {/* Header with badges and pin */}
+                  <div className="flex items-center flex-wrap gap-2 mb-3">
+                    {topic.isPinned && <Pin className="w-4 h-4 text-yellow-400 flex-shrink-0" />}
+                    <Badge variant="outline" className={`${getAvatarColor(topic.authorType, topic.aiEntity)} text-white border-0 flex-shrink-0`}>
+                      {topic.category}
+                    </Badge>
+                    {topic.sentiment && (
+                      <Badge variant="outline" className={`flex-shrink-0 ${
+                        topic.sentiment === "bullish" ? "bg-green-500/20 text-green-400 border-green-500/30" :
+                        topic.sentiment === "bearish" ? "bg-red-500/20 text-red-400 border-red-500/30" :
+                        "bg-slate-500/20 text-slate-400 border-slate-500/30"
+                      }`}>
+                        {topic.sentiment}
                       </Badge>
-                      {topic.sentiment && (
-                        <Badge variant="outline" className={
-                          topic.sentiment === "bullish" ? "bg-green-500/20 text-green-400 border-green-500/30" :
-                          topic.sentiment === "bearish" ? "bg-red-500/20 text-red-400 border-red-500/30" :
-                          "bg-slate-500/20 text-slate-400 border-slate-500/30"
-                        }>
-                          {topic.sentiment}
+                    )}
+                  </div>
+                  
+                  {/* Title */}
+                  <h3 className="text-lg font-semibold text-white mb-3 hover:text-blue-300 transition-colors line-clamp-2 break-words">
+                    {topic.title}
+                  </h3>
+                  
+                  {/* Content preview */}
+                  <p className="text-slate-400 text-sm mb-4 line-clamp-2 break-words">
+                    {topic.content}
+                  </p>
+                  
+                  {/* Author info and stats */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                    <div className="flex items-center space-x-2 min-w-0">
+                      <Avatar className="h-6 w-6 flex-shrink-0">
+                        <AvatarFallback className={`${getAvatarColor(topic.authorType, topic.aiEntity)} text-xs`}>
+                          {topic.authorType === "ai" ? (
+                            (() => {
+                              const Icon = getEntityIcon(topic.aiEntity);
+                              return <Icon className="w-3 h-3" />;
+                            })()
+                          ) : (
+                            topic.author[0]
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm text-slate-300 truncate">{topic.author}</span>
+                      {topic.authorType === "ai" && (
+                        <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30 flex-shrink-0">
+                          AI
                         </Badge>
                       )}
                     </div>
                     
-                    <h3 className="text-lg font-semibold text-white mb-2 hover:text-blue-300 transition-colors">
-                      {topic.title}
-                    </h3>
-                    
-                    <p className="text-slate-400 text-sm mb-3 line-clamp-2">
-                      {topic.content}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className={`${getAvatarColor(topic.authorType, topic.aiEntity)} text-xs`}>
-                            {topic.authorType === "ai" ? (
-                              (() => {
-                                const Icon = getEntityIcon(topic.aiEntity);
-                                return <Icon className="w-3 h-3" />;
-                              })()
-                            ) : (
-                              topic.author[0]
-                            )}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm text-slate-300">{topic.author}</span>
-                        {topic.authorType === "ai" && (
-                          <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30">
-                            AI
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center space-x-4 text-sm text-slate-400">
-                        <span className="flex items-center">
-                          <MessageSquare className="w-4 h-4 mr-1" />
-                          {topic.replies}
-                        </span>
-                        <span className="flex items-center">
-                          <Eye className="w-4 h-4 mr-1" />
-                          {topic.views}
-                        </span>
-                        <span className="flex items-center">
-                          <Heart className="w-4 h-4 mr-1" />
-                          {topic.likes}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {topic.lastActivity}
-                        </span>
-                      </div>
+                    <div className="flex items-center flex-wrap gap-3 text-sm text-slate-400">
+                      <span className="flex items-center flex-shrink-0">
+                        <MessageSquare className="w-4 h-4 mr-1" />
+                        {topic.replies}
+                      </span>
+                      <span className="flex items-center flex-shrink-0">
+                        <Eye className="w-4 h-4 mr-1" />
+                        {topic.views}
+                      </span>
+                      <span className="flex items-center flex-shrink-0">
+                        <Heart className="w-4 h-4 mr-1" />
+                        {topic.likes}
+                      </span>
+                      <span className="flex items-center flex-shrink-0">
+                        <Clock className="w-4 h-4 mr-1" />
+                        {topic.lastActivity}
+                      </span>
                     </div>
-                    
-                    {topic.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {topic.tags.slice(0, 3).map((tag, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                        {topic.tags.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{topic.tags.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
+                  
+                  {/* Tags */}
+                  {topic.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {topic.tags.slice(0, 3).map((tag, index) => (
+                        <Badge key={index} variant="outline" className="text-xs flex-shrink-0">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {topic.tags.length > 3 && (
+                        <Badge variant="outline" className="text-xs flex-shrink-0">
+                          +{topic.tags.length - 3} more
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
