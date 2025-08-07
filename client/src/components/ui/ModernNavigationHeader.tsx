@@ -590,7 +590,7 @@ const ModernNavigationHeader: React.FC = () => {
             {/* Debug indicator */}
             {process.env.NODE_ENV === 'development' && (
               <div className="text-xs text-yellow-300 border border-yellow-600 px-2 py-1 rounded">
-                Auth: {isAuthenticated ? 'Yes' : 'No'} | User: {user?.username || 'None'}
+                Auth: {isAuthenticated ? 'Yes' : 'No'} | User: {user?.username || 'None'} | Token: {token ? 'Present' : 'None'}
               </div>
             )}
             {isAuthenticated ? (
