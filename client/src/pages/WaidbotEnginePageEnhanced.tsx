@@ -115,7 +115,102 @@ export default function WaidbotEnginePageEnhanced() {
   const [fundAmount, setFundAmount] = useState('');
   const queryClient = useQueryClient();
 
-  // Fetch bot statuses
+  // All 6 Bot Entities Configuration
+  const BOT_ENTITIES = [
+    {
+      id: 'maibot',
+      name: 'Maibot',
+      displayName: 'Free Trading Assistant',
+      tier: 'FREE',
+      price: 0,
+      icon: Sparkles,
+      color: "from-blue-500 to-blue-600",
+      route: '/maibot',
+      autonomous: false,
+      decisionEngine: 'Manual Override Required',
+      description: 'Entry-level bot with manual approval for all trades'
+    },
+    {
+      id: 'waidbot',
+      name: 'WaidBot α',
+      displayName: 'Basic ETH Uptrend Trading',
+      tier: 'BASIC',
+      price: 9.99,
+      icon: TrendingUp,
+      color: "from-green-500 to-green-600",
+      route: '/waidbot',
+      autonomous: true,
+      decisionEngine: 'Uptrend-Only Algorithm',
+      description: 'ETH uptrend-only trading with semi-autonomous decision making'
+    },
+    {
+      id: 'waidbot-pro',
+      name: 'WaidBot Pro β',
+      displayName: 'Professional Bidirectional Trading',
+      tier: 'PRO',
+      price: 29.99,
+      icon: Lightning,
+      color: "from-purple-500 to-purple-600",
+      route: '/waidbot-pro',
+      autonomous: true,
+      decisionEngine: 'Bidirectional Analysis Engine',
+      description: 'Full bidirectional ETH3L/ETH3S trading with advanced AI'
+    },
+    {
+      id: 'autonomous',
+      name: 'Autonomous Trader γ',
+      displayName: '24/7 Market Scanner Elite',
+      tier: 'ELITE',
+      price: 59.99,
+      icon: Radar,
+      color: "from-orange-500 to-orange-600",
+      route: '/enhanced-waidbot',
+      autonomous: true,
+      decisionEngine: 'Multi-Strategy ML Engine',
+      description: 'Multi-market autonomous scanner with 24/7 operation'
+    },
+    {
+      id: 'full-engine',
+      name: 'Full Engine Ω',
+      displayName: 'Master Trading Engine',
+      tier: 'MASTER',
+      price: 149.99,
+      icon: Hexagon,
+      color: "from-red-500 to-red-600",
+      route: '/waidbot-engine',
+      autonomous: true,
+      decisionEngine: 'Guardian Decision System',
+      description: 'Complete trading suite with smart risk management'
+    },
+    {
+      id: 'smai-chinnikstah',
+      name: 'SmaiChinnikstah δ',
+      displayName: 'Divine Spiritual Trading',
+      tier: 'DIVINE_DELTA',
+      price: 299.99,
+      icon: Brain,
+      color: "from-pink-500 to-pink-600",
+      route: '/divine-trading',
+      autonomous: true,
+      decisionEngine: 'Divine Energy Algorithm',
+      description: 'Spiritual market intelligence with divine energy distribution'
+    },
+    {
+      id: 'nwaora-chigozie',
+      name: 'Nwaora Chigozie ε',
+      displayName: 'Cosmic Intelligence Omega',
+      tier: 'COSMIC_EPSILON',
+      price: 999.99,
+      icon: Target,
+      color: "from-indigo-500 to-indigo-600",
+      route: '/divine-commands',
+      autonomous: true,
+      decisionEngine: 'Cosmic Consciousness Engine',
+      description: 'Ultimate cosmic intelligence with backup trading system'
+    }
+  ];
+
+  // Fetch bot statuses for all 6 entities
   const { data: waidbotStatus } = useQuery<BotStatus>({
     queryKey: ['/api/waidbot-engine/waidbot/status'],
     refetchInterval: 2000,
@@ -131,27 +226,35 @@ export default function WaidbotEnginePageEnhanced() {
     refetchInterval: 2000,
   });
 
+  const { data: maibotStatus } = useQuery<BotStatus>({
+    queryKey: ['/api/waidbot-engine/maibot/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: fullEngineStatus } = useQuery<any>({
+    queryKey: ['/api/full-engine/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: smaiChinnikstahStatus } = useQuery<any>({
+    queryKey: ['/api/divine-bots/smai-chinnikstah/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: nwaoraChigozieStatus } = useQuery<any>({
+    queryKey: ['/api/divine-bots/nwaora-chigozie/status'],
+    refetchInterval: 2000,
+  });
+
   // Fetch bot messages with 30-second refresh
   const { data: botMessages } = useQuery<any>({
     queryKey: ['/api/waidbot-engine/bot-messages'],
     refetchInterval: 30000, // 30 seconds for bot messages
   });
 
-  // Fetch Full Engine status (now independent)
-  const { data: fullEngineStatus } = useQuery<any>({
-    queryKey: ['/api/full-engine/status'],
-    refetchInterval: 2000,
-  });
-
   const { data: fullEngineAnalytics } = useQuery<any>({
     queryKey: ['/api/full-engine/analytics'],
     refetchInterval: 5000,
-  });
-
-  // Fetch Nwaora Chigozie bot status (Smai Chinnikstah now background API only)
-  const { data: nwaoraChigozieStatus } = useQuery<any>({
-    queryKey: ['/api/divine-bots/nwaora-chigozie/status'],
-    refetchInterval: 2000,
   });
 
   // Fetch comprehensive real-time data from entire app
@@ -175,6 +278,89 @@ export default function WaidbotEnginePageEnhanced() {
     queryKey: ['/api/system/stats'],
     refetchInterval: 10000,
   });
+
+  // Helper function to get bot status by ID
+  const getBotStatusById = (botId: string): BotStatus | null => {
+    switch (botId) {
+      case 'maibot':
+        return maibotStatus || null;
+      case 'waidbot':
+        return waidbotStatus || null;
+      case 'waidbot-pro':
+        return waidbotProStatus || null;
+      case 'autonomous':
+        return autonomousStatus || null;
+      case 'full-engine':
+        return fullEngineStatus ? {
+          id: 'full-engine',
+          name: 'Full Engine Ω',
+          isActive: fullEngineStatus.engine_status?.emergency_stop === false,
+          performance: {
+            totalTrades: fullEngineStatus.engine_status?.active_trades || 0,
+            winRate: 0,
+            profit: 0,
+            todayTrades: 0
+          },
+          currentAction: fullEngineStatus.engine_status?.status || 'Standby',
+          nextAction: 'Smart Risk Management',
+          confidence: 95
+        } : null;
+      case 'smai-chinnikstah':
+        return smaiChinnikstahStatus ? {
+          id: 'smai-chinnikstah',
+          name: 'SmaiChinnikstah δ',
+          isActive: smaiChinnikstahStatus.isActive || false,
+          performance: smaiChinnikstahStatus.performance || {
+            totalTrades: 0,
+            winRate: 0,
+            profit: 0,
+            todayTrades: 0
+          },
+          currentAction: smaiChinnikstahStatus.distributionMode || 'Divine Standby',
+          nextAction: 'Energy Distribution',
+          confidence: smaiChinnikstahStatus.energyLevel || 120
+        } : null;
+      case 'nwaora-chigozie':
+        return nwaoraChigozieStatus ? {
+          id: 'nwaora-chigozie',
+          name: 'Nwaora Chigozie ε',
+          isActive: nwaoraChigozieStatus.isActive || false,
+          performance: nwaoraChigozieStatus.performance || {
+            totalTrades: 0,
+            winRate: 0,
+            profit: 0,
+            todayTrades: 0
+          },
+          currentAction: nwaoraChigozieStatus.supportMode || 'Backup Standby',
+          nextAction: 'Cosmic Analysis',
+          confidence: nwaoraChigozieStatus.energyLevel || 85
+        } : null;
+      default:
+        return null;
+    }
+  };
+
+  // Function to generate autonomous decision text
+  const getAutonomousDecisionText = (bot: any, status: BotStatus | null) => {
+    if (!bot.autonomous) {
+      return "Manual approval required for all trades";
+    }
+
+    if (!status || !status.isActive) {
+      return "Bot offline - activate to begin autonomous trading";
+    }
+
+    const decisions = [
+      `${bot.decisionEngine} analyzing market patterns...`,
+      `Processing ${bot.tier} level trading signals...`,
+      `Evaluating risk parameters autonomously...`,
+      `${status.currentAction} - confidence ${status.confidence}%`,
+      `Scanning for optimal ${bot.tier} tier opportunities...`,
+      `Autonomous engine active - making independent decisions`
+    ];
+
+    return decisions[Math.floor(Math.random() * decisions.length)];
+  };
 
   // Bot control mutations
   const startWaidBot = useMutation({
@@ -1464,6 +1650,196 @@ export default function WaidbotEnginePageEnhanced() {
             </DialogContent>
           </Dialog>
         )}
+
+        {/* Complete 6-Bot Entity Display with Page Connections */}
+        <div className="mt-12">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Complete Bot Fleet - All 6 Trading Entities</h2>
+            <p className="text-blue-200">Central command for all trading entities with autonomous decision-making capabilities</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {BOT_ENTITIES.map((bot) => {
+              const Icon = bot.icon;
+              const status = getBotStatusById(bot.id);
+              const decisionText = getAutonomousDecisionText(bot, status);
+
+              return (
+                <Card 
+                  key={bot.id} 
+                  className={`transition-all duration-300 hover:scale-105 cursor-pointer ${
+                    status?.isActive 
+                      ? 'bg-gradient-to-br from-slate-900/95 to-slate-800/95 border-green-400/50 shadow-xl shadow-green-500/20' 
+                      : 'bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-slate-600/40 hover:border-slate-500/60'
+                  }`}
+                  onClick={() => window.location.href = bot.route}
+                >
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className={`p-3 rounded-xl bg-gradient-to-r ${bot.color} shadow-lg`}>
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {status?.isActive && (
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className="text-xs text-green-400 font-medium">LIVE</span>
+                          </div>
+                        )}
+                        <Badge 
+                          variant={status?.isActive ? "default" : "secondary"}
+                          className={status?.isActive ? "bg-green-500/20 text-green-400 border-green-500/40" : ""}
+                        >
+                          {status?.isActive ? "Active" : "Standby"}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <CardTitle className="text-xl font-bold text-white flex items-center justify-between">
+                        {bot.name}
+                        <span className="text-sm font-normal text-slate-400">
+                          ${bot.price}/mo
+                        </span>
+                      </CardTitle>
+                      <p className="text-sm text-slate-400">{bot.description}</p>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4">
+                    {/* Autonomous Decision Display */}
+                    <div className={`p-3 rounded-lg ${bot.autonomous ? 'bg-green-900/20 border border-green-400/30' : 'bg-yellow-900/20 border border-yellow-400/30'}`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Brain className={`h-4 w-4 ${bot.autonomous ? 'text-green-400' : 'text-yellow-400'}`} />
+                        <span className="text-sm font-medium text-white">
+                          {bot.autonomous ? 'Autonomous Decision Engine' : 'Manual Control Required'}
+                        </span>
+                      </div>
+                      <p className={`text-xs ${bot.autonomous ? 'text-green-300' : 'text-yellow-300'}`}>
+                        {decisionText}
+                      </p>
+                      {bot.autonomous && status?.confidence && (
+                        <div className="mt-2">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="text-slate-400">Decision Confidence</span>
+                            <span className="text-white">{status.confidence}%</span>
+                          </div>
+                          <Progress value={status.confidence} className="h-1" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Bot Specifications */}
+                    <div className="bg-slate-800/50 rounded-lg p-3 space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-400">Engine:</span>
+                        <span className="text-white font-medium text-xs">{bot.decisionEngine}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-400">Tier:</span>
+                        <Badge variant="outline" className="text-xs">
+                          {bot.tier}
+                        </Badge>
+                      </div>
+                      {status && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-slate-400">Current Action:</span>
+                          <span className="text-white font-medium text-xs">{status.currentAction}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Performance Metrics */}
+                    {status?.performance && (
+                      <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                        <div>
+                          <div className="font-bold text-white">{status.performance.totalTrades || 0}</div>
+                          <div className="text-xs text-slate-400">Trades</div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-blue-400">{status.performance.winRate || 0}%</div>
+                          <div className="text-xs text-slate-400">Win Rate</div>
+                        </div>
+                        <div>
+                          <div className="font-bold text-green-400">${status.performance.profit || 0}</div>
+                          <div className="text-xs text-slate-400">Profit</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Navigation Button */}
+                    <Button
+                      className={`w-full bg-gradient-to-r ${bot.color} hover:opacity-90 text-white font-medium`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = bot.route;
+                      }}
+                    >
+                      Access {bot.name} Interface →
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Enhanced Bot Fleet Summary */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-blue-400/40">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Activity className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      {BOT_ENTITIES.filter(bot => {
+                        const status = getBotStatusById(bot.id);
+                        return status?.isActive;
+                      }).length}
+                    </p>
+                    <p className="text-sm text-blue-400">Active Bots</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-green-500/20 rounded-lg">
+                    <Brain className="h-5 w-5 text-green-400" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      {BOT_ENTITIES.filter(bot => bot.autonomous).length}
+                    </p>
+                    <p className="text-sm text-green-400">Autonomous Bots</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-purple-400/40">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-500/20 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-white">
+                      ${BOT_ENTITIES.reduce((total, bot) => {
+                        const status = getBotStatusById(bot.id);
+                        return total + (status?.performance?.profit || 0);
+                      }, 0).toLocaleString()}
+                    </p>
+                    <p className="text-sm text-purple-400">Total Fleet Profit</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
 
       <style>{`
