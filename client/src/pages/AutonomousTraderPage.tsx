@@ -22,16 +22,28 @@ import { useQuery } from "@tanstack/react-query";
 export default function AutonomousTraderPage() {
   const [isActive, setIsActive] = useState(false);
 
-  // Fetch autonomous trader status
+  // Fetch autonomous trader status from centralized engine
   const { data: traderStatus } = useQuery({
     queryKey: ['/api/waidbot-engine/autonomous/status'],
+    refetchInterval: 3000
+  });
+
+  // Fetch performance metrics
+  const { data: performanceData } = useQuery({
+    queryKey: ['/api/waidbot-engine/autonomous/performance'],
+    refetchInterval: 5000
+  });
+
+  // Fetch trading signals
+  const { data: signalsData } = useQuery({
+    queryKey: ['/api/waidbot-engine/autonomous/signals'],
     refetchInterval: 2000
   });
 
-  // Fetch ML engine data for sync
-  const { data: mlEngineData } = useQuery({
-    queryKey: ['/api/ml-engine/autonomous/metrics'],
-    refetchInterval: 3000
+  // Fetch profit/loss data
+  const { data: profitLossData } = useQuery({
+    queryKey: ['/api/waidbot-engine/autonomous/profit-loss'],
+    refetchInterval: 4000
   });
 
   return (
@@ -44,8 +56,11 @@ export default function AutonomousTraderPage() {
               <Radar className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-white">Autonomous Trader γ</h1>
-              <p className="text-orange-200">24/7 Market Scanner Elite - Multi-Strategy ML Engine</p>
+              <h1 className="text-4xl font-bold text-white flex items-center gap-2">
+                Autonomous Trader γ
+                <div className="h-6 w-6 text-orange-400" title="Synced with Engine">🔗</div>
+              </h1>
+              <p className="text-orange-200">24/7 Market Scanner Elite - Synchronized with Centralized Engine</p>
             </div>
             <div className="ml-auto">
               <Badge 

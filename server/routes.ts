@@ -3427,6 +3427,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Start individual bot
+  app.post("/api/waidbot-engine/:botId/start", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'full-engine', 'nwaora-chigozie'];
+      
+      if (!validBots.includes(botId)) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      // Update bot status to active
+      const settings = enhancedBotConfiguration.getBotSettings(botId);
+      if (settings) {
+        settings.autoTrading = true;
+        settings.isActive = true;
+        settings.lastStarted = new Date().toISOString();
+      }
+      
+      res.json({
+        success: true,
+        message: `${botId} started successfully`,
+        botId,
+        status: 'active',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error starting ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to start bot' });
+    }
+  });
+
+  // Stop individual bot
+  app.post("/api/waidbot-engine/:botId/stop", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'full-engine', 'nwaora-chigozie'];
+      
+      if (!validBots.includes(botId)) {
+        return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      // Update bot status to inactive
+      const settings = enhancedBotConfiguration.getBotSettings(botId);
+      if (settings) {
+        settings.autoTrading = false;
+        settings.isActive = false;
+        settings.lastStopped = new Date().toISOString();
+      }
+      
+      res.json({
+        success: true,
+        message: `${botId} stopped successfully`,
+        botId,
+        status: 'inactive',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error(`❌ Error stopping ${req.params.botId}:`, error);
+      res.status(500).json({ error: 'Failed to stop bot' });
+    }
+  });
+
   // Emergency stop bot
   app.post("/api/waidbot-engine/:botId/emergency-stop", async (req, res) => {
     try {

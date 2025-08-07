@@ -26,16 +26,28 @@ export default function FullEnginePage() {
   const [isActive, setIsActive] = useState(false);
   const queryClient = useQueryClient();
 
-  // Fetch Full Engine status with ML synchronization
+  // Fetch Full Engine status from centralized engine
   const { data: fullEngineStatus } = useQuery({
     queryKey: ['/api/full-engine/status'],
-    refetchInterval: 1000
+    refetchInterval: 3000
   });
 
   // Fetch ML Engine analytics
   const { data: mlAnalytics } = useQuery({
     queryKey: ['/api/full-engine/analytics'],
-    refetchInterval: 2000
+    refetchInterval: 5000
+  });
+
+  // Fetch engine-specific data for synchronization
+  const { data: engineData } = useQuery({
+    queryKey: ['/api/waidbot-engine/full-engine/status'],
+    refetchInterval: 3000
+  });
+
+  // Fetch comprehensive metrics
+  const { data: comprehensiveMetrics } = useQuery({
+    queryKey: ['/api/waidbot-engine/comprehensive-metrics'],
+    refetchInterval: 4000
   });
 
   // Safe data access with fallbacks
@@ -57,8 +69,11 @@ export default function FullEnginePage() {
               <Brain className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-white">Full Engine Ω</h1>
-              <p className="text-orange-200">Smart Risk Management + Machine Learning Control Center</p>
+              <h1 className="text-4xl font-bold text-white flex items-center gap-2">
+                Full Engine Ω
+                <div className="h-6 w-6 text-orange-400" title="Synced with Engine">🔗</div>
+              </h1>
+              <p className="text-orange-200">Smart Risk Management + Machine Learning - Synchronized with Centralized Engine</p>
             </div>
             <div className="ml-auto">
               <Badge 
