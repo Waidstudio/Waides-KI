@@ -74,6 +74,8 @@ import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
 import ForumPage from "@/pages/forum";
 import UserDashboard from "@/pages/UserDashboard";
 import AISystemsPage from "@/pages/AISystemsPage";
+import AutonomousTraderPage from "@/pages/AutonomousTraderPage";
+import FullEnginePage from "@/pages/FullEnginePage";
 
 import NotFound from "@/pages/not-found";
 
@@ -251,6 +253,20 @@ function Router() {
             {() => (
               <ProtectedRoute requiredPermission="control_trading">
                 <EnhancedWaidBotPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/autonomous-trader">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <AutonomousTraderPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/full-engine">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <FullEnginePage />
               </ProtectedRoute>
             )}
           </Route>
