@@ -21,6 +21,7 @@ import { UserAuthProvider, useUserAuth } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
 import StableNavigation from "@/components/ui/StableNavigation";
+import EnhancedHeader from "@/components/ui/EnhancedHeader";
 import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import HomePage from "@/components/HomePage";
@@ -46,6 +47,8 @@ import GatewayPage from "@/pages/GatewayPage";
 import LearningPage from "@/pages/learning";
 import EnhancedWaidBotPage from "@/pages/enhanced-waidbot";
 import ProfilePage from "@/pages/profile";
+import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
+import SupportPage from "@/pages/SupportPage";
 import AutonomousWealthEngine from "@/components/AutonomousWealthEngine";
 import { ReincarnationLoop } from "@/components/ReincarnationLoop";
 import { SigilLayer } from "@/components/SigilLayer";
@@ -123,8 +126,8 @@ function Router() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
-      {/* Stable Navigation */}
-      <StableNavigation />
+      {/* Enhanced Header with Comprehensive Navigation */}
+      <EnhancedHeader />
 
       {/* Main Content Area */}
       <main className="pb-16">
@@ -347,7 +350,42 @@ function Router() {
           <Route path="/profile">
             {() => (
               <ProtectedRoute>
-                <ProfilePage />
+                <ProfileSettingsPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/settings">
+            {() => (
+              <ProtectedRoute>
+                <ProfileSettingsPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/support">
+            {() => (
+              <ProtectedRoute>
+                <SupportPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/analytics">
+            {() => (
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/security">
+            {() => (
+              <ProtectedRoute>
+                <AdminPanel />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/vision-portal">
+            {() => (
+              <ProtectedRoute>
+                <WaidesKIVisionPortal />
               </ProtectedRoute>
             )}
           </Route>

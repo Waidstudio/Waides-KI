@@ -72,9 +72,7 @@ import {
   Languages,
   Share2,
   GitBranch,
-  PieChart,
-  Upload,
-  ImageIcon
+  PieChart
 } from 'lucide-react';
 
 interface AdminConfig {
