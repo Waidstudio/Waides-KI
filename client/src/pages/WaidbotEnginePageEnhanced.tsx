@@ -699,7 +699,7 @@ export default function WaidbotEnginePageEnhanced() {
 
         {/* Enhanced Bot Control Panels - 4-Bot Core System + Guardian Bot */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6 lg:gap-8">
-          {/* WaidBot α - Enhanced */}
+          {/* WaidBot α */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-green-400/40 backdrop-blur shadow-xl shadow-green-500/20 hover:shadow-green-500/30 transition-all group">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
@@ -859,7 +859,7 @@ export default function WaidbotEnginePageEnhanced() {
             </CardContent>
           </Card>
 
-          {/* WaidBot Pro β - Enhanced */}
+          {/* WaidBot Pro β */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-blue-400/40 backdrop-blur shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 transition-all group">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
