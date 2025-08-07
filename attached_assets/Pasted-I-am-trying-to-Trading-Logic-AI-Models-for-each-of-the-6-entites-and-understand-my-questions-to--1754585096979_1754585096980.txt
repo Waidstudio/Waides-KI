@@ -1,0 +1,99 @@
+I am trying to 
+Trading Logic & AI Models for each of the 6 entites and understand my questions to know where to work on and which of the entitiy each question represent
+
+Are all AI models backed by test datasets?
+
+Are inputs validated before passing to models?
+
+Are models periodically retrained with fresh data?
+
+Is there performance drift monitoring on prediction models?
+
+Can model outputs be traced back to training data?
+
+Is there live A/B model testing?
+
+Do bot strategies have unit and integration tests?
+
+Are backtests conducted with real market data?
+
+Are edge cases like flash crashes tested?
+
+Is risk-adjusted scoring built into model output?
+
+Are trading signals interpretable, not black boxes?
+
+Can the AI reject a trade on ethical grounds?
+
+Is there logic to avoid over-leveraging?
+
+Are all asset pairs whitelisted?
+
+Are fees and slippage accounted for in profit calculations?
+
+Are TP/SL levels updated dynamically?
+
+Do bots check capital availability before entering trades?
+
+Is the Kelly sizing model stress-tested?
+
+Is win rate calculated with live trades?
+
+Are losing streaks tracked for adjustment?
+
+Are psychological indicators (fear/greed) data-fed?
+
+Is signal noise filtering applied?
+
+Do models integrate spiritual ‘Intuition’ layers?
+
+Do fallback hand-coded strategies exist?
+
+Are trades simulated before live execution?
+
+Are simulators run post-changes to confirm logic integrity?
+
+Do bots implement partial exits for profit protection?
+
+Are bots prevented from reinvesting unrealized gains?
+
+Is slippage proactively mitigated?
+
+Are orphan positions avoided with monitoring watchdog?
+
+in /waidbot-engine
+
+
+
+---
+- Research my codebase first
+
+- Find related files and functions
+
+- Assess if changes are possible without restructuring existing code
+
+- Develop a plan that builds on existing code
+- understand the question i am asking
+
+- Write the plan in Instructions.md
+
+
+INSTRUCTION FOR DEVELOPER:
+
+• DO NOT remove or overwrite any existing files or functions unless explicitly told.
+
+• If updating an existing file (e.g., routes/user.js), EDIT it in place — do not create a duplicate like routes/user1.js.
+
+• Maintain current file/folder structure. No rearrangement.
+
+• Keep all routing paths unchanged unless specified or needed to be.
+
+• Only build or enhance what I request. Do not improvise beyond instructions.
+
+• Every component or function added should have inline comments and must integrate with the current system.
+
+• ⚠️ Submit a changelog showing what files you modified and what was added.
+
+
+
+

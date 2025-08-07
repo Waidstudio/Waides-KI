@@ -9,7 +9,7 @@ export interface EthPriceData {
 export class EthMonitor {
   private apiKey: string | undefined;
   private cache: { data: EthPriceData | null; timestamp: number } = { data: null, timestamp: 0 };
-  private cacheDuration: number = 30000; // 30 seconds cache
+  private cacheDuration: number = 60000; // 60 seconds cache to reduce API calls
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.COINGECKO_API_KEY;
@@ -28,10 +28,20 @@ export class EthMonitor {
         : 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true';
       
       const response = await fetch(url, { 
-        signal: AbortSignal.timeout(5000) // 5 second timeout
+        signal: AbortSignal.timeout(10000), // 10 second timeout
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'WaidesKI/1.0'
+        }
       });
       
       if (!response.ok) {
+        if (response.status === 429) {
+          console.warn(`CoinGecko API rate limit reached. Using cached data.`);
+          if (this.cache.data) {
+            return this.cache.data;
+          }
+        }
         throw new Error(`CoinGecko API error: ${response.status} ${response.statusText}`);
       }
       

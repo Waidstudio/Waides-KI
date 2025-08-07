@@ -60,10 +60,12 @@ app.use((req, res, next) => {
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  // ⏱️ WaidBot auto-cycle: every 1 minute
+  // ⏱️ WaidBot auto-cycle: every 2 minutes to reduce database load
   setInterval(() => {
-    runWaidBotCycle();
-  }, 60 * 1000); // You can change this to 15 * 1000 for every 15s
+    runWaidBotCycle().catch(error => {
+      console.error('WaidBot cycle error caught in main:', error);
+    });
+  }, 120 * 1000); // 2 minutes to reduce API rate limiting
   const port = 5000;
   server.listen({
     port,

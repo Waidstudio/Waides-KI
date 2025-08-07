@@ -74,7 +74,8 @@ class ServiceRegistry {
       async process() { return null; },
       async analyze() { return null; },
       async execute() { return null; },
-      getStatus() { return { active: false, error: `Service ${name} failed to load` }; }
+      getStatus() { return { active: false, error: `Service ${name} failed to load` }; },
+      [Symbol.toStringTag]: `Stub${name}`
     };
     return stub;
   }
@@ -103,11 +104,17 @@ class ServiceRegistry {
   cleanup(): void {
     // Keep core services, clean up others
     const coreServices = ['ethMonitor', 'konsaiEngine', 'storage', 'binanceWebSocket'];
-    for (const [name, service] of this.services.entries()) {
+    const servicesToDelete: string[] = [];
+    
+    this.services.forEach((service, name) => {
       if (!coreServices.includes(name)) {
-        this.services.delete(name);
+        servicesToDelete.push(name);
       }
-    }
+    });
+    
+    servicesToDelete.forEach(name => {
+      this.services.delete(name);
+    });
   }
 }
 

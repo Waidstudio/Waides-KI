@@ -19,7 +19,7 @@ export async function runWaidBotCycle() {
     const divineSignal = await fetchDivineSignal();
 
     // Step 2: Analyze ETH + Divine Signal using KonsLang
-    const konsLangSymbols: KonsLangSymbol[] = analyzeWithKonsLang(ethData, divineSignal);
+    const konsLangSymbols: KonsLangSymbol[] = analyzeWithKonsLang(ethData, divineSignal as any);
 
     // Step 3: Let WaidBot think
     const decision: WaidDecision = await makeWaidDecision(konsLangSymbols, ethData);
