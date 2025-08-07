@@ -518,7 +518,6 @@ const ModernNavigationHeader: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-white hover:text-blue-300">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={user?.profileImage} />
             <AvatarFallback className="bg-blue-600 text-white">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </AvatarFallback>
