@@ -20,7 +20,11 @@ import {
   TrendingUp,
   Database,
   Activity,
-  Crown
+  Crown,
+  Home,
+  ChevronRight,
+  ArrowLeft,
+  RotateCcw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -328,25 +332,27 @@ const ModernNavigationHeader: React.FC = () => {
       <Button 
         variant="ghost" 
         className={cn(
-          "flex items-center space-x-2 text-white hover:text-blue-300 transition-all duration-200",
-          activeDropdown === category.label && "text-blue-300 bg-blue-900/20"
+          "flex items-center space-x-2 text-white hover:text-blue-300 transition-all duration-200 px-4 py-2 rounded-lg hover:bg-blue-900/20",
+          activeDropdown === category.label && "text-blue-300 bg-blue-900/30 shadow-lg"
         )}
         onClick={() => handleDropdownToggle(category.label)}
       >
-        {category.icon}
-        <span>{category.label}</span>
-        <ChevronDown className={cn(
-          "h-4 w-4 transition-transform duration-200",
-          activeDropdown === category.label && "rotate-180"
-        )} />
+        <div className="flex items-center space-x-2">
+          {category.icon}
+          <span className="font-medium">{category.label}</span>
+          <ChevronDown className={cn(
+            "h-4 w-4 transition-transform duration-300",
+            activeDropdown === category.label && "rotate-180"
+          )} />
+        </div>
       </Button>
       
-      {/* Custom Dropdown Content with smooth animations */}
+      {/* Enhanced Dropdown Content */}
       <div className={cn(
-        "absolute top-full left-0 mt-2 w-80 bg-gray-900/95 border border-gray-700 rounded-lg shadow-2xl backdrop-blur-sm z-50 transition-all duration-300 ease-out",
+        "absolute top-full left-1/2 transform -translate-x-1/2 mt-3 w-96 bg-gray-900/98 border border-gray-600 rounded-2xl shadow-2xl backdrop-blur-md z-50 transition-all duration-300 ease-out",
         activeDropdown === category.label 
-          ? "opacity-100 visible translate-y-0" 
-          : "opacity-0 invisible -translate-y-2 pointer-events-none"
+          ? "opacity-100 visible translate-y-0 scale-100" 
+          : "opacity-0 invisible -translate-y-3 scale-95 pointer-events-none"
       )}>
         <div className="p-4">
           <div className="flex items-center space-x-2 mb-3">
@@ -556,31 +562,27 @@ const ModernNavigationHeader: React.FC = () => {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-gray-900/95 via-blue-900/95 to-purple-900/95 backdrop-blur-sm border-b border-gray-700/50">
+    <header className="w-full bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 border-b border-gray-700/50 shadow-lg">
       <div className="container mx-auto px-4">
+        {/* Top Bar */}
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">W</span>
+          {/* Left: Logo and Brand */}
+          <div className="flex items-center space-x-6">
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform">
+                <span className="text-white font-bold text-lg">W</span>
               </div>
-              <span className="text-xl font-bold text-white hidden sm:block">
-                Waides Ki
-              </span>
+              <div className="hidden sm:block">
+                <span className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">
+                  Waides Ki
+                </span>
+                <p className="text-xs text-gray-400 -mt-1">Autonomous AI Trading</p>
+              </div>
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6">
-            {navigationCategories.map((category) => (
-              <InteractiveDropdown key={category.label} category={category} />
-            ))}
-          </nav>
-
-          {/* Right Side Actions */}
+          {/* Right: User Actions */}
           <div className="flex items-center space-x-4">
-
             {isAuthenticated ? (
               <>
                 <NotificationsDropdown />
@@ -588,24 +590,24 @@ const ModernNavigationHeader: React.FC = () => {
                 <UserMenu />
               </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <Link href="/login">
-                  <Button variant="ghost" className="text-white hover:text-blue-300">
+                  <Button variant="ghost" className="text-white hover:text-blue-300 border border-gray-600 hover:border-blue-500">
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 shadow-lg">
                     Get Started
                   </Button>
                 </Link>
               </div>
             )}
 
-            {/* Mobile Menu Trigger */}
+            {/* Mobile Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="lg:hidden text-white hover:text-blue-300">
+                <Button variant="ghost" size="sm" className="md:hidden text-white hover:text-blue-300">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
@@ -677,6 +679,57 @@ const ModernNavigationHeader: React.FC = () => {
                 </div>
               </SheetContent>
             </Sheet>
+          </div>
+        </div>
+
+        {/* Navigation Bar - Second Row */}
+        <div className="border-t border-gray-700/30">
+          <div className="flex items-center justify-between py-3">
+            {/* Breadcrumb Navigation */}
+            <div className="flex items-center space-x-2 text-sm">
+              <Link href="/" className="text-gray-400 hover:text-blue-300 transition-colors">
+                <Home className="h-4 w-4" />
+              </Link>
+              {location !== '/' && (
+                <>
+                  <ChevronRight className="h-3 w-3 text-gray-500" />
+                  <span className="text-blue-300 font-medium capitalize">
+                    {location.substring(1).replace('-', ' ')}
+                  </span>
+                </>
+              )}
+              {location !== '/' && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => window.history.back()}
+                  className="ml-4 text-gray-400 hover:text-white text-xs border border-gray-600 hover:border-blue-500"
+                >
+                  <ArrowLeft className="h-3 w-3 mr-1" />
+                  Back
+                </Button>
+              )}
+            </div>
+
+            {/* Main Navigation */}
+            <nav className="hidden md:flex items-center space-x-6">
+              {navigationCategories.map((category) => (
+                <InteractiveDropdown key={category.label} category={category} />
+              ))}
+            </nav>
+
+            {/* Quick Actions */}
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-gray-400 hover:text-blue-300 text-xs"
+                onClick={() => window.location.reload()}
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Refresh
+              </Button>
+            </div>
           </div>
         </div>
       </div>
