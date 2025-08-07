@@ -79,13 +79,7 @@ const ModernNavigationHeader: React.FC = () => {
   const [location] = useLocation();
   const { user, logout, isAuthenticated, token, isLoading } = useAuth();
   
-  // Debug log the authentication state
-  console.log('Auth State in Header:', { 
-    isAuthenticated, 
-    user: user ? `${user.username} (${user.email})` : null, 
-    token: token ? `${token.substring(0, 10)}...` : null,
-    isLoading 
-  });
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -587,12 +581,7 @@ const ModernNavigationHeader: React.FC = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* Debug indicator */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="text-xs text-yellow-300 border border-yellow-600 px-2 py-1 rounded">
-                Auth: {isAuthenticated ? 'Yes' : 'No'} | User: {user?.username || 'None'} | Token: {token ? 'Present' : 'None'}
-              </div>
-            )}
+
             {isAuthenticated ? (
               <>
                 <NotificationsDropdown />
