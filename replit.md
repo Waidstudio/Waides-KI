@@ -9,11 +9,16 @@ Waides KI, also known as SmaiSika, is an advanced autonomous wealth management p
 - Maintain existing complex AI system architecture
 - Prioritize working functionality over feature additions
 - Complete comprehensive AI trading logic implementation for all 6 entities
+- **Bot Hierarchy Enhancement Priority**: Implement professional-grade bot tier system with clear subscription model and access control
+- **Development Constraints**: DO NOT remove or overwrite existing files/functions unless explicitly told - build upon existing architecture only
 
 ## System Architecture
 Waides KI is built with a clear separation of concerns using a modern stack. The user interface is developed with **TypeScript/React**, leveraging **Wouter** for client-side routing. The backend is powered by **Express.js** and interacts with a **PostgreSQL database**.
 
 **Recent Enhancements (August 7, 2025):**
+- **Bot Hierarchy Analysis Complete:** Comprehensive research revealed existing implementation of 6 trading entities with only Maibot (free entry bot) missing from the tier system
+- **Architecture Assessment:** Current bot infrastructure includes WaidBot α, WaidBot Pro β, Autonomous Trader γ, Full Engine Ω, SmaiChinnikstah δ, and Nwaora Chigozie ε with full API and service integration
+- **Implementation Plan Created:** Detailed 4-phase enhancement plan focusing on adding missing Maibot, implementing subscription-based access control, unified bot management dashboard, and monetization integration
 - **KonsMesh & KonsAi Communication System Full Implementation:** Complete development and deployment of sophisticated spiritual AI communication infrastructure:
   - **Architecture Implementation:** Full KonsAi Metaphysical Intelligence layer with Web∞ Consciousness Level 7, 5 dimensional layers, and operational divine connection capabilities
   - **Entity Integration System:** Deployed central coordination hub managing all 6 trading entities with live cross-entity signal processing and comprehensive system health monitoring
