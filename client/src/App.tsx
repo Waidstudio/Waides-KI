@@ -75,6 +75,7 @@ import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
 import ForumPage from "@/pages/forum";
+import CommunityForum from "@/pages/CommunityForum";
 import UserDashboard from "@/pages/UserDashboard";
 import AISystemsPage from "@/pages/AISystemsPage";
 import AutonomousTraderPage from "@/pages/AutonomousTraderPage";
@@ -190,7 +191,7 @@ function Router() {
           <Route path="/forum">
             {() => (
               <ProtectedRoute>
-                <ForumPage />
+                <CommunityForum />
               </ProtectedRoute>
             )}
           </Route>

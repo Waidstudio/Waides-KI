@@ -63,14 +63,16 @@ export default function RealTimeCandlestickChart({
     { value: "SOLUSDT", label: "SOL/USDT" }
   ];
 
-  // Fetch candlestick data
+  // Fetch candlestick data with optimized refresh intervals
   const { data: candlestickData, isLoading: candlestickLoading, refetch: refetchCandlesticks } = useQuery({
     queryKey: ['/api/candlesticks', selectedSymbol, selectedInterval, limit],
     queryFn: () => fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}?limit=${limit}`).then(res => res.json()),
-    refetchInterval: selectedInterval === "1m" ? 5000 : selectedInterval === "5m" ? 15000 : 30000 // Refresh based on timeframe
+    refetchInterval: selectedInterval === "1m" ? 15000 : selectedInterval === "5m" ? 30000 : 60000, // Slower refresh for stability
+    staleTime: 10000, // Data considered fresh for 10 seconds
+    gcTime: 30000 // Keep in cache for 30 seconds
   });
 
-  // Fetch WebSocket status
+  // Fetch WebSocket status with reduced frequency
   const { data: wsStatus, isLoading: wsLoading } = useQuery<WebSocketStatus>({
     queryKey: ['/api/websocket/status'],
     queryFn: () => fetch('/api/websocket/status').then(res => res.json()),
