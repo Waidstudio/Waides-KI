@@ -9799,5 +9799,132 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // ===== KONSMESH & KONSAI COMMUNICATION SYSTEM =====
+  
+  const { getKonsAiMeshControlCenter } = await import('./services/konsaiMeshControlCenter.js');
+  const meshControlCenter = getKonsAiMeshControlCenter();
+
+  // KonsMesh System Status
+  app.get("/api/konsmesh/status", async (req, res) => {
+    try {
+      const status = meshControlCenter.getMeshSystemStatus();
+      res.json({
+        success: true,
+        ...status
+      });
+    } catch (error) {
+      console.error('❌ KonsMesh status error:', error);
+      res.status(500).json({ error: 'Failed to get KonsMesh status' });
+    }
+  });
+
+  // Authenticate Entity in Mesh
+  app.post("/api/konsmesh/authenticate", async (req, res) => {
+    try {
+      const { entityId, spiritualAlignment, karmaScore } = req.body;
+      const authResult = await meshControlCenter.authenticateEntity(entityId, spiritualAlignment, karmaScore);
+      res.json({
+        success: true,
+        authentication: authResult
+      });
+    } catch (error) {
+      console.error('❌ Entity authentication error:', error);
+      res.status(500).json({ error: 'Failed to authenticate entity' });
+    }
+  });
+
+  // Send Secure Mesh Message
+  app.post("/api/konsmesh/message", async (req, res) => {
+    try {
+      const messageRequest = req.body;
+      const result = await meshControlCenter.sendSecureMessage(messageRequest);
+      res.json({
+        success: result.success,
+        messageId: result.messageId,
+        error: result.error
+      });
+    } catch (error) {
+      console.error('❌ Secure message error:', error);
+      res.status(500).json({ error: 'Failed to send secure message' });
+    }
+  });
+
+  // Execute System-wide Operation
+  app.post("/api/konsmesh/operation", async (req, res) => {
+    try {
+      const operation = req.body;
+      const result = await meshControlCenter.executeSystemWideOperation(operation);
+      res.json(result);
+    } catch (error) {
+      console.error('❌ System operation error:', error);
+      res.status(500).json({ error: 'Failed to execute system operation' });
+    }
+  });
+
+  // Check Entity Isolation Status
+  app.get("/api/konsmesh/entity/:entityId/isolation", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const isolationCheck = meshControlCenter.checkEntityIsolation(entityId);
+      res.json({
+        success: true,
+        entityId,
+        ...isolationCheck
+      });
+    } catch (error) {
+      console.error('❌ Entity isolation check error:', error);
+      res.status(500).json({ error: 'Failed to check entity isolation' });
+    }
+  });
+
+  // Check Mesh Timeout for Entity
+  app.get("/api/konsmesh/entity/:entityId/timeout", async (req, res) => {
+    try {
+      const { entityId } = req.params;
+      const hasTimeout = meshControlCenter.detectMeshTimeout(entityId);
+      res.json({
+        success: true,
+        entityId,
+        hasTimeout,
+        status: hasTimeout ? 'timeout_detected' : 'responsive'
+      });
+    } catch (error) {
+      console.error('❌ Mesh timeout check error:', error);
+      res.status(500).json({ error: 'Failed to check mesh timeout' });
+    }
+  });
+
+  // Emergency Mesh Shutdown
+  app.post("/api/konsmesh/emergency/shutdown", async (req, res) => {
+    try {
+      const { reason, initiator } = req.body;
+      await meshControlCenter.emergencyMeshShutdown(reason, initiator);
+      res.json({
+        success: true,
+        message: 'Emergency shutdown initiated',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Emergency shutdown error:', error);
+      res.status(500).json({ error: 'Failed to initiate emergency shutdown' });
+    }
+  });
+
+  // Restore Mesh Operations
+  app.post("/api/konsmesh/emergency/restore", async (req, res) => {
+    try {
+      const { approvedBy } = req.body;
+      await meshControlCenter.restoreMeshOperations(approvedBy);
+      res.json({
+        success: true,
+        message: 'Mesh operations restored',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Mesh restore error:', error);
+      res.status(500).json({ error: 'Failed to restore mesh operations' });
+    }
+  });
+
   return Promise.resolve(server);
 }
