@@ -95,7 +95,7 @@ const EnhancedHeader = () => {
         <div className="flex justify-between h-16">
           {/* Logo and Brand */}
           <div className="flex items-center">
-            <Link href="/">
+            <Link href="/dashboard">
               <div className="flex items-center space-x-3 cursor-pointer group">
                 <div className="relative">
                   <Brain className="h-8 w-8 text-blue-400 group-hover:text-blue-300 transition-colors" />
