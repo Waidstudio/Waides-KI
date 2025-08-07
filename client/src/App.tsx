@@ -70,6 +70,7 @@ import VoiceCommandPage from "@/pages/VoiceCommandPage";
 import SmaiSikaWalletPage from "@/pages/SmaiSikaWalletPage";
 import SMSConfigPage from "@/pages/SMSConfigPage";
 import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
+import AdminExchangePoolPage from "@/pages/AdminExchangePoolPage";
 import KonsPowaPage from "@/pages/KonsPowaPage";
 import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
@@ -317,6 +318,13 @@ function Router() {
             {() => (
               <ProtectedRoute requiredRole={["admin", "super_admin"]}>
                 <SMSConfigPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/admin-exchange-pool">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <AdminExchangePoolPage />
               </ProtectedRoute>
             )}
           </Route>

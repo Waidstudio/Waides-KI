@@ -1074,6 +1074,27 @@ export const insertExchangeRateSchema = createInsertSchema(exchangeRates).omit({
   lastUpdated: true,
 });
 
+// Admin Exchange Pool - for users without their own API keys
+export const adminExchangePool = pgTable("admin_exchange_pool", {
+  id: serial("id").primaryKey(),
+  exchangeName: text("exchange_name").notNull(),
+  apiKey: text("api_key").notNull(),
+  apiSecret: text("api_secret").notNull(),
+  passphrase: text("passphrase"), // For exchanges like Coinbase Pro
+  sandbox: boolean("sandbox").default(false),
+  maxUsersPerKey: integer("max_users_per_key").default(10),
+  currentUsers: integer("current_users").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertAdminExchangePoolSchema = createInsertSchema(adminExchangePool).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertKycVerificationSchema = createInsertSchema(kycVerifications).omit({
   id: true,
   createdAt: true,
