@@ -280,6 +280,293 @@ export type Signal = typeof signals.$inferSelect;
 export type InsertCandlestick = z.infer<typeof insertCandlestickSchema>;
 export type Candlestick = typeof candlesticks.$inferSelect;
 
+// ===== WALLET SECURITY ENHANCEMENT TABLES =====
+
+// User Permission Roles for wallet access control (Question 1)
+export const userPermissionRoles = pgTable("user_permission_roles", {
+  id: serial("id").primaryKey(),
+  roleName: text("role_name").notNull().unique(), // 'admin', 'trader', 'viewer', 'restricted'
+  description: text("description"),
+  walletReadAccess: boolean("wallet_read_access").default(false),
+  walletWriteAccess: boolean("wallet_write_access").default(false),
+  tradingAccess: boolean("trading_access").default(false),
+  adminAccess: boolean("admin_access").default(false),
+  apiAccess: boolean("api_access").default(false),
+  maxDailyTransactionLimit: numeric("max_daily_transaction_limit", { precision: 15, scale: 2 }).default("1000.00"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Wallet Access Permissions linking users to specific wallet access levels (Question 1)
+export const walletPermissions = pgTable("wallet_permissions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  roleId: integer("role_id").notNull().references(() => userPermissionRoles.id, { onDelete: "cascade" }),
+  walletId: integer("wallet_id").references(() => wallets.id, { onDelete: "cascade" }),
+  isActive: boolean("is_active").default(true),
+  grantedBy: integer("granted_by").references(() => users.id),
+  grantedAt: timestamp("granted_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
+// Multi-Factor Authentication settings (Question 2)
+export const userMfaSettings = pgTable("user_mfa_settings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  totpSecret: text("totp_secret"), // Encrypted TOTP secret
+  smsEnabled: boolean("sms_enabled").default(false),
+  phoneNumber: text("phone_number"), // Encrypted phone number
+  biometricEnabled: boolean("biometric_enabled").default(false),
+  smaiPrintEnabled: boolean("smai_print_enabled").default(false),
+  smaiPrintHash: text("smai_print_hash"), // SmaiPrint pattern hash
+  backupCodes: text("backup_codes").array(), // Encrypted backup codes
+  lastMfaVerified: timestamp("last_mfa_verified"),
+  mfaFailedAttempts: integer("mfa_failed_attempts").default(0),
+  mfaLockedUntil: timestamp("mfa_locked_until"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// JWT Token Audit Trail (Question 3)
+export const jwtAuditTrail = pgTable("jwt_audit_trail", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  tokenId: text("token_id").notNull(), // Unique token identifier
+  tokenType: text("token_type").notNull(), // 'access', 'refresh', 'reset'
+  action: text("action").notNull(), // 'issued', 'used', 'revoked', 'expired'
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  location: text("location"), // GeoIP location if available
+  issuedAt: timestamp("issued_at"),
+  expiresAt: timestamp("expires_at"),
+  revokedAt: timestamp("revoked_at"),
+  revokedReason: text("revoked_reason"),
+  suspicious: boolean("suspicious").default(false),
+  riskScore: integer("risk_score").default(0), // 0-100 risk assessment
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Authentication Monitoring (Question 4)
+export const authenticationAttempts = pgTable("authentication_attempts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  email: text("email"), // For failed attempts where user doesn't exist
+  attemptType: text("attempt_type").notNull(), // 'login', 'password_reset', 'mfa', 'biometric'
+  success: boolean("success").notNull(),
+  failureReason: text("failure_reason"), // 'invalid_credentials', 'account_locked', 'mfa_failed'
+  ipAddress: text("ip_address").notNull(),
+  userAgent: text("user_agent"),
+  location: text("location"),
+  deviceFingerprint: text("device_fingerprint"),
+  sessionId: text("session_id"),
+  mfaMethod: text("mfa_method"), // '2fa', 'biometric', 'smai_print'
+  riskScore: integer("risk_score").default(0),
+  blockedBySystem: boolean("blocked_by_system").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Transaction Security and Signing (Question 5)
+export const transactionSecurity = pgTable("transaction_security", {
+  id: serial("id").primaryKey(),
+  transactionId: text("transaction_id").notNull().unique(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  transactionType: text("transaction_type").notNull(), // 'deposit', 'withdrawal', 'trade', 'transfer'
+  amount: numeric("amount", { precision: 15, scale: 8 }).notNull(),
+  currency: text("currency").notNull(),
+  digitalSignature: text("digital_signature").notNull(), // Cryptographic signature
+  publicKeyUsed: text("public_key_used").notNull(),
+  hashAlgorithm: text("hash_algorithm").notNull().default("SHA-256"),
+  encryptionMethod: text("encryption_method").notNull().default("AES-256-GCM"),
+  verificationStatus: text("verification_status").notNull().default("pending"), // 'pending', 'verified', 'failed'
+  verifiedAt: timestamp("verified_at"),
+  verificationFailureReason: text("verification_failure_reason"),
+  nonce: text("nonce").notNull(), // Prevents replay attacks
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Financial Audit Trail (Question 6)
+export const financialAuditTrail = pgTable("financial_audit_trail", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  transactionId: text("transaction_id").notNull(),
+  auditType: text("audit_type").notNull(), // 'deposit', 'withdrawal', 'balance_change', 'freeze', 'unfreeze'
+  beforeBalance: numeric("before_balance", { precision: 15, scale: 8 }).notNull(),
+  afterBalance: numeric("after_balance", { precision: 15, scale: 8 }).notNull(),
+  amountChanged: numeric("amount_changed", { precision: 15, scale: 8 }).notNull(),
+  currency: text("currency").notNull(),
+  reason: text("reason").notNull(),
+  approvedBy: integer("approved_by").references(() => users.id),
+  botId: text("bot_id"), // Which bot initiated the transaction
+  complianceStatus: text("compliance_status").notNull().default("compliant"), // 'compliant', 'flagged', 'under_review'
+  auditHash: text("audit_hash").notNull(), // Hash for integrity verification
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Trading Control System (Question 9)
+export const tradingControls = pgTable("trading_controls", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  tradingEnabled: boolean("trading_enabled").default(true),
+  emergencyStop: boolean("emergency_stop").default(false),
+  partialRestrictions: jsonb("partial_restrictions").default("{}"), // Specific trading pair restrictions
+  dailyTradingLimit: numeric("daily_trading_limit", { precision: 15, scale: 2 }).default("10000.00"),
+  currentDailyVolume: numeric("current_daily_volume", { precision: 15, scale: 2 }).default("0.00"),
+  lastDailyReset: timestamp("last_daily_reset").defaultNow(),
+  freezeReason: text("freeze_reason"),
+  freezeInitiatedBy: integer("freeze_initiated_by").references(() => users.id),
+  frozenAt: timestamp("frozen_at"),
+  scheduledUnfreezeAt: timestamp("scheduled_unfreeze_at"),
+  autoUnfreezeEnabled: boolean("auto_unfreeze_enabled").default(false),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Bot Fund Isolation (Question 10)
+export const botFundIsolation = pgTable("bot_fund_isolation", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  botId: text("bot_id").notNull(),
+  botName: text("bot_name").notNull(),
+  isolatedFunds: numeric("isolated_funds", { precision: 15, scale: 8 }).default("0.00"),
+  mainWalletFunds: numeric("main_wallet_funds", { precision: 15, scale: 8 }).default("0.00"),
+  isolationTriggered: boolean("isolation_triggered").default(false),
+  isolationReason: text("isolation_reason"),
+  triggerThreshold: numeric("trigger_threshold", { precision: 5, scale: 2 }).default("10.00"), // % loss threshold
+  currentLossPercentage: numeric("current_loss_percentage", { precision: 5, scale: 2 }).default("0.00"),
+  riskScore: integer("risk_score").default(0), // Bot behavior risk score 0-100
+  isolatedAt: timestamp("isolated_at"),
+  lastRiskAssessment: timestamp("last_risk_assessment").defaultNow(),
+  autoRecoveryEnabled: boolean("auto_recovery_enabled").default(true),
+  manualOverrideBy: integer("manual_override_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Fraud Detection System (Question 12)
+export const fraudDetectionLogs = pgTable("fraud_detection_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  detectionType: text("detection_type").notNull(), // 'trade_pattern', 'login_pattern', 'withdrawal_pattern'
+  suspiciousActivity: text("suspicious_activity").notNull(),
+  riskLevel: text("risk_level").notNull(), // 'low', 'medium', 'high', 'critical'
+  riskScore: integer("risk_score").notNull(), // 0-100
+  activityData: jsonb("activity_data").notNull(), // JSON data of the suspicious activity
+  patternMatched: text("pattern_matched"), // Which fraud pattern was matched
+  automaticAction: text("automatic_action"), // Action taken automatically
+  manualReviewRequired: boolean("manual_review_required").default(false),
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewOutcome: text("review_outcome"), // 'false_positive', 'confirmed_fraud', 'needs_monitoring'
+  actionTaken: text("action_taken"), // Final action taken
+  resolved: boolean("resolved").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Cold Storage Management (Question 20)
+export const coldStorageVaults = pgTable("cold_storage_vaults", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  vaultName: text("vault_name").notNull(),
+  vaultType: text("vault_type").notNull().default("cold"), // 'cold', 'warm', 'hot'
+  balance: numeric("balance", { precision: 15, scale: 8 }).default("0.00"),
+  currency: text("currency").notNull(),
+  isActive: boolean("is_active").default(true),
+  encryptedPrivateKey: text("encrypted_private_key").notNull(), // AES encrypted private key
+  publicKey: text("public_key").notNull(),
+  keyDerivationMethod: text("key_derivation_method").notNull().default("PBKDF2"),
+  accessRequiresApproval: boolean("access_requires_approval").default(true),
+  approvalThreshold: integer("approval_threshold").default(2), // Multi-sig threshold
+  lastAccessedAt: timestamp("last_accessed_at"),
+  accessAttempts: integer("access_attempts").default(0),
+  maxAccessAttempts: integer("max_access_attempts").default(3),
+  lockedUntil: timestamp("locked_until"),
+  backupLocations: text("backup_locations").array(), // Encrypted backup storage locations
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Insert schemas for new security tables
+export const insertUserPermissionRoleSchema = createInsertSchema(userPermissionRoles).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWalletPermissionsSchema = createInsertSchema(walletPermissions).omit({
+  id: true,
+  grantedAt: true,
+});
+
+export const insertUserMfaSettingsSchema = createInsertSchema(userMfaSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertJwtAuditTrailSchema = createInsertSchema(jwtAuditTrail).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAuthenticationAttemptsSchema = createInsertSchema(authenticationAttempts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTransactionSecuritySchema = createInsertSchema(transactionSecurity).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertFinancialAuditTrailSchema = createInsertSchema(financialAuditTrail).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTradingControlsSchema = createInsertSchema(tradingControls).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const insertBotFundIsolationSchema = createInsertSchema(botFundIsolation).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertFraudDetectionLogsSchema = createInsertSchema(fraudDetectionLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertColdStorageVaultsSchema = createInsertSchema(coldStorageVaults).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Type exports for new security tables
+export type UserPermissionRole = typeof userPermissionRoles.$inferSelect;
+export type InsertUserPermissionRole = z.infer<typeof insertUserPermissionRoleSchema>;
+export type WalletPermission = typeof walletPermissions.$inferSelect;
+export type InsertWalletPermission = z.infer<typeof insertWalletPermissionsSchema>;
+export type UserMfaSetting = typeof userMfaSettings.$inferSelect;
+export type InsertUserMfaSetting = z.infer<typeof insertUserMfaSettingsSchema>;
+export type JwtAuditTrail = typeof jwtAuditTrail.$inferSelect;
+export type InsertJwtAuditTrail = z.infer<typeof insertJwtAuditTrailSchema>;
+export type AuthenticationAttempt = typeof authenticationAttempts.$inferSelect;
+export type InsertAuthenticationAttempt = z.infer<typeof insertAuthenticationAttemptsSchema>;
+export type TransactionSecurity = typeof transactionSecurity.$inferSelect;
+export type InsertTransactionSecurity = z.infer<typeof insertTransactionSecuritySchema>;
+export type FinancialAuditTrail = typeof financialAuditTrail.$inferSelect;
+export type InsertFinancialAuditTrail = z.infer<typeof insertFinancialAuditTrailSchema>;
+export type TradingControl = typeof tradingControls.$inferSelect;
+export type InsertTradingControl = z.infer<typeof insertTradingControlsSchema>;
+export type BotFundIsolation = typeof botFundIsolation.$inferSelect;
+export type InsertBotFundIsolation = z.infer<typeof insertBotFundIsolationSchema>;
+export type FraudDetectionLog = typeof fraudDetectionLogs.$inferSelect;
+export type InsertFraudDetectionLog = z.infer<typeof insertFraudDetectionLogsSchema>;
+export type ColdStorageVault = typeof coldStorageVaults.$inferSelect;
+export type InsertColdStorageVault = z.infer<typeof insertColdStorageVaultsSchema>;
+
 // New comprehensive schemas for wallet system
 export const insertWalletSchema = createInsertSchema(wallets).omit({
   id: true,

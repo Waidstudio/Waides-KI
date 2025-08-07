@@ -23,6 +23,11 @@ import jwt from 'jsonwebtoken';
 import { smaiTrustAuthService } from "./services/smaiTrustAuthService.js";
 import { shavokaAuthService } from "./services/shavokaAuthService.js";
 
+// Import wallet security services
+import { walletSecurityService } from "./services/walletSecurityService.js";
+import { fraudDetectionService } from "./services/fraudDetectionService.js";
+import { transactionSecurityService } from "./services/transactionSecurityService.js";
+
 // WebSocket setup for real-time features
 let wss: any = null;
 
@@ -7683,6 +7688,339 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Unlock trading balance error:', error);
       res.status(500).json({ error: 'Failed to unlock trading balance' });
+    }
+  });
+
+  // ===== WALLET SECURITY ENHANCEMENT API =====
+
+  // Question 1: User Rights & Wallet Access Control
+  app.post("/api/security/wallet-access/grant", requireAuth, async (req, res) => {
+    try {
+      const { userId, walletId, roleId, expiresAt } = req.body;
+      const grantedBy = (req.user as any)?.id;
+
+      if (!grantedBy) {
+        return res.status(401).json({ success: false, message: "Authorization required" });
+      }
+
+      const success = await walletSecurityService.grantWalletPermission(
+        userId, 
+        walletId, 
+        roleId, 
+        grantedBy, 
+        expiresAt ? new Date(expiresAt) : undefined
+      );
+
+      res.json({ 
+        success, 
+        message: success ? "Wallet permission granted" : "Failed to grant permission" 
+      });
+    } catch (error) {
+      console.error("Error granting wallet permission:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/security/wallet-access/check", requireAuth, async (req, res) => {
+    try {
+      const { userId, walletId, accessType } = req.body;
+      
+      const hasAccess = await walletSecurityService.checkWalletAccess(
+        userId, 
+        walletId, 
+        accessType
+      );
+
+      res.json({ success: true, hasAccess, accessType });
+    } catch (error) {
+      console.error("Error checking wallet access:", error);
+      res.status(500).json({ success: false, message: "Access check failed" });
+    }
+  });
+
+  // Question 2: Multi-Factor Authentication
+  app.post("/api/security/mfa/configure", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const mfaSettings = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const success = await walletSecurityService.configureMFA(userId, mfaSettings);
+      
+      res.json({ 
+        success, 
+        message: success ? "MFA settings updated" : "Failed to update MFA settings" 
+      });
+    } catch (error) {
+      console.error("Error configuring MFA:", error);
+      res.status(500).json({ success: false, message: "MFA configuration failed" });
+    }
+  });
+
+  app.post("/api/security/mfa/verify", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const { method, credential } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const verified = await walletSecurityService.verifyMFA(userId, method, credential);
+      
+      res.json({ success: true, verified });
+    } catch (error) {
+      console.error("Error verifying MFA:", error);
+      res.status(500).json({ success: false, message: "MFA verification failed" });
+    }
+  });
+
+  // Question 3: JWT Token Auditing
+  app.get("/api/security/jwt-audit/stats", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const timeRange = parseInt(req.query.timeRange as string) || 86400000; // 24 hours default
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const stats = await transactionSecurityService.getJWTTokenStats(userId, timeRange);
+      
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error("Error getting JWT audit stats:", error);
+      res.status(500).json({ success: false, message: "Failed to get JWT stats" });
+    }
+  });
+
+  app.post("/api/security/jwt-audit/revoke-suspicious", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const { reason } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const revokedCount = await transactionSecurityService.revokeSuspiciousTokens(userId, reason);
+      
+      res.json({ success: true, revokedCount, message: `Revoked ${revokedCount} suspicious tokens` });
+    } catch (error) {
+      console.error("Error revoking suspicious tokens:", error);
+      res.status(500).json({ success: false, message: "Failed to revoke tokens" });
+    }
+  });
+
+  // Question 4: Authentication Monitoring
+  app.get("/api/security/auth-monitoring/stats", requireAdmin, async (req, res) => {
+    try {
+      const timeRange = parseInt(req.query.timeRange as string) || 86400000; // 24 hours default
+      
+      const stats = await transactionSecurityService.getAuthenticationStats(timeRange);
+      
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error("Error getting authentication stats:", error);
+      res.status(500).json({ success: false, message: "Failed to get auth stats" });
+    }
+  });
+
+  // Question 5: Transaction Security & Signing
+  app.post("/api/security/transaction/sign", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const transactionData = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const signature = await walletSecurityService.signTransaction(userId, transactionData);
+      
+      if (signature) {
+        res.json({ success: true, signature });
+      } else {
+        res.status(400).json({ success: false, message: "Transaction signing failed" });
+      }
+    } catch (error) {
+      console.error("Error signing transaction:", error);
+      res.status(500).json({ success: false, message: "Transaction signing failed" });
+    }
+  });
+
+  app.post("/api/security/transaction/verify", requireAuth, async (req, res) => {
+    try {
+      const { transactionId } = req.body;
+      
+      const verified = await walletSecurityService.verifyTransactionSignature(transactionId);
+      
+      res.json({ success: true, verified });
+    } catch (error) {
+      console.error("Error verifying transaction:", error);
+      res.status(500).json({ success: false, message: "Transaction verification failed" });
+    }
+  });
+
+  // Question 10: Bot Fund Isolation
+  app.post("/api/security/bot-isolation/monitor", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const { botId, currentPerformance } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const result = await walletSecurityService.monitorBotPerformance(userId, botId, currentPerformance);
+      
+      res.json({ success: true, isolation: result });
+    } catch (error) {
+      console.error("Error monitoring bot performance:", error);
+      res.status(500).json({ success: false, message: "Bot monitoring failed" });
+    }
+  });
+
+  // Question 12: Fraud Detection
+  app.post("/api/security/fraud-detection/analyze-trade", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const tradeData = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const analysis = await fraudDetectionService.analyzeTradePattern(userId, tradeData);
+      
+      res.json({ success: true, analysis });
+    } catch (error) {
+      console.error("Error analyzing trade pattern:", error);
+      res.status(500).json({ success: false, message: "Trade analysis failed" });
+    }
+  });
+
+  app.post("/api/security/fraud-detection/analyze-withdrawal", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const withdrawalData = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const analysis = await fraudDetectionService.analyzeWithdrawalPattern(userId, withdrawalData);
+      
+      res.json({ success: true, analysis });
+    } catch (error) {
+      console.error("Error analyzing withdrawal pattern:", error);
+      res.status(500).json({ success: false, message: "Withdrawal analysis failed" });
+    }
+  });
+
+  app.get("/api/security/fraud-detection/pending-cases", requireAdmin, async (req, res) => {
+    try {
+      const pendingCases = await fraudDetectionService.getPendingFraudCases();
+      
+      res.json({ success: true, cases: pendingCases });
+    } catch (error) {
+      console.error("Error getting pending fraud cases:", error);
+      res.status(500).json({ success: false, message: "Failed to get fraud cases" });
+    }
+  });
+
+  app.post("/api/security/fraud-detection/resolve-case", requireAdmin, async (req, res) => {
+    try {
+      const reviewedBy = (req.user as any)?.id;
+      const { caseId, outcome, actionTaken } = req.body;
+
+      if (!reviewedBy) {
+        return res.status(401).json({ success: false, message: "Admin authentication required" });
+      }
+
+      const resolved = await fraudDetectionService.resolveFraudCase(caseId, reviewedBy, outcome, actionTaken);
+      
+      res.json({ success: resolved, message: resolved ? "Case resolved" : "Failed to resolve case" });
+    } catch (error) {
+      console.error("Error resolving fraud case:", error);
+      res.status(500).json({ success: false, message: "Failed to resolve case" });
+    }
+  });
+
+  // Question 20: Cold Storage Management
+  app.post("/api/security/cold-storage/create-vault", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const { vaultName, currency, initialBalance } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const vaultId = await walletSecurityService.createColdStorageVault(userId, vaultName, currency, initialBalance);
+      
+      if (vaultId) {
+        res.json({ success: true, vaultId, message: "Cold storage vault created" });
+      } else {
+        res.status(400).json({ success: false, message: "Failed to create vault" });
+      }
+    } catch (error) {
+      console.error("Error creating cold storage vault:", error);
+      res.status(500).json({ success: false, message: "Vault creation failed" });
+    }
+  });
+
+  app.post("/api/security/cold-storage/transfer", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const { vaultId, amount, direction } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      const success = await walletSecurityService.transferColdStorageFunds(userId, vaultId, amount, direction);
+      
+      res.json({ 
+        success, 
+        message: success ? "Cold storage transfer completed" : "Transfer failed" 
+      });
+    } catch (error) {
+      console.error("Error transferring cold storage funds:", error);
+      res.status(500).json({ success: false, message: "Cold storage transfer failed" });
+    }
+  });
+
+  // Security Dashboard - Comprehensive Security Overview
+  app.get("/api/security/dashboard/overview", requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.id;
+      const timeRange = parseInt(req.query.timeRange as string) || 86400000; // 24 hours default
+
+      if (!userId) {
+        return res.status(401).json({ success: false, message: "User authentication required" });
+      }
+
+      // Get comprehensive security overview
+      const [jwtStats, authStats] = await Promise.all([
+        transactionSecurityService.getJWTTokenStats(userId, timeRange),
+        transactionSecurityService.getAuthenticationStats(timeRange)
+      ]);
+
+      const securityOverview = {
+        jwt: jwtStats,
+        authentication: authStats,
+        timestamp: new Date().toISOString(),
+        timeRange,
+      };
+
+      res.json({ success: true, overview: securityOverview });
+    } catch (error) {
+      console.error("Error getting security dashboard overview:", error);
+      res.status(500).json({ success: false, message: "Failed to get security overview" });
     }
   });
 

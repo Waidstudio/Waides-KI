@@ -100,6 +100,61 @@ export interface IStorage {
   logNeuralEvolution(evolution: InsertNeuralEvolutionLog): Promise<NeuralEvolutionLog>;
   getEvolutionHistory(limit?: number): Promise<NeuralEvolutionLog[]>;
   revertEvolution(evolutionId: number): Promise<void>;
+
+  // ===== WALLET SECURITY ENHANCEMENT METHODS =====
+
+  // User Permission Management (Question 1)
+  createUserPermissionRole(role: InsertUserPermissionRole): Promise<UserPermissionRole>;
+  grantWalletPermission(permission: InsertWalletPermission): Promise<WalletPermission>;
+  revokeWalletPermission(userId: number, walletId: number): Promise<void>;
+  checkWalletAccess(userId: number, walletId: number, accessType: 'read' | 'write' | 'trade' | 'admin'): Promise<boolean>;
+
+  // Multi-Factor Authentication (Question 2)
+  upsertUserMfaSettings(settings: InsertUserMfaSetting): Promise<UserMfaSetting>;
+  getUserMfaSettings(userId: number): Promise<UserMfaSetting | undefined>;
+  updateMfaFailedAttempts(userId: number, attempts: number, lockUntil?: Date): Promise<void>;
+
+  // JWT Token Auditing (Question 3)
+  logJwtAudit(audit: InsertJwtAuditTrail): Promise<JwtAuditTrail>;
+  getJwtAuditHistory(userId: number, limit?: number): Promise<JwtAuditTrail[]>;
+  revokeSuspiciousTokens(userId: number, reason: string): Promise<number>;
+
+  // Authentication Monitoring (Question 4)
+  logAuthenticationAttempt(attempt: InsertAuthenticationAttempt): Promise<AuthenticationAttempt>;
+  getFailedAuthAttempts(ipAddress: string, timeRange: number): Promise<AuthenticationAttempt[]>;
+  getAuthStatistics(timeRange: number): Promise<any>;
+
+  // Transaction Security (Question 5)
+  createTransactionSecurity(security: InsertTransactionSecurity): Promise<TransactionSecurity>;
+  verifyTransactionSignature(transactionId: string): Promise<TransactionSecurity | undefined>;
+  getTransactionSecurityHistory(userId: number, limit?: number): Promise<TransactionSecurity[]>;
+
+  // Financial Audit Trail (Question 6)
+  createFinancialAudit(audit: InsertFinancialAuditTrail): Promise<FinancialAuditTrail>;
+  getFinancialAuditTrail(userId: number, auditType?: string, limit?: number): Promise<FinancialAuditTrail[]>;
+  verifyAuditIntegrity(userId: number, timeRange: number): Promise<any>;
+
+  // Trading Controls (Question 9)
+  upsertTradingControls(controls: InsertTradingControl): Promise<TradingControl>;
+  getUserTradingControls(userId: number): Promise<TradingControl | undefined>;
+  freezeUserTrading(userId: number, reason: string, freezeBy: number): Promise<void>;
+  unfreezeUserTrading(userId: number): Promise<void>;
+
+  // Bot Fund Isolation (Question 10)
+  upsertBotFundIsolation(isolation: InsertBotFundIsolation): Promise<BotFundIsolation>;
+  getBotFundIsolation(userId: number, botId: string): Promise<BotFundIsolation | undefined>;
+  triggerBotIsolation(userId: number, botId: string, reason: string): Promise<void>;
+
+  // Fraud Detection (Question 12)
+  logFraudDetection(log: InsertFraudDetectionLog): Promise<FraudDetectionLog>;
+  getPendingFraudCases(): Promise<any[]>;
+  resolveFraudCase(caseId: number, reviewedBy: number, outcome: string, actionTaken?: string): Promise<void>;
+
+  // Cold Storage Management (Question 20)
+  createColdStorageVault(vault: InsertColdStorageVault): Promise<ColdStorageVault>;
+  getUserColdStorageVaults(userId: number): Promise<ColdStorageVault[]>;
+  updateColdStorageBalance(vaultId: number, newBalance: string): Promise<void>;
+  lockColdStorageVault(vaultId: number, reason: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -715,6 +770,594 @@ export class DatabaseStorage implements IStorage {
         isStableEvolution: false
       })
       .where(eq(neuralEvolutionLogs.id, evolutionId));
+  }
+
+  // ===== WALLET SECURITY ENHANCEMENT IMPLEMENTATIONS =====
+
+  // User Permission Management (Question 1)
+  async createUserPermissionRole(role: InsertUserPermissionRole): Promise<UserPermissionRole> {
+    try {
+      const [newRole] = await db
+        .insert(userPermissionRoles)
+        .values(role)
+        .returning();
+      return newRole;
+    } catch (error) {
+      console.error("Error creating user permission role:", error);
+      throw error;
+    }
+  }
+
+  async grantWalletPermission(permission: InsertWalletPermission): Promise<WalletPermission> {
+    try {
+      const [newPermission] = await db
+        .insert(walletPermissions)
+        .values(permission)
+        .returning();
+      return newPermission;
+    } catch (error) {
+      console.error("Error granting wallet permission:", error);
+      throw error;
+    }
+  }
+
+  async revokeWalletPermission(userId: number, walletId: number): Promise<void> {
+    try {
+      await db.update(walletPermissions)
+        .set({ 
+          isActive: false,
+          revokedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(walletPermissions.userId, userId),
+            eq(walletPermissions.walletId, walletId),
+            eq(walletPermissions.isActive, true)
+          )
+        );
+    } catch (error) {
+      console.error("Error revoking wallet permission:", error);
+      throw error;
+    }
+  }
+
+  async checkWalletAccess(userId: number, walletId: number, accessType: 'read' | 'write' | 'trade' | 'admin'): Promise<boolean> {
+    try {
+      const permissions = await db
+        .select()
+        .from(walletPermissions)
+        .innerJoin(
+          userPermissionRoles,
+          eq(walletPermissions.roleId, userPermissionRoles.id)
+        )
+        .where(
+          and(
+            eq(walletPermissions.userId, userId),
+            eq(walletPermissions.walletId, walletId),
+            eq(walletPermissions.isActive, true),
+            or(
+              eq(walletPermissions.expiresAt, null),
+              gt(walletPermissions.expiresAt, new Date())
+            )
+          )
+        );
+
+      if (permissions.length === 0) return false;
+
+      // Check if any role has the required permission
+      return permissions.some(permission => {
+        const role = permission.user_permission_roles;
+        switch (accessType) {
+          case 'read': return role.canRead;
+          case 'write': return role.canWrite;
+          case 'trade': return role.canTrade;
+          case 'admin': return role.canAdmin;
+          default: return false;
+        }
+      });
+    } catch (error) {
+      console.error("Error checking wallet access:", error);
+      return false;
+    }
+  }
+
+  // Multi-Factor Authentication (Question 2)
+  async upsertUserMfaSettings(settings: InsertUserMfaSetting): Promise<UserMfaSetting> {
+    try {
+      const [upsertedSettings] = await db
+        .insert(userMfaSettings)
+        .values(settings)
+        .onConflictDoUpdate({
+          target: userMfaSettings.userId,
+          set: {
+            ...settings,
+            updatedAt: new Date()
+          }
+        })
+        .returning();
+      return upsertedSettings;
+    } catch (error) {
+      console.error("Error upserting MFA settings:", error);
+      throw error;
+    }
+  }
+
+  async getUserMfaSettings(userId: number): Promise<UserMfaSetting | undefined> {
+    try {
+      const [settings] = await db
+        .select()
+        .from(userMfaSettings)
+        .where(eq(userMfaSettings.userId, userId));
+      return settings;
+    } catch (error) {
+      console.error("Error getting MFA settings:", error);
+      throw error;
+    }
+  }
+
+  async updateMfaFailedAttempts(userId: number, attempts: number, lockUntil?: Date): Promise<void> {
+    try {
+      await db.update(userMfaSettings)
+        .set({ 
+          mfaFailedAttempts: attempts,
+          mfaLockUntil: lockUntil,
+          updatedAt: new Date()
+        })
+        .where(eq(userMfaSettings.userId, userId));
+    } catch (error) {
+      console.error("Error updating MFA failed attempts:", error);
+      throw error;
+    }
+  }
+
+  // JWT Token Auditing (Question 3)
+  async logJwtAudit(audit: InsertJwtAuditTrail): Promise<JwtAuditTrail> {
+    try {
+      const [newAudit] = await db
+        .insert(jwtAuditTrails)
+        .values(audit)
+        .returning();
+      return newAudit;
+    } catch (error) {
+      console.error("Error logging JWT audit:", error);
+      throw error;
+    }
+  }
+
+  async getJwtAuditHistory(userId: number, limit?: number): Promise<JwtAuditTrail[]> {
+    try {
+      return await db
+        .select()
+        .from(jwtAuditTrails)
+        .where(eq(jwtAuditTrails.userId, userId))
+        .orderBy(desc(jwtAuditTrails.createdAt))
+        .limit(limit || 50);
+    } catch (error) {
+      console.error("Error getting JWT audit history:", error);
+      throw error;
+    }
+  }
+
+  async revokeSuspiciousTokens(userId: number, reason: string): Promise<number> {
+    try {
+      const result = await db.update(jwtAuditTrails)
+        .set({ 
+          isRevoked: true,
+          revokeReason: reason,
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(jwtAuditTrails.userId, userId),
+            eq(jwtAuditTrails.isRevoked, false),
+            or(
+              eq(jwtAuditTrails.suspiciousActivity, true),
+              ne(jwtAuditTrails.ipAddress, "127.0.0.1") // Example: revoke non-local tokens
+            )
+          )
+        );
+
+      return result.rowCount || 0;
+    } catch (error) {
+      console.error("Error revoking suspicious tokens:", error);
+      throw error;
+    }
+  }
+
+  // Authentication Monitoring (Question 4)
+  async logAuthenticationAttempt(attempt: InsertAuthenticationAttempt): Promise<AuthenticationAttempt> {
+    try {
+      const [newAttempt] = await db
+        .insert(authenticationAttempts)
+        .values(attempt)
+        .returning();
+      return newAttempt;
+    } catch (error) {
+      console.error("Error logging authentication attempt:", error);
+      throw error;
+    }
+  }
+
+  async getFailedAuthAttempts(ipAddress: string, timeRange: number): Promise<AuthenticationAttempt[]> {
+    try {
+      const timeThreshold = new Date(Date.now() - timeRange);
+      return await db
+        .select()
+        .from(authenticationAttempts)
+        .where(
+          and(
+            eq(authenticationAttempts.ipAddress, ipAddress),
+            eq(authenticationAttempts.isSuccess, false),
+            gt(authenticationAttempts.attemptedAt, timeThreshold)
+          )
+        )
+        .orderBy(desc(authenticationAttempts.attemptedAt));
+    } catch (error) {
+      console.error("Error getting failed auth attempts:", error);
+      throw error;
+    }
+  }
+
+  async getAuthStatistics(timeRange: number): Promise<any> {
+    try {
+      const timeThreshold = new Date(Date.now() - timeRange);
+      
+      // Get total attempts, successful and failed
+      const stats = await db
+        .select({
+          totalAttempts: sql<number>`COUNT(*)`,
+          successfulAttempts: sql<number>`SUM(CASE WHEN is_success = true THEN 1 ELSE 0 END)`,
+          failedAttempts: sql<number>`SUM(CASE WHEN is_success = false THEN 1 ELSE 0 END)`,
+          uniqueIps: sql<number>`COUNT(DISTINCT ip_address)`,
+          uniqueUsers: sql<number>`COUNT(DISTINCT user_id)`
+        })
+        .from(authenticationAttempts)
+        .where(gt(authenticationAttempts.attemptedAt, timeThreshold));
+
+      return stats[0] || {};
+    } catch (error) {
+      console.error("Error getting auth statistics:", error);
+      throw error;
+    }
+  }
+
+  // Transaction Security (Question 5)
+  async createTransactionSecurity(security: InsertTransactionSecurity): Promise<TransactionSecurity> {
+    try {
+      const [newSecurity] = await db
+        .insert(transactionSecurities)
+        .values(security)
+        .returning();
+      return newSecurity;
+    } catch (error) {
+      console.error("Error creating transaction security:", error);
+      throw error;
+    }
+  }
+
+  async verifyTransactionSignature(transactionId: string): Promise<TransactionSecurity | undefined> {
+    try {
+      const [security] = await db
+        .select()
+        .from(transactionSecurities)
+        .where(eq(transactionSecurities.transactionId, transactionId));
+      return security;
+    } catch (error) {
+      console.error("Error verifying transaction signature:", error);
+      throw error;
+    }
+  }
+
+  async getTransactionSecurityHistory(userId: number, limit?: number): Promise<TransactionSecurity[]> {
+    try {
+      return await db
+        .select()
+        .from(transactionSecurities)
+        .where(eq(transactionSecurities.userId, userId))
+        .orderBy(desc(transactionSecurities.createdAt))
+        .limit(limit || 50);
+    } catch (error) {
+      console.error("Error getting transaction security history:", error);
+      throw error;
+    }
+  }
+
+  // Financial Audit Trail (Question 6)
+  async createFinancialAudit(audit: InsertFinancialAuditTrail): Promise<FinancialAuditTrail> {
+    try {
+      const [newAudit] = await db
+        .insert(financialAuditTrails)
+        .values(audit)
+        .returning();
+      return newAudit;
+    } catch (error) {
+      console.error("Error creating financial audit:", error);
+      throw error;
+    }
+  }
+
+  async getFinancialAuditTrail(userId: number, auditType?: string, limit?: number): Promise<FinancialAuditTrail[]> {
+    try {
+      let query = db
+        .select()
+        .from(financialAuditTrails)
+        .where(eq(financialAuditTrails.userId, userId));
+
+      if (auditType) {
+        query = query.where(eq(financialAuditTrails.auditType, auditType));
+      }
+
+      return await query
+        .orderBy(desc(financialAuditTrails.createdAt))
+        .limit(limit || 100);
+    } catch (error) {
+      console.error("Error getting financial audit trail:", error);
+      throw error;
+    }
+  }
+
+  async verifyAuditIntegrity(userId: number, timeRange: number): Promise<any> {
+    try {
+      const timeThreshold = new Date(Date.now() - timeRange);
+      
+      // Get audit statistics for integrity verification
+      const integrity = await db
+        .select({
+          totalAudits: sql<number>`COUNT(*)`,
+          auditTypes: sql<number>`COUNT(DISTINCT audit_type)`,
+          integrityScore: sql<number>`AVG(CASE WHEN is_verified = true THEN 100 ELSE 0 END)`,
+          lastAudit: sql<string>`MAX(created_at)`
+        })
+        .from(financialAuditTrails)
+        .where(
+          and(
+            eq(financialAuditTrails.userId, userId),
+            gt(financialAuditTrails.createdAt, timeThreshold)
+          )
+        );
+
+      return integrity[0] || {};
+    } catch (error) {
+      console.error("Error verifying audit integrity:", error);
+      throw error;
+    }
+  }
+
+  // Trading Controls (Question 9)
+  async upsertTradingControls(controls: InsertTradingControl): Promise<TradingControl> {
+    try {
+      const [upsertedControls] = await db
+        .insert(tradingControls)
+        .values(controls)
+        .onConflictDoUpdate({
+          target: tradingControls.userId,
+          set: {
+            ...controls,
+            updatedAt: new Date()
+          }
+        })
+        .returning();
+      return upsertedControls;
+    } catch (error) {
+      console.error("Error upserting trading controls:", error);
+      throw error;
+    }
+  }
+
+  async getUserTradingControls(userId: number): Promise<TradingControl | undefined> {
+    try {
+      const [controls] = await db
+        .select()
+        .from(tradingControls)
+        .where(eq(tradingControls.userId, userId));
+      return controls;
+    } catch (error) {
+      console.error("Error getting user trading controls:", error);
+      throw error;
+    }
+  }
+
+  async freezeUserTrading(userId: number, reason: string, freezeBy: number): Promise<void> {
+    try {
+      await db.update(tradingControls)
+        .set({ 
+          isTradingFrozen: true,
+          freezeReason: reason,
+          frozenBy: freezeBy,
+          frozenAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(tradingControls.userId, userId));
+    } catch (error) {
+      console.error("Error freezing user trading:", error);
+      throw error;
+    }
+  }
+
+  async unfreezeUserTrading(userId: number): Promise<void> {
+    try {
+      await db.update(tradingControls)
+        .set({ 
+          isTradingFrozen: false,
+          freezeReason: null,
+          frozenBy: null,
+          frozenAt: null,
+          updatedAt: new Date()
+        })
+        .where(eq(tradingControls.userId, userId));
+    } catch (error) {
+      console.error("Error unfreezing user trading:", error);
+      throw error;
+    }
+  }
+
+  // Bot Fund Isolation (Question 10)
+  async upsertBotFundIsolation(isolation: InsertBotFundIsolation): Promise<BotFundIsolation> {
+    try {
+      const [upsertedIsolation] = await db
+        .insert(botFundIsolations)
+        .values(isolation)
+        .onConflictDoUpdate({
+          target: [botFundIsolations.userId, botFundIsolations.botId],
+          set: {
+            ...isolation,
+            updatedAt: new Date()
+          }
+        })
+        .returning();
+      return upsertedIsolation;
+    } catch (error) {
+      console.error("Error upserting bot fund isolation:", error);
+      throw error;
+    }
+  }
+
+  async getBotFundIsolation(userId: number, botId: string): Promise<BotFundIsolation | undefined> {
+    try {
+      const [isolation] = await db
+        .select()
+        .from(botFundIsolations)
+        .where(
+          and(
+            eq(botFundIsolations.userId, userId),
+            eq(botFundIsolations.botId, botId)
+          )
+        );
+      return isolation;
+    } catch (error) {
+      console.error("Error getting bot fund isolation:", error);
+      throw error;
+    }
+  }
+
+  async triggerBotIsolation(userId: number, botId: string, reason: string): Promise<void> {
+    try {
+      await db.update(botFundIsolations)
+        .set({ 
+          isIsolated: true,
+          isolationReason: reason,
+          isolatedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(botFundIsolations.userId, userId),
+            eq(botFundIsolations.botId, botId)
+          )
+        );
+    } catch (error) {
+      console.error("Error triggering bot isolation:", error);
+      throw error;
+    }
+  }
+
+  // Fraud Detection (Question 12)
+  async logFraudDetection(log: InsertFraudDetectionLog): Promise<FraudDetectionLog> {
+    try {
+      const [newLog] = await db
+        .insert(fraudDetectionLogs)
+        .values(log)
+        .returning();
+      return newLog;
+    } catch (error) {
+      console.error("Error logging fraud detection:", error);
+      throw error;
+    }
+  }
+
+  async getPendingFraudCases(): Promise<any[]> {
+    try {
+      return await db
+        .select()
+        .from(fraudDetectionLogs)
+        .where(
+          and(
+            eq(fraudDetectionLogs.isResolved, false),
+            gt(fraudDetectionLogs.riskScore, 70) // High risk cases
+          )
+        )
+        .orderBy(desc(fraudDetectionLogs.riskScore), desc(fraudDetectionLogs.detectedAt));
+    } catch (error) {
+      console.error("Error getting pending fraud cases:", error);
+      throw error;
+    }
+  }
+
+  async resolveFraudCase(caseId: number, reviewedBy: number, outcome: string, actionTaken?: string): Promise<void> {
+    try {
+      await db.update(fraudDetectionLogs)
+        .set({ 
+          isResolved: true,
+          outcome,
+          actionTaken: actionTaken || null,
+          reviewedBy,
+          resolvedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(fraudDetectionLogs.id, caseId));
+    } catch (error) {
+      console.error("Error resolving fraud case:", error);
+      throw error;
+    }
+  }
+
+  // Cold Storage Management (Question 20)
+  async createColdStorageVault(vault: InsertColdStorageVault): Promise<ColdStorageVault> {
+    try {
+      const [newVault] = await db
+        .insert(coldStorageVaults)
+        .values(vault)
+        .returning();
+      return newVault;
+    } catch (error) {
+      console.error("Error creating cold storage vault:", error);
+      throw error;
+    }
+  }
+
+  async getUserColdStorageVaults(userId: number): Promise<ColdStorageVault[]> {
+    try {
+      return await db
+        .select()
+        .from(coldStorageVaults)
+        .where(eq(coldStorageVaults.userId, userId))
+        .orderBy(desc(coldStorageVaults.createdAt));
+    } catch (error) {
+      console.error("Error getting user cold storage vaults:", error);
+      throw error;
+    }
+  }
+
+  async updateColdStorageBalance(vaultId: number, newBalance: string): Promise<void> {
+    try {
+      await db.update(coldStorageVaults)
+        .set({ 
+          balance: newBalance,
+          lastTransactionAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(coldStorageVaults.id, vaultId));
+    } catch (error) {
+      console.error("Error updating cold storage balance:", error);
+      throw error;
+    }
+  }
+
+  async lockColdStorageVault(vaultId: number, reason: string): Promise<void> {
+    try {
+      await db.update(coldStorageVaults)
+        .set({ 
+          isLocked: true,
+          lockReason: reason,
+          lockedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(eq(coldStorageVaults.id, vaultId));
+    } catch (error) {
+      console.error("Error locking cold storage vault:", error);
+      throw error;
+    }
   }
 }
 
