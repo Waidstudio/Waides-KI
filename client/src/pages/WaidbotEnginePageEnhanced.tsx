@@ -182,7 +182,7 @@ export default function WaidbotEnginePageEnhanced() {
       price: 59.99,
       icon: Radar,
       color: "from-orange-500 to-orange-600",
-      route: '/enhanced-waidbot',
+      route: '/autonomous-trader',
       autonomous: true,
       decisionEngine: 'Multi-Strategy ML Engine',
       description: 'Multi-market autonomous scanner with 24/7 operation'
@@ -195,7 +195,7 @@ export default function WaidbotEnginePageEnhanced() {
       price: 149.99,
       icon: Hexagon,
       color: "from-red-500 to-red-600",
-      route: '/waidbot-engine',
+      route: '/full-engine',
       autonomous: true,
       decisionEngine: 'Guardian Decision System',
       description: 'Complete trading suite with smart risk management'
@@ -221,7 +221,7 @@ export default function WaidbotEnginePageEnhanced() {
       price: 999.99,
       icon: Target,
       color: "from-indigo-500 to-indigo-600",
-      route: '/divine-commands',
+      route: '/nwaora-chigozie',
       autonomous: true,
       decisionEngine: 'Cosmic Consciousness Engine',
       description: 'Ultimate cosmic intelligence with backup trading system'
