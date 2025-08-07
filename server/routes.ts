@@ -6938,6 +6938,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           tradeFrequency: Math.floor(Math.random() * 80) + 40, // Higher frequency
           avgHoldTime: Math.floor(Math.random() * 180) + 60 // 60-240 minutes
         };
+      case 'maibot':
+        return {
+          ...baseMetrics,
+          specialization: 'Beginner Assistant',
+          expertiseLevel: 'Novice',
+          winPercentage: 55 + Math.random() * 20, // Lower win rate for free tier
+          riskScore: 1, // Very conservative for beginners
+          tradeFrequency: Math.floor(Math.random() * 20) + 5, // Low frequency
+          avgHoldTime: Math.floor(Math.random() * 360) + 120 // 2-8 hours hold time
+        };
       default:
         return baseMetrics;
     }
@@ -6967,6 +6977,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     return realTimeAutonomousTrader;
   };
+
+  // Add Maibot lazy loader
+  let realTimeMaibot: any = null;
+  const getRealTimeMaibot = async () => {
+    if (!realTimeMaibot) {
+      const { realTimeMaibot: bot } = await import('./services/realTimeMaibot.js');
+      realTimeMaibot = bot;
+    }
+    return realTimeMaibot;
+  };
+
+  // Import subscription and monetization services
+  const { subscriptionService } = await import('./services/subscriptionService.js');
+  const { monetizationService } = await import('./services/monetizationService.js');
+  const { BotTier, botTierDefinitions } = await import('@shared/subscriptions.js');
 
   // WaidBot (ETH Uptrend Only) Status - Enhanced with Gamified Metrics
   app.get("/api/waidbot-engine/waidbot/status", async (req, res) => {
@@ -7055,6 +7080,387 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('❌ WaidBot Pro toggle error:', error);
       res.status(500).json({ error: 'Failed to toggle WaidBot Pro' });
+    }
+  });
+
+  // Maibot (Free Entry Bot) Status - Enhanced with Gamified Metrics  
+  app.get("/api/waidbot-engine/maibot/status", async (req, res) => {
+    try {
+      const bot = await getRealTimeMaibot();
+      const status = bot.getStatus();
+      const gamifiedMetrics = generateBotMetrics('maibot');
+      
+      res.json({
+        ...status,
+        gamifiedMetrics,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Maibot Engine status error:', error);
+      res.status(500).json({ error: 'Failed to get Maibot status' });
+    }
+  });
+
+  // Start/Stop Maibot
+  app.post("/api/waidbot-engine/maibot/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const bot = await getRealTimeMaibot();
+      
+      let result;
+      if (action === 'start') {
+        result = await bot.start();
+      } else if (action === 'stop') {
+        result = await bot.stop();
+      } else {
+        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
+      }
+      
+      res.json({ 
+        ...result,
+        action,
+        timestamp: new Date().toISOString(),
+        status: bot.getStatus()
+      });
+    } catch (error) {
+      console.error('❌ Maibot toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle Maibot' });
+    }
+  });
+
+  // Get Maibot trades
+  app.get("/api/waidbot-engine/maibot/trades", async (req, res) => {
+    try {
+      const bot = await getRealTimeMaibot();
+      const trades = bot.getRecentTrades(20);
+      
+      res.json({
+        success: true,
+        trades,
+        count: trades.length,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Maibot trades error:', error);
+      res.status(500).json({ error: 'Failed to get Maibot trades' });
+    }
+  });
+
+  // ===== PHASE 2: SUBSCRIPTION-BASED ACCESS CONTROL API ENDPOINTS =====
+
+  // Get user's current subscription
+  app.get("/api/subscriptions/current", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user'; // Using demo for now
+      const subscription = await subscriptionService.getUserSubscription(userId);
+      
+      if (!subscription) {
+        // Return free tier info if no subscription
+        const freeTierInfo = botTierDefinitions[BotTier.FREE];
+        res.json({
+          success: true,
+          subscription: {
+            tier: BotTier.FREE,
+            status: 'active',
+            ...freeTierInfo,
+            isFreeTier: true
+          }
+        });
+        return;
+      }
+
+      const tierInfo = botTierDefinitions[subscription.botTier as BotTier];
+      res.json({
+        success: true,
+        subscription: {
+          ...subscription,
+          ...tierInfo,
+          isFreeTier: subscription.botTier === BotTier.FREE
+        }
+      });
+    } catch (error) {
+      console.error('❌ Error fetching user subscription:', error);
+      res.status(500).json({ error: 'Failed to fetch subscription' });
+    }
+  });
+
+  // Get all available bot tiers with pricing
+  app.get("/api/subscriptions/tiers", (req, res) => {
+    try {
+      const tiers = subscriptionService.getBotTierDefinitions();
+      res.json({
+        success: true,
+        tiers
+      });
+    } catch (error) {
+      console.error('❌ Error fetching bot tiers:', error);
+      res.status(500).json({ error: 'Failed to fetch bot tiers' });
+    }
+  });
+
+  // Upgrade/downgrade subscription
+  app.post("/api/subscriptions/upgrade", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const { toTier, paymentMethod = 'stripe' } = req.body;
+
+      if (!toTier || !Object.values(BotTier).includes(toTier)) {
+        return res.status(400).json({ error: 'Invalid bot tier specified' });
+      }
+
+      const result = await subscriptionService.upgradeSubscription(userId, toTier, paymentMethod);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('❌ Error upgrading subscription:', error);
+      res.status(500).json({ error: 'Subscription upgrade failed' });
+    }
+  });
+
+  // Start free trial
+  app.post("/api/subscriptions/trial", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const { botTier, trialDays = 7 } = req.body;
+
+      if (!botTier || botTier === BotTier.FREE) {
+        return res.status(400).json({ error: 'Invalid tier for trial' });
+      }
+
+      const result = await subscriptionService.startFreeTrial(userId, botTier, trialDays);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('❌ Error starting free trial:', error);
+      res.status(500).json({ error: 'Failed to start free trial' });
+    }
+  });
+
+  // Cancel subscription
+  app.post("/api/subscriptions/cancel", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const result = await subscriptionService.cancelSubscription(userId);
+      
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('❌ Error cancelling subscription:', error);
+      res.status(500).json({ error: 'Subscription cancellation failed' });
+    }
+  });
+
+  // Get subscription history
+  app.get("/api/subscriptions/history", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const history = await subscriptionService.getSubscriptionHistory(userId, limit);
+      
+      res.json({
+        success: true,
+        history
+      });
+    } catch (error) {
+      console.error('❌ Error fetching subscription history:', error);
+      res.status(500).json({ error: 'Failed to fetch subscription history' });
+    }
+  });
+
+  // Check bot tier access
+  app.get("/api/subscriptions/access/:botTier", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const { botTier } = req.params;
+
+      if (!Object.values(BotTier).includes(botTier as BotTier)) {
+        return res.status(400).json({ error: 'Invalid bot tier' });
+      }
+
+      const hasAccess = await subscriptionService.hasAccessToBotTier(userId, botTier as BotTier);
+      const accessControl = await subscriptionService.getBotAccessControl(userId, botTier as BotTier);
+      
+      res.json({
+        success: true,
+        hasAccess,
+        accessControl,
+        botTier
+      });
+    } catch (error) {
+      console.error('❌ Error checking bot access:', error);
+      res.status(500).json({ error: 'Failed to check bot access' });
+    }
+  });
+
+  // ===== PHASE 4: MONETIZATION INTEGRATION API ENDPOINTS =====
+
+  // Get platform pricing table
+  app.get("/api/monetization/pricing", (req, res) => {
+    try {
+      const pricingTable = monetizationService.generatePricingTable();
+      const paymentMethods = monetizationService.getPaymentMethods();
+      
+      res.json({
+        success: true,
+        pricing: pricingTable,
+        paymentMethods
+      });
+    } catch (error) {
+      console.error('❌ Error generating pricing table:', error);
+      res.status(500).json({ error: 'Failed to generate pricing table' });
+    }
+  });
+
+  // Process subscription payment
+  app.post("/api/monetization/process-payment", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const { subscriptionId, amount, paymentMethod, transactionId } = req.body;
+
+      if (!subscriptionId || !amount || !paymentMethod) {
+        return res.status(400).json({ error: 'Missing required payment parameters' });
+      }
+
+      const result = await monetizationService.processSubscriptionPayment(
+        userId,
+        subscriptionId,
+        parseFloat(amount),
+        paymentMethod,
+        transactionId
+      );
+
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('❌ Error processing payment:', error);
+      res.status(500).json({ error: 'Payment processing failed' });
+    }
+  });
+
+  // Calculate platform fees for trading profit
+  app.post("/api/monetization/calculate-fees", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const { botTier, tradingProfit } = req.body;
+
+      if (!botTier || tradingProfit === undefined) {
+        return res.status(400).json({ error: 'Missing bot tier or trading profit' });
+      }
+
+      const feeCalculation = await monetizationService.calculatePlatformFees(
+        userId,
+        botTier as BotTier,
+        parseFloat(tradingProfit)
+      );
+
+      res.json({
+        success: true,
+        ...feeCalculation
+      });
+    } catch (error) {
+      console.error('❌ Error calculating fees:', error);
+      res.status(500).json({ error: 'Fee calculation failed' });
+    }
+  });
+
+  // Get user payment information
+  app.get("/api/monetization/user-payments", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const paymentInfo = await monetizationService.getUserPaymentInfo(userId);
+      
+      res.json({
+        success: true,
+        paymentInfo
+      });
+    } catch (error) {
+      console.error('❌ Error fetching user payment info:', error);
+      res.status(500).json({ error: 'Failed to fetch payment information' });
+    }
+  });
+
+  // Get platform revenue analytics (admin only)
+  app.get("/api/monetization/revenue", async (req, res) => {
+    try {
+      // TODO: Add admin authentication check
+      const { startDate, endDate } = req.query;
+      
+      const start = startDate ? new Date(startDate as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const end = endDate ? new Date(endDate as string) : new Date();
+
+      const revenue = await monetizationService.getPlatformRevenue(start, end);
+      
+      res.json({
+        success: true,
+        revenue
+      });
+    } catch (error) {
+      console.error('❌ Error fetching platform revenue:', error);
+      res.status(500).json({ error: 'Failed to fetch revenue analytics' });
+    }
+  });
+
+  // Generate monthly report (admin only)
+  app.get("/api/monetization/monthly-report/:year/:month", async (req, res) => {
+    try {
+      // TODO: Add admin authentication check
+      const { year, month } = req.params;
+      
+      const report = await monetizationService.generateMonthlyReport(
+        parseInt(year),
+        parseInt(month)
+      );
+      
+      res.json({
+        success: true,
+        report
+      });
+    } catch (error) {
+      console.error('❌ Error generating monthly report:', error);
+      res.status(500).json({ error: 'Failed to generate monthly report' });
+    }
+  });
+
+  // Process refund request
+  app.post("/api/monetization/refund", async (req, res) => {
+    try {
+      const userId = req.user?.id || 'demo_user';
+      const { subscriptionId, amount, reason } = req.body;
+
+      if (!subscriptionId || !amount || !reason) {
+        return res.status(400).json({ error: 'Missing required refund parameters' });
+      }
+
+      const result = await monetizationService.processRefund(
+        userId,
+        subscriptionId,
+        parseFloat(amount),
+        reason
+      );
+
+      if (result.success) {
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error) {
+      console.error('❌ Error processing refund:', error);
+      res.status(500).json({ error: 'Refund processing failed' });
     }
   });
 

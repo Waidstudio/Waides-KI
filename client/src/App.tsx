@@ -32,8 +32,10 @@ import AdminLoginPage from "@/pages/AdminLoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import Dashboard from "@/pages/dashboard";
+import MaibotPage from "@/pages/maibot";
 import WaidBotPage from "@/pages/waidbot";
 import WaidBotProPage from "@/pages/waidbot-pro";
+import UnifiedBotDashboardPage from "@/pages/unified-bot-dashboard";
 import WaidbotEnginePage from "@/pages/WaidbotEnginePageEnhanced";
 import LiveDataPage from "@/pages/LiveDataPage";
 import AdminPage from "@/pages/AdminPage";
@@ -88,6 +90,8 @@ function Router() {
     { path: "/forum", label: "Cosmic Forum" },
     { path: "/waidbot-engine", label: "Waidbot Engine" },
     { path: "/market-storytelling", label: "Market Stories" },
+    { path: "/bot-dashboard", label: "Bot Dashboard" },
+    { path: "/maibot", label: "Maibot (Free)" },
     { path: "/waidbot", label: "WaidBot" },
     { path: "/waidbot-pro", label: "WaidBot Pro" },
     { path: "/strategy-autogen", label: "Strategy Autogen" },
@@ -182,6 +186,20 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <ForumPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/bot-dashboard">
+            {() => (
+              <ProtectedRoute>
+                <UnifiedBotDashboardPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/maibot">
+            {() => (
+              <ProtectedRoute>
+                <MaibotPage />
               </ProtectedRoute>
             )}
           </Route>
