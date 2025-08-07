@@ -82,6 +82,7 @@ const ModernNavigationHeader: React.FC = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   // Navigation categories with organized menu structure
   const navigationCategories: NavigationCategory[] = [
@@ -289,40 +290,103 @@ const ModernNavigationHeader: React.FC = () => {
     setUnreadCount(0);
   };
 
-  const NavigationDropdown = ({ category }: { category: NavigationCategory }) => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center space-x-2 text-white hover:text-blue-300">
-          {category.icon}
-          <span>{category.label}</span>
-          <ChevronDown className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 bg-gray-900/95 border-gray-700 backdrop-blur-sm">
-        <DropdownMenuLabel className="text-blue-300 font-semibold">
-          {category.label}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator className="bg-gray-700" />
-        {category.items.map((item) => (
-          <DropdownMenuItem key={item.path} className="hover:bg-gray-800/50 cursor-pointer">
-            <Link href={item.path} className="flex items-center space-x-3 w-full py-2">
-              {item.icon}
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">{item.label}</span>
-                  {item.badge && (
-                    <Badge variant="secondary" className="text-xs">
-                      {item.badge}
-                    </Badge>
-                  )}
+  // Handle dropdown toggle with click
+  const handleDropdownToggle = (categoryLabel: string) => {
+    setActiveDropdown(activeDropdown === categoryLabel ? null : categoryLabel);
+  };
+
+  // Close dropdown when clicking outside or pressing escape
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.dropdown-container')) {
+        setActiveDropdown(null);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveDropdown(null);
+      }
+    };
+
+    if (activeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [activeDropdown]);
+
+  const InteractiveDropdown = ({ category }: { category: NavigationCategory }) => (
+    <div className="relative dropdown-container">
+      <Button 
+        variant="ghost" 
+        className={cn(
+          "flex items-center space-x-2 text-white hover:text-blue-300 transition-all duration-200",
+          activeDropdown === category.label && "text-blue-300 bg-blue-900/20"
+        )}
+        onClick={() => handleDropdownToggle(category.label)}
+      >
+        {category.icon}
+        <span>{category.label}</span>
+        <ChevronDown className={cn(
+          "h-4 w-4 transition-transform duration-200",
+          activeDropdown === category.label && "rotate-180"
+        )} />
+      </Button>
+      
+      {/* Custom Dropdown Content with smooth animations */}
+      <div className={cn(
+        "absolute top-full left-0 mt-2 w-80 bg-gray-900/95 border border-gray-700 rounded-lg shadow-2xl backdrop-blur-sm z-50 transition-all duration-300 ease-out",
+        activeDropdown === category.label 
+          ? "opacity-100 visible translate-y-0" 
+          : "opacity-0 invisible -translate-y-2 pointer-events-none"
+      )}>
+        <div className="p-4">
+          <div className="flex items-center space-x-2 mb-3">
+            {category.icon}
+            <h3 className="text-blue-300 font-semibold text-lg">{category.label}</h3>
+          </div>
+          <div className="space-y-2">
+            {category.items.map((item, index) => (
+              <Link 
+                key={item.path} 
+                href={item.path}
+                className={cn(
+                  "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 hover:bg-gray-800/50 group",
+                  "animate-in slide-in-from-left-2 fade-in-0"
+                )}
+                style={{ animationDelay: `${index * 50}ms` }}
+                onClick={() => setActiveDropdown(null)}
+              >
+                <div className="flex-shrink-0 text-gray-400 group-hover:text-blue-400 transition-colors">
+                  {item.icon}
                 </div>
-                <p className="text-sm text-gray-400 mt-1">{item.description}</p>
-              </div>
-            </Link>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white font-medium group-hover:text-blue-300 transition-colors truncate">
+                      {item.label}
+                    </span>
+                    {item.badge && (
+                      <Badge variant="secondary" className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors mt-1 line-clamp-2">
+                    {item.description}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 
   const NotificationsDropdown = () => (
@@ -452,7 +516,7 @@ const ModernNavigationHeader: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-white hover:text-blue-300">
           <Avatar className="w-8 h-8">
-            <AvatarImage src={user?.profileImageUrl} />
+            <AvatarImage src={user?.profileImage} />
             <AvatarFallback className="bg-blue-600 text-white">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </AvatarFallback>
@@ -509,7 +573,7 @@ const ModernNavigationHeader: React.FC = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
             {navigationCategories.map((category) => (
-              <NavigationDropdown key={category.label} category={category} />
+              <InteractiveDropdown key={category.label} category={category} />
             ))}
           </nav>
 
@@ -550,29 +614,57 @@ const ModernNavigationHeader: React.FC = () => {
                 <div className="mt-8 space-y-6">
                   {navigationCategories.map((category) => (
                     <div key={category.label} className="space-y-3">
-                      <h3 className="flex items-center space-x-2 text-lg font-semibold text-white">
-                        {category.icon}
-                        <span>{category.label}</span>
-                      </h3>
-                      <div className="pl-6 space-y-2">
-                        {category.items.map((item) => (
+                      <Button 
+                        variant="ghost" 
+                        className={cn(
+                          "w-full justify-start text-lg font-semibold text-white hover:text-blue-300 hover:bg-gray-800/30 p-3 h-auto transition-all duration-200",
+                          activeDropdown === `mobile-${category.label}` && "text-blue-300 bg-blue-900/20"
+                        )}
+                        onClick={() => handleDropdownToggle(`mobile-${category.label}`)}
+                      >
+                        <div className="flex items-center space-x-2 w-full">
+                          {category.icon}
+                          <span className="flex-1 text-left">{category.label}</span>
+                          <ChevronDown className={cn(
+                            "h-4 w-4 transition-transform duration-200",
+                            activeDropdown === `mobile-${category.label}` && "rotate-180"
+                          )} />
+                        </div>
+                      </Button>
+                      
+                      <div className={cn(
+                        "pl-6 space-y-2 transition-all duration-300 ease-in-out overflow-hidden",
+                        activeDropdown === `mobile-${category.label}` 
+                          ? "max-h-96 opacity-100" 
+                          : "max-h-0 opacity-0"
+                      )}>
+                        {category.items.map((item, index) => (
                           <Link
                             key={item.path}
                             href={item.path}
-                            onClick={() => setMobileMenuOpen(false)}
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setActiveDropdown(null);
+                            }}
+                            className={cn(
+                              "block animate-in slide-in-from-left-2 fade-in-0"
+                            )}
+                            style={{ animationDelay: `${index * 75}ms` }}
                           >
-                            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-colors">
-                              {item.icon}
+                            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-800/50 transition-all duration-200 group">
+                              <div className="text-gray-400 group-hover:text-blue-400 transition-colors">
+                                {item.icon}
+                              </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-white">{item.label}</span>
+                                  <span className="text-white group-hover:text-blue-300 transition-colors">{item.label}</span>
                                   {item.badge && (
-                                    <Badge variant="secondary" className="text-xs">
+                                    <Badge variant="secondary" className="text-xs bg-blue-900/50 text-blue-300 border-blue-700">
                                       {item.badge}
                                     </Badge>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-400">{item.description}</p>
+                                <p className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors mt-1">{item.description}</p>
                               </div>
                             </div>
                           </Link>
