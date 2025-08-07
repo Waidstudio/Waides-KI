@@ -52,7 +52,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/UserAuthContext";
 
 interface NotificationItem {
   id: string;
@@ -77,7 +77,15 @@ interface NavigationCategory {
 
 const ModernNavigationHeader: React.FC = () => {
   const [location] = useLocation();
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, token, isLoading } = useAuth();
+  
+  // Debug log the authentication state
+  console.log('Auth State in Header:', { 
+    isAuthenticated, 
+    user: user ? `${user.username} (${user.email})` : null, 
+    token: token ? `${token.substring(0, 10)}...` : null,
+    isLoading 
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -579,6 +587,12 @@ const ModernNavigationHeader: React.FC = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
+            {/* Debug indicator */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="text-xs text-yellow-300 border border-yellow-600 px-2 py-1 rounded">
+                Auth: {isAuthenticated ? 'Yes' : 'No'} | User: {user?.username || 'None'}
+              </div>
+            )}
             {isAuthenticated ? (
               <>
                 <NotificationsDropdown />

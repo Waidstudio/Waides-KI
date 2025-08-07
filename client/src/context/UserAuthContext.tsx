@@ -59,7 +59,7 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
     enabled: !!token,
     retry: false,
     staleTime: Infinity, // Never consider data stale - persistent session
-    cacheTime: Infinity, // Cache indefinitely
+    gcTime: Infinity, // Cache indefinitely (replaced cacheTime in v5)
     refetchOnWindowFocus: false, // Don't refetch on window focus
     refetchOnMount: false, // Don't refetch on component mount
     refetchOnReconnect: false, // Don't refetch on network reconnect
@@ -216,3 +216,6 @@ export function useUserAuth() {
   }
   return context;
 }
+
+// Export as useAuth for backwards compatibility
+export { useUserAuth as useAuth };
