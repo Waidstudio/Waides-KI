@@ -71,6 +71,7 @@ import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMa
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
 import ForumPage from "@/pages/forum";
 import UserDashboard from "@/pages/UserDashboard";
+import AISystemsPage from "@/pages/AISystemsPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -81,6 +82,7 @@ function Router() {
   const navItems = [
     { path: "/portal", label: "Vision Portal" },
     { path: "/trading", label: "Trading Interface" },
+    { path: "/ai-systems", label: "AI Systems" },
     { path: "/wallet", label: "Wallet" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/forum", label: "Cosmic Forum" },
@@ -145,6 +147,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <TradingInterface />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/ai-systems">
+            {() => (
+              <ProtectedRoute>
+                <AISystemsPage />
               </ProtectedRoute>
             )}
           </Route>
