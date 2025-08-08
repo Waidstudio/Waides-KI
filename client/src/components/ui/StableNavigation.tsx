@@ -17,8 +17,8 @@ import {
   BarChart3,
   Shield,
   Crown,
-
-
+  MessageCircle,
+  Bell,
   User,
   Search,
   LogOut,
@@ -55,7 +55,7 @@ const StableNavigation = () => {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
+  const [notificationCount, setNotificationCount] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});
   
@@ -157,7 +157,7 @@ const StableNavigation = () => {
         { name: 'Admin Dashboard', path: '/admin-panel', description: 'Admin interface', icon: Gauge },
         { name: 'Configuration', path: '/config', description: 'System config', icon: Command },
         { name: 'Expanded Config', path: '/expanded-config', description: 'Advanced settings', icon: Layers },
-        { name: 'SMS Config', path: '/sms-config', description: 'SMS settings', icon: Settings },
+        { name: 'SMS Config', path: '/sms-config', description: 'SMS settings', icon: MessageCircle },
         { name: 'API Documentation', path: '/api-docs', description: 'API reference', icon: BookOpen },
         { name: 'Security', path: '/security', description: 'Security settings', icon: Lock }
       ]
@@ -220,7 +220,7 @@ const StableNavigation = () => {
             </Link>
           </div>
 
-          {/* User Actions - Profile Only (Cleaned Up) */}
+          {/* User Actions - Chat, Notifications, Profile (After Logo) */}
           <div className="flex items-center space-x-4 ml-8">
             {/* Search */}
             <div className="relative hidden lg:block">
@@ -234,7 +234,78 @@ const StableNavigation = () => {
               />
             </div>
 
+            {/* Chat Icon */}
+            <Link href="/forum">
+              <Button variant="ghost" size="sm" className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2">
+                <MessageCircle className="h-5 w-5" />
+                <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-blue-500 hover:bg-blue-500 flex items-center justify-center">
+                  2
+                </Badge>
+              </Button>
+            </Link>
 
+            {/* Notifications */}
+            <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => toggleDropdown('notifications')}
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2"
+              >
+                <Bell className="h-5 w-5" />
+                {notificationCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-emerald-500 hover:bg-emerald-500 animate-pulse flex items-center justify-center">
+                    {notificationCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {/* Notifications Dropdown */}
+              {activeDropdown === 'notifications' && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                  <div className="p-4 border-b border-slate-700/50">
+                    <h3 className="text-sm font-semibold text-white">Notifications</h3>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
+                    <div className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 animate-pulse"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">ETH Price Alert</p>
+                          <p className="text-xs text-gray-400 mt-1">ETH reached $4,045.39 (+4.55%)</p>
+                          <p className="text-xs text-gray-500 mt-1">2 minutes ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">WaidBot Update</p>
+                          <p className="text-xs text-gray-400 mt-1">Trading cycle completed successfully</p>
+                          <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 hover:bg-slate-700/30 transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">System Health</p>
+                          <p className="text-xs text-gray-400 mt-1">All systems operational</p>
+                          <p className="text-xs text-gray-500 mt-1">10 minutes ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-3 border-t border-slate-700/50">
+                    <Button variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 text-xs">
+                      View All Notifications
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Profile Dropdown */}
             <div className="relative" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
@@ -554,6 +625,34 @@ const StableNavigation = () => {
               {/* Mobile Actions */}
               <div className="border-t border-slate-700/50 pt-4 mt-4">
                 <div className="space-y-2">
+                  {/* Mobile Chat */}
+                  <Link href="/forum">
+                    <div
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <MessageCircle className="h-5 w-5" />
+                        <span className="text-sm font-medium">Community Chat</span>
+                      </div>
+                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                        2
+                      </Badge>
+                    </div>
+                  </Link>
+
+                  {/* Mobile Notifications */}
+                  <div className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center space-x-3">
+                      <Bell className="h-5 w-5" />
+                      <span className="text-sm font-medium">Notifications</span>
+                    </div>
+                    {notificationCount > 0 && (
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs animate-pulse">
+                        {notificationCount}
+                      </Badge>
+                    )}
+                  </div>
 
                   {/* Mobile Profile */}
                   {user && (
