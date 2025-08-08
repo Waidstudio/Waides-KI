@@ -456,7 +456,10 @@ const StableNavigation = () => {
                           return (
                             <Link key={item.path} href={item.path}>
                               <div
-                                onClick={() => setActiveDropdown(null)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveDropdown(null);
+                                }}
                                 className={`
                                   px-4 py-3 transition-all duration-200 cursor-pointer border-b border-slate-700/30 last:border-0
                                   hover:bg-slate-700/30 group
@@ -528,7 +531,10 @@ const StableNavigation = () => {
                 return (
                   <Link key={item.path} href={item.path}>
                     <div
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsMobileMenuOpen(false);
+                      }}
                       className={`
                         flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer
                         ${isActive 
@@ -583,7 +589,8 @@ const StableNavigation = () => {
                           return (
                             <Link key={item.path} href={item.path}>
                               <div
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setIsMobileMenuOpen(false);
                                   setActiveDropdown(null);
                                 }}
