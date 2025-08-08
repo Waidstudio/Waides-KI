@@ -220,6 +220,172 @@ const StableNavigation = () => {
             </Link>
           </div>
 
+          {/* Right Side Actions - Chat, Notifications, Profile (Before Navigation) */}
+          <div className="hidden md:flex items-center space-x-4 mr-6">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 w-56"
+              />
+            </div>
+
+            {/* Chat Icon */}
+            <Link href="/forum">
+              <Button variant="ghost" size="sm" className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2">
+                <MessageCircle className="h-5 w-5" />
+                <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-blue-500 hover:bg-blue-500 flex items-center justify-center">
+                  2
+                </Badge>
+              </Button>
+            </Link>
+
+            {/* Notifications */}
+            <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => toggleDropdown('notifications')}
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2"
+              >
+                <Bell className="h-5 w-5" />
+                {notificationCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-emerald-500 hover:bg-emerald-500 animate-pulse flex items-center justify-center">
+                    {notificationCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {/* Notifications Dropdown */}
+              {activeDropdown === 'notifications' && (
+                <div className="absolute top-full right-0 mt-2 w-80 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                  <div className="p-4 border-b border-slate-700/50">
+                    <h3 className="text-sm font-semibold text-white">Notifications</h3>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
+                    <div className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 animate-pulse"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">ETH Price Alert</p>
+                          <p className="text-xs text-gray-400 mt-1">ETH reached $4,045.39 (+4.55%)</p>
+                          <p className="text-xs text-gray-500 mt-1">2 minutes ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">WaidBot Update</p>
+                          <p className="text-xs text-gray-400 mt-1">Trading cycle completed successfully</p>
+                          <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-3 hover:bg-slate-700/30 transition-colors">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm text-white font-medium">System Health</p>
+                          <p className="text-xs text-gray-400 mt-1">All systems operational</p>
+                          <p className="text-xs text-gray-500 mt-1">10 minutes ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-3 border-t border-slate-700/50">
+                    <Button variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 text-xs">
+                      View All Notifications
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Dropdown */}
+            <div className="relative" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => toggleDropdown('profile')}
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 flex items-center space-x-2 p-2"
+              >
+                <User className="h-5 w-5" />
+                {user && <span className="text-sm hidden lg:block">{user.username}</span>}
+                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${activeDropdown === 'profile' ? 'rotate-180' : ''}`} />
+              </Button>
+
+              {/* Profile Dropdown */}
+              {activeDropdown === 'profile' && (
+                <div className="absolute top-full right-0 mt-2 w-56 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+                  {user && (
+                    <div className="p-4 border-b border-slate-700/50">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-bold">{user.username?.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-white">{user.username}</p>
+                          <p className="text-xs text-gray-400">{user.email || 'Premium User'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="py-2">
+                    <Link href="/profile">
+                      <div 
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
+                      >
+                        <User className="h-4 w-4" />
+                        <span>Profile Settings</span>
+                      </div>
+                    </Link>
+                    
+                    <Link href="/wallet">
+                      <div 
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
+                      >
+                        <Wallet className="h-4 w-4" />
+                        <span>Wallet</span>
+                      </div>
+                    </Link>
+
+                    <Link href="/support">
+                      <div 
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
+                      >
+                        <Shield className="h-4 w-4" />
+                        <span>Support</span>
+                      </div>
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-slate-700/50 py-2">
+                    <button
+                      onClick={() => {
+                        setActiveDropdown(null);
+                        logout();
+                      }}
+                      className="flex items-center space-x-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 cursor-pointer w-full"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {/* Simple Navigation Items */}
@@ -330,173 +496,6 @@ const StableNavigation = () => {
               );
             })}
             
-          </div>
-
-          {/* Right Side Actions - Chat, Notifications, Profile */}
-          <div className="hidden md:flex items-center space-x-3">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 w-64"
-              />
-            </div>
-
-            {/* Chat Icon */}
-            <Link href="/forum">
-              <Button variant="ghost" size="sm" className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200">
-                <MessageCircle className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-blue-500 hover:bg-blue-500">
-                  2
-                </Badge>
-              </Button>
-            </Link>
-
-            {/* Notifications */}
-            <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => toggleDropdown('notifications')}
-                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200"
-              >
-                <Bell className="h-5 w-5" />
-                {notificationCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-emerald-500 hover:bg-emerald-500 animate-pulse">
-                    {notificationCount}
-                  </Badge>
-                )}
-              </Button>
-
-              {/* Notifications Dropdown */}
-              {activeDropdown === 'notifications' && (
-                <div className="absolute top-full right-0 mt-2 w-80 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                  <div className="p-4 border-b border-slate-700/50">
-                    <h3 className="text-sm font-semibold text-white">Notifications</h3>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
-                    <div className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 animate-pulse"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white font-medium">ETH Price Alert</p>
-                          <p className="text-xs text-gray-400 mt-1">ETH reached $4,045.39 (+4.55%)</p>
-                          <p className="text-xs text-gray-500 mt-1">2 minutes ago</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-3 border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white font-medium">WaidBot Update</p>
-                          <p className="text-xs text-gray-400 mt-1">Trading cycle completed successfully</p>
-                          <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-3 hover:bg-slate-700/30 transition-colors">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                        <div className="flex-1">
-                          <p className="text-sm text-white font-medium">System Health</p>
-                          <p className="text-xs text-gray-400 mt-1">All systems operational</p>
-                          <p className="text-xs text-gray-500 mt-1">10 minutes ago</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3 border-t border-slate-700/50">
-                    <Button variant="ghost" size="sm" className="w-full text-blue-400 hover:text-blue-300 text-xs">
-                      View All Notifications
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Profile Dropdown */}
-            <div className="relative" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => toggleDropdown('profile')}
-                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 flex items-center space-x-2"
-              >
-                <User className="h-5 w-5" />
-                {user && <span className="text-sm hidden lg:block">{user.username}</span>}
-                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${activeDropdown === 'profile' ? 'rotate-180' : ''}`} />
-              </Button>
-
-              {/* Profile Dropdown */}
-              {activeDropdown === 'profile' && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                  {user && (
-                    <div className="p-4 border-b border-slate-700/50">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-bold">{user.username?.charAt(0).toUpperCase()}</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-white">{user.username}</p>
-                          <p className="text-xs text-gray-400">{user.email || 'Premium User'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="py-2">
-                    <Link href="/profile">
-                      <div 
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
-                      >
-                        <User className="h-4 w-4" />
-                        <span>Profile Settings</span>
-                      </div>
-                    </Link>
-                    
-                    <Link href="/wallet">
-                      <div 
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
-                      >
-                        <Wallet className="h-4 w-4" />
-                        <span>Wallet</span>
-                      </div>
-                    </Link>
-
-                    <Link href="/support">
-                      <div 
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 cursor-pointer"
-                      >
-                        <Shield className="h-4 w-4" />
-                        <span>Support</span>
-                      </div>
-                    </Link>
-                  </div>
-
-                  <div className="border-t border-slate-700/50 py-2">
-                    <button
-                      onClick={() => {
-                        setActiveDropdown(null);
-                        logout();
-                      }}
-                      className="flex items-center space-x-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 cursor-pointer w-full"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Status Badge */}
             <Badge variant="outline" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs animate-pulse">
               <Activity className="w-3 h-3 mr-1" />
