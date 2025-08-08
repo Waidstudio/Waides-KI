@@ -9,7 +9,7 @@ export interface EthPriceData {
 export class EthMonitor {
   private apiKey: string | undefined;
   private cache: { data: EthPriceData | null; timestamp: number } = { data: null, timestamp: 0 };
-  private cacheDuration: number = 60000; // 60 seconds cache to reduce API calls
+  private cacheDuration: number = 300000; // 5 minutes cache to prevent rate limiting
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.COINGECKO_API_KEY;

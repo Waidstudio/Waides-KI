@@ -115,6 +115,19 @@ export const AdminRoles = {
 
 export type AdminRole = typeof AdminRoles[keyof typeof AdminRoles];
 
+// Authenticated User Type (simplified for frontend use)
+export interface AuthenticatedUser {
+  id: number;
+  username: string;
+  email: string;
+  role: AdminRole | "user";
+  permissions?: string[];
+  firstName?: string | null;
+  lastName?: string | null;
+  profileImage?: string | null;
+  lastLogin?: Date | null;
+}
+
 // Permission Definitions
 export const AdminPermissions = {
   // User Management

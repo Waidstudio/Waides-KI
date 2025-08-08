@@ -18,7 +18,7 @@ import {
   updateLoginAttempts,
   requireAnyAuth
 } from "./middleware/authMiddleware.js";
-import { AdminPermissions, loginSchema, insertAdminUserSchema, userLoginSchema, userRegisterSchema } from "@shared/schema.js";
+import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/authSchema.js";
 import jwt from 'jsonwebtoken';
 import { smaiTrustAuthService } from "./services/smaiTrustAuthService.js";
 import { shavokaAuthService } from "./services/shavokaAuthService.js";
@@ -58,20 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Import chat routes
   const chatRoutes = await import('./routes/chat.js');
 
-  // Import authentication middleware
-  const requireAuth = (req: any, res: any, next: any) => {
-    // Mock authentication - replace with real auth
-    req.user = { id: '1', role: 'admin' };
-    next();
-  };
-
-  const requireAdmin = (req: any, res: any, next: any) => {
-    if (req.user?.role === 'admin' || req.user?.role === 'super_admin') {
-      next();
-    } else {
-      res.status(403).json({ error: 'Admin access required' });
-    }
-  };
+  // Remove duplicate authentication middleware definitions (already imported at top)
 
   const requireSuperAdmin = (req: any, res: any, next: any) => {
     if (req.user?.role === 'super_admin') {
@@ -3932,8 +3919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get latest ETH data
       let ethData;
       try {
-        const { EthMonitor } = await import('./services/ethMonitor');
-        const ethMonitor = new EthMonitor();
+        const { ethMonitor } = await import('./services/ethMonitor');
         ethData = await ethMonitor.fetchEthData();
       } catch (e: unknown) {
         ethData = { price: 3250, priceChange24h: 2.4, volume: 28500000, timestamp: Date.now() };

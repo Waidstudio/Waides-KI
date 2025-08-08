@@ -60,6 +60,8 @@ export function useKonsMesh(options: UseKonsMeshOptions = {}) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const subscriptionIdRef = useRef<string>(`mesh_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const lastConnectionAttempt = useRef<number>(0);
+  const connectionThrottleMs = 2000; // Minimum 2 seconds between connection attempts
 
   // Get initial ETH price data
   const { data: initialEthPrice } = useQuery({
@@ -68,22 +70,32 @@ export function useKonsMesh(options: UseKonsMeshOptions = {}) {
     enabled: !meshState.isConnected,
   });
 
-  // Update initial ETH price
+  // Update initial ETH price - Fix connection loop by removing meshState.isConnected dependency
   useEffect(() => {
-    if (initialEthPrice?.success && initialEthPrice.data && !meshState.isConnected) {
+    if (initialEthPrice && typeof initialEthPrice === 'object' && 'success' in initialEthPrice && 
+        initialEthPrice.success && 'data' in initialEthPrice && initialEthPrice.data && !meshState.isConnected) {
       setMeshState(prev => ({
         ...prev,
-        ethPrice: initialEthPrice.data,
+        ethPrice: (initialEthPrice as any).data,
         lastUpdate: Date.now()
       }));
     }
-  }, [initialEthPrice, meshState.isConnected]);
+  }, [initialEthPrice]); // Remove meshState.isConnected from dependencies to prevent loop
 
-  // WebSocket connection management
+  // WebSocket connection management - Add connection throttling
   const connectWebSocket = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      return; // Already connected
+    const now = Date.now();
+    
+    // Throttle connection attempts to prevent spam
+    if (now - lastConnectionAttempt.current < connectionThrottleMs) {
+      return;
     }
+    
+    if (wsRef.current?.readyState === WebSocket.OPEN || wsRef.current?.readyState === WebSocket.CONNECTING) {
+      return; // Already connected or connecting
+    }
+
+    lastConnectionAttempt.current = now;
 
     try {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -154,11 +166,12 @@ export function useKonsMesh(options: UseKonsMeshOptions = {}) {
 
         onConnectionChange?.(false);
 
-        // Attempt reconnection
+        // Attempt reconnection with throttling
         if (autoConnect) {
+          const timeToWait = Math.max(retryInterval, connectionThrottleMs);
           reconnectTimeoutRef.current = setTimeout(() => {
             connectWebSocket();
-          }, retryInterval);
+          }, timeToWait);
         }
       };
 
@@ -182,7 +195,7 @@ export function useKonsMesh(options: UseKonsMeshOptions = {}) {
     }
   }, [autoConnect, subscriptions, onDataUpdate, onConnectionChange, retryInterval]);
 
-  // Initialize connection
+  // Initialize connection - Fix dependency issues
   useEffect(() => {
     if (autoConnect) {
       connectWebSocket();
@@ -196,7 +209,7 @@ export function useKonsMesh(options: UseKonsMeshOptions = {}) {
         wsRef.current.close();
       }
     };
-  }, [autoConnect, connectWebSocket]);
+  }, [autoConnect]); // Remove connectWebSocket from dependencies to prevent recreation loop
 
   // Manual connection control
   const connect = useCallback(() => {

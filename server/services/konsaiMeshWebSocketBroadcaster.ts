@@ -158,7 +158,9 @@ export class KonsAiMeshWebSocketBroadcaster {
     if (!client) return;
 
     // Update client subscriptions
-    client.subscriptions = [...new Set([...client.subscriptions, ...subscription.dataTypes])];
+    const existingSet = new Set(client.subscriptions);
+    subscription.dataTypes.forEach(dataType => existingSet.add(dataType));
+    client.subscriptions = Array.from(existingSet);
     
     console.log(`📡 Client ${clientId} subscribed to: ${subscription.dataTypes.join(', ')}`);
   }
@@ -198,12 +200,12 @@ export class KonsAiMeshWebSocketBroadcaster {
   private broadcastToClients(update: MeshDataUpdate): void {
     let broadcastCount = 0;
 
-    for (const [clientId, client] of this.clients) {
+    this.clients.forEach((client, clientId) => {
       if (client.subscriptions.includes(update.type)) {
         this.sendToClient(clientId, update);
         broadcastCount++;
       }
-    }
+    });
 
     console.log(`📢 Broadcasted ${update.type} to ${broadcastCount} WebSocket clients`);
   }
@@ -230,17 +232,17 @@ export class KonsAiMeshWebSocketBroadcaster {
    */
   private startHeartbeatMonitoring(): void {
     this.heartbeatInterval = setInterval(() => {
-      for (const [clientId, client] of this.clients) {
+      this.clients.forEach((client, clientId) => {
         if (!client.isAlive) {
           console.log(`💔 Terminating inactive client: ${clientId}`);
           client.socket.terminate();
           this.clients.delete(clientId);
-          continue;
+          return;
         }
 
         client.isAlive = false;
         client.socket.ping();
-      }
+      });
     }, 30000); // 30 seconds
 
     console.log('💓 WebSocket heartbeat monitoring started');
@@ -262,11 +264,11 @@ export class KonsAiMeshWebSocketBroadcaster {
       subscriptionBreakdown: {} as Record<string, number>
     };
 
-    for (const client of this.clients.values()) {
-      for (const subscription of client.subscriptions) {
+    this.clients.forEach((client) => {
+      client.subscriptions.forEach((subscription) => {
         stats.subscriptionBreakdown[subscription] = (stats.subscriptionBreakdown[subscription] || 0) + 1;
-      }
-    }
+      });
+    });
 
     return stats;
   }
@@ -302,9 +304,9 @@ export class KonsAiMeshWebSocketBroadcaster {
     }
 
     // Close all client connections
-    for (const client of this.clients.values()) {
+    this.clients.forEach((client) => {
       client.socket.close();
-    }
+    });
     this.clients.clear();
 
     if (this.wss) {

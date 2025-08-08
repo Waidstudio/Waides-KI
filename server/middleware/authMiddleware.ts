@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/authService';
-import { AdminPermission, AdminRoles, type AdminUser } from '@shared/authSchema';
+import { AdminPermission, AdminRoles, type AdminUser, type AuthenticatedUser } from '@shared/authSchema';
 
 // Extend Express Request to include user
 declare global {
   namespace Express {
     interface Request {
-      user?: AdminUser;
+      user?: AuthenticatedUser;
       sessionId?: string;
     }
   }
@@ -137,8 +137,18 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       });
     }
     
-    // Attach user and session info to request
-    req.user = sessionInfo.user;
+    // Attach user and session info to request (convert to AuthenticatedUser type)
+    req.user = {
+      id: sessionInfo.user.id,
+      username: sessionInfo.user.username,
+      email: sessionInfo.user.email,
+      role: sessionInfo.user.role as AdminRole | "user",
+      permissions: sessionInfo.user.permissions || [],
+      firstName: sessionInfo.user.firstName,
+      lastName: sessionInfo.user.lastName,
+      profileImage: sessionInfo.user.profileImage,
+      lastLogin: sessionInfo.user.lastLogin
+    };
     req.sessionId = sessionInfo.sessionId;
     
     // Log activity for sensitive operations
@@ -180,7 +190,19 @@ export const requirePermission = (permission: AdminPermission) => {
     }
     
     // Check if user has the required permission
-    if (!authService.hasPermission(req.user, permission)) {
+    // Convert AuthenticatedUser back to AdminUser for permission checking
+    const adminUser: AdminUser = {
+      ...req.user,
+      passwordHash: '',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      permissions: req.user.permissions || [],
+      twoFactorEnabled: false,
+      twoFactorSecret: null
+    };
+    
+    if (!authService.hasPermission(adminUser, permission)) {
       return res.status(403).json({
         error: 'Insufficient permissions',
         message: `This action requires the '${permission}' permission`,
