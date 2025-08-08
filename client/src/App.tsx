@@ -15,12 +15,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { SmaiWalletProvider } from "@/contexts/SmaiWalletContext";
+import { SmaiWalletProvider } from "@/context/SmaiWalletContext";
 import { AdminAuthProvider } from "@/context/AuthContext";
 import { UserAuthProvider, useUserAuth } from "@/context/UserAuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { NotificationBell } from "@/components/NotificationBell";
-import FuturisticNavbar from "@/components/ui/FuturisticNavbar";
+import StableNavigation from "@/components/ui/StableNavigation";
 import AdminChatSystem from "@/components/AdminChatSystem";
 import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
@@ -131,11 +131,11 @@ function Router() {
 
   return (
     <div className={`min-h-screen bg-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
-      {/* Futuristic Navigation Header */}
-      <FuturisticNavbar />
+      {/* Unified Navigation Header */}
+      <StableNavigation />
 
       {/* Main Content Area */}
-      <main className="pb-16 pt-16">
+      <main className="pb-16">
         <Switch>
           {/* Authentication Routes */}
           <Route path="/login" component={LoginPage} />

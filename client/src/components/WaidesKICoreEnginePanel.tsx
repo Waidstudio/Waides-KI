@@ -9,7 +9,7 @@ import {
   RefreshCw, Send, Award, CheckCircle, Lock, Gift, Star, DollarSign, Users
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useSmaiWallet } from '@/contexts/SmaiWalletContext';
+import { useSmaiWallet } from '@/context/SmaiWalletContext';
 
 export function WaidesKICoreEnginePanel() {
   const [selectedCard, setSelectedCard] = useState<string | null>(null);

@@ -15,7 +15,7 @@ import {
 import KonsaiChat from './KonsaiChat';
 import OriginalHeartOfWaidesKI from './OriginalHeartOfWaidesKI';
 import { useLocation, Link } from 'wouter';
-import { useSmaiWallet } from '@/contexts/SmaiWalletContext';
+import { useSmaiWallet } from '@/context/SmaiWalletContext';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 
