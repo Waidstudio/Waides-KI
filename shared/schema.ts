@@ -33,10 +33,12 @@ export const userSessions = pgTable("user_sessions", {
 export const wallets = pgTable("wallets", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
+  accountType: text("account_type").default("demo"), // 'demo' or 'real'
   localBalance: numeric("local_balance", { precision: 15, scale: 2 }).default("10000.00"), // Default starting balance
+  usdBalance: numeric("usd_balance", { precision: 30, scale: 8 }).default("10000.00"), // USD balance for KonsMesh
   localCurrency: text("local_currency").default("USD"), // Primary currency for backend tracking
-  smaiBalance: numeric("smai_balance", { precision: 15, scale: 2 }).default("0.00"), // SmaiSika balance after conversion
-  smaiConversionRate: numeric("smai_conversion_rate", { precision: 10, scale: 4 }).default("1.0000"), // Current SS conversion rate
+  smaiBalance: numeric("smai_balance", { precision: 30, scale: 8 }).default("0.00"), // SmaiSika balance after conversion
+  smaiConversionRate: numeric("smai_conversion_rate", { precision: 10, scale: 6 }).default("1.000000"), // Current SS conversion rate
   lastConversionAt: timestamp("last_conversion_at"),
   locked: numeric("locked", { precision: 15, scale: 2 }).default("0.00"),
   lockedUntil: timestamp("locked_until"),
@@ -505,6 +507,45 @@ export const coldStorageVaults = pgTable("cold_storage_vaults", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// ===== KONSMESH WALLET SYSTEM TABLES =====
+
+// Wallet Ledger for atomic operations and audit trail
+export const walletLedger = pgTable("wallet_ledger", {
+  id: serial("id").primaryKey(),
+  walletId: integer("wallet_id").notNull().references(() => wallets.id, { onDelete: "cascade" }),
+  changeUsd: numeric("change_usd", { precision: 30, scale: 8 }).default("0.00000000"),
+  changeSmaisika: numeric("change_smaisika", { precision: 30, scale: 8 }).default("0.00000000"),
+  reason: text("reason").notNull(),
+  meta: jsonb("meta").default("{}"),
+  txId: text("tx_id").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// KonsMesh Conversion History for USD → SmaiSika conversions
+export const konsMeshConversionHistory = pgTable("konsmesh_conversion_history", {
+  id: serial("id").primaryKey(),
+  walletId: integer("wallet_id").notNull().references(() => wallets.id, { onDelete: "cascade" }),
+  usdAmount: numeric("usd_amount", { precision: 30, scale: 8 }).notNull(),
+  smaiSikaAmount: numeric("smaisika_amount", { precision: 30, scale: 8 }).notNull(),
+  rate: numeric("rate", { precision: 10, scale: 6 }).notNull(),
+  txId: text("tx_id").notNull().unique(),
+  performedBy: integer("performed_by").notNull().references(() => users.id),
+  requestId: text("request_id").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Bot Funding tracking for SmaiSika allocations
+export const botFunding = pgTable("bot_funding", {
+  id: serial("id").primaryKey(),
+  walletId: integer("wallet_id").notNull().references(() => wallets.id, { onDelete: "cascade" }),
+  botId: text("bot_id").notNull(),
+  smaiSikaAmount: numeric("smaisika_amount", { precision: 30, scale: 8 }).notNull(),
+  fundingType: text("funding_type").default("allocation"),
+  txId: text("tx_id").notNull().unique(),
+  requestId: text("request_id").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas for new security tables
 export const insertUserPermissionRoleSchema = createInsertSchema(userPermissionRoles).omit({
   id: true,
@@ -840,6 +881,22 @@ export const insertColdStorageVaultsSchema = createInsertSchema(coldStorageVault
   updatedAt: true,
 });
 
+// Insert schemas for KonsMesh wallet tables
+export const insertWalletLedgerSchema = createInsertSchema(walletLedger).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertKonsMeshConversionHistorySchema = createInsertSchema(konsMeshConversionHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertBotFundingSchema = createInsertSchema(botFunding).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Type exports for new security tables
 export type UserPermissionRole = typeof userPermissionRoles.$inferSelect;
 export type InsertUserPermissionRole = z.infer<typeof insertUserPermissionRoleSchema>;
@@ -863,6 +920,14 @@ export type FraudDetectionLog = typeof fraudDetectionLogs.$inferSelect;
 export type InsertFraudDetectionLog = z.infer<typeof insertFraudDetectionLogsSchema>;
 export type ColdStorageVault = typeof coldStorageVaults.$inferSelect;
 export type InsertColdStorageVault = z.infer<typeof insertColdStorageVaultsSchema>;
+
+// Type exports for KonsMesh wallet tables
+export type WalletLedger = typeof walletLedger.$inferSelect;
+export type InsertWalletLedger = z.infer<typeof insertWalletLedgerSchema>;
+export type KonsMeshConversionHistory = typeof konsMeshConversionHistory.$inferSelect;
+export type InsertKonsMeshConversionHistory = z.infer<typeof insertKonsMeshConversionHistorySchema>;
+export type BotFunding = typeof botFunding.$inferSelect;
+export type InsertBotFunding = z.infer<typeof insertBotFundingSchema>;
 
 // New comprehensive schemas for wallet system
 export const insertWalletSchema = createInsertSchema(wallets).omit({

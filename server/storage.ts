@@ -34,16 +34,17 @@ export interface IStorage {
   getCandlestickHistory(symbol: string, interval: string, limit?: number): Promise<Candlestick[]>;
   getLatestCandlestick(symbol: string, interval: string): Promise<Candlestick | undefined>;
 
-  // Wallet methods
+  // Legacy wallet methods (for backward compatibility)
   createDeposit(deposit: any): Promise<any>;
   updateDepositStatus(id: string, status: string): Promise<void>;
   addToUserBalance(userId: string, amount: number, currency: string): Promise<void>;
   deductFromUserBalance(userId: string, amount: number, currency: string): Promise<void>;
   getUserBalance(userId: string, currency: string): Promise<number>;
-  getWalletBalance(userId: string): Promise<{ balance: number; currency: string; usdValue: number }>;
+  getWalletBalance(userId: string): Promise<{ balance: number; currency: string; usdValue: number; localBalance: number; localCurrency: string; smaiBalance: number; totalUsdValue: number; hasConverted: boolean }>;
   addToSmaiSikaBalance(userId: string, amount: number): Promise<void>;
   getSmaiSikaBalance(userId: string): Promise<number>;
   createConversion(conversion: any): Promise<any>;
+  convertToSmaiSika(userId: string, amount: number, fromCurrency: string): Promise<{ success: boolean; smaiAmount?: number; transactionId?: string; exchangeRate?: number }>;
   getUserTransactions(userId: string): Promise<any[]>;
 
   // Kons Powa Predictions
@@ -380,6 +381,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getWalletBalance(userId: string): Promise<{ 
+    balance: number; 
+    currency: string; 
+    usdValue: number;
     localBalance: number; 
     localCurrency: string; 
     smaiBalance: number;
@@ -387,40 +391,79 @@ export class DatabaseStorage implements IStorage {
     hasConverted: boolean;
   }> {
     try {
-      // Try database first
-      const [wallet] = await db.select().from(wallets).where(eq(wallets.userId, parseInt(userId)));
+      // First try KonsMesh wallet service for canonical data
+      const { konsMeshWalletService } = await import('./services/konsMeshWalletService.js');
+      const result = await konsMeshWalletService.getWallet(parseInt(userId));
       
-      if (wallet) {
-        const localBalance = parseFloat(wallet.localBalance || '0');
-        const smaiBalance = parseFloat(wallet.smaiBalance || '0');
-        const conversionRate = parseFloat(wallet.smaiConversionRate || '1.0');
+      if (result.success && result.wallet) {
+        const wallet = result.wallet;
+        const localBalance = parseFloat(wallet.usdBalance);
+        const smaiBalance = parseFloat(wallet.smaiSikaBalance);
+        const hasConverted = smaiBalance > 0;
         
         return {
+          // Legacy support
+          balance: hasConverted ? smaiBalance : localBalance,
+          currency: hasConverted ? 'SS' : 'USD',
+          usdValue: localBalance + smaiBalance,
+          // Enhanced wallet data
           localBalance,
-          localCurrency: wallet.localCurrency || 'USD',
+          localCurrency: 'USD',
           smaiBalance,
-          totalUsdValue: localBalance + (smaiBalance * conversionRate),
-          hasConverted: smaiBalance > 0
+          totalUsdValue: localBalance + smaiBalance,
+          hasConverted
         };
       }
     } catch (error) {
-      console.log('Database wallet not found, using fallback storage');
+      console.log('KonsMesh wallet service unavailable, using database fallback');
+    }
+
+    try {
+      // Fallback to direct database access
+      const [wallet] = await db.select().from(wallets).where(eq(wallets.userId, parseInt(userId)));
+      
+      if (wallet) {
+        const localBalance = parseFloat(wallet.usdBalance || wallet.localBalance || '0');
+        const smaiBalance = parseFloat(wallet.smaiBalance || '0');
+        const hasConverted = smaiBalance > 0;
+        
+        return {
+          // Legacy support
+          balance: hasConverted ? smaiBalance : localBalance,
+          currency: hasConverted ? 'SS' : 'USD',
+          usdValue: localBalance + smaiBalance,
+          // Enhanced wallet data
+          localBalance,
+          localCurrency: wallet.localCurrency || 'USD',
+          smaiBalance,
+          totalUsdValue: localBalance + smaiBalance,
+          hasConverted
+        };
+      }
+    } catch (error) {
+      console.log('Database wallet not found, using in-memory fallback storage');
     }
     
-    // Fallback to in-memory storage
+    // Final fallback to in-memory storage
     const balances = this.walletData.get('balances') || {};
     const smaiBalances = this.walletData.get('smaiBalances') || {};
     
     // Get primary balance (default 10000 USD)
     const localBalance = balances[`${userId}_USD`] || 10000;
     const smaiBalance = smaiBalances[userId] || 0;
+    const hasConverted = smaiBalance > 0;
     
     return {
+      // Legacy support
+      balance: hasConverted ? smaiBalance : localBalance,
+      currency: hasConverted ? 'SS' : 'USD',
+      usdValue: localBalance + smaiBalance,
+      // Enhanced wallet data
       localBalance,
       localCurrency: 'USD',
       smaiBalance,
       totalUsdValue: localBalance + smaiBalance,
-      hasConverted: smaiBalance > 0
+      hasConverted
     };
   }
 

@@ -185,6 +185,13 @@ function Router() {
               </ProtectedRoute>
             )}
           </Route>
+          <Route path="/wallet-pro">
+            {() => (
+              <ProtectedRoute>
+                <ProfessionalWalletPage />
+              </ProtectedRoute>
+            )}
+          </Route>
           <Route path="/dashboard">
             {() => (
               <ProtectedRoute>

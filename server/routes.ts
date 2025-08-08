@@ -29,6 +29,9 @@ import { walletSecurityService } from "./services/walletSecurityService.js";
 import { fraudDetectionService } from "./services/fraudDetectionService.js";
 import { transactionSecurityService } from "./services/transactionSecurityService.js";
 
+// Import KonsMesh wallet service
+import { konsMeshWalletService } from "./services/konsMeshWalletService.js";
+
 // WebSocket setup for real-time features
 let wss: any = null;
 
@@ -1898,6 +1901,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fee: 0
       }
     ]);
+  });
+
+  // ===== KONSMESH WALLET SYSTEM API ROUTES =====
+  
+  // KonsMesh wallet balance - canonical source of truth
+  app.get("/api/konsmesh/wallet", requireAnyAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || 1; // Default for demo
+      const result = await konsMeshWalletService.getWallet(userId);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          wallet: result.wallet
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: result.error
+        });
+      }
+    } catch (error) {
+      console.error('❌ KonsMesh wallet error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error'
+      });
+    }
+  });
+
+  // Convert USD to SmaiSika with atomic operation
+  app.post("/api/konsmesh/convert", requireAnyAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || 1;
+      const { usdAmount, rate } = req.body;
+      
+      if (!usdAmount || !rate || usdAmount <= 0 || rate <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid conversion parameters'
+        });
+      }
+
+      const requestId = `convert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      const result = await konsMeshWalletService.convertToSmaiSika({
+        userId,
+        usdAmount: parseFloat(usdAmount),
+        rate: parseFloat(rate),
+        requestId
+      });
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          conversion: result.conversion,
+          wallet: result.wallet,
+          message: `Successfully converted $${usdAmount} to SmaiSika`
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: result.error
+        });
+      }
+    } catch (error) {
+      console.error('❌ KonsMesh conversion error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Conversion failed'
+      });
+    }
+  });
+
+  // Fund bot with SmaiSika
+  app.post("/api/konsmesh/fund-bot", requireAnyAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || 1;
+      const { botId, smaiSikaAmount } = req.body;
+      
+      if (!botId || !smaiSikaAmount || smaiSikaAmount <= 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid bot funding parameters'
+        });
+      }
+
+      const requestId = `fund_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      const result = await konsMeshWalletService.fundBot({
+        userId,
+        botId,
+        smaiSikaAmount: parseFloat(smaiSikaAmount),
+        requestId
+      });
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          funding: result.funding,
+          wallet: result.wallet,
+          message: `Successfully funded bot ${botId} with ${smaiSikaAmount} SmaiSika`
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: result.error
+        });
+      }
+    } catch (error) {
+      console.error('❌ KonsMesh bot funding error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Bot funding failed'
+      });
+    }
+  });
+
+  // Switch account mode (demo/real)
+  app.post("/api/konsmesh/switch-mode", requireAnyAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || 1;
+      const { targetMode, mfaToken } = req.body;
+      
+      if (!targetMode || !['demo', 'real'].includes(targetMode)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid account mode'
+        });
+      }
+
+      const result = await konsMeshWalletService.switchAccountMode(userId, targetMode, mfaToken);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          wallet: result.wallet,
+          message: `Account mode switched to ${targetMode}`
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: result.error
+        });
+      }
+    } catch (error) {
+      console.error('❌ KonsMesh account mode switch error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Account mode switch failed'
+      });
+    }
+  });
+
+  // Clear operation cache (admin only)
+  app.post("/api/konsmesh/clear-cache", requireAdmin, async (req, res) => {
+    try {
+      konsMeshWalletService.clearOperationCache();
+      res.json({
+        success: true,
+        message: 'Operation cache cleared successfully'
+      });
+    } catch (error) {
+      console.error('❌ KonsMesh cache clear error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to clear cache'
+      });
+    }
   });
 
   // Enhanced wallet countries endpoint with global coverage

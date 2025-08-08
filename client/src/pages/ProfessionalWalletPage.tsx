@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   TrendingUp,
   ArrowUpRight,
@@ -31,9 +32,14 @@ import {
   Download,
   Upload,
   MoreHorizontal,
-  ExternalLink
+  ExternalLink,
+  Zap,
+  Bot,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSmaiWallet } from '@/contexts/SmaiWalletContext';
 
 interface WalletBalance {
   balance: number;
@@ -60,18 +66,47 @@ const ProfessionalWalletPage = () => {
   const [showBalance, setShowBalance] = useState(true);
   const [transferAmount, setTransferAmount] = useState('');
   const [transferRecipient, setTransferRecipient] = useState('');
+  const [conversionAmount, setConversionAmount] = useState('');
+  const [botFundingAmount, setBotFundingAmount] = useState('');
+  const [selectedBot, setSelectedBot] = useState('');
+  const [showConversionDialog, setShowConversionDialog] = useState(false);
+  const [showBotFundingDialog, setShowBotFundingDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Use enhanced SmaiWallet context for KonsMesh integration
+  const { 
+    walletData: smaiWalletData, 
+    isLoading: isSmaiLoading,
+    refreshWallet: refreshSmaiWallet,
+    convertToSmaiSika,
+    fundBot,
+    switchAccountMode,
+    isConverting,
+    isFunding,
+    isSwitching
+  } = useSmaiWallet();
+
+  // Legacy wallet data for backward compatibility
   const { data: balance } = useQuery<WalletBalance>({
     queryKey: ['/api/wallet/balance'],
-    refetchInterval: 30000
+    refetchInterval: 30000,
+    enabled: !smaiWalletData?.wallet // Only fetch if KonsMesh data is unavailable
   });
 
   const { data: transactions } = useQuery<Transaction[]>({
     queryKey: ['/api/wallet/transactions'],
     refetchInterval: 60000
   });
+
+  // Use KonsMesh wallet data if available, otherwise fallback to legacy
+  const currentBalance = smaiWalletData ? {
+    balance: smaiWalletData.hasConverted ? smaiWalletData.smaiBalance : smaiWalletData.localBalance,
+    currency: smaiWalletData.hasConverted ? 'SS' : smaiWalletData.localCurrency,
+    available: smaiWalletData.hasConverted ? smaiWalletData.smaiBalance : smaiWalletData.localBalance - 1500,
+    locked: 1500,
+    pending: 250
+  } : balance;
 
   const transferMutation = useMutation({
     mutationFn: (data: { amount: number; currency: string; recipient: string }) =>
@@ -83,6 +118,75 @@ const ProfessionalWalletPage = () => {
       queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
     }
   });
+
+  // KonsMesh wallet functions
+  const handleConvertToSmaiSika = async () => {
+    try {
+      const amount = parseFloat(conversionAmount);
+      if (!amount || amount <= 0) {
+        toast({ title: 'Invalid amount', variant: 'destructive' });
+        return;
+      }
+
+      await convertToSmaiSika({ usdAmount: amount, rate: 1.0 });
+      toast({ 
+        title: 'Conversion successful', 
+        description: `Converted $${amount} to ${amount} SmaiSika` 
+      });
+      setConversionAmount('');
+      setShowConversionDialog(false);
+      refreshSmaiWallet();
+    } catch (error: any) {
+      toast({ 
+        title: 'Conversion failed', 
+        description: error.error || 'Please try again',
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  const handleFundBot = async () => {
+    try {
+      const amount = parseFloat(botFundingAmount);
+      if (!amount || amount <= 0 || !selectedBot) {
+        toast({ title: 'Invalid amount or bot selection', variant: 'destructive' });
+        return;
+      }
+
+      await fundBot({ botId: selectedBot, smaiSikaAmount: amount });
+      toast({ 
+        title: 'Bot funding successful', 
+        description: `Funded ${selectedBot} with ${amount} SmaiSika` 
+      });
+      setBotFundingAmount('');
+      setSelectedBot('');
+      setShowBotFundingDialog(false);
+      refreshSmaiWallet();
+    } catch (error: any) {
+      toast({ 
+        title: 'Bot funding failed', 
+        description: error.error || 'Please try again',
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  const handleSwitchAccountMode = async (mode: 'demo' | 'real') => {
+    try {
+      await switchAccountMode(mode);
+      toast({ 
+        title: 'Account mode switched', 
+        description: `Switched to ${mode} mode` 
+      });
+      refreshSmaiWallet();
+    } catch (error: any) {
+      toast({ 
+        title: 'Mode switch failed', 
+        description: error.error || 'Please try again',
+        variant: 'destructive' 
+      });
+    }
+  };
 
   const formatCurrency = (amount: number, currency = 'USD') => {
     return new Intl.NumberFormat('en-US', {
@@ -161,8 +265,13 @@ const ProfessionalWalletPage = () => {
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Total Balance</p>
                   <p className="text-2xl font-semibold text-slate-900 dark:text-white">
-                    {showBalance ? (balance ? formatCurrency(balance.balance) : '$0.00') : '••••••'}
+                    {showBalance ? (currentBalance ? formatCurrency(currentBalance.balance, currentBalance.currency) : '$0.00') : '••••••'}
                   </p>
+                  {smaiWalletData?.wallet && (
+                    <Badge variant="outline" className="text-xs">
+                      {smaiWalletData.wallet.accountMode === 'demo' ? '🎮 Demo' : '💰 Real'} • KonsMesh
+                    </Badge>
+                  )}
                 </div>
                 <div className="w-12 h-12 bg-blue-50 dark:bg-blue-950/20 rounded-lg flex items-center justify-center">
                   <Wallet className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -175,13 +284,35 @@ const ProfessionalWalletPage = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Available</p>
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">USD Balance</p>
                   <p className="text-2xl font-semibold text-slate-900 dark:text-white">
-                    {showBalance ? (balance ? formatCurrency(balance.available) : '$0.00') : '••••••'}
+                    {showBalance ? `$${smaiWalletData?.localBalance?.toFixed(2) || '0.00'}` : '••••••'}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                  <DollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-slate-200 dark:border-slate-800">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">SmaiSika (SS)</p>
+                  <p className="text-2xl font-semibold text-slate-900 dark:text-white">
+                    {showBalance ? `${smaiWalletData?.smaiBalance?.toFixed(4) || '0.0000'} SS` : '••••••'}
+                  </p>
+                  {smaiWalletData?.hasConverted && (
+                    <Badge variant="secondary" className="text-xs">
+                      <Zap className="w-3 h-3 mr-1" />
+                      Converted
+                    </Badge>
+                  )}
+                </div>
+                <div className="w-12 h-12 bg-purple-50 dark:bg-purple-950/20 rounded-lg flex items-center justify-center">
+                  <Zap className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
               </div>
             </CardContent>
@@ -265,20 +396,119 @@ const ProfessionalWalletPage = () => {
 
               <Card className="border-slate-200 dark:border-slate-800">
                 <CardHeader className="border-b border-slate-200 dark:border-slate-800">
-                  <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold">KonsMesh Actions</CardTitle>
+                    {smaiWalletData?.wallet && (
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleSwitchAccountMode(smaiWalletData.wallet!.accountMode === 'demo' ? 'real' : 'demo')}
+                          disabled={isSwitching}
+                          className="text-xs"
+                        >
+                          {smaiWalletData.wallet.accountMode === 'demo' ? (
+                            <><ToggleRight className="w-3 h-3 mr-1" /> Real</>
+                          ) : (
+                            <><ToggleLeft className="w-3 h-3 mr-1" /> Demo</>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="p-6 space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Upload className="w-4 h-4 mr-3" />
-                    Deposit Funds
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Download className="w-4 h-4 mr-3" />
-                    Withdraw
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
+                  <Dialog open={showConversionDialog} onOpenChange={setShowConversionDialog}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Zap className="w-4 h-4 mr-3" />
+                        Convert to SmaiSika
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Convert USD to SmaiSika</DialogTitle>
+                        <DialogDescription>
+                          Convert your USD balance to SmaiSika tokens for bot trading
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="conversion-amount">Amount (USD)</Label>
+                          <Input
+                            id="conversion-amount"
+                            type="number"
+                            placeholder="0.00"
+                            value={conversionAmount}
+                            onChange={(e) => setConversionAmount(e.target.value)}
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setShowConversionDialog(false)}>
+                            Cancel
+                          </Button>
+                          <Button onClick={handleConvertToSmaiSika} disabled={isConverting}>
+                            {isConverting ? 'Converting...' : 'Convert'}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={showBotFundingDialog} onOpenChange={setShowBotFundingDialog}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start">
+                        <Bot className="w-4 h-4 mr-3" />
+                        Fund Trading Bot
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Fund Trading Bot</DialogTitle>
+                        <DialogDescription>
+                          Allocate SmaiSika tokens to a trading bot
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="bot-select">Select Bot</Label>
+                          <Select value={selectedBot} onValueChange={setSelectedBot}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose a bot" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="waidbot_alpha">WaidBot Alpha</SelectItem>
+                              <SelectItem value="waidbot_pro_beta">WaidBot Pro Beta</SelectItem>
+                              <SelectItem value="autonomous_gamma">Autonomous Gamma</SelectItem>
+                              <SelectItem value="full_engine_omega">Full Engine Omega</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="bot-funding-amount">Amount (SmaiSika)</Label>
+                          <Input
+                            id="bot-funding-amount"
+                            type="number"
+                            placeholder="0.0000"
+                            value={botFundingAmount}
+                            onChange={(e) => setBotFundingAmount(e.target.value)}
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setShowBotFundingDialog(false)}>
+                            Cancel
+                          </Button>
+                          <Button onClick={handleFundBot} disabled={isFunding}>
+                            {isFunding ? 'Funding...' : 'Fund Bot'}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button variant="outline" className="w-full justify-start" onClick={refreshSmaiWallet}>
                     <RefreshCw className="w-4 h-4 mr-3" />
-                    Exchange
+                    Refresh Wallet
                   </Button>
                   <Button variant="outline" className="w-full justify-start">
                     <ExternalLink className="w-4 h-4 mr-3" />
