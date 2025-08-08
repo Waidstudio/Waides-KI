@@ -210,11 +210,17 @@ const ProfessionalLanding = () => {
   }, [realTestimonials.length]);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950/60 to-purple-950/40 text-white relative overflow-hidden">
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-slate-900">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-orange-900/20"></div>
+      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-slate-950 via-indigo-950/60 to-purple-950/40">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/10 via-purple-900/20 to-indigo-900/15"></div>
+        {/* Futuristic animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-128 h-128 bg-indigo-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Main Title */}
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 leading-tight">

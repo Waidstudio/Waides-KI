@@ -280,7 +280,7 @@ export default function RealTimeCandlestickChart({
 
       {/* Latest Price & OHLC Data */}
       {latest && (
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/90 border-slate-700/70 shadow-2xl backdrop-blur-lg">
           <CardHeader className="pb-3">
             <CardTitle className="text-xl font-bold text-white flex items-center justify-between">
               <div className="flex items-center">
@@ -366,7 +366,7 @@ export default function RealTimeCandlestickChart({
 
       {/* Loading State */}
       {(candlestickLoading || wsLoading) && (
-        <Card className="bg-slate-900/50 border-slate-800">
+        <Card className="bg-slate-900/90 border-slate-700/70 shadow-2xl backdrop-blur-lg">
           <CardContent className="p-6">
             <div className="flex items-center justify-center space-x-2">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>

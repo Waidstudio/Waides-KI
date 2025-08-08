@@ -139,7 +139,7 @@ export default function Dashboard() {
   const spiritualReading: SpiritualReading = (data as any)?.spiritualReading;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950/30 to-purple-950/20">
       {/* Header now handled at App.tsx level */}
       
       {/* Main Dashboard Content */}
@@ -160,10 +160,10 @@ export default function Dashboard() {
               </div>
             ) : (
               <>
-                {/* Tabs Container */}
+                {/* Tabs Container - Futuristic styling */}
                 <Tabs defaultValue="realtime" className="w-full">
-                  {/* Responsive Tab Navigation */}
-                  <div className="bg-slate-800 border border-slate-700 rounded-lg p-1 mb-6">
+                  {/* Responsive Tab Navigation - Enhanced futuristic design */}
+                  <div className="bg-gradient-to-r from-slate-900/80 via-indigo-950/40 to-slate-900/80 border border-slate-700/60 rounded-xl p-1.5 mb-6 backdrop-blur-sm shadow-lg">
                     <div className="overflow-x-auto scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
                       <TabsList className="flex w-max bg-transparent gap-1 p-0 h-auto min-w-fit">
                         <TabsTrigger 
@@ -381,13 +381,33 @@ export default function Dashboard() {
                     </TabsContent>
 
                     <TabsContent value="charts" className="space-y-6">
-                      {/* Real-time Candlestick Chart */}
-                      <RealTimeCandlestickChart />
+                      {/* Futuristic Charts Container */}
+                      <Card className="bg-gradient-to-br from-slate-900/90 via-indigo-950/30 to-purple-950/20 border-slate-700/60 shadow-2xl backdrop-blur-sm">
+                        <CardHeader className="pb-4">
+                          <CardTitle className="text-xl font-bold text-white flex items-center">
+                            <BarChart3 className="w-6 h-6 mr-3 text-cyan-400" />
+                            Real-Time Market Analytics
+                          </CardTitle>
+                          <CardDescription className="text-slate-400">
+                            Advanced candlestick analysis with live WebSocket data streaming
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                          {/* Real-time Candlestick Chart - Contained within card */}
+                          <RealTimeCandlestickChart />
+                        </CardContent>
+                      </Card>
                       
-                      {/* Historical Candlestick Chart */}
-                      <Card className="bg-slate-900/50 border-slate-800">
+                      {/* Historical Candlestick Chart - Enhanced styling */}
+                      <Card className="bg-slate-900/90 border-slate-700/70 shadow-2xl backdrop-blur-lg">
                         <CardHeader>
-                          <CardTitle className="text-lg">Historical ETH/USDT Chart</CardTitle>
+                          <CardTitle className="text-lg font-bold text-white flex items-center">
+                            <Activity className="w-5 h-5 mr-2 text-purple-400" />
+                            Historical ETH/USDT Chart
+                          </CardTitle>
+                          <CardDescription className="text-slate-400">
+                            Extended historical price movement analysis
+                          </CardDescription>
                         </CardHeader>
                         <CardContent>
                           <CandlestickChart />
