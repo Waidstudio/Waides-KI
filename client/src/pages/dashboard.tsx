@@ -13,6 +13,7 @@ import EthCommunicationEngine from "@/components/EthCommunicationEngine";
 import DivineCommandCenter from "@/components/DivineCommandCenter";
 import CandlestickChart from "@/components/CandlestickChart";
 import RealTimeCandlestickChart from "@/components/RealTimeCandlestickChart";
+import AdvancedRealTimeCharts from "@/components/AdvancedRealTimeCharts";
 import WeeklyTradingSchedule from "@/components/WeeklyTradingSchedule";
 import TradingBrainPanel from "@/components/TradingBrainPanel";
 import RealTimeTrading from "@/components/RealTimeTrading";
@@ -381,38 +382,8 @@ export default function Dashboard() {
                     </TabsContent>
 
                     <TabsContent value="charts" className="space-y-6">
-                      {/* Futuristic Charts Container */}
-                      <Card className="bg-gradient-to-br from-slate-900/90 via-indigo-950/30 to-purple-950/20 border-slate-700/60 shadow-2xl backdrop-blur-sm">
-                        <CardHeader className="pb-4">
-                          <CardTitle className="text-xl font-bold text-white flex items-center">
-                            <BarChart3 className="w-6 h-6 mr-3 text-cyan-400" />
-                            Real-Time Market Analytics
-                          </CardTitle>
-                          <CardDescription className="text-slate-400">
-                            Advanced candlestick analysis with live WebSocket data streaming
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                          {/* Real-time Candlestick Chart - Contained within card */}
-                          <RealTimeCandlestickChart />
-                        </CardContent>
-                      </Card>
-                      
-                      {/* Historical Candlestick Chart - Enhanced styling */}
-                      <Card className="bg-slate-900/90 border-slate-700/70 shadow-2xl backdrop-blur-lg">
-                        <CardHeader>
-                          <CardTitle className="text-lg font-bold text-white flex items-center">
-                            <Activity className="w-5 h-5 mr-2 text-purple-400" />
-                            Historical ETH/USDT Chart
-                          </CardTitle>
-                          <CardDescription className="text-slate-400">
-                            Extended historical price movement analysis
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <CandlestickChart />
-                        </CardContent>
-                      </Card>
+                      {/* Advanced Real-Time Charts - Complete Redesign */}
+                      <AdvancedRealTimeCharts />
                     </TabsContent>
 
 
