@@ -11220,7 +11220,9 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // ===== KONSMESH & KONSAI COMMUNICATION SYSTEM =====
   
   const { getKonsAiMeshControlCenter } = await import('./services/konsaiMeshControlCenter.js');
+  const { getKonsAiMeshDataDistributor } = await import('./services/konsaiMeshDataDistributor.js');
   const meshControlCenter = getKonsAiMeshControlCenter();
+  const meshDataDistributor = getKonsAiMeshDataDistributor();
 
   // KonsMesh System Status
   app.get("/api/konsmesh/status", async (req, res) => {
@@ -11341,6 +11343,101 @@ Ask me about specific market conditions, upload files for analysis, or request K
     } catch (error) {
       console.error('❌ Mesh restore error:', error);
       res.status(500).json({ error: 'Failed to restore mesh operations' });
+    }
+  });
+
+  // ===== KONSMESH DATA DISTRIBUTION SYSTEM =====
+
+  // Get Current ETH Price from KonsMesh
+  app.get("/api/konsmesh/data/eth-price", (req, res) => {
+    try {
+      const currentEthPrice = meshDataDistributor.getCurrentEthPrice();
+      if (currentEthPrice) {
+        res.json({
+          success: true,
+          data: currentEthPrice,
+          source: 'konsmesh',
+          timestamp: Date.now()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'No ETH price data available'
+        });
+      }
+    } catch (error) {
+      console.error('❌ KonsMesh ETH price error:', error);
+      res.status(500).json({ error: 'Failed to get ETH price from KonsMesh' });
+    }
+  });
+
+  // Subscribe to KonsMesh Data Updates
+  app.post("/api/konsmesh/data/subscribe", (req, res) => {
+    try {
+      const { subscriptionId, dataTypes, filters } = req.body;
+      meshDataDistributor.subscribe(subscriptionId, { dataTypes, ...filters });
+      res.json({
+        success: true,
+        subscriptionId,
+        message: `Subscribed to ${dataTypes.join(', ')}`
+      });
+    } catch (error) {
+      console.error('❌ KonsMesh subscription error:', error);
+      res.status(500).json({ error: 'Failed to create KonsMesh subscription' });
+    }
+  });
+
+  // Unsubscribe from KonsMesh Data Updates
+  app.delete("/api/konsmesh/data/subscribe/:subscriptionId", (req, res) => {
+    try {
+      const { subscriptionId } = req.params;
+      meshDataDistributor.unsubscribe(subscriptionId);
+      res.json({
+        success: true,
+        subscriptionId,
+        message: 'Subscription removed'
+      });
+    } catch (error) {
+      console.error('❌ KonsMesh unsubscribe error:', error);
+      res.status(500).json({ error: 'Failed to remove KonsMesh subscription' });
+    }
+  });
+
+  // Get KonsMesh Data Update History
+  app.get("/api/konsmesh/data/history/:type?", (req, res) => {
+    try {
+      const { type } = req.params;
+      const history = meshDataDistributor.getUpdateHistory(type);
+      res.json({
+        success: true,
+        type: type || 'all',
+        history,
+        count: history.length
+      });
+    } catch (error) {
+      console.error('❌ KonsMesh history error:', error);
+      res.status(500).json({ error: 'Failed to get KonsMesh update history' });
+    }
+  });
+
+  // Get KonsMesh Statistics
+  app.get("/api/konsmesh/data/stats", (req, res) => {
+    try {
+      const subscriptionCount = meshDataDistributor.getSubscriptionCount();
+      const currentEthPrice = meshDataDistributor.getCurrentEthPrice();
+      
+      res.json({
+        success: true,
+        stats: {
+          activeSubscriptions: subscriptionCount,
+          currentEthPrice: currentEthPrice?.price,
+          lastUpdate: currentEthPrice?.timestamp,
+          systemStatus: 'operational'
+        }
+      });
+    } catch (error) {
+      console.error('❌ KonsMesh stats error:', error);
+      res.status(500).json({ error: 'Failed to get KonsMesh statistics' });
     }
   });
 

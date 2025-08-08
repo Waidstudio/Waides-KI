@@ -1,4 +1,5 @@
-import { TrendingUp, Clock, DollarSign, BarChart3 } from "lucide-react";
+import { TrendingUp, Clock, DollarSign, BarChart3, Wifi } from "lucide-react";
+import { useEthPrice } from "@/hooks/useKonsMesh";
 
 interface EthData {
   price: number;
@@ -14,7 +15,19 @@ interface PriceOverviewProps {
 }
 
 export default function PriceOverview({ ethData }: PriceOverviewProps) {
-  if (!ethData) return null;
+  // Use KonsMesh for real-time ETH price
+  const ethPrice = useEthPrice();
+  
+  // Use KonsMesh data if available, otherwise fallback to props
+  const currentEthData = ethPrice.price > 0 ? {
+    price: ethPrice.price,
+    volume: ethPrice.volume,
+    marketCap: ethPrice.marketCap,
+    priceChange24h: ethPrice.priceChange24h,
+    timestamp: ethPrice.timestamp
+  } : ethData;
+  
+  if (!currentEthData) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -57,31 +70,44 @@ export default function PriceOverview({ ethData }: PriceOverviewProps) {
     return "text-red-600";
   };
 
-  const priceChangeClass = (ethData.priceChange24h || 0) >= 0 ? "text-green-500" : "text-red-500";
-  const priceChangeIcon = (ethData.priceChange24h || 0) >= 0 ? "+" : "";
+  const priceChangeClass = (currentEthData.priceChange24h || 0) >= 0 ? "text-green-500" : "text-red-500";
+  const priceChangeIcon = (currentEthData.priceChange24h || 0) >= 0 ? "+" : "";
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-2 waides-card rounded-xl p-6 waides-border border">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold waides-text-primary">Ethereum (ETH)</h3>
+          <div className="flex items-center space-x-2">
+            <h3 className="text-lg font-semibold waides-text-primary">Ethereum (ETH)</h3>
+            {ethPrice.isConnected && (
+              <div className="flex items-center space-x-1">
+                <Wifi className="w-3 h-3 text-green-500" />
+                <span className="text-xs text-green-500">Live</span>
+              </div>
+            )}
+            {ethPrice.isStale && (
+              <span className="text-xs text-yellow-500 bg-yellow-100 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded">
+                Stale
+              </span>
+            )}
+          </div>
           <div className="flex items-center space-x-2 text-sm waides-text-secondary">
             <Clock className="w-4 h-4" />
-            <span>{new Date(ethData.timestamp).toLocaleTimeString()} UTC</span>
+            <span>{new Date(currentEthData.timestamp).toLocaleTimeString()} UTC</span>
           </div>
         </div>
         
         <div className="flex items-end space-x-4">
           <div>
             <div className="text-3xl font-bold waides-text-primary">
-              {formatPrice(ethData.price)}
+              {formatPrice(currentEthData.price)}
             </div>
             <div className="flex items-center space-x-2 mt-1">
               <span className={`text-sm font-medium ${priceChangeClass}`}>
-                {priceChangeIcon}{ethData.priceChange24h?.toFixed(2)}%
+                {priceChangeIcon}{currentEthData.priceChange24h?.toFixed(2)}%
               </span>
               <span className="text-sm waides-text-secondary">
-                {priceChangeIcon}{formatPrice(Math.abs((ethData.priceChange24h || 0) * ethData.price / 100))}
+                {priceChangeIcon}{formatPrice(Math.abs((currentEthData.priceChange24h || 0) * currentEthData.price / 100))}
               </span>
             </div>
           </div>
@@ -110,14 +136,14 @@ export default function PriceOverview({ ethData }: PriceOverviewProps) {
           24h Volume
         </h4>
         <div className="text-2xl font-bold waides-text-primary">
-          {ethData.volume ? formatVolume(ethData.volume) : 'N/A'}
+          {currentEthData.volume ? formatVolume(currentEthData.volume) : 'N/A'}
         </div>
         
         <div className="mt-4 pt-4 border-t waides-border">
           <div className="flex justify-between text-sm">
             <span className="waides-text-secondary">Market Cap</span>
             <span className="waides-text-primary">
-              {ethData.marketCap ? formatMarketCap(ethData.marketCap) : 'N/A'}
+              {currentEthData.marketCap ? formatMarketCap(currentEthData.marketCap) : 'N/A'}
             </span>
           </div>
         </div>

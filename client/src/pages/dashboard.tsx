@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useEthPrice, useSystemAlerts } from "@/hooks/useKonsMesh";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,10 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [location] = useLocation();
+  
+  // Use KonsMesh for real-time ETH price
+  const ethPrice = useEthPrice();
+  const systemAlerts = useSystemAlerts();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -122,7 +127,13 @@ export default function Dashboard() {
     );
   }
 
-  const ethData: EthData = (data as any)?.ethData || { price: 0, timestamp: Date.now() };
+  const ethData: EthData = {
+    price: ethPrice.price,
+    volume: ethPrice.volume,
+    marketCap: ethPrice.marketCap,
+    priceChange24h: ethPrice.priceChange24h,
+    timestamp: ethPrice.timestamp
+  };
   const signal: Signal = (data as any)?.signal;
   const spiritualReading: SpiritualReading = (data as any)?.spiritualReading;
 
