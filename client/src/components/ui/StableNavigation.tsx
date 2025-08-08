@@ -142,7 +142,7 @@ const StableNavigation = () => {
       items: [
         { name: 'Main Wallet', path: '/wallet', description: 'Portfolio management', icon: Wallet },
         { name: 'SmaiSika Wallet', path: '/wallet-simple', description: 'Simplified interface', icon: Coins },
-        { name: 'Professional Wallet', path: '/enhanced-wallet', description: 'Advanced tools', icon: TrendingUp },
+        { name: 'Professional Wallet', path: '/wallet-pro', description: 'Advanced KonsMesh wallet', icon: TrendingUp },
         { name: 'Payment Admin', path: '/payment-admin', description: 'Payment management', icon: Settings },
         { name: 'Exchange Pool', path: '/admin-exchange-pool', description: 'Exchange management', icon: Globe }
       ]
@@ -191,7 +191,26 @@ const StableNavigation = () => {
   }, [activeDropdown]);
 
   const toggleDropdown = (key: string) => {
-    setActiveDropdown(activeDropdown === key ? null : key);
+    // On desktop, toggle normally
+    if (window.innerWidth >= 768) {
+      setActiveDropdown(activeDropdown === key ? null : key);
+    } else {
+      // On mobile, toggle normally for category buttons
+      setActiveDropdown(activeDropdown === key ? null : key);
+    }
+  };
+
+  // Handle navigation clicks differently for desktop vs mobile
+  const handleNavigationClick = (path: string, isMobile: boolean = false) => {
+    if (isMobile) {
+      // On mobile, close menu and dropdown after navigation
+      setIsMobileMenuOpen(false);
+      setActiveDropdown(null);
+    } else {
+      // On desktop, keep dropdown open for continued navigation
+      // Only close dropdown if explicitly needed
+    }
+    navigate(path);
   };
 
   const isPathInDropdown = (items: { path: string }[]) => {
@@ -200,8 +219,8 @@ const StableNavigation = () => {
 
   return (
     <nav className="bg-slate-800/95 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 transition-all duration-300">
+        <div className="flex justify-between items-center h-14 md:h-16">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/dashboard">
@@ -459,8 +478,7 @@ const StableNavigation = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 console.log('Desktop navigation clicked:', item.path, item.name);
-                                setActiveDropdown(null);
-                                navigate(item.path);
+                                handleNavigationClick(item.path, false);
                               }}
                               className={`
                                 px-4 py-3 transition-all duration-200 cursor-pointer border-b border-slate-700/30 last:border-0
@@ -507,23 +525,27 @@ const StableNavigation = () => {
             </Badge>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Enhanced Mobile menu button */}
           <div className="md:hidden flex items-center">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-300 hover:text-white"
+              className="text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-300 p-2"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <div className="relative w-6 h-6 flex items-center justify-center">
+                <div className={`absolute transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 opacity-100' : 'rotate-0 opacity-100'}`}>
+                  {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </div>
+              </div>
             </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Enhanced Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-700 py-2">
-            <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
+          <div className="md:hidden border-t border-slate-700 py-3 animate-in slide-in-from-top-2 duration-300">
+            <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent px-2">
               {/* Simple Mobile Items */}
               {simpleNavItems.map((item) => {
                 const Icon = item.icon;
@@ -535,8 +557,7 @@ const StableNavigation = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log('Mobile simple navigation clicked:', item.path, item.name);
-                      setIsMobileMenuOpen(false);
-                      navigate(item.path);
+                      handleNavigationClick(item.path, true);
                     }}
                       className={`
                         flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer
@@ -594,9 +615,7 @@ const StableNavigation = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 console.log('Mobile dropdown navigation clicked:', item.path, item.name);
-                                setIsMobileMenuOpen(false);
-                                setActiveDropdown(null);
-                                navigate(item.path);
+                                handleNavigationClick(item.path, true);
                               }}
                                 className={`
                                   flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer group
