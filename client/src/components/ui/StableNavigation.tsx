@@ -204,7 +204,7 @@ const StableNavigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/">
+            <Link href="/dashboard">
               <div className="flex items-center space-x-3 cursor-pointer">
                 <div className="relative">
                   <Brain className="h-6 w-6 text-blue-400" />
@@ -220,10 +220,10 @@ const StableNavigation = () => {
             </Link>
           </div>
 
-          {/* Right Side Actions - Chat, Notifications, Profile (Before Navigation) */}
-          <div className="hidden md:flex items-center space-x-4 mr-6">
+          {/* User Actions - Chat, Notifications, Profile (After Logo) */}
+          <div className="flex items-center space-x-4 ml-8">
             {/* Search */}
-            <div className="relative">
+            <div className="relative hidden lg:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
