@@ -19,6 +19,7 @@ import {
   requireAnyAuth
 } from "./middleware/authMiddleware.js";
 import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/authSchema.js";
+import { userLoginSchema, userRegisterSchema } from "@shared/schema.js";
 import jwt from 'jsonwebtoken';
 import { smaiTrustAuthService } from "./services/smaiTrustAuthService.js";
 import { shavokaAuthService } from "./services/shavokaAuthService.js";
@@ -174,6 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       credentials = userLoginSchema.parse(req.body);
     } catch (parseError) {
+      console.error('User login validation error:', parseError);
       return res.status(400).json({
         success: false,
         message: 'Invalid request data'

@@ -87,6 +87,8 @@ export const loginSchema = z.object({
   rememberMe: z.boolean().optional(),
 });
 
+// Note: userLoginSchema and userRegisterSchema are defined in shared/schema.ts
+
 export const updateAdminUserSchema = createInsertSchema(adminUsers).omit({
   id: true,
   createdAt: true,
@@ -102,6 +104,7 @@ export type AdminUser = typeof adminUsers.$inferSelect;
 export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 export type UpdateAdminUser = z.infer<typeof updateAdminUserSchema>;
 export type LoginCredentials = z.infer<typeof loginSchema>;
+// Note: UserLoginCredentials and UserRegisterData are defined in shared/schema.ts
 export type AdminSession = typeof adminSessions.$inferSelect;
 export type AdminActivityLog = typeof adminActivityLogs.$inferSelect;
 export type AdminLoginAttempt = typeof adminLoginAttempts.$inferSelect;
