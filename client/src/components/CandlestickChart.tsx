@@ -97,7 +97,7 @@ export default function CandlestickChart({
             <span>Real-time Candlesticks</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="text-center text-slate-400 py-8">
             No candlestick data available
           </div>

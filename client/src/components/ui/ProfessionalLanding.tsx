@@ -210,10 +210,10 @@ const ProfessionalLanding = () => {
   }, [realTestimonials.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-white relative overflow-hidden">
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-orange-900/20"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Main Title */}

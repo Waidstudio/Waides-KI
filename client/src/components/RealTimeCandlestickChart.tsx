@@ -162,7 +162,7 @@ export default function RealTimeCandlestickChart({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Connection Status */}
             <div className="flex items-center space-x-2">
@@ -225,7 +225,7 @@ export default function RealTimeCandlestickChart({
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-3 bg-slate-800/50 rounded-lg">
                 <div className="text-xs text-slate-400 uppercase">Open</div>
