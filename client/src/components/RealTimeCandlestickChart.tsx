@@ -165,9 +165,9 @@ export default function RealTimeCandlestickChart({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 p-6 bg-gradient-to-br from-slate-900 via-indigo-950/30 to-purple-950/20 rounded-xl border border-slate-700/50 backdrop-blur-sm">
       {/* Real-time Data Source Selector */}
-      <Card className="bg-slate-900/50 border-slate-800">
+      <Card className="bg-slate-900/80 border-slate-700/60 shadow-2xl backdrop-blur-lg">
         <CardHeader className="pb-3">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
