@@ -129,7 +129,7 @@ function Router() {
   ];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
+    <div className={`min-h-screen bg-slate-900 ${isAuthenticated ? 'has-footer-nav' : ''}`}>
       {/* Unified Navigation Header */}
       <StableNavigation />
 
