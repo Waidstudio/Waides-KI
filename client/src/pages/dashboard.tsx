@@ -18,7 +18,7 @@ import TradingBrainPanel from "@/components/TradingBrainPanel";
 import RealTimeTrading from "@/components/RealTimeTrading";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Wifi, WifiOff, Menu, Brain, Bot } from "lucide-react";
+import { AlertCircle, Wifi, WifiOff, Menu, Brain, Bot, BarChart3, Activity, TrendingUp, TrendingDown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 interface EthData {
