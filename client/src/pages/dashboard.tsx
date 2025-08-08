@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEthPrice, useSystemAlerts } from "@/hooks/useKonsMesh";
-import UnifiedHeader from "@/components/UnifiedHeader";
+// Header is now handled at App.tsx level - no need for individual page headers
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -140,7 +140,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <UnifiedHeader />
+      {/* Header now handled at App.tsx level */}
       
       {/* Main Dashboard Content */}
       <main className="container mx-auto px-4 py-8">
