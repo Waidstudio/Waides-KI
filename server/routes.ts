@@ -1684,18 +1684,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enhanced wallet balance endpoint with detailed breakdown
-  app.get("/api/wallet/balance", (req, res) => {
-    res.json({
-      success: true,
-      balance: 10000,
-      currency: "USDT",
-      available: 8500,
-      locked: 1500,
-      pending: 250,
-      smaiBalance: 5250.75, // SmaiSika balance for portal display
-      localBalance: 2625375, // Local currency balance (NGN)
-      last_updated: new Date().toISOString()
-    });
+  app.get("/api/wallet/balance", async (req, res) => {
+    try {
+      const userId = "1"; // Hardcoded for demo
+      const walletData = await storage.getWalletBalance(userId);
+      
+      res.json({
+        success: true,
+        localBalance: walletData.localBalance,
+        localCurrency: walletData.localCurrency,
+        smaiBalance: walletData.smaiBalance,
+        totalUsdValue: walletData.totalUsdValue,
+        hasConverted: walletData.hasConverted,
+        // Legacy support
+        balance: walletData.hasConverted ? walletData.smaiBalance : walletData.localBalance,
+        currency: walletData.hasConverted ? 'SS' : walletData.localCurrency,
+        available: walletData.hasConverted ? walletData.smaiBalance : walletData.localBalance - 1500,
+        locked: 1500,
+        pending: 250,
+        last_updated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Balance fetch error:', error);
+      res.status(500).json({ error: "Failed to get wallet balance" });
+    }
   });
 
   // Wallet portfolio data
@@ -1733,6 +1745,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         year: 45.7
       }
     });
+  });
+
+  // Convert local currency to SmaiSika
+  app.post("/api/wallet/convert-to-smaisika", async (req, res) => {
+    try {
+      const userId = "1"; // Hardcoded for demo
+      const { amount, fromCurrency } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Invalid conversion amount" 
+        });
+      }
+
+      // Get current wallet balance first
+      const currentWallet = await storage.getWalletBalance(userId);
+      
+      if (currentWallet.localBalance < amount) {
+        return res.status(400).json({ 
+          success: false, 
+          error: `Insufficient ${currentWallet.localCurrency} balance. Available: ${currentWallet.localBalance}` 
+        });
+      }
+
+      const result = await storage.convertToSmaiSika(userId, amount, fromCurrency || currentWallet.localCurrency);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          message: `Successfully converted ${amount} ${fromCurrency || currentWallet.localCurrency} to ${result.smaiAmount} SmaiSika`,
+          smaiAmount: result.smaiAmount,
+          transactionId: result.transactionId,
+          exchangeRate: result.exchangeRate,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          error: "Conversion failed" 
+        });
+      }
+    } catch (error) {
+      console.error('Conversion error:', error);
+      res.status(500).json({ success: false, error: "Failed to process conversion" });
+    }
   });
 
   // Security settings

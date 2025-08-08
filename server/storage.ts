@@ -379,22 +379,125 @@ export class DatabaseStorage implements IStorage {
     return balances[userKey] || 0;
   }
 
-  async getWalletBalance(userId: string): Promise<{ balance: number; currency: string; usdValue: number }> {
+  async getWalletBalance(userId: string): Promise<{ 
+    localBalance: number; 
+    localCurrency: string; 
+    smaiBalance: number;
+    totalUsdValue: number;
+    hasConverted: boolean;
+  }> {
+    try {
+      // Try database first
+      const [wallet] = await db.select().from(wallets).where(eq(wallets.userId, parseInt(userId)));
+      
+      if (wallet) {
+        const localBalance = parseFloat(wallet.localBalance || '0');
+        const smaiBalance = parseFloat(wallet.smaiBalance || '0');
+        const conversionRate = parseFloat(wallet.smaiConversionRate || '1.0');
+        
+        return {
+          localBalance,
+          localCurrency: wallet.localCurrency || 'USD',
+          smaiBalance,
+          totalUsdValue: localBalance + (smaiBalance * conversionRate),
+          hasConverted: smaiBalance > 0
+        };
+      }
+    } catch (error) {
+      console.log('Database wallet not found, using fallback storage');
+    }
+    
+    // Fallback to in-memory storage
     const balances = this.walletData.get('balances') || {};
     const smaiBalances = this.walletData.get('smaiBalances') || {};
     
-    // Get primary USD balance
-    const usdBalance = balances[`${userId}_USD`] || 0;
-    
-    // Get SmaiSika balance and convert to USD equivalent
+    // Get primary balance (default 10000 USD)
+    const localBalance = balances[`${userId}_USD`] || 10000;
     const smaiBalance = smaiBalances[userId] || 0;
-    const smaiToUsd = smaiBalance * 0.85; // SmaiSika conversion rate
     
     return {
-      balance: usdBalance + smaiToUsd,
-      currency: 'USD',
-      usdValue: usdBalance + smaiToUsd
+      localBalance,
+      localCurrency: 'USD',
+      smaiBalance,
+      totalUsdValue: localBalance + smaiBalance,
+      hasConverted: smaiBalance > 0
     };
+  }
+
+  async convertToSmaiSika(userId: string, amount: number, fromCurrency: string): Promise<{
+    success: boolean;
+    smaiAmount: number;
+    transactionId: string;
+    exchangeRate: number;
+  }> {
+    try {
+      const transactionId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const exchangeRate = 1.0; // 1:1 conversion rate for all currencies to SS
+      const smaiAmount = amount * exchangeRate;
+      
+      // Update database if available
+      try {
+        const [wallet] = await db.select().from(wallets).where(eq(wallets.userId, parseInt(userId)));
+        
+        if (wallet) {
+          // Update existing wallet
+          await db.update(wallets)
+            .set({
+              localBalance: (parseFloat(wallet.localBalance || '0') - amount).toString(),
+              smaiBalance: (parseFloat(wallet.smaiBalance || '0') + smaiAmount).toString(),
+              lastConversionAt: new Date(),
+              updatedAt: new Date()
+            })
+            .where(eq(wallets.userId, parseInt(userId)));
+            
+          // Record conversion history
+          await db.insert(conversionHistory).values({
+            userId: parseInt(userId),
+            transactionId,
+            fromCurrency,
+            toCurrency: 'SS',
+            fromAmount: amount.toString(),
+            toAmount: smaiAmount.toString(),
+            exchangeRate: exchangeRate.toString(),
+            netAmount: smaiAmount.toString(),
+            conversionType: 'manual'
+          });
+          
+          return {
+            success: true,
+            smaiAmount,
+            transactionId,
+            exchangeRate
+          };
+        }
+      } catch (error) {
+        console.log('Database conversion failed, using fallback storage');
+      }
+      
+      // Fallback to in-memory storage
+      const balances = this.walletData.get('balances') || {};
+      const smaiBalances = this.walletData.get('smaiBalances') || {};
+      
+      balances[`${userId}_${fromCurrency}`] = (balances[`${userId}_${fromCurrency}`] || 10000) - amount;
+      smaiBalances[userId] = (smaiBalances[userId] || 0) + smaiAmount;
+      
+      this.walletData.set('balances', balances);
+      this.walletData.set('smaiBalances', smaiBalances);
+      
+      return {
+        success: true,
+        smaiAmount,
+        transactionId,
+        exchangeRate
+      };
+    } catch (error) {
+      return {
+        success: false,
+        smaiAmount: 0,
+        transactionId: '',
+        exchangeRate: 0
+      };
+    }
   }
 
   async addToSmaiSikaBalance(userId: string, amount: number): Promise<void> {

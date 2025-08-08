@@ -33,8 +33,11 @@ export const userSessions = pgTable("user_sessions", {
 export const wallets = pgTable("wallets", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id),
-  localBalance: numeric("local_balance", { precision: 15, scale: 2 }).default("0.00"),
-  smaiBalance: numeric("smai_balance", { precision: 15, scale: 2 }).default("0.00"),
+  localBalance: numeric("local_balance", { precision: 15, scale: 2 }).default("10000.00"), // Default starting balance
+  localCurrency: text("local_currency").default("USD"), // Primary currency for backend tracking
+  smaiBalance: numeric("smai_balance", { precision: 15, scale: 2 }).default("0.00"), // SmaiSika balance after conversion
+  smaiConversionRate: numeric("smai_conversion_rate", { precision: 10, scale: 4 }).default("1.0000"), // Current SS conversion rate
+  lastConversionAt: timestamp("last_conversion_at"),
   locked: numeric("locked", { precision: 15, scale: 2 }).default("0.00"),
   lockedUntil: timestamp("locked_until"),
   karmaScore: integer("karma_score").default(100),
@@ -42,6 +45,24 @@ export const wallets = pgTable("wallets", {
   divineApproval: boolean("divine_approval").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Conversion History Table for tracking all currency conversions
+export const conversionHistory = pgTable("conversion_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  transactionId: text("transaction_id").notNull().unique(),
+  fromCurrency: text("from_currency").notNull(),
+  toCurrency: text("to_currency").notNull(),
+  fromAmount: numeric("from_amount", { precision: 15, scale: 2 }).notNull(),
+  toAmount: numeric("to_amount", { precision: 15, scale: 2 }).notNull(),
+  exchangeRate: numeric("exchange_rate", { precision: 10, scale: 6 }).notNull(),
+  fees: numeric("fees", { precision: 15, scale: 2 }).default("0.00"),
+  netAmount: numeric("net_amount", { precision: 15, scale: 2 }).notNull(),
+  conversionType: text("conversion_type").default("manual"), // manual, automatic, bot_triggered
+  status: text("status").default("completed"), // pending, completed, failed
+  metadata: jsonb("metadata").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const userProfiles = pgTable("user_profiles", {
