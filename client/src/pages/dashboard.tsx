@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEthPrice, useSystemAlerts } from "@/hooks/useKonsMesh";
-import UnifiedHeader from "@/components/UnifiedHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -139,11 +138,120 @@ export default function Dashboard() {
   const spiritualReading: SpiritualReading = (data as any)?.spiritualReading;
 
   return (
-    <div className="min-h-screen bg-background">
-      <UnifiedHeader />
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex">
+      {/* Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
       
-      {/* Main Dashboard Content */}
-      <main className="container mx-auto px-4 py-8">
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-slate-900 to-slate-950 border-r border-slate-700 transform transition-transform duration-300 ease-in-out ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:relative lg:translate-x-0`}>
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-6 border-b border-slate-700">
+            <h2 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+              Waides AI
+            </h2>
+            <button
+              onClick={closeSidebar}
+              className="p-2 rounded-lg hover:bg-slate-700/50 transition-colors lg:hidden"
+            >
+              <Menu className="w-5 h-5 text-slate-400" />
+            </button>
+          </div>
+          
+          {/* Navigation Menu */}
+          <nav className="flex-1 p-4 space-y-2">
+            <Link href="/" onClick={closeSidebar}>
+              <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-slate-700/50 ${
+                location === '/' ? 'bg-slate-700/50 border-l-4 border-green-400' : ''
+              }`}>
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="font-medium">Dashboard</span>
+              </div>
+            </Link>
+            
+            <Link href="/waidbot" onClick={closeSidebar}>
+              <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-slate-700/50 ${
+                location === '/waidbot' ? 'bg-slate-700/50 border-l-4 border-blue-400' : ''
+              }`}>
+                <Brain className="w-5 h-5 text-blue-400" />
+                <span className="font-medium">WaidBot</span>
+              </div>
+            </Link>
+            
+            <Link href="/waidbot-pro" onClick={closeSidebar}>
+              <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors hover:bg-slate-700/50 ${
+                location === '/waidbot-pro' ? 'bg-slate-700/50 border-l-4 border-purple-400' : ''
+              }`}>
+                <Brain className="w-5 h-5 text-purple-400" />
+                <div className="flex flex-col">
+                  <span className="font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">WaidBot Pro</span>
+                  <span className="text-xs text-slate-400">Advanced AI Trading</span>
+                </div>
+              </div>
+            </Link>
+          </nav>
+          
+          {/* Sidebar Footer */}
+          <div className="p-4 border-t border-slate-700">
+            <div className="flex items-center space-x-2 text-sm text-slate-400">
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+              <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        {/* Header */}
+        <header className="bg-gradient-to-r from-slate-950/95 to-slate-900/95 backdrop-blur-xl border-b border-slate-800">
+          <div className="flex items-center justify-between p-4 lg:px-6">
+            {/* Left Section */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors lg:hidden"
+              >
+                <Menu className="w-5 h-5 text-slate-400" />
+              </button>
+              
+              {/* Header Title */}
+              <div className="lg:hidden">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                  Waides KI
+                </h1>
+              </div>
+            </div>
+                
+            {/* Status Indicators */}
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-500/20 rounded-full border border-green-500/30">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-xs font-medium text-green-400 hidden sm:inline">KonsLang</span>
+              </div>
+              
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-blue-500/20 rounded-full border border-blue-500/30">
+                <div className={`w-2 h-2 rounded-full ${
+                  isConnected ? 'bg-blue-500 animate-pulse' : 'bg-red-500'
+                }`} />
+                <span className={`text-xs font-medium hidden sm:inline ${
+                  isConnected ? 'text-blue-400' : 'text-red-400'
+                }`}>
+                  {isConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Dashboard Content */}
+        <main className="flex-1 overflow-auto">
           <div className="p-4 lg:p-8 space-y-8 max-w-full">
             {isLoading ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -399,8 +507,9 @@ export default function Dashboard() {
                   </Tabs>
                 </>
               )}
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
-  );
-}
+      </div>
+    );
+  }
