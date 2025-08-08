@@ -63,27 +63,66 @@ export default function RealTimeCandlestickChart({
     { value: "SOLUSDT", label: "SOL/USDT" }
   ];
 
-  // Fetch candlestick data with optimized refresh intervals
-  const { data: candlestickData, isLoading: candlestickLoading, refetch: refetchCandlesticks } = useQuery({
+  // Fetch candlestick data with optimized refresh intervals and error handling
+  const { data: candlestickData, isLoading: candlestickLoading, error: candlestickError, refetch: refetchCandlesticks } = useQuery({
     queryKey: ['/api/candlesticks', selectedSymbol, selectedInterval, limit],
-    queryFn: () => fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}?limit=${limit}`).then(res => res.json()),
+    queryFn: async () => {
+      try {
+        const response = await fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}?limit=${limit}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('Candlestick fetch error:', error);
+        throw error;
+      }
+    },
     refetchInterval: selectedInterval === "1m" ? 15000 : selectedInterval === "5m" ? 30000 : 60000, // Slower refresh for stability
     staleTime: 10000, // Data considered fresh for 10 seconds
-    gcTime: 30000 // Keep in cache for 30 seconds
+    gcTime: 30000, // Keep in cache for 30 seconds
+    retry: 2, // Retry failed requests 2 times
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000) // Exponential backoff
   });
 
-  // Fetch WebSocket status with reduced frequency
-  const { data: wsStatus, isLoading: wsLoading } = useQuery<WebSocketStatus>({
+  // Fetch WebSocket status with reduced frequency and error handling
+  const { data: wsStatus, isLoading: wsLoading, error: wsError } = useQuery<WebSocketStatus>({
     queryKey: ['/api/websocket/status'],
-    queryFn: () => fetch('/api/websocket/status').then(res => res.json()),
-    refetchInterval: 10000 // Check status every 10 seconds
+    queryFn: async () => {
+      try {
+        const response = await fetch('/api/websocket/status');
+        if (!response.ok) {
+          throw new Error(`WebSocket status fetch failed: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('WebSocket status error:', error);
+        throw error;
+      }
+    },
+    refetchInterval: 10000, // Check status every 10 seconds
+    retry: 1,
+    retryDelay: 5000
   });
 
-  // Get latest candlestick
-  const { data: latestCandlestick } = useQuery({
+  // Get latest candlestick with error handling
+  const { data: latestCandlestick, error: latestError } = useQuery({
     queryKey: ['/api/candlesticks/latest', selectedSymbol, selectedInterval],
-    queryFn: () => fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}/latest`).then(res => res.json()),
-    refetchInterval: selectedInterval === "1m" ? 2000 : selectedInterval === "5m" ? 10000 : 30000 // Update based on timeframe
+    queryFn: async () => {
+      try {
+        const response = await fetch(`/api/candlesticks/${selectedSymbol}/${selectedInterval}/latest`);
+        if (!response.ok) {
+          throw new Error(`Latest candlestick fetch failed: ${response.status}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error('Latest candlestick error:', error);
+        return null; // Return null instead of throwing to prevent breaking the UI
+      }
+    },
+    refetchInterval: selectedInterval === "1m" ? 2000 : selectedInterval === "5m" ? 10000 : 30000, // Update based on timeframe
+    retry: 1,
+    retryDelay: 3000
   });
 
   const candlesticks = candlestickData?.candlesticks || [];
@@ -95,6 +134,35 @@ export default function RealTimeCandlestickChart({
 
   // Get Binance connection status
   const connectionStatus = wsStatus?.binance;
+
+  // Show error state if critical data fetch fails
+  if (candlestickError && !candlestickData) {
+    return (
+      <div className="space-y-4">
+        <Card className="bg-slate-900/50 border-slate-800">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-white flex items-center">
+              <WifiOff className="w-5 h-5 mr-2 text-red-400" />
+              Chart Data Unavailable
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center py-8">
+            <p className="text-slate-400 mb-4">
+              Unable to fetch real-time chart data. This may be due to API limits or connectivity issues.
+            </p>
+            <Button
+              onClick={() => refetchCandlesticks()}
+              variant="outline"
+              className="border-slate-700 hover:bg-slate-800"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry Loading
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

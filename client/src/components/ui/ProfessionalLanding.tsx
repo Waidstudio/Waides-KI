@@ -210,10 +210,10 @@ const ProfessionalLanding = () => {
   }, [realTestimonials.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-slate-900 text-white relative overflow-hidden">
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      <section className="relative min-h-screen flex items-center justify-center px-6 py-20 bg-slate-900">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-orange-900/20"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Main Title */}
@@ -451,7 +451,7 @@ const ProfessionalLanding = () => {
                     <div className={`w-12 h-12 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center`}>
                       <feature.icon className="w-6 h-6 text-white" />
                     </div>
-                    {isAuthenticated && feature.status && (
+                    {isAuthenticated && 'status' in feature && (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         {feature.status}
                       </Badge>
@@ -459,7 +459,7 @@ const ProfessionalLanding = () => {
                   </div>
                   <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
                   <p className="text-gray-300 leading-relaxed mb-4">{feature.description}</p>
-                  {isAuthenticated && feature.action && (
+                  {isAuthenticated && 'action' in feature && (
                     <Button asChild variant="outline" className="w-full border-gray-600 hover:bg-gray-700/50 group-hover:border-purple-500/50">
                       <Link href={feature.action}>
                         Access Now
@@ -549,10 +549,10 @@ const ProfessionalLanding = () => {
             ]).map((stat, index) => (
               <div key={index} className="text-center">
                 <div className={`w-16 h-16 bg-gradient-to-r ${stat.gradient} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                  {isAuthenticated && stat.icon ? (
+                  {isAuthenticated && 'icon' in stat && stat.icon ? (
                     <stat.icon className="w-8 h-8 text-white" />
                   ) : (
-                    <span className="text-2xl font-bold text-white">{stat.value.slice(0, 2)}</span>
+                    <span className="text-2xl font-bold text-white">{stat.value.toString().slice(0, 2)}</span>
                   )}
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
