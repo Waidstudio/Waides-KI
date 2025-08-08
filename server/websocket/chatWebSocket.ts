@@ -77,13 +77,14 @@ class ChatWebSocketManager {
 
     // Setup heartbeat interval
     const interval = setInterval(() => {
-      this.wss?.clients.forEach((ws: WebSocketClient) => {
-        if (!ws.isAlive) {
-          return ws.terminate();
+      this.wss?.clients.forEach((ws) => {
+        const client = ws as WebSocketClient;
+        if (!client.isAlive) {
+          return client.terminate();
         }
         
-        ws.isAlive = false;
-        ws.ping();
+        client.isAlive = false;
+        client.ping();
       });
     }, 30000);
 
@@ -233,7 +234,9 @@ class ChatWebSocketManager {
       }
 
       // Create message in database
+      const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       const newMessage = await comprehensiveChatService.createMessage({
+        messageId,
         roomId,
         userId,
         senderName: message.senderName || `User${userId}`,

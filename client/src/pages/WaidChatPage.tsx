@@ -137,31 +137,33 @@ export default function WaidChatPage() {
   const queryClient = useQueryClient();
 
   // Fetch chat rooms
-  const { data: rooms = [], isLoading: roomsLoading } = useQuery({
+  const { data: roomsData, isLoading: roomsLoading, error: roomsError } = useQuery({
     queryKey: ['/api/waidchat/rooms'],
     refetchInterval: 10000
   });
 
+  const rooms = (roomsData as any)?.rooms || [];
+
   // Fetch messages for current room
-  const { data: messagesData, isLoading: messagesLoading } = useQuery({
+  const { data: messagesData, isLoading: messagesLoading, error: messagesError } = useQuery({
     queryKey: ['/api/waidchat/rooms', currentRoom, 'messages'],
     enabled: !!currentRoom,
-    refetchInterval: 2000
+    refetchInterval: 5000
   });
 
   const messages = messagesData?.messages || [];
 
   // Fetch room users
-  const { data: roomUsersData } = useQuery({
+  const { data: roomUsersData, error: usersError } = useQuery({
     queryKey: ['/api/waidchat/rooms', currentRoom, 'users'],
     enabled: !!currentRoom,
-    refetchInterval: 5000
+    refetchInterval: 10000
   });
 
   const roomUsers = roomUsersData?.users || [];
 
   // Fetch moderators
-  const { data: moderatorsData } = useQuery({
+  const { data: moderatorsData, error: moderatorsError } = useQuery({
     queryKey: ['/api/waidchat/moderators'],
     refetchInterval: 30000
   });
@@ -299,7 +301,7 @@ export default function WaidChatPage() {
   // WebSocket connection
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = `${protocol}//${window.location.host}/ws/chat`;
     
     wsRef.current = new WebSocket(wsUrl);
     
@@ -581,10 +583,22 @@ export default function WaidChatPage() {
     }
   };
 
-  if (roomsLoading || messagesLoading) {
+  if (roomsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-white">Loading WaidChat...</div>
+      </div>
+    );
+  }
+
+  // Show error state if rooms failed to load
+  if (roomsError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <h2 className="text-xl font-bold mb-2">WaidChat Unavailable</h2>
+          <p className="text-gray-400">Unable to connect to chat service. Please try again later.</p>
+        </div>
       </div>
     );
   }
