@@ -196,29 +196,6 @@ const FreshModernHeader = () => {
     setActiveDropdown(activeDropdown === label ? null : label);
   };
 
-  const handleDropdownTouchStart = (label: string) => {
-    // For touch devices, handle immediate response
-    setActiveDropdown(activeDropdown === label ? null : label);
-  };
-
-  const handleDropdownMouseEnter = (label: string) => {
-    // For desktop, show on hover but with slight delay for UX
-    setTimeout(() => {
-      if (window.innerWidth >= 768) { // Only on desktop
-        setActiveDropdown(label);
-      }
-    }, 100);
-  };
-
-  const handleDropdownMouseLeave = () => {
-    // For desktop, hide with delay to allow mouse movement to dropdown
-    setTimeout(() => {
-      if (window.innerWidth >= 768) {
-        setActiveDropdown(null);
-      }
-    }, 200);
-  };
-
   const handleNotificationClick = (notificationId: string) => {
     setNotifications(prev => 
       prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
@@ -229,40 +206,19 @@ const FreshModernHeader = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
-  // Enhanced event handling for dropdowns
+  // Close dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: Event) => {
-      const target = event.target as Element;
-      if (!target.closest('.dropdown-container')) {
-        setActiveDropdown(null);
-      }
-    };
-    
+    const handleClickOutside = () => setActiveDropdown(null);
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setActiveDropdown(null);
     };
 
-    const handleTouchOutside = (event: TouchEvent) => {
-      const target = event.target as Element;
-      if (!target.closest('.dropdown-container')) {
-        setActiveDropdown(null);
-      }
-    };
-
-    const handleScroll = () => {
-      setActiveDropdown(null);
-    };
-
     document.addEventListener('click', handleClickOutside);
-    document.addEventListener('touchstart', handleTouchOutside);
     document.addEventListener('keydown', handleEscapeKey);
-    window.addEventListener('scroll', handleScroll);
 
     return () => {
       document.removeEventListener('click', handleClickOutside);
-      document.removeEventListener('touchstart', handleTouchOutside);
       document.removeEventListener('keydown', handleEscapeKey);
-      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -393,98 +349,65 @@ const FreshModernHeader = () => {
     </DropdownMenu>
   );
 
-  // Interactive Dropdown Component with Enhanced Touch Support
+  // Interactive Dropdown Component
   const InteractiveDropdown = ({ category }: { category: NavigationCategory }) => (
-    <div 
-      className="relative dropdown-container"
-      onMouseEnter={() => handleDropdownMouseEnter(category.label)}
-      onMouseLeave={handleDropdownMouseLeave}
-    >
+    <div className="relative dropdown-container">
       <Button 
         variant="ghost" 
         className={cn(
-          "flex items-center space-x-2 text-white hover:text-blue-300 transition-all duration-200 px-4 py-2 rounded-lg hover:bg-blue-900/20 touch-manipulation select-none",
-          "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-gray-900",
-          "active:bg-blue-900/40 active:scale-95 transform",
-          activeDropdown === category.label && "text-blue-300 bg-blue-900/30 shadow-lg ring-2 ring-blue-500/30"
+          "flex items-center space-x-2 text-white hover:text-blue-300 transition-all duration-200 px-4 py-2 rounded-lg hover:bg-blue-900/20",
+          activeDropdown === category.label && "text-blue-300 bg-blue-900/30 shadow-lg"
         )}
         onClick={(e) => {
           e.stopPropagation();
           handleDropdownToggle(category.label);
         }}
-        onTouchStart={(e) => {
-          e.stopPropagation();
-          handleDropdownTouchStart(category.label);
-        }}
-        onTouchEnd={(e) => {
-          e.preventDefault(); // Prevent double-tap zoom
-        }}
-        aria-expanded={activeDropdown === category.label}
-        aria-haspopup="true"
-        role="button"
-        tabIndex={0}
       >
         <div className="flex items-center space-x-2">
           {category.icon}
-          <span className="font-medium text-sm sm:text-base">{category.label}</span>
+          <span className="font-medium">{category.label}</span>
           <ChevronDown className={cn(
-            "h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-300 ease-in-out",
+            "h-4 w-4 transition-transform duration-300",
             activeDropdown === category.label && "rotate-180"
           )} />
         </div>
       </Button>
       
-      {/* Enhanced Touch-Friendly Dropdown Content */}
-      <div 
-        className={cn(
-          "absolute top-full left-1/2 transform -translate-x-1/2 mt-3 w-80 sm:w-96 bg-gray-900/98 border border-gray-600 rounded-2xl shadow-2xl backdrop-blur-md z-50 transition-all duration-300 ease-out max-h-[80vh] overflow-y-auto",
-          activeDropdown === category.label 
-            ? "opacity-100 visible translate-y-0 scale-100" 
-            : "opacity-0 invisible -translate-y-3 scale-95 pointer-events-none"
-        )}
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
-      >
-        <div className="p-3 sm:p-4">
-          <div className="grid gap-1 sm:gap-2">
+      {/* Enhanced Dropdown Content */}
+      <div className={cn(
+        "absolute top-full left-1/2 transform -translate-x-1/2 mt-3 w-80 bg-gray-900/98 border border-gray-600 rounded-2xl shadow-2xl backdrop-blur-md z-50 transition-all duration-300 ease-out",
+        activeDropdown === category.label 
+          ? "opacity-100 visible translate-y-0 scale-100" 
+          : "opacity-0 invisible -translate-y-3 scale-95 pointer-events-none"
+      )}>
+        <div className="p-4">
+          <div className="grid gap-2">
             {category.items.map((item) => (
               <Link
                 key={item.path}
                 href={item.path}
                 onClick={() => setActiveDropdown(null)}
-                onTouchEnd={() => setActiveDropdown(null)}
                 className={cn(
-                  "flex flex-col p-3 sm:p-4 rounded-lg transition-all duration-200 hover:bg-blue-900/20 active:bg-blue-900/30 group touch-manipulation",
-                  "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-blue-900/20",
-                  "min-h-[3rem] sm:min-h-[3.5rem] flex justify-center", // Touch-friendly minimum height
-                  location === item.path && "bg-blue-900/30 border border-blue-500/50 ring-1 ring-blue-500/30"
+                  "flex flex-col p-3 rounded-lg transition-all duration-200 hover:bg-blue-900/20 group",
+                  location === item.path && "bg-blue-900/30 border border-blue-500/50"
                 )}
-                role="menuitem"
-                tabIndex={0}
               >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex-1">
-                    <span className="font-medium text-white group-hover:text-blue-300 group-focus:text-blue-300 transition-colors text-sm sm:text-base">
-                      {item.label}
-                    </span>
-                    {item.description && (
-                      <span className="text-xs text-gray-400 mt-1 group-hover:text-gray-300 group-focus:text-gray-300 block">
-                        {item.description}
-                      </span>
-                    )}
-                  </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-white group-hover:text-blue-300 transition-colors">
+                    {item.label}
+                  </span>
                   {location === item.path && (
-                    <div className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 ml-2"></div>
+                    <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
                   )}
                 </div>
+                {item.description && (
+                  <span className="text-xs text-gray-400 mt-1 group-hover:text-gray-300">
+                    {item.description}
+                  </span>
+                )}
               </Link>
             ))}
           </div>
-        </div>
-        
-        {/* Touch-friendly close indicator */}
-        <div className="flex justify-center py-2 border-t border-gray-700/50 md:hidden">
-          <div className="w-12 h-1 bg-gray-600 rounded-full"></div>
         </div>
       </div>
     </div>
@@ -557,22 +480,12 @@ const FreshModernHeader = () => {
                             key={item.path}
                             href={item.path}
                             onClick={() => setMobileMenuOpen(false)}
-                            onTouchEnd={() => setMobileMenuOpen(false)}
                             className={cn(
-                              "block px-3 py-3 text-gray-300 hover:text-white hover:bg-gray-800/30 active:bg-gray-700/40 rounded-lg transition-all duration-200 touch-manipulation",
-                              "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-gray-800/30",
-                              "min-h-[2.75rem] flex items-center", // Touch-friendly height
-                              location === item.path && "text-blue-300 bg-blue-900/20 ring-1 ring-blue-500/30"
+                              "block px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800/30 rounded-lg transition-all duration-200",
+                              location === item.path && "text-blue-300 bg-blue-900/20"
                             )}
-                            role="menuitem"
-                            tabIndex={0}
                           >
-                            <div className="flex items-center justify-between w-full">
-                              <span className="text-sm">{item.label}</span>
-                              {location === item.path && (
-                                <div className="h-1.5 w-1.5 bg-blue-500 rounded-full"></div>
-                              )}
-                            </div>
+                            {item.label}
                           </Link>
                         ))}
                       </div>
