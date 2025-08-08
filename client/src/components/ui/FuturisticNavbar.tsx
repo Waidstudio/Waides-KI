@@ -235,31 +235,52 @@ const FuturisticNavbar = () => {
             />
           </div>
 
-          {/* Notifications */}
-          <Button variant="ghost" size="sm" className="action-button">
-            <Bell className="w-5 h-5" />
-            {notificationCount > 0 && (
-              <Badge className="notification-badge">
-                {notificationCount}
-              </Badge>
-            )}
-          </Button>
-
-          {/* User Profile */}
+          {/* User Profile and Actions */}
           {isAuthenticated ? (
-            <div className="user-profile">
-              <Button variant="ghost" size="sm" className="action-button">
-                <User className="w-5 h-5" />
-              </Button>
+            <>
+              {/* WaidChat Icon */}
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={handleLogout}
                 className="action-button"
+                onClick={() => navigate('/waid-chat')}
+                title="WaidChat"
               >
-                <LogOut className="w-5 h-5" />
+                <MessageCircle className="w-5 h-5" />
               </Button>
-            </div>
+
+              {/* Notifications */}
+              <Button variant="ghost" size="sm" className="action-button" title="Notifications">
+                <Bell className="w-5 h-5" />
+                {notificationCount > 0 && (
+                  <Badge className="notification-badge">
+                    {notificationCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {/* User Profile */}
+              <div className="user-profile">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="action-button"
+                  onClick={() => navigate('/profile')}
+                  title={`Profile (${user?.username || 'User'})`}
+                >
+                  <User className="w-5 h-5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleLogout}
+                  className="action-button"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </Button>
+              </div>
+            </>
           ) : (
             <Button 
               variant="ghost" 
@@ -321,6 +342,48 @@ const FuturisticNavbar = () => {
             )}
           </div>
         ))}
+        
+        {/* Mobile User Actions */}
+        <div className="mobile-user-actions">
+          {isAuthenticated ? (
+            <>
+              <Link
+                href="/waid-chat"
+                className="mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <MessageCircle className="w-4 h-4" />
+                WaidChat
+              </Link>
+              <Link
+                href="/profile"
+                className="mobile-link"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <User className="w-4 h-4" />
+                Profile ({user?.username || 'User'})
+              </Link>
+              <button
+                className="mobile-link"
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="mobile-link"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Login
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );
