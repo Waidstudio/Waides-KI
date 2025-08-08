@@ -458,6 +458,7 @@ const StableNavigation = () => {
                               key={item.path}
                               onClick={(e) => {
                                 e.stopPropagation();
+                                console.log('Desktop navigation clicked:', item.path, item.name);
                                 setActiveDropdown(null);
                                 navigate(item.path);
                               }}
@@ -533,6 +534,7 @@ const StableNavigation = () => {
                     key={item.path}
                     onClick={(e) => {
                       e.stopPropagation();
+                      console.log('Mobile simple navigation clicked:', item.path, item.name);
                       setIsMobileMenuOpen(false);
                       navigate(item.path);
                     }}
@@ -591,6 +593,7 @@ const StableNavigation = () => {
                               key={item.path}
                               onClick={(e) => {
                                 e.stopPropagation();
+                                console.log('Mobile dropdown navigation clicked:', item.path, item.name);
                                 setIsMobileMenuOpen(false);
                                 setActiveDropdown(null);
                                 navigate(item.path);
