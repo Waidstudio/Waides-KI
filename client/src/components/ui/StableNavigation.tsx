@@ -235,7 +235,7 @@ const StableNavigation = () => {
             </div>
 
             {/* Chat Icon */}
-            <Link href="/forum">
+            <Link href="/waidchat">
               <Button variant="ghost" size="sm" className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2">
                 <MessageCircle className="h-5 w-5" />
                 <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-blue-500 hover:bg-blue-500 flex items-center justify-center">

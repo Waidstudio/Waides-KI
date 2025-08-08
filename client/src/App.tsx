@@ -82,6 +82,7 @@ import UserDashboard from "@/pages/UserDashboard";
 import AISystemsPage from "@/pages/AISystemsPage";
 import AutonomousTraderPage from "@/pages/AutonomousTraderPage";
 import FullEnginePage from "@/pages/FullEnginePage";
+import WaidChatPage from "@/pages/WaidChatPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -195,6 +196,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <CommunityForum />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/waidchat">
+            {() => (
+              <ProtectedRoute>
+                <WaidChatPage />
               </ProtectedRoute>
             )}
           </Route>

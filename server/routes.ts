@@ -58,6 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Import chat routes
   const chatRoutes = await import('./routes/chat.js');
+  const waidchatRoutes = await import('./routes/waidchat.js');
 
   // Remove duplicate authentication middleware definitions (already imported at top)
 
@@ -11658,7 +11659,93 @@ Ask me about specific market conditions, upload files for analysis, or request K
 
   // === CHAT SYSTEM ROUTES ===
   app.use('/api/chat', chatRoutes.default);
+  app.use('/api/waidchat', waidchatRoutes.default);
   console.log('💬 Chat system routes registered');
+
+  // Initialize WebSocket for WaidChat
+  const { chatWebSocketManager } = await import('./websocket/chatWebSocket.js');
+  chatWebSocketManager.initialize(server);
+
+  // Initialize default chat rooms and moderators
+  const { comprehensiveChatService } = await import('./services/comprehensiveChatService.js');
+  
+  // Create default rooms if they don't exist
+  try {
+    const existingRooms = await comprehensiveChatService.getRooms();
+    
+    if (existingRooms.length === 0) {
+      console.log('🏗️ Creating default chat rooms...');
+      
+      await comprehensiveChatService.createRoom({
+        roomId: 'general',
+        name: 'General Discussion',
+        description: 'General chat for all users',
+        type: 'public',
+        maxUsers: 100,
+        createdBy: 1
+      });
+
+      await comprehensiveChatService.createRoom({
+        roomId: 'trading',
+        name: 'Trading Discussion',
+        description: 'Discuss trading strategies and market insights',
+        type: 'public',
+        maxUsers: 50,
+        createdBy: 1
+      });
+
+      await comprehensiveChatService.createRoom({
+        roomId: 'support',
+        name: 'Support',
+        description: 'Get help from moderators and staff',
+        type: 'support',
+        maxUsers: 25,
+        createdBy: 1
+      });
+
+      await comprehensiveChatService.createRoom({
+        roomId: 'ai-signals',
+        name: 'AI Trading Signals',
+        description: 'AI-generated trading signals and analysis',
+        type: 'public',
+        maxUsers: 75,
+        createdBy: 1
+      });
+
+      console.log('✅ Default chat rooms created successfully');
+    }
+
+    // Create default moderator if none exist
+    const existingModerators = await comprehensiveChatService.getModerators();
+    
+    if (existingModerators.length === 0) {
+      await comprehensiveChatService.createModerator({
+        userId: 1,
+        name: 'System Moderator',
+        email: 'moderator@smaisika.com',
+        permissions: {
+          ban_users: true,
+          delete_messages: true,
+          pin_messages: true,
+          manage_rooms: true,
+          view_reports: true
+        }
+      });
+      console.log('✅ Default moderator created');
+    }
+
+  } catch (error) {
+    console.error('❌ Error initializing chat system:', error);
+  }
+
+  // Start voice note expiration cleanup
+  setInterval(async () => {
+    try {
+      await comprehensiveChatService.expireVoiceNotes();
+    } catch (error) {
+      console.error('Error cleaning up expired voice notes:', error);
+    }
+  }, 60 * 60 * 1000); // Run every hour
 
   return Promise.resolve(server);
 }

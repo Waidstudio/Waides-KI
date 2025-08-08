@@ -516,6 +516,282 @@ export const insertTransactionSecuritySchema = createInsertSchema(transactionSec
   createdAt: true,
 });
 
+// ===== COMPREHENSIVE REAL-TIME CHAT SYSTEM TABLES =====
+
+// Chat Moderators - Admin users who can moderate chat
+export const chatModerators = pgTable("chat_moderators", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  isActive: boolean("is_active").default(true),
+  permissions: jsonb("permissions").default("{}"), // Read, write, ban, delete, admin
+  joinedAt: timestamp("joined_at").defaultNow(),
+  lastActiveAt: timestamp("last_active_at").defaultNow(),
+});
+
+// Chat Rooms - Different chat channels
+export const chatRooms = pgTable("chat_rooms", {
+  id: serial("id").primaryKey(),
+  roomId: text("room_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  type: text("type").notNull().default("public"), // public, private, support, trading
+  isActive: boolean("is_active").default(true),
+  maxUsers: integer("max_users").default(100),
+  currentUsers: integer("current_users").default(0),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Chat Messages - Real-time messages with file support
+export const chatMessagesNew = pgTable("chat_messages_new", {
+  id: serial("id").primaryKey(),
+  messageId: text("message_id").notNull().unique(),
+  roomId: text("room_id").notNull().references(() => chatRooms.roomId, { onDelete: "cascade" }),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  moderatorId: integer("moderator_id").references(() => chatModerators.id, { onDelete: "cascade" }),
+  senderName: text("sender_name").notNull(),
+  senderType: text("sender_type").notNull(), // user, moderator, system, bot
+  content: text("content"),
+  messageType: text("message_type").notNull().default("text"), // text, file, voice, image, system
+  fileUrl: text("file_url"),
+  fileName: text("file_name"),
+  fileSize: integer("file_size"),
+  fileMimeType: text("file_mime_type"),
+  voiceNoteDuration: integer("voice_note_duration"), // in seconds
+  voiceNoteUrl: text("voice_note_url"),
+  voiceNoteExpiresAt: timestamp("voice_note_expires_at"), // 48 hours expiry
+  replyToMessageId: text("reply_to_message_id"),
+  isEdited: boolean("is_edited").default(false),
+  editedAt: timestamp("edited_at"),
+  isDeleted: boolean("is_deleted").default(false),
+  deletedBy: integer("deleted_by").references(() => users.id),
+  deletedAt: timestamp("deleted_at"),
+  reactions: jsonb("reactions").default("{}"), // emoji reactions
+  isPinned: boolean("is_pinned").default(false),
+  pinnedBy: integer("pinned_by").references(() => chatModerators.id),
+  mentions: text("mentions").array(), // @username mentions
+  tags: text("tags").array(), // #hashtags
+  priority: text("priority").default("normal"), // low, normal, high, urgent
+  status: text("status").default("sent"), // sent, delivered, read
+  metadata: jsonb("metadata").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Chat Users - Online users in chat
+export const chatUsers = pgTable("chat_users", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  roomId: text("room_id").notNull().references(() => chatRooms.roomId, { onDelete: "cascade" }),
+  username: text("username").notNull(),
+  displayName: text("display_name"),
+  avatar: text("avatar"),
+  status: text("status").default("online"), // online, offline, away, busy, invisible
+  lastSeen: timestamp("last_seen").defaultNow(),
+  joinedRoomAt: timestamp("joined_room_at").defaultNow(),
+  socketId: text("socket_id"),
+  isTyping: boolean("is_typing").default(false),
+  typingUntil: timestamp("typing_until"),
+});
+
+// Chat File Uploads - Track uploaded files
+export const chatFileUploads = pgTable("chat_file_uploads", {
+  id: serial("id").primaryKey(),
+  fileId: text("file_id").notNull().unique(),
+  messageId: text("message_id").references(() => chatMessagesNew.messageId, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  fileName: text("file_name").notNull(),
+  originalFileName: text("original_file_name").notNull(),
+  fileSize: integer("file_size").notNull(),
+  mimeType: text("mime_type").notNull(),
+  fileUrl: text("file_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  isVoiceNote: boolean("is_voice_note").default(false),
+  voiceDuration: integer("voice_duration"), // seconds
+  expiresAt: timestamp("expires_at"), // For voice notes - 48 hour expiry
+  isExpired: boolean("is_expired").default(false),
+  downloadCount: integer("download_count").default(0),
+  scanStatus: text("scan_status").default("pending"), // pending, clean, infected, error
+  scanResults: jsonb("scan_results"),
+  isPublic: boolean("is_public").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Chat Notifications - Real-time chat notifications
+export const chatNotificationsNew = pgTable("chat_notifications_new", {
+  id: serial("id").primaryKey(),
+  notificationId: text("notification_id").notNull().unique(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  roomId: text("room_id").references(() => chatRooms.roomId),
+  messageId: text("message_id").references(() => chatMessagesNew.messageId),
+  type: text("type").notNull(), // mention, reply, new_message, system, moderator_action
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  actionUrl: text("action_url"),
+  isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+  priority: text("priority").default("normal"), // low, normal, high, urgent
+  expiresAt: timestamp("expires_at"),
+  metadata: jsonb("metadata").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Chat Moderation Actions - Track moderator actions
+export const chatModerationActions = pgTable("chat_moderation_actions", {
+  id: serial("id").primaryKey(),
+  actionId: text("action_id").notNull().unique(),
+  moderatorId: integer("moderator_id").notNull().references(() => chatModerators.id),
+  targetUserId: integer("target_user_id").references(() => users.id),
+  roomId: text("room_id").references(() => chatRooms.roomId),
+  messageId: text("message_id").references(() => chatMessagesNew.messageId),
+  actionType: text("action_type").notNull(), // ban, unban, mute, unmute, kick, warn, delete_message, pin_message
+  reason: text("reason"),
+  duration: integer("duration"), // in minutes, for temporary actions
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  evidence: jsonb("evidence"), // Screenshots, logs, etc.
+  appealable: boolean("appealable").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Chat User Bans - Track banned users
+export const chatUserBans = pgTable("chat_user_bans", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  roomId: text("room_id").references(() => chatRooms.roomId),
+  moderatorId: integer("moderator_id").notNull().references(() => chatModerators.id),
+  banType: text("ban_type").notNull(), // temporary, permanent, room_specific, global
+  reason: text("reason").notNull(),
+  evidence: jsonb("evidence"),
+  bannedAt: timestamp("banned_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  appealSubmitted: boolean("appeal_submitted").default(false),
+  appealedAt: timestamp("appealed_at"),
+  appealReason: text("appeal_reason"),
+  appealStatus: text("appeal_status"), // pending, approved, rejected
+  appealReviewedBy: integer("appeal_reviewed_by").references(() => chatModerators.id),
+  appealReviewedAt: timestamp("appeal_reviewed_at"),
+});
+
+// Chat Room Settings - Room-specific configuration
+export const chatRoomSettings = pgTable("chat_room_settings", {
+  id: serial("id").primaryKey(),
+  roomId: text("room_id").notNull().references(() => chatRooms.roomId, { onDelete: "cascade" }).unique(),
+  allowFileUploads: boolean("allow_file_uploads").default(true),
+  allowVoiceNotes: boolean("allow_voice_notes").default(true),
+  allowImages: boolean("allow_images").default(true),
+  maxFileSize: integer("max_file_size").default(10485760), // 10MB
+  moderationLevel: text("moderation_level").default("medium"), // low, medium, high, strict
+  wordFilter: jsonb("word_filter").default("[]"),
+  linkFilter: boolean("link_filter").default(false),
+  spamProtection: boolean("spam_protection").default(true),
+  slowMode: integer("slow_mode").default(0), // seconds between messages
+  requireApproval: boolean("require_approval").default(false),
+  welcomeMessage: text("welcome_message"),
+  rules: text("rules"),
+  customEmojis: jsonb("custom_emojis").default("[]"),
+  theme: jsonb("theme").default("{}"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Chat Statistics - Usage analytics
+export const chatStatistics = pgTable("chat_statistics", {
+  id: serial("id").primaryKey(),
+  roomId: text("room_id").references(() => chatRooms.roomId),
+  userId: integer("user_id").references(() => users.id),
+  date: timestamp("date").notNull(),
+  messagesCount: integer("messages_count").default(0),
+  filesSharedCount: integer("files_shared_count").default(0),
+  voiceNotesCount: integer("voice_notes_count").default(0),
+  uniqueUsers: integer("unique_users").default(0),
+  peakConcurrentUsers: integer("peak_concurrent_users").default(0),
+  averageResponseTime: real("average_response_time"), // seconds
+  moderationActions: integer("moderation_actions").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for chat tables
+export const insertChatModeratorSchema = createInsertSchema(chatModerators).omit({
+  id: true,
+  joinedAt: true,
+  lastActiveAt: true,
+});
+
+export const insertChatRoomSchema = createInsertSchema(chatRooms).omit({
+  id: true,
+  currentUsers: true,
+  createdAt: true,
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessagesNew).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertChatUserSchema = createInsertSchema(chatUsers).omit({
+  id: true,
+  lastSeen: true,
+  joinedRoomAt: true,
+});
+
+export const insertChatFileUploadSchema = createInsertSchema(chatFileUploads).omit({
+  id: true,
+  downloadCount: true,
+  scanResults: true,
+  createdAt: true,
+});
+
+export const insertChatNotificationSchema = createInsertSchema(chatNotificationsNew).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertChatModerationActionSchema = createInsertSchema(chatModerationActions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertChatUserBanSchema = createInsertSchema(chatUserBans).omit({
+  id: true,
+  bannedAt: true,
+});
+
+export const insertChatRoomSettingsSchema = createInsertSchema(chatRoomSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export const insertChatStatisticsSchema = createInsertSchema(chatStatistics).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Chat type exports
+export type ChatModerator = typeof chatModerators.$inferSelect;
+export type InsertChatModerator = z.infer<typeof insertChatModeratorSchema>;
+export type ChatRoom = typeof chatRooms.$inferSelect;
+export type InsertChatRoom = z.infer<typeof insertChatRoomSchema>;
+export type ChatMessageNew = typeof chatMessagesNew.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatUser = typeof chatUsers.$inferSelect;
+export type InsertChatUser = z.infer<typeof insertChatUserSchema>;
+export type ChatFileUpload = typeof chatFileUploads.$inferSelect;
+export type InsertChatFileUpload = z.infer<typeof insertChatFileUploadSchema>;
+export type ChatNotificationNew = typeof chatNotificationsNew.$inferSelect;
+export type InsertChatNotification = z.infer<typeof insertChatNotificationSchema>;
+export type ChatModerationAction = typeof chatModerationActions.$inferSelect;
+export type InsertChatModerationAction = z.infer<typeof insertChatModerationActionSchema>;
+export type ChatUserBan = typeof chatUserBans.$inferSelect;
+export type InsertChatUserBan = z.infer<typeof insertChatUserBanSchema>;
+export type ChatRoomSettings = typeof chatRoomSettings.$inferSelect;
+export type InsertChatRoomSettings = z.infer<typeof insertChatRoomSettingsSchema>;
+export type ChatStatistics = typeof chatStatistics.$inferSelect;
+export type InsertChatStatistics = z.infer<typeof insertChatStatisticsSchema>;
+
 export const insertFinancialAuditTrailSchema = createInsertSchema(financialAuditTrail).omit({
   id: true,
   createdAt: true,
