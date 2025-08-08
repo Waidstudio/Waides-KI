@@ -52,7 +52,7 @@ import { Badge } from './badge';
 import { useUserAuth } from '../../hooks/useUserAuth';
 
 const StableNavigation = () => {
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(3);
@@ -454,25 +454,26 @@ const StableNavigation = () => {
                           const ItemIcon = item.icon;
                           const isItemActive = location === item.path;
                           return (
-                            <Link key={item.path} href={item.path}>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setActiveDropdown(null);
-                                }}
-                                className={`
-                                  px-4 py-3 transition-all duration-200 cursor-pointer border-b border-slate-700/30 last:border-0
-                                  hover:bg-slate-700/30 group
-                                  ${isItemActive 
-                                    ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
-                                    : 'text-gray-300 hover:text-white'
-                                  }
-                                `}
-                                style={{
-                                  animationDelay: `${index * 50}ms`,
-                                  animation: isOpen ? 'fadeInUp 0.3s ease-out forwards' : ''
-                                }}
-                              >
+                            <div
+                              key={item.path}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveDropdown(null);
+                                navigate(item.path);
+                              }}
+                              className={`
+                                px-4 py-3 transition-all duration-200 cursor-pointer border-b border-slate-700/30 last:border-0
+                                hover:bg-slate-700/30 group
+                                ${isItemActive 
+                                  ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
+                                  : 'text-gray-300 hover:text-white'
+                                }
+                              `}
+                              style={{
+                                animationDelay: `${index * 50}ms`,
+                                animation: isOpen ? 'fadeInUp 0.3s ease-out forwards' : ''
+                              }}
+                            >
                                 <div className="flex items-start space-x-3">
                                   {ItemIcon && (
                                     <ItemIcon className={`h-4 w-4 mt-0.5 transition-all duration-200 ${
@@ -488,8 +489,7 @@ const StableNavigation = () => {
                                     )}
                                   </div>
                                 </div>
-                              </div>
-                            </Link>
+                            </div>
                           );
                         })}
                       </div>
@@ -529,12 +529,13 @@ const StableNavigation = () => {
                 const isActive = location === item.path;
                 
                 return (
-                  <Link key={item.path} href={item.path}>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsMobileMenuOpen(false);
-                      }}
+                  <div
+                    key={item.path}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMobileMenuOpen(false);
+                      navigate(item.path);
+                    }}
                       className={`
                         flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer
                         ${isActive 
@@ -546,7 +547,6 @@ const StableNavigation = () => {
                       <Icon className="h-4 w-4" />
                       <span className="text-sm font-medium">{item.name}</span>
                     </div>
-                  </Link>
                 );
               })}
 
@@ -587,13 +587,14 @@ const StableNavigation = () => {
                           const ItemIcon = item.icon;
                           const isItemActive = location === item.path;
                           return (
-                            <Link key={item.path} href={item.path}>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setIsMobileMenuOpen(false);
-                                  setActiveDropdown(null);
-                                }}
+                            <div
+                              key={item.path}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsMobileMenuOpen(false);
+                                setActiveDropdown(null);
+                                navigate(item.path);
+                              }}
                                 className={`
                                   flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer group
                                   ${isItemActive 
@@ -620,7 +621,6 @@ const StableNavigation = () => {
                                   )}
                                 </div>
                               </div>
-                            </Link>
                           );
                         })}
                       </div>
@@ -633,11 +633,13 @@ const StableNavigation = () => {
               <div className="border-t border-slate-700/50 pt-4 mt-4">
                 <div className="space-y-2">
                   {/* Mobile Chat */}
-                  <Link href="/forum">
-                    <div
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer"
-                    >
+                  <div
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      navigate('/forum');
+                    }}
+                    className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer"
+                  >
                       <div className="flex items-center space-x-3">
                         <MessageCircle className="h-5 w-5" />
                         <span className="text-sm font-medium">Community Chat</span>
@@ -646,7 +648,6 @@ const StableNavigation = () => {
                         2
                       </Badge>
                     </div>
-                  </Link>
 
                   {/* Mobile Notifications */}
                   <div className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer">
