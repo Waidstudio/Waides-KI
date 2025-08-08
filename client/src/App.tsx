@@ -531,7 +531,7 @@ function Router() {
       {isAuthenticated && (
         <AdminChatSystem 
           isAdmin={user?.role === 'admin' || user?.role === 'super_admin'} 
-          userId={user?.id || '1'} 
+          userId={user?.id?.toString() || '1'} 
         />
       )}
     </div>
