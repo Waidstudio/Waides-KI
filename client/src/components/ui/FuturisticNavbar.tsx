@@ -61,70 +61,76 @@ const FuturisticNavbar = () => {
   
   const { user, isAuthenticated, logout } = useUserAuth();
 
-  // Navigation categories with dropdown items
-  const navigationCategories = [
-    {
-      name: 'Core Trading',
-      key: 'trading',
-      icon: TrendingUp,
-      items: [
-        { name: 'Vision Portal', path: '/portal', icon: Eye },
-        { name: 'Trading Interface', path: '/trading', icon: BarChart3 },
-        { name: 'Bot Dashboard', path: '/bot-dashboard', icon: Bot },
-        { name: 'Live Data', path: '/live-data', icon: Activity },
-        { name: 'Dashboard', path: '/dashboard', icon: Gauge },
-        { name: 'Analytics', path: '/analytics', icon: TrendingUp }
-      ]
-    },
-    {
-      name: 'AI Systems',
-      key: 'ai',
-      icon: Brain,
-      items: [
-        { name: 'AI Systems Hub', path: '/ai-systems', icon: Brain },
-        { name: 'Maibot (Free)', path: '/maibot', icon: Bot },
-        { name: 'WaidBot', path: '/waidbot', icon: Zap },
-        { name: 'WaidBot Pro', path: '/waidbot-pro', icon: Crown },
-        { name: 'Enhanced WaidBot', path: '/enhanced-waidbot', icon: Sparkles },
-        { name: 'Autonomous Trader', path: '/autonomous-trader', icon: Target }
-      ]
-    },
-    {
-      name: 'Spiritual AI',
-      key: 'spiritual',
-      icon: Sparkles,
-      items: [
-        { name: 'Dream Vision', path: '/dream-vision', icon: Eye },
-        { name: 'Vision Spirit', path: '/vision-spirit', icon: Heart },
-        { name: 'Spiritual Recall', path: '/spiritual-recall', icon: Brain },
-        { name: 'Seasonal Rebirth', path: '/seasonal-rebirth', icon: Waves },
-        { name: 'Sigil Layer', path: '/sigil-layer', icon: Star },
-        { name: 'Shadow Defense', path: '/shadow-defense', icon: Shield }
-      ]
-    },
-    {
-      name: 'Wallet & Finance',
-      key: 'wallet',
-      icon: Wallet,
-      items: [
-        { name: 'Main Wallet', path: '/wallet', icon: Wallet },
-        { name: 'SmaiSika Wallet', path: '/wallet-simple', icon: Coins },
-        { name: 'Professional Wallet', path: '/wallet-pro', icon: TrendingUp },
-        { name: 'Payment Admin', path: '/payment-admin', icon: Settings }
-      ]
-    },
-    {
-      name: 'Admin & Config',
-      key: 'admin',
-      icon: Settings,
-      items: [
-        { name: 'Admin Panel', path: '/admin', icon: Settings },
-        { name: 'Admin Dashboard', path: '/admin-panel', icon: Gauge },
-        { name: 'Configuration', path: '/config', icon: Command },
-        { name: 'Security', path: '/security', icon: Lock }
-      ]
-    }
-  ];
+  // Navigation categories with dropdown items - filtered by authentication
+  const getNavigationCategories = () => {
+    const authenticatedItems = [
+      {
+        name: 'Core Trading',
+        key: 'trading',
+        icon: TrendingUp,
+        items: [
+          { name: 'Vision Portal', path: '/portal', icon: Eye },
+          { name: 'Trading Interface', path: '/trading', icon: BarChart3 },
+          { name: 'Bot Dashboard', path: '/bot-dashboard', icon: Bot },
+          { name: 'Live Data', path: '/live-data', icon: Activity },
+          { name: 'Dashboard', path: '/dashboard', icon: Gauge },
+          { name: 'Analytics', path: '/analytics', icon: TrendingUp }
+        ]
+      },
+      {
+        name: 'AI Systems',
+        key: 'ai',
+        icon: Brain,
+        items: [
+          { name: 'AI Systems Hub', path: '/ai-systems', icon: Brain },
+          { name: 'Maibot (Free)', path: '/maibot', icon: Bot },
+          { name: 'WaidBot', path: '/waidbot', icon: Zap },
+          { name: 'WaidBot Pro', path: '/waidbot-pro', icon: Crown },
+          { name: 'Enhanced WaidBot', path: '/enhanced-waidbot', icon: Sparkles },
+          { name: 'Autonomous Trader', path: '/autonomous-trader', icon: Target }
+        ]
+      },
+      {
+        name: 'Spiritual AI',
+        key: 'spiritual',
+        icon: Sparkles,
+        items: [
+          { name: 'Dream Vision', path: '/dream-vision', icon: Eye },
+          { name: 'Vision Spirit', path: '/vision-spirit', icon: Heart },
+          { name: 'Spiritual Recall', path: '/spiritual-recall', icon: Brain },
+          { name: 'Seasonal Rebirth', path: '/seasonal-rebirth', icon: Waves },
+          { name: 'Sigil Layer', path: '/sigil-layer', icon: Star },
+          { name: 'Shadow Defense', path: '/shadow-defense', icon: Shield }
+        ]
+      },
+      {
+        name: 'Wallet & Finance',
+        key: 'wallet',
+        icon: Wallet,
+        items: [
+          { name: 'Main Wallet', path: '/wallet', icon: Wallet },
+          { name: 'SmaiSika Wallet', path: '/wallet-simple', icon: Coins },
+          { name: 'Professional Wallet', path: '/wallet-pro', icon: TrendingUp },
+          { name: 'Payment Admin', path: '/payment-admin', icon: Settings }
+        ]
+      },
+      {
+        name: 'Admin & Config',
+        key: 'admin',
+        icon: Settings,
+        items: [
+          { name: 'Admin Panel', path: '/admin', icon: Settings },
+          { name: 'Admin Dashboard', path: '/admin-panel', icon: Gauge },
+          { name: 'Configuration', path: '/config', icon: Command },
+          { name: 'Security', path: '/security', icon: Lock }
+        ]
+      }
+    ];
+
+    return isAuthenticated ? authenticatedItems : [];
+  };
+
+  const navigationCategories = getNavigationCategories();
 
   // Close dropdowns when clicking outside or pressing escape
   useEffect(() => {
@@ -184,7 +190,7 @@ const FuturisticNavbar = () => {
           </Link>
         </div>
 
-        {/* Desktop Navigation Links */}
+        {/* Desktop Navigation Links - Only show for authenticated users */}
         <div className="navbar-links">
           {navigationCategories.map((category) => (
             <div
@@ -225,15 +231,17 @@ const FuturisticNavbar = () => {
 
         {/* Right Side Actions */}
         <div className="navbar-actions">
-          {/* Search */}
-          <div className="search-container">
-            <Search className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="search-input"
-            />
-          </div>
+          {/* Search - Only for authenticated users */}
+          {isAuthenticated && (
+            <div className="search-container">
+              <Search className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="search-input"
+              />
+            </div>
+          )}
 
           {/* User Profile and Actions */}
           {isAuthenticated ? (
@@ -306,47 +314,47 @@ const FuturisticNavbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Only show navigation for authenticated users */}
       <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-        {navigationCategories.map((category) => (
-          <div key={category.key} className="mobile-category">
-            <button
-              className="mobile-category-toggle"
-              onClick={() => handleDropdownToggle(`mobile-${category.key}`)}
-            >
-              <category.icon className="w-4 h-4" />
-              {category.name}
-              <ChevronDown 
-                className={`w-4 h-4 transition-transform duration-300 ${
-                  activeDropdown === `mobile-${category.key}` ? 'rotate-180' : ''
-                }`} 
-              />
-            </button>
-            {activeDropdown === `mobile-${category.key}` && (
-              <div className="mobile-dropdown">
-                {category.items.map((item) => (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    className="mobile-link"
-                    onClick={() => {
-                      setActiveDropdown(null);
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    {item.name}
-                  </Link>
-                ))}
+        {isAuthenticated ? (
+          <>
+            {navigationCategories.map((category) => (
+              <div key={category.key} className="mobile-category">
+                <button
+                  className="mobile-category-toggle"
+                  onClick={() => handleDropdownToggle(`mobile-${category.key}`)}
+                >
+                  <category.icon className="w-4 h-4" />
+                  {category.name}
+                  <ChevronDown 
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      activeDropdown === `mobile-${category.key}` ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+                {activeDropdown === `mobile-${category.key}` && (
+                  <div className="mobile-dropdown">
+                    {category.items.map((item) => (
+                      <Link
+                        key={item.path}
+                        href={item.path}
+                        className="mobile-link"
+                        onClick={() => {
+                          setActiveDropdown(null);
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
-        
-        {/* Mobile User Actions */}
-        <div className="mobile-user-actions">
-          {isAuthenticated ? (
-            <>
+            ))}
+            
+            {/* Mobile User Actions */}
+            <div className="mobile-user-actions">
               <Link
                 href="/waid-chat"
                 className="mobile-link"
@@ -373,8 +381,10 @@ const FuturisticNavbar = () => {
                 <LogOut className="w-4 h-4" />
                 Logout
               </button>
-            </>
-          ) : (
+            </div>
+          </>
+        ) : (
+          <div className="mobile-guest-actions">
             <Link
               href="/login"
               className="mobile-link"
@@ -382,8 +392,8 @@ const FuturisticNavbar = () => {
             >
               Login
             </Link>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
