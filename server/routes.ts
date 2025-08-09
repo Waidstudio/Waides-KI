@@ -1416,10 +1416,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const status = {
         isRunning: true,
         memory: {
-          totalTrades: Math.floor(uptime / 300) + 100, // Trades based on uptime
-          successRate: 70 + (ethData.priceChange24h > 0 ? 15 : 5) + Math.random() * 10, // Real market-based success rate
-          gainStreak: ethData.priceChange24h > 0 ? Math.floor(Math.random() * 8) + 3 : Math.floor(Math.random() * 3),
-          failStreak: ethData.priceChange24h < -2 ? Math.floor(Math.random() * 3) : 0,
+          totalTrades: 0, // New account - no trades yet
+          successRate: 0, // New account - no success rate yet
+          gainStreak: 0, // New account - no streak data yet
+          failStreak: 0, // New account - no streak data yet
           spiritualState: ethData.priceChange24h > 3 ? 'enlightened' : ethData.priceChange24h > 0 ? 'focused' : ethData.priceChange24h > -3 ? 'cautious' : 'blocked' as const,
           learningWeight: Math.min(0.95, 0.65 + (uptime / 86400) * 0.1), // Increases with system uptime
           priceHistoryLength: Math.floor(uptime / 60), // Minutes of price data
@@ -1430,17 +1430,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           { 
             timestamp: Date.now() - 300000, 
             signal: ethData.priceChange24h > 2 ? 'BUY' : ethData.priceChange24h < -2 ? 'SELL' : 'HOLD', 
-            confidence: 0.70 + Math.random() * 0.25 
+            confidence: 0 // New account - no confidence data yet 
           },
           { 
             timestamp: Date.now() - 600000, 
             signal: 'HOLD', 
-            confidence: 0.60 + Math.random() * 0.20 
+            confidence: 0 // New account - no confidence data yet 
           },
           { 
             timestamp: Date.now() - 900000, 
             signal: Math.random() > 0.5 ? 'BUY' : 'SELL', 
-            confidence: 0.75 + Math.random() * 0.20 
+            confidence: 0 // New account - no confidence data yet 
           }
         ],
         systemHealth: {
@@ -1675,7 +1675,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         reading: reading || "The spirits whisper of opportunity in the ETH markets. Patience and wisdom shall guide your trades.",
         timestamp: new Date().toISOString(),
-        energy_level: Math.floor(Math.random() * 100) + 1
+        energy_level: 0 // New account - no energy level data yet
       });
     } catch (error) {
       res.json({
@@ -3430,7 +3430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         aiInsights: {
           marketSentiment: 'Bullish',
-          confidence: 84.2,
+          confidence: 0,
           nextAction: 'Hold current positions'
         }
       }
@@ -3469,19 +3469,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       predictions: {
         nextWeek: {
           trend: 'upward',
-          confidence: 82.3,
+          confidence: 0,
           expectedReturn: 4.2,
           riskLevel: 'Low-Medium'
         },
         nextMonth: {
           trend: 'bullish',
-          confidence: 74.8,
+          confidence: 0,
           expectedReturn: 12.8,
           riskLevel: 'Medium'
         },
         nextQuarter: {
           trend: 'stable_growth',
-          confidence: 68.5,
+          confidence: 0,
           expectedReturn: 28.4,
           riskLevel: 'Medium-High'
         }
@@ -3511,7 +3511,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           allocated: 750.00,
           available: 14250.00,
           totalTrades: 63,
-          profit: 2340.75,
+          profit: 0,
           profitPercent: 15.6
         },
         autonomous_trader: {
@@ -3519,7 +3519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           allocated: 1200.00,
           available: 18800.00,
           totalTrades: 89,
-          profit: 3120.45,
+          profit: 0,
           profitPercent: 15.6
         },
         full_engine: {
@@ -4098,7 +4098,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           risk_level: 'DIVINE'
         },
         performance: {
-          success_rate: smaiStatus.performance?.winRate || 89.7,
+          success_rate: smaiStatus.performance?.winRate || 0,
           total_profit: smaiStatus.performance?.dailyProfit || 0,
           daily_trades: smaiStatus.performance?.totalTrades || 0,
           divine_accuracy: 94.2,
@@ -4209,11 +4209,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Enhanced gamified metrics similar to other bots
-      const divineConfidence = 88 + Math.random() * 10; // 88-98% range
-      const energyAlignment = 85 + Math.random() * 12; // 85-97% range
-      const successRate = 92.5 + Math.random() * 5; // 92.5-97.5% range
-      const totalTrades = Math.floor(15 + Math.random() * 25); // 15-40 trades
-      const dailyProfit = 847 + Math.random() * 800; // $847-$1647 range
+      const divineConfidence = 0; // New account - no confidence data yet
+      const energyAlignment = 0; // New account - no alignment data yet
+      const successRate = 0; // New account - no success rate yet
+      const totalTrades = 0; // New account - no trades yet
+      const dailyProfit = 0; // New account - no profit yet
       
       res.json({
         success: true,
@@ -4557,9 +4557,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           ],
           performancePrediction: {
-            conservative: { return: 8.5, confidence: 85 },
-            moderate: { return: 15.2, confidence: 75 },
-            aggressive: { return: 28.7, confidence: 60 }
+            conservative: { return: 0, confidence: 0 },
+            moderate: { return: 0, confidence: 0 },
+            aggressive: { return: 0, confidence: 0 }
           }
         },
         aiInsights: {
@@ -7480,7 +7480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Calculate real-time trading statistics with fallback data
       const totalTrades = (autonomousStatus?.performance?.totalTrades) || 847;
-      const successRate = (autonomousStatus?.performance?.winRate) || 78.5;
+      const successRate = (autonomousStatus?.performance?.winRate) || 0;
       const currentBalance = autonomousStatus?.currentBalance?.totalValue || 12840;
       const currentProfit = ((currentBalance - 10000) / 10000) * 100;
       
@@ -9622,10 +9622,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         confidence: 0, // Builds with real trading experience
         gamifiedMetrics,
         wallet: {
-          balance: 25480,
+          balance: 0,
           currency: "SmaiSika",
-          totalInvested: 20000,
-          dailyProfit: 1234
+          totalInvested: 0,
+          dailyProfit: 0
         },
         tradingMode: getTradingMode('alpha'),
         liveActivity: [
@@ -10079,7 +10079,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           balance: 15750,
           currency: "SmaiSika",
           totalInvested: 10000,
-          dailyProfit: 847
+          dailyProfit: 0
         },
         tradingMode: getTradingMode('autonomous'),
         liveActivity: [
@@ -10102,21 +10102,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         id: "alpha",
         name: "Alpha Entity",
-        isActive: Math.random() > 0.5,
+        isActive: false,
         performance: {
-          totalTrades: 892,
-          winRate: 87,
-          profit: 23.4,
-          todayTrades: 47
+          totalTrades: 0,
+          winRate: 0,
+          profit: 0,
+          todayTrades: 0
         },
-        currentAction: "Advanced pattern recognition",
-        nextAction: "Deep learning optimization",
-        confidence: 91,
+        currentAction: "Awaiting activation",
+        nextAction: "Initialize trading patterns",
+        confidence: 0,
         wallet: {
-          balance: 25480,
+          balance: 0,
           currency: "SmaiSika",
-          totalInvested: 20000,
-          dailyProfit: 1234
+          totalInvested: 0,
+          dailyProfit: 0
         },
         tradingMode: getTradingMode('alpha'),
         liveActivity: [
@@ -13546,15 +13546,15 @@ Ask me about specific market conditions, upload files for analysis, or request K
           market_phase: 10
         },
         model_metrics: {
-          accuracy: 75,
-          precision: 78,
-          recall: 73,
-          f1_score: 75.5
+          accuracy: 0,
+          precision: 0,
+          recall: 0,
+          f1_score: 0
         },
         recent_predictions: [
-          { timestamp: Date.now() - 3600000, prediction: 'BUY', confidence: 82, result: 'WIN' },
-          { timestamp: Date.now() - 7200000, prediction: 'HOLD', confidence: 0, result: 'NEW_ACCOUNT' },
-          { timestamp: Date.now() - 10800000, prediction: 'BUY', confidence: 78, result: 'LOSS' }
+          { timestamp: Date.now() - 3600000, prediction: 'NONE', confidence: 0, result: 'NEW_ACCOUNT' },
+          { timestamp: Date.now() - 7200000, prediction: 'NONE', confidence: 0, result: 'NEW_ACCOUNT' },
+          { timestamp: Date.now() - 10800000, prediction: 'NONE', confidence: 0, result: 'NEW_ACCOUNT' }
         ]
       }
     });
@@ -13566,46 +13566,46 @@ Ask me about specific market conditions, upload files for analysis, or request K
       success: true,
       performance_tracker: {
         overall_metrics: {
-          total_trades: 127,
-          winning_trades: 86,
-          losing_trades: 41,
-          win_rate: 68,
-          profit_factor: 2.4,
-          total_return_pct: 24.7,
-          sharpe_ratio: 1.8,
-          max_drawdown_pct: -8.3
+          total_trades: 0,
+          winning_trades: 0,
+          losing_trades: 0,
+          win_rate: 0,
+          profit_factor: 0,
+          total_return_pct: 0,
+          sharpe_ratio: 0,
+          max_drawdown_pct: 0
         },
         strategy_performance: [
           {
             strategy_name: 'DIVINE_QUANTUM_FLUX',
-            win_rate: 72,
-            total_trades: 45,
-            profit_factor: 2.8,
-            performance_trend: 'IMPROVING',
-            confidence_score: 84,
-            recommendation: 'INCREASE_ALLOCATION'
+            win_rate: 0,
+            total_trades: 0,
+            profit_factor: 0,
+            performance_trend: 'NEW_ACCOUNT',
+            confidence_score: 0,
+            recommendation: 'START_TRADING'
           },
           {
             strategy_name: 'NEURAL_QUANTUM_SINGULARITY',
-            win_rate: 65,
-            total_trades: 38,
-            profit_factor: 2.1,
-            performance_trend: 'STABLE',
-            confidence_score: 76,
-            recommendation: 'MAINTAIN'
+            win_rate: 0,
+            total_trades: 0,
+            profit_factor: 0,
+            performance_trend: 'NEW_ACCOUNT',
+            confidence_score: 0,
+            recommendation: 'START_TRADING'
           },
           {
             strategy_name: 'TRINITY_BRAIN_CONSENSUS',
-            win_rate: 69,
-            total_trades: 44,
-            profit_factor: 2.5,
-            performance_trend: 'IMPROVING',
-            confidence_score: 81,
-            recommendation: 'INCREASE_ALLOCATION'
+            win_rate: 0,
+            total_trades: 0,
+            profit_factor: 0,
+            performance_trend: 'NEW_ACCOUNT',
+            confidence_score: 0,
+            recommendation: 'START_TRADING'
           }
         ],
-        recent_performance: 'IMPROVING',
-        system_health: 94
+        recent_performance: 'NEW_ACCOUNT',
+        system_health: 0
       }
     });
   });
