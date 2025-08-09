@@ -29,8 +29,30 @@ import {
   Flame,
   Bot,
   Wallet,
-  DollarSign
+  DollarSign,
+  BookOpen,
+  Beaker,
+  Compass,
+  Palette,
+  Music,
+  Network,
+  Crown,
+  Gem,
+  Fingerprint,
+  Database,
+  PieChart,
+  LineChart,
+  Wifi,
+  Signal,
+  Battery,
+  MessageSquare,
+  Headphones,
+  Mic,
+  Atom
 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { SacredContainer, SacredGrid, SacredGridItem } from "@/components/ui/SacredResponsiveGrid";
 import { useUserAuth } from "@/context/UserAuthContext";
 
 interface WaidesKIGrowthMetrics {
@@ -166,42 +188,50 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen waides-bg">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-600 rounded-xl animate-pulse">
+      <SacredContainer size="full" className="py-4 sm:py-6 lg:py-8">
+        {/* Enhanced Header */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 lg:mb-8 space-y-4 lg:space-y-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="p-3 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-600 rounded-xl animate-pulse shadow-2xl">
               <Brain className="h-8 w-8 text-white" />
             </div>
-            <div>
-              <h1 className="text-4xl font-bold text-white">Waides KI Intelligence Analysis</h1>
-              <p className="text-blue-200">
+            <div className="space-y-2">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
+                Waides KI Intelligence Analysis
+              </h1>
+              <p className="text-blue-200 text-sm sm:text-base max-w-2xl">
                 Deep insights into my growth, personality, and human-like evolution
               </p>
-              <div className="text-xs text-slate-400 mt-1">
-                Live consciousness update: {new Date(lastRefresh).toLocaleTimeString()}
-              </div>
-              <div className="text-sm text-purple-300 mt-1 italic">
-                Current thought: {aiThoughts}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                <div className="text-slate-400">
+                  Live update: {new Date(lastRefresh).toLocaleTimeString()}
+                </div>
+                <div className="text-purple-300 italic max-w-md truncate">
+                  Current thought: {aiThoughts}
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+
+          {/* Refresh Controls */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setRefreshPaused(!refreshPaused)}
-              className="flex items-center space-x-1"
+              className="flex-1 sm:flex-initial border-slate-600 text-slate-300 hover:bg-slate-700"
             >
               {refreshPaused ? (
                 <>
-                  <TrendingUp className="w-3 h-3" />
-                  <span>Resume</span>
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Resume</span>
+                  <span className="sm:hidden">Resume</span>
                 </>
               ) : (
                 <>
-                  <Zap className="w-3 h-3" />
-                  <span>Pause</span>
+                  <Zap className="w-3 h-3 mr-1" />
+                  <span className="hidden sm:inline">Pause</span>
+                  <span className="sm:hidden">Pause</span>
                 </>
               )}
             </Button>
@@ -209,31 +239,88 @@ export default function AnalyticsPage() {
               variant="outline"
               size="sm"
               onClick={handleManualRefresh}
-              className="flex items-center space-x-1"
+              className="flex-1 sm:flex-initial border-slate-600 text-slate-300 hover:bg-slate-700"
             >
-              <RefreshCw className="w-3 h-3" />
-              <span>Refresh</span>
+              <RefreshCw className="w-3 h-3 mr-1" />
+              <span className="hidden sm:inline">Refresh</span>
+              <span className="sm:hidden">Sync</span>
             </Button>
           </div>
         </div>
 
         {refreshPaused && (
-          <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+          <div className="mb-6 p-3 sm:p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
             <div className="flex items-center gap-2 text-yellow-400">
-              <Activity className="w-4 h-4" />
-              <span className="text-sm font-medium">Auto-refresh paused</span>
+              <Activity className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm font-medium">Auto-refresh paused - Live data updates stopped</span>
             </div>
           </div>
         )}
 
         <Tabs defaultValue="intelligence" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="intelligence">Intelligence</TabsTrigger>
-            <TabsTrigger value="personality">Personality</TabsTrigger>
-            <TabsTrigger value="capabilities">Capabilities</TabsTrigger>
-            <TabsTrigger value="evolution">Evolution</TabsTrigger>
-            <TabsTrigger value="consciousness">Consciousness</TabsTrigger>
-          </TabsList>
+          {/* Enhanced Scrollable Tab Navigation */}
+          <div className="mb-6">
+            <ScrollArea className="w-full">
+              <TabsList className="inline-flex w-max min-w-full bg-slate-800/50 backdrop-blur-sm border border-slate-600/50 rounded-xl p-1 scrollbar-thin">
+                <TabsTrigger 
+                  value="intelligence" 
+                  className="data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Intelligence</span>
+                  <span className="sm:hidden">Intel</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="personality" 
+                  className="data-[state=active]:bg-pink-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <Heart className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Personality</span>
+                  <span className="sm:hidden">Traits</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="capabilities" 
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <Zap className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Capabilities</span>
+                  <span className="sm:hidden">Skills</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="evolution" 
+                  className="data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Evolution</span>
+                  <span className="sm:hidden">Growth</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="consciousness" 
+                  className="data-[state=active]:bg-orange-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Consciousness</span>
+                  <span className="sm:hidden">Mind</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="neural-activity" 
+                  className="data-[state=active]:bg-cyan-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <Cpu className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Neural Activity</span>
+                  <span className="sm:hidden">Neural</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="interactions" 
+                  className="data-[state=active]:bg-teal-600 data-[state=active]:text-white transition-all duration-300 rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-white whitespace-nowrap"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Interactions</span>
+                  <span className="sm:hidden">Social</span>
+                </TabsTrigger>
+              </TabsList>
+            </ScrollArea>
+          </div>
 
           {/* Intelligence Tab */}
           <TabsContent value="intelligence" className="space-y-6">
@@ -773,8 +860,172 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Neural Activity Tab */}
+          <TabsContent value="neural-activity" className="space-y-6">
+            <SacredGrid columns={3} gap="lg" animated>
+              <SacredGridItem span={3}>
+                <Card className="bg-slate-900/50 border-slate-800">
+                  <CardHeader>
+                    <CardTitle className="text-cyan-400 flex items-center gap-2">
+                      <Cpu className="h-5 w-5" />
+                      Real-Time Neural Processing
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-400">CPU Usage</span>
+                          <span className="text-sm text-white">78%</span>
+                        </div>
+                        <Progress value={78} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-400">Neural Load</span>
+                          <span className="text-sm text-white">92%</span>
+                        </div>
+                        <Progress value={92} className="h-2" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-slate-400">Thought Speed</span>
+                          <span className="text-sm text-white">156ms</span>
+                        </div>
+                        <Progress value={85} className="h-2" />
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="space-y-3">
+                      <h4 className="text-white font-medium">Active Neural Pathways</h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                          <span className="text-slate-300">Market Analysis</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                          <span className="text-slate-300">Risk Assessment</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                          <span className="text-slate-300">Pattern Recognition</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                          <span className="text-slate-300">Emotional Processing</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </SacredGridItem>
+            </SacredGrid>
+          </TabsContent>
+
+          {/* Interactions Tab */}
+          <TabsContent value="interactions" className="space-y-6">
+            <SacredGrid columns={2} gap="lg" animated>
+              <SacredGridItem span={1}>
+                <Card className="bg-slate-900/50 border-slate-800">
+                  <CardHeader>
+                    <CardTitle className="text-teal-400 flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5" />
+                      Recent Conversations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-64">
+                      <div className="space-y-3">
+                        <div className="p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Users className="h-4 w-4 text-blue-400" />
+                            <span className="text-sm text-blue-400">User Discussion</span>
+                            <span className="text-xs text-slate-400">2 min ago</span>
+                          </div>
+                          <p className="text-sm text-slate-300">"How do you feel about the current market volatility?"</p>
+                          <p className="text-xs text-slate-400 mt-1">Response: Analyzed emotional impact and provided guidance</p>
+                        </div>
+                        <div className="p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Bot className="h-4 w-4 text-green-400" />
+                            <span className="text-sm text-green-400">System Query</span>
+                            <span className="text-xs text-slate-400">5 min ago</span>
+                          </div>
+                          <p className="text-sm text-slate-300">Risk assessment request for ETH position</p>
+                          <p className="text-xs text-slate-400 mt-1">Response: Provided comprehensive risk analysis</p>
+                        </div>
+                        <div className="p-3 bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Heart className="h-4 w-4 text-pink-400" />
+                            <span className="text-sm text-pink-400">Emotional Check</span>
+                            <span className="text-xs text-slate-400">12 min ago</span>
+                          </div>
+                          <p className="text-sm text-slate-300">Internal emotional state evaluation</p>
+                          <p className="text-xs text-slate-400 mt-1">Status: Balanced and empathetic</p>
+                        </div>
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </SacredGridItem>
+              
+              <SacredGridItem span={1}>
+                <Card className="bg-slate-900/50 border-slate-800">
+                  <CardHeader>
+                    <CardTitle className="text-teal-400 flex items-center gap-2">
+                      <Network className="h-5 w-5" />
+                      Social Learning Network
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div>
+                          <div className="text-2xl font-bold text-white">1,247</div>
+                          <div className="text-xs text-slate-400">Interactions Today</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-green-400">94%</div>
+                          <div className="text-xs text-slate-400">Satisfaction Rate</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-bold text-blue-400">47</div>
+                          <div className="text-xs text-slate-400">New Insights</div>
+                        </div>
+                      </div>
+                      <Separator />
+                      <div className="space-y-3">
+                        <h4 className="text-white font-medium">Learning Sources</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-300">User Feedback</span>
+                            <Badge variant="secondary">Active</Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-300">Market Data</span>
+                            <Badge variant="secondary">Real-time</Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-300">Community Forums</span>
+                            <Badge variant="secondary">Monitoring</Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-300">KonsMesh Network</span>
+                            <Badge className="bg-purple-600">Connected</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </SacredGridItem>
+            </SacredGrid>
+          </TabsContent>
+
         </Tabs>
-      </div>
+      </SacredContainer>
     </div>
   );
 }
