@@ -81,6 +81,7 @@ import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
 import SystemAdminDashboard from "@/pages/SystemAdminDashboard";
 import TradingAdminDashboard from "@/pages/TradingAdminDashboard";
 import SupportAdminDashboard from "@/pages/SupportAdminDashboard";
+import ViewerAdminDashboard from "@/pages/ViewerAdminDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
@@ -629,6 +630,13 @@ function Router() {
             {() => (
               <ProtectedRoute requiredRole={["admin", "super_admin"]}>
                 <SupportAdminDashboard />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/viewer-admin-dashboard">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <ViewerAdminDashboard />
               </ProtectedRoute>
             )}
           </Route>
