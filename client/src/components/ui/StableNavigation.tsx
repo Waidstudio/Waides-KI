@@ -47,7 +47,8 @@ import {
   Infinity,
   Command,
   DollarSign,
-  TestTube
+  TestTube,
+  Pickaxe
 } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
@@ -146,6 +147,8 @@ const StableNavigation = () => {
         { name: 'Main Wallet', path: '/wallet', description: 'Portfolio management', icon: Wallet },
         { name: 'SmaiSika Wallet', path: '/wallet-simple', description: 'Simplified interface', icon: Coins },
         { name: 'Professional Wallet', path: '/wallet-pro', description: 'Advanced KonsMesh wallet', icon: TrendingUp },
+        { name: 'SmaiSika Mining', path: '/smaisika-mining', description: 'Cryptocurrency mining portal', icon: Pickaxe },
+        { name: 'Admin Mining', path: '/admin-mining', description: 'Admin mining controls', icon: Crown },
         { name: 'Payment Admin', path: '/payment-admin', description: 'Payment management', icon: Settings },
         { name: 'Exchange Pool', path: '/admin-exchange-pool', description: 'Exchange management', icon: Globe }
       ]

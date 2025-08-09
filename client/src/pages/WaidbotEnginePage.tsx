@@ -31,6 +31,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface BotStatus {
   id: string;
@@ -57,6 +58,9 @@ interface BotStatus {
 
 export default function WaidbotEnginePage() {
   const queryClient = useQueryClient();
+  
+  // Global trading mode state
+  const [globalTradingMode, setGlobalTradingMode] = useState<'demo' | 'real'>('demo');
 
   // Fetch status for all six entities
   const { data: waidBotStatus, isLoading: waidBotLoading } = useQuery<BotStatus>({
@@ -163,6 +167,74 @@ export default function WaidbotEnginePage() {
     }
   });
 
+  // Trading mode mutations for each bot
+  const setWaidBotTradingMode = useMutation({
+    mutationFn: async (mode: 'demo' | 'real') => {
+      const response = await fetch(`/api/waidbot-engine/waidbot/set-trading-mode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+    }
+  });
+
+  const setWaidBotProTradingMode = useMutation({
+    mutationFn: async (mode: 'demo' | 'real') => {
+      const response = await fetch(`/api/waidbot-engine/waidbot-pro/set-trading-mode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+    }
+  });
+
+  const setAutonomousTradingMode = useMutation({
+    mutationFn: async (mode: 'demo' | 'real') => {
+      const response = await fetch(`/api/waidbot-engine/autonomous/set-trading-mode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+    }
+  });
+
+  const setMaibotTradingMode = useMutation({
+    mutationFn: async (mode: 'demo' | 'real') => {
+      const response = await fetch(`/api/waidbot-engine/maibot/set-trading-mode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+    }
+  });
+
+  // Global trading mode toggle
+  const handleGlobalTradingModeToggle = (mode: 'demo' | 'real') => {
+    setGlobalTradingMode(mode);
+    
+    // Set trading mode for all bots
+    setWaidBotTradingMode.mutate(mode);
+    setWaidBotProTradingMode.mutate(mode);
+    setAutonomousTradingMode.mutate(mode);
+    setMaibotTradingMode.mutate(mode);
+  };
+
   // Additional bot mutations for Divine Bots and Full Engine
   const toggleSmaiChinnikstah = useMutation({
     mutationFn: async (action: 'start' | 'stop') => {
@@ -262,6 +334,48 @@ export default function WaidbotEnginePage() {
           </p>
         </div>
 
+        {/* Global Trading Mode Toggle */}
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <TestTube className="w-6 h-6 text-blue-400" />
+                <span className="text-xl text-slate-100">Global Trading Mode</span>
+              </div>
+              <Badge className={`${globalTradingMode === 'demo' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-green-500/20 text-green-400 border-green-500/30'}`}>
+                {globalTradingMode === 'demo' ? 'DEMO MODE' : 'REAL TRADING'}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <p className="text-slate-300">
+                  {globalTradingMode === 'demo' 
+                    ? 'Safe testing environment with simulated trades and virtual funds'
+                    : 'Live trading with real money and actual market execution'
+                  }
+                </p>
+                <p className="text-sm text-slate-400">
+                  This setting applies to all active trading bots
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="demo-mode" className="text-slate-300">Demo</Label>
+                  <Switch
+                    id="trading-mode"
+                    checked={globalTradingMode === 'real'}
+                    onCheckedChange={(checked) => handleGlobalTradingModeToggle(checked ? 'real' : 'demo')}
+                    className="data-[state=checked]:bg-green-600"
+                  />
+                  <Label htmlFor="real-mode" className="text-slate-300">Real</Label>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Waidbot - ETH Uptrend Only */}
         <Card className="bg-gradient-to-br from-green-900/20 to-emerald-900/10 border-green-500/30">
           <CardHeader>
@@ -287,6 +401,9 @@ export default function WaidbotEnginePage() {
                     <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">INACTIVE</Badge>
                   </>
                 )}
+                <Badge className={`${waidBotStatus?.tradingMode === 'demo' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'}`}>
+                  {waidBotStatus?.tradingMode?.toUpperCase() || 'DEMO'}
+                </Badge>
               </div>
             </CardTitle>
           </CardHeader>
@@ -437,6 +554,9 @@ export default function WaidbotEnginePage() {
                     <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">INACTIVE</Badge>
                   </>
                 )}
+                <Badge className={`${waidBotProStatus?.tradingMode === 'demo' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'}`}>
+                  {waidBotProStatus?.tradingMode?.toUpperCase() || 'DEMO'}
+                </Badge>
               </div>
             </CardTitle>
           </CardHeader>
