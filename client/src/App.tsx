@@ -88,6 +88,11 @@ import AISystemsPage from "@/pages/AISystemsPage";
 import AutonomousTraderPage from "@/pages/AutonomousTraderPage";
 import FullEnginePage from "@/pages/FullEnginePage";
 import WaidChatPage from "@/pages/WaidChatPage";
+import HolographicUIPage from "@/pages/HolographicUIPage";
+import NeuralTradingPage from "@/pages/NeuralTradingPage";
+import QuantumAnalyticsPage from "@/pages/QuantumAnalyticsPage";
+import BiometricAuthPage from "@/pages/BiometricAuthPage";
+import MarketScannerPage from "@/pages/MarketScannerPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -476,6 +481,43 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <SeasonalRebirth />
+              </ProtectedRoute>
+            )}
+          </Route>
+          
+          {/* Advanced AI UI Pages */}
+          <Route path="/holographic-ui">
+            {() => (
+              <ProtectedRoute>
+                <HolographicUIPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/neural-trading">
+            {() => (
+              <ProtectedRoute>
+                <NeuralTradingPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/quantum-analytics">
+            {() => (
+              <ProtectedRoute>
+                <QuantumAnalyticsPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/biometric-auth">
+            {() => (
+              <ProtectedRoute>
+                <BiometricAuthPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/market-scanner">
+            {() => (
+              <ProtectedRoute>
+                <MarketScannerPage />
               </ProtectedRoute>
             )}
           </Route>
