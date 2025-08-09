@@ -35,6 +35,7 @@ interface WaidBotState {
   confidence: number;
   startTime?: number;
   tradingInterval?: NodeJS.Timeout;
+  tradingMode: 'demo' | 'real';
 }
 
 export class RealTimeWaidBot extends EventEmitter {
@@ -66,7 +67,8 @@ export class RealTimeWaidBot extends EventEmitter {
       performance: historicalPerformance,
       currentAction: 'Standby - Monitoring market conditions',
       nextAction: 'Begin real-time ETH trend monitoring',
-      confidence: 78.3 // Realistic confidence based on historical success
+      confidence: 78.3, // Realistic confidence based on historical success
+      tradingMode: 'demo'
     };
   }
 
@@ -394,8 +396,20 @@ export class RealTimeWaidBot extends EventEmitter {
       nextAction: this.state.nextAction,
       confidence: this.state.confidence,
       recentTrades: this.state.trades.slice(0, 5),
-      uptime: this.state.startTime ? Date.now() - this.state.startTime : 0
+      uptime: this.state.startTime ? Date.now() - this.state.startTime : 0,
+      tradingMode: this.state.tradingMode
     };
+  }
+
+  public setTradingMode(mode: 'demo' | 'real') {
+    this.state.tradingMode = mode;
+    console.log(`🔄 WaidBot trading mode set to: ${mode.toUpperCase()}`);
+    
+    if (mode === 'real') {
+      this.state.currentAction = 'Real trading mode enabled - Live market execution';
+    } else {
+      this.state.currentAction = 'Demo mode enabled - Simulated trading only';
+    }
   }
 
   public getTradeHistory(): Trade[] {

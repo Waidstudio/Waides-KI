@@ -21,6 +21,7 @@ class RealTimeMaibot {
     this.riskLevel = 'conservative'; // Very conservative for beginners
     this.maxPositionSize = 0.01; // Small position sizes
     this.platformFeeRate = 0.35; // 35% platform fee for free tier
+    this.tradingMode = 'demo'; // Initialize with demo mode
     this.learningProgress = {
       completedAnalysis: 0,
       patterns_learned: 0,
@@ -124,6 +125,7 @@ class RealTimeMaibot {
       platformFeeRate: this.platformFeeRate,
       tier: 'free',
       botType: 'maibot',
+      tradingMode: this.tradingMode,
       limitations: {
         maxPositionSize: this.maxPositionSize,
         strategiesAvailable: this.strategies.length,
@@ -133,6 +135,20 @@ class RealTimeMaibot {
     
     console.log('📊 Maibot getStatus() returning:', JSON.stringify(status, null, 2));
     return status;
+  }
+
+  /**
+   * Set trading mode for Maibot
+   */
+  setTradingMode(mode) {
+    this.tradingMode = mode;
+    console.log(`🔄 Maibot trading mode set to: ${mode.toUpperCase()}`);
+    
+    if (mode === 'real') {
+      console.log('⚠️ Real trading mode enabled - Live market execution for Maibot');
+    } else {
+      console.log('🎮 Demo mode enabled - Simulated trading only for Maibot');
+    }
   }
 
   /**
@@ -545,3 +561,4 @@ const maibotInstance = new RealTimeMaibot();
 console.log('🤖 RealTimeMaibot singleton instance created');
 
 export const realTimeMaibot = maibotInstance;
+export default RealTimeMaibot;

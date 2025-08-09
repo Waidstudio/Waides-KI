@@ -36,6 +36,7 @@ interface WaidBotProState {
   confidence: number;
   startTime?: number;
   tradingInterval?: NodeJS.Timeout;
+  tradingMode: 'demo' | 'real';
 }
 
 export class RealTimeWaidBotPro extends EventEmitter {
@@ -68,7 +69,8 @@ export class RealTimeWaidBotPro extends EventEmitter {
       performance: historicalPerformance,
       currentAction: 'Standby - Advanced market analysis ready',
       nextAction: 'Begin ETH3L/ETH3S opportunity scanning',
-      confidence: 84.7 // Higher confidence for Pro version
+      confidence: 84.7, // Higher confidence for Pro version
+      tradingMode: 'demo'
     };
   }
 
@@ -422,8 +424,20 @@ export class RealTimeWaidBotPro extends EventEmitter {
       nextAction: this.state.nextAction,
       confidence: this.state.confidence,
       recentTrades: this.state.trades.slice(0, 5),
-      uptime: this.state.startTime ? Date.now() - this.state.startTime : 0
+      uptime: this.state.startTime ? Date.now() - this.state.startTime : 0,
+      tradingMode: this.state.tradingMode
     };
+  }
+
+  public setTradingMode(mode: 'demo' | 'real') {
+    this.state.tradingMode = mode;
+    console.log(`🔄 WaidBot Pro trading mode set to: ${mode.toUpperCase()}`);
+    
+    if (mode === 'real') {
+      this.state.currentAction = 'Real trading mode enabled - Live ETH3L/ETH3S execution';
+    } else {
+      this.state.currentAction = 'Demo mode enabled - Simulated bidirectional trading';
+    }
   }
 
   public getTradeHistory(): Trade[] {

@@ -224,3 +224,28 @@ serviceRegistry.register('futuristicModules', async () => {
     };
   }
 });
+
+// Register WaidBot Engine Trading Services
+serviceRegistry.register('realTimeWaidBot', async () => {
+  console.log('Loading service: RealTime WaidBot');
+  const { RealTimeWaidBot } = await import('./services/realTimeWaidBot.js');
+  return new RealTimeWaidBot();
+});
+
+serviceRegistry.register('realTimeWaidBotPro', async () => {
+  console.log('Loading service: RealTime WaidBot Pro');
+  const { RealTimeWaidBotPro } = await import('./services/realTimeWaidBotPro.js');
+  return new RealTimeWaidBotPro();
+});
+
+serviceRegistry.register('realTimeAutonomousTrader', async () => {
+  console.log('Loading service: RealTime Autonomous Trader');
+  const { RealTimeAutonomousTrader } = await import('./services/realTimeAutonomousTrader.js');
+  return new RealTimeAutonomousTrader();
+});
+
+serviceRegistry.register('realTimeMaibot', async () => {
+  console.log('Loading service: RealTime Maibot');
+  const { realTimeMaibot } = await import('./services/realTimeMaibot.js');
+  return realTimeMaibot;
+});

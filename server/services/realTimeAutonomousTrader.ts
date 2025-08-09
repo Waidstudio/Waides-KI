@@ -40,6 +40,7 @@ interface AutonomousTraderState {
   tradingInterval?: NodeJS.Timeout;
   activeStrategies: string[];
   scanningPairs: string[];
+  tradingMode: 'demo' | 'real';
 }
 
 export class RealTimeAutonomousTrader extends EventEmitter {
@@ -77,7 +78,8 @@ export class RealTimeAutonomousTrader extends EventEmitter {
       nextAction: 'Begin 24/7 autonomous market scanning',
       confidence: 87.2, // Highest confidence for autonomous system
       activeStrategies: [],
-      scanningPairs: []
+      scanningPairs: [],
+      tradingMode: 'demo'
     };
   }
 
@@ -513,8 +515,20 @@ export class RealTimeAutonomousTrader extends EventEmitter {
       uptime: this.state.startTime ? Date.now() - this.state.startTime : 0,
       activeStrategies: this.state.activeStrategies,
       scanningPairs: this.state.scanningPairs,
-      activePositions: this.getActivePositionsCount()
+      activePositions: this.getActivePositionsCount(),
+      tradingMode: this.state.tradingMode
     };
+  }
+
+  public setTradingMode(mode: 'demo' | 'real') {
+    this.state.tradingMode = mode;
+    console.log(`🔄 Autonomous Trader trading mode set to: ${mode.toUpperCase()}`);
+    
+    if (mode === 'real') {
+      this.state.currentAction = 'Real trading mode enabled - Live multi-strategy execution';
+    } else {
+      this.state.currentAction = 'Demo mode enabled - Simulated autonomous trading';
+    }
   }
 
   public getTradeHistory(): Trade[] {
