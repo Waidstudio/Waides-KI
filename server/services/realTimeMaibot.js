@@ -164,15 +164,38 @@ class RealTimeMaibot {
    * Get basic market data for analysis
    */
   async getBasicMarketData() {
-    // Simplified market data retrieval
-    return {
-      price: 3500 + (Math.random() - 0.5) * 100,
-      change24h: (Math.random() - 0.5) * 10,
-      volume: 25000000 + Math.random() * 5000000,
-      rsi: 30 + Math.random() * 40, // RSI between 30-70
-      trend: Math.random() > 0.5 ? 'up' : 'down',
-      timestamp: Date.now()
-    };
+    try {
+      // Fetch real ETH data from existing API
+      const response = await fetch('http://localhost:5000/api/eth/current-price');
+      const ethData = await response.json();
+      
+      // Get market analysis data
+      const analysisResponse = await fetch('http://localhost:5000/api/eth/market-analysis');
+      const analysisData = await analysisResponse.json();
+      
+      return {
+        price: ethData.price || 3500,
+        change24h: ethData.change24h || 0,
+        volume: ethData.volume || 25000000,
+        rsi: analysisData.rsi || 50,
+        trend: analysisData.trend === 'BULLISH' || analysisData.trend === 'STRONG_BULLISH' ? 'up' : 'down',
+        timestamp: ethData.timestamp || Date.now(),
+        momentum: analysisData.momentum || 0,
+        volatility: analysisData.volatility || 'MEDIUM'
+      };
+    } catch (error) {
+      console.error('❌ Maibot failed to fetch real ETH data:', error);
+      // Fallback with warning
+      return {
+        price: 3500,
+        change24h: 0,
+        volume: 25000000,
+        rsi: 50,
+        trend: 'neutral',
+        timestamp: Date.now(),
+        dataSource: 'fallback'
+      };
+    }
   }
 
   /**
@@ -313,11 +336,50 @@ class RealTimeMaibot {
   }
 
   /**
-   * Update learning progress
+   * Update gamified metrics and wallet state with real-time data
    */
-  updateLearningProgress() {
+  async updateGamifiedMetrics() {
+    // Update activity timestamp
+    this.gamifiedMetrics.lastActive = Date.now();
+    
+    try {
+      // Get real market data for metrics calculation
+      const marketData = await this.getBasicMarketData();
+      
+      // Learning simulation (beginner bot) based on real market conditions
+      if (this.isActive) {
+        // Confidence adjusts based on market volatility
+        const volatilityImpact = marketData.volatility === 'HIGH' ? -2 : 1;
+        this.gamifiedMetrics.confidenceLevel = Math.min(95, Math.max(40, this.gamifiedMetrics.confidenceLevel + volatilityImpact));
+        
+        // Update wallet balance based on market performance
+        const marketPerformance = marketData.change24h || 0;
+        if (marketPerformance > 2) {
+          this.wallet.dailyProfit = Math.max(0, this.wallet.dailyProfit + Math.random() * 10);
+        }
+        
+        // Update trading mode and live activity based on real ETH data
+        this.liveActivity = [
+          '🆓 Free tier active',
+          `📊 Learning from ETH at $${marketData.price.toFixed(2)}`,
+          `📈 Market trend: ${marketData.trend}`,
+          `🎯 ${marketData.change24h > 0 ? 'Bullish' : 'Bearish'} signals detected`
+        ];
+      }
+    } catch (error) {
+      console.error('❌ Maibot failed to update metrics with real data:', error);
+    }
+  }
+
+  /**
+   * Update learning progress with real market awareness
+   */
+  async updateLearningProgress() {
     this.learningProgress.completedAnalysis += 1;
     this.learningProgress.learning_score = Math.min(100, this.learningProgress.completedAnalysis * 2);
+    
+    // Update gamified metrics with real market data
+    await this.updateGamifiedMetrics();
     
     // Log progress every 10 analysis cycles
     if (this.learningProgress.completedAnalysis % 10 === 0) {

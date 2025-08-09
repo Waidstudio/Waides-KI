@@ -162,18 +162,35 @@ export class RealTimeWaidBot extends EventEmitter {
   }
 
   private async getMarketData() {
-    // Simulate real market data with trending behavior
-    const basePrice = 3200;
-    const trend = Math.sin(Date.now() / 300000) * 100; // 5-minute trend cycle
-    const noise = (Math.random() - 0.5) * 50;
-    const price = basePrice + trend + noise;
-
-    return {
-      price: Math.max(2800, Math.min(3800, price)),
-      volume: 20000000000 + Math.random() * 10000000000,
-      change24h: (Math.random() - 0.5) * 10,
-      timestamp: Date.now()
-    };
+    try {
+      // Fetch real ETH data from existing API
+      const response = await fetch('http://localhost:5000/api/eth/current-price');
+      const ethData = await response.json();
+      
+      // Get market analysis data
+      const analysisResponse = await fetch('http://localhost:5000/api/eth/market-analysis');
+      const analysisData = await analysisResponse.json();
+      
+      return {
+        price: ethData.price || 3200,
+        volume: ethData.volume || 20000000000,
+        change24h: ethData.change24h || 0,
+        timestamp: ethData.timestamp || Date.now(),
+        trend: analysisData.trend || 'NEUTRAL',
+        momentum: analysisData.momentum || 0,
+        volatility: analysisData.volatility || 'MEDIUM'
+      };
+    } catch (error) {
+      console.error('❌ WaidBot failed to fetch real ETH data:', error);
+      // Fallback with warning
+      return {
+        price: 3200,
+        volume: 20000000000,
+        change24h: 0,
+        timestamp: Date.now(),
+        dataSource: 'fallback'
+      };
+    }
   }
 
   private analyzeMarket(marketData: any) {
