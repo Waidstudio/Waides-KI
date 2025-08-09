@@ -242,38 +242,28 @@ const StableNavigation = () => {
             </Link>
           </div>
 
-          {/* Compact Global Trading Mode Selector */}
-          <div className="flex items-center ml-4">
+          {/* Mini Trading Mode Icon */}
+          <div className="flex items-center ml-2">
             <div className="relative" ref={(el) => { dropdownRefs.current['trading-mode'] = el; }}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <button
                 onClick={() => toggleDropdown('trading-mode')}
-                className={`flex items-center space-x-1 px-2 py-1 rounded-md border transition-all duration-200 ${
+                className={`p-1.5 rounded-full transition-all duration-200 ${
                   globalTradingMode === 'demo' 
-                    ? 'bg-purple-500/20 border-purple-500/30 text-purple-300 hover:bg-purple-500/30' 
-                    : 'bg-amber-500/20 border-amber-500/30 text-amber-300 hover:bg-amber-500/30'
+                    ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30' 
+                    : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
                 }`}
+                title={globalTradingMode === 'demo' ? 'Demo Mode' : 'Real Trading'}
               >
                 {globalTradingMode === 'demo' ? (
-                  <TestTube className="h-3 w-3" />
+                  <TestTube className="h-3.5 w-3.5" />
                 ) : (
-                  <DollarSign className="h-3 w-3" />
+                  <DollarSign className="h-3.5 w-3.5" />
                 )}
-                <span className="text-xs font-medium">
-                  {globalTradingMode === 'demo' ? 'Demo' : 'Real'}
-                </span>
-                <ChevronDown className={`h-2 w-2 transition-transform duration-200 ${activeDropdown === 'trading-mode' ? 'rotate-180' : ''}`} />
-              </Button>
+              </button>
 
-              {/* Compact Trading Mode Dropdown */}
+              {/* Mini Trading Mode Dropdown */}
               {activeDropdown === 'trading-mode' && (
-                <div className="absolute top-full left-0 mt-1 w-48 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                  <div className="p-2 border-b border-slate-700/50">
-                    <h3 className="text-xs font-semibold text-white">Trading Mode</h3>
-                    <p className="text-xs text-gray-400">Controls all bots</p>
-                  </div>
-                  
+                <div className="absolute top-full left-0 mt-1 w-40 bg-slate-800/95 backdrop-blur-md border border-purple-500/20 rounded-lg shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
                   <div className="py-1">
                     <div 
                       onClick={() => {
@@ -287,12 +277,9 @@ const StableNavigation = () => {
                       }`}
                     >
                       <TestTube className="h-3 w-3" />
-                      <div className="flex-1">
-                        <div className="font-medium">Demo</div>
-                        <div className="text-xs text-gray-400">50k SmaiSika</div>
-                      </div>
+                      <span className="font-medium">Demo</span>
                       {globalTradingMode === 'demo' && (
-                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
+                        <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse ml-auto"></div>
                       )}
                     </div>
                     
@@ -308,12 +295,9 @@ const StableNavigation = () => {
                       }`}
                     >
                       <DollarSign className="h-3 w-3" />
-                      <div className="flex-1">
-                        <div className="font-medium">Real</div>
-                        <div className="text-xs text-gray-400">Your funds</div>
-                      </div>
+                      <span className="font-medium">Real</span>
                       {globalTradingMode === 'real' && (
-                        <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></div>
+                        <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse ml-auto"></div>
                       )}
                     </div>
                   </div>
