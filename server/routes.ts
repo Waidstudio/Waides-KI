@@ -11229,11 +11229,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create independent engine status
       const independentStatus = {
-        is_active: engineStatus.is_active,
-        is_running: engineStatus.is_running,
+        is_active: engineStatus.isRunning || false,  // Use isRunning from actual engine
+        is_running: engineStatus.isRunning || false,
         emergency_stop_active: false,
-        active_trades: engineStatus.active_trades || 0,
-        total_trades: engineStatus.total_trades || 0,
+        active_trades: engineStatus.activeTrades || 0,
+        total_trades: engineStatus.engineMetrics?.total_trades || 0,
         current_strategy: 'SMART_RISK_MANAGEMENT',
         last_tuning: Date.now() - 300000,
         next_evaluation: Date.now() + 300000,
