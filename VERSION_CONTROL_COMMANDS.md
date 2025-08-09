@@ -29,6 +29,33 @@ node scripts/backup-system.cjs incremental
 node scripts/backup-system.cjs clean
 ```
 
+## Component Protection Commands
+
+### Lock Critical Components
+```bash
+node scripts/component-lock-system.cjs lock
+```
+
+### Verify Component Integrity
+```bash
+node scripts/component-lock-system.cjs verify
+```
+
+### Generate Security Report
+```bash
+node scripts/component-lock-system.cjs report
+```
+
+### Enable Development Mode (1 hour)
+```bash
+node scripts/component-lock-system.cjs dev-mode
+```
+
+### Create Protected Backup
+```bash
+node scripts/component-lock-system.cjs backup
+```
+
 ## Automated Monitoring
 
 The version control system automatically tracks:

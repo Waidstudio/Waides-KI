@@ -1,0 +1,82 @@
+{
+  "server/routes.ts": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:22.990Z",
+    "originalChecksum": "163d0b6db4f97ae1a2a1991eed221127145a7d9c19dfb5729b75a1d92b5e048e",
+    "size": 493102,
+    "lastModified": "2025-08-09T05:58:31.945Z",
+    "lockLevel": "critical"
+  },
+  "server/services/modeService.ts": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:22.992Z",
+    "originalChecksum": "0e52b4749cc9d12ed6d1f489ee747c9d03932de9a4649984d0fd9e446b13dfbf",
+    "size": 6428,
+    "lastModified": "2025-08-09T05:57:09.841Z",
+    "lockLevel": "critical"
+  },
+  "server/services/smaisikaMiningEngine.ts": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:22.993Z",
+    "originalChecksum": "01f71439a9bb3e72e63e03abc7693761c5e48c94f1a70d6adea9ca8f4872b605",
+    "size": 29744,
+    "lastModified": "2025-08-09T05:53:01.137Z",
+    "lockLevel": "critical"
+  },
+  "server/services/autonomousBotEngine.ts": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:22.993Z",
+    "originalChecksum": "4d587a2c67db53b07c21a824871e1ec1f224a6b3fc558a5db3e1d604645643cd",
+    "size": 10265,
+    "lastModified": "2025-06-26T08:28:26.363Z",
+    "lockLevel": "critical"
+  },
+  "shared/schema.ts": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:22.999Z",
+    "originalChecksum": "e58bed3ab89752af8932880c52ba39da6df7af901b6d839ec3717ed51ad1d741",
+    "size": 79452,
+    "lastModified": "2025-08-09T05:00:18.350Z",
+    "lockLevel": "critical"
+  },
+  "client/src/App.tsx": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:23.004Z",
+    "originalChecksum": "d8dcb594904e95e62a56ab08f0d6770f5f44aa1a811b7d4f465c15cab0cee91f",
+    "size": 20460,
+    "lastModified": "2025-08-09T05:21:16.025Z",
+    "lockLevel": "high"
+  },
+  "client/src/components/ui/StableNavigation.tsx": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:23.005Z",
+    "originalChecksum": "50a4760a8c55db99adb549b07091d2f3ab3f987fc87993c59fd523b96d5508b7",
+    "size": 37530,
+    "lastModified": "2025-08-09T06:00:03.671Z",
+    "lockLevel": "high"
+  },
+  "client/src/hooks/useModeSwitch.tsx": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:23.006Z",
+    "originalChecksum": "ea1af448c97bcb40a55750897b1a20391240b49922dbce6e5b631549422b872c",
+    "size": 1463,
+    "lastModified": "2025-08-09T05:59:31.355Z",
+    "lockLevel": "high"
+  },
+  "drizzle.config.ts": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:23.007Z",
+    "originalChecksum": "db80922910a890344195617c17acd664cd9b922973f607a5c6fdc0c749b4476a",
+    "size": 325,
+    "lastModified": "2025-06-17T23:22:01.877Z",
+    "lockLevel": "medium"
+  },
+  "tsconfig.json": {
+    "locked": true,
+    "lockDate": "2025-08-09T06:13:23.007Z",
+    "originalChecksum": "4bea0e0003e3c943f455346abc4854d1666d604adbaa6aa8eda11f94fb8f1396",
+    "size": 657,
+    "lastModified": "2025-06-17T23:22:01.877Z",
+    "lockLevel": "medium"
+  }
+}

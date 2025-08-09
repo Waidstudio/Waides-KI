@@ -1,0 +1,12 @@
+{
+  "server/routes.ts": "163d0b6db4f97ae1a2a1991eed221127145a7d9c19dfb5729b75a1d92b5e048e",
+  "server/services/modeService.ts": "0e52b4749cc9d12ed6d1f489ee747c9d03932de9a4649984d0fd9e446b13dfbf",
+  "server/services/smaisikaMiningEngine.ts": "01f71439a9bb3e72e63e03abc7693761c5e48c94f1a70d6adea9ca8f4872b605",
+  "server/services/autonomousBotEngine.ts": "4d587a2c67db53b07c21a824871e1ec1f224a6b3fc558a5db3e1d604645643cd",
+  "shared/schema.ts": "e58bed3ab89752af8932880c52ba39da6df7af901b6d839ec3717ed51ad1d741",
+  "client/src/App.tsx": "d8dcb594904e95e62a56ab08f0d6770f5f44aa1a811b7d4f465c15cab0cee91f",
+  "client/src/components/ui/StableNavigation.tsx": "50a4760a8c55db99adb549b07091d2f3ab3f987fc87993c59fd523b96d5508b7",
+  "client/src/hooks/useModeSwitch.tsx": "ea1af448c97bcb40a55750897b1a20391240b49922dbce6e5b631549422b872c",
+  "drizzle.config.ts": "db80922910a890344195617c17acd664cd9b922973f607a5c6fdc0c749b4476a",
+  "tsconfig.json": "4bea0e0003e3c943f455346abc4854d1666d604adbaa6aa8eda11f94fb8f1396"
+}
