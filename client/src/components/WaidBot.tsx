@@ -295,60 +295,60 @@ export function WaidBot() {
           {/* Status Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-400/30">
-              <CardContent className="p-6">
+          <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-400">Bot Status</p>
-                    <p className="text-2xl font-bold text-white">
+<p className="text-2xl font-bold text-white">
                       {status.isActive ? "Active" : "Inactive"}
                     </p>
                   </div>
                   <Activity className="h-8 w-8 text-green-400" />
                 </div>
               </CardContent>
-            </Card>
+        </Card>
 
             <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-400/30">
-              <CardContent className="p-6">
+          <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-400">Confidence</p>
-                    <p className="text-2xl font-bold text-white">
+<p className="text-2xl font-bold text-white">
                       {status.confidence || 0}%
                     </p>
                   </div>
                   <BarChart3 className="h-8 w-8 text-blue-400" />
                 </div>
               </CardContent>
-            </Card>
+        </Card>
 
             <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
-              <CardContent className="p-6">
+          <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-400">Total Profit</p>
-                    <p className="text-2xl font-bold text-white">
+<p className="text-2xl font-bold text-white">
                       {status.performance?.profit || 0} {balance.currency}
                     </p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-purple-400" />
                 </div>
               </CardContent>
-            </Card>
+        </Card>
 
             <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
-              <CardContent className="p-6">
+          <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-slate-400">Total Trades</p>
-                    <p className="text-2xl font-bold text-white">
+<p className="text-2xl font-bold text-white">
                       {status.performance?.trades || 0}
                     </p>
                   </div>
                   <BarChart3 className="h-8 w-8 text-yellow-400" />
                 </div>
               </CardContent>
-            </Card>
+        </Card>
           </div>
 
           {/* Trading Controls */}
@@ -407,7 +407,7 @@ export function WaidBot() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+        </Card>
 
         </TabsContent>
 
@@ -450,52 +450,56 @@ export function WaidBot() {
               {/* Balance Display */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-400/30">
-                  <CardContent className="p-4">
+          <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
                         {balance.available?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Available Balance</p>
-                      <p className="text-xs text-green-400">{balance.currency}</p>
+<p className="text-xs text-green-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
 
                 <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-400/30">
-                  <CardContent className="p-4">
+          <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
                         {balance.invested?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Currently Invested</p>
-                      <p className="text-xs text-blue-400">{balance.currency}</p>
+<p className="text-xs text-blue-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
 
                 <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
-                  <CardContent className="p-4">
+          <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
                         {balance.totalProfit?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Total Profit</p>
-                      <p className="text-xs text-purple-400">{balance.currency}</p>
+<p className="text-xs text-purple-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
 
                 <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
-                  <CardContent className="p-4">
+          <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
                         {balance.dailyProfit?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Daily Profit</p>
-                      <p className="text-xs text-yellow-400">{balance.currency}</p>
+<p className="text-xs text-yellow-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
               </div>
 
               {/* Fund & Withdraw Controls */}
@@ -527,7 +531,7 @@ export function WaidBot() {
                       {fundMutation.isPending ? "Processing..." : "Fund Bot"}
                     </Button>
                   </CardContent>
-                </Card>
+        </Card>
 
                 <Card className="bg-gradient-to-br from-red-500/10 to-pink-600/10 border-red-400/30">
                   <CardHeader>
@@ -557,10 +561,10 @@ export function WaidBot() {
                       {withdrawMutation.isPending ? "Processing..." : "Withdraw"}
                     </Button>
                   </CardContent>
-                </Card>
+        </Card>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
 
         {/* Signals Tab */}
@@ -579,10 +583,10 @@ export function WaidBot() {
               <div className="text-center py-8">
                 <Signal className="h-12 w-12 text-green-400 mx-auto mb-4" />
                 <p className="text-slate-400">Real-time signals will appear here</p>
-                <p className="text-sm text-slate-500 mt-2">WaidBot α continuously analyzes ETH uptrend patterns</p>
+<p className="text-sm text-slate-500 mt-2">WaidBot α continuously analyzes ETH uptrend patterns</p>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
 
         {/* Trades Tab */}
@@ -601,10 +605,10 @@ export function WaidBot() {
               <div className="text-center py-8">
                 <DollarSign className="h-12 w-12 text-green-400 mx-auto mb-4" />
                 <p className="text-slate-400">Trade history will appear here</p>
-                <p className="text-sm text-slate-500 mt-2">All WaidBot α transactions and performance data</p>
+<p className="text-sm text-slate-500 mt-2">All WaidBot α transactions and performance data</p>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
 
         {/* Upgrade Tab */}
@@ -623,10 +627,10 @@ export function WaidBot() {
               <div className="text-center py-8">
                 <Crown className="h-12 w-12 text-green-400 mx-auto mb-4" />
                 <p className="text-slate-400">Advanced features coming soon</p>
-                <p className="text-sm text-slate-500 mt-2">Enhanced AI models, custom strategies, and more</p>
+<p className="text-sm text-slate-500 mt-2">Enhanced AI models, custom strategies, and more</p>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
       </Tabs>
     </div>
@@ -634,35 +638,38 @@ export function WaidBot() {
 }
                         {balance.invested?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Invested</p>
-                      <p className="text-xs text-blue-400">{balance.currency}</p>
+<p className="text-xs text-blue-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
 
                 <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
-                  <CardContent className="p-4">
+          <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
                         {balance.totalProfit?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Total Profit</p>
-                      <p className="text-xs text-purple-400">{balance.currency}</p>
+<p className="text-xs text-purple-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
 
                 <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
-                  <CardContent className="p-4">
+          <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
                         {balance.dailyProfit?.toLocaleString() || 0}
                       </p>
+
                       <p className="text-xs text-slate-400">Daily Profit</p>
-                      <p className="text-xs text-yellow-400">{balance.currency}</p>
+<p className="text-xs text-yellow-400">{balance.currency}</p>
                     </div>
                   </CardContent>
-                </Card>
+        </Card>
               </div>
 
               {/* Fund/Withdraw Section */}
@@ -723,7 +730,7 @@ export function WaidBot() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
 
         {/* Signals Tab */}
@@ -744,7 +751,7 @@ export function WaidBot() {
                 <p className="text-slate-400">Signal system coming soon...</p>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
 
         {/* Trades Tab */}
@@ -765,7 +772,7 @@ export function WaidBot() {
                 <p className="text-slate-400">No trades executed yet</p>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
 
         {/* Upgrade Tab */}
@@ -790,7 +797,7 @@ export function WaidBot() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+        </Card>
         </TabsContent>
       </Tabs>
 
@@ -821,7 +828,7 @@ export function WaidBot() {
             
             <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
               <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Reasoning:</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+<p className="text-sm text-gray-600 dark:text-gray-400">
                 {status.lastDecision.reasoning}
               </p>
             </div>
@@ -873,7 +880,7 @@ export function WaidBot() {
             <div className="text-center py-8">
               <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600 dark:text-gray-400">No trading decisions yet</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+<p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
                 Enable auto-trading or generate a manual decision to see history
               </p>
             </div>
@@ -910,7 +917,7 @@ export function WaidBot() {
             </div>
           )}
         </CardContent>
-      </Card>
+        </Card>
     </div>
   );
 }

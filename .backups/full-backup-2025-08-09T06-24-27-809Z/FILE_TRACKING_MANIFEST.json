@@ -1,0 +1,181 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-08-09T06:02:00Z",
+  "totalFiles": 8682,
+  "trackedCategories": {
+    "typescript": {
+      "count": 286,
+      "extensions": [".ts", ".tsx"],
+      "criticality": "high",
+      "autoBackup": true
+    },
+    "javascript": {
+      "count": 45,
+      "extensions": [".js", ".jsx"],
+      "criticality": "medium",
+      "autoBackup": true
+    },
+    "configuration": {
+      "count": 12,
+      "extensions": [".json", ".config.js", ".config.ts"],
+      "criticality": "critical",
+      "autoBackup": true
+    },
+    "documentation": {
+      "count": 23,
+      "extensions": [".md", ".txt"],
+      "criticality": "low",
+      "autoBackup": false
+    },
+    "styles": {
+      "count": 8,
+      "extensions": [".css", ".scss"],
+      "criticality": "low",
+      "autoBackup": false
+    }
+  },
+  "criticalFiles": [
+    {
+      "path": "server/routes.ts",
+      "type": "API_ENDPOINTS",
+      "criticality": "critical",
+      "lastModified": "2025-08-09T05:58:00Z",
+      "changeFrequency": "high",
+      "backupRequired": true
+    },
+    {
+      "path": "server/services/modeService.ts",
+      "type": "CORE_SERVICE",
+      "criticality": "critical",
+      "lastModified": "2025-08-09T05:45:00Z",
+      "changeFrequency": "medium",
+      "backupRequired": true
+    },
+    {
+      "path": "shared/schema.ts",
+      "type": "DATABASE_SCHEMA",
+      "criticality": "critical",
+      "lastModified": "2025-08-09T05:30:00Z",
+      "changeFrequency": "low",
+      "backupRequired": true
+    },
+    {
+      "path": "client/src/App.tsx",
+      "type": "MAIN_COMPONENT",
+      "criticality": "high",
+      "lastModified": "2025-08-09T04:15:00Z",
+      "changeFrequency": "medium",
+      "backupRequired": true
+    },
+    {
+      "path": "client/src/components/ui/StableNavigation.tsx",
+      "type": "NAVIGATION",
+      "criticality": "high",
+      "lastModified": "2025-08-09T06:00:00Z",
+      "changeFrequency": "medium",
+      "backupRequired": true
+    },
+    {
+      "path": "client/src/hooks/useModeSwitch.tsx",
+      "type": "CORE_HOOK",
+      "criticality": "high",
+      "lastModified": "2025-08-09T06:00:00Z",
+      "changeFrequency": "low",
+      "backupRequired": true
+    },
+    {
+      "path": "server/services/smaisikaMiningEngine.ts",
+      "type": "FINANCIAL_SERVICE",
+      "criticality": "critical",
+      "lastModified": "2025-08-09T03:20:00Z",
+      "changeFrequency": "medium",
+      "backupRequired": true
+    },
+    {
+      "path": "server/services/autonomousBotEngine.ts",
+      "type": "TRADING_SERVICE",
+      "criticality": "critical",
+      "lastModified": "2025-08-08T22:45:00Z",
+      "changeFrequency": "high",
+      "backupRequired": true
+    }
+  ],
+  "securityProtected": [
+    ".env",
+    ".env.local",
+    ".env.production",
+    ".env.development",
+    "api-keys.json",
+    "config/secrets.json",
+    "**/secrets/**",
+    "**/credentials/**",
+    "*.pem",
+    "*.key"
+  ],
+  "excludedFromTracking": [
+    "node_modules/**",
+    "dist/**",
+    ".cache/**",
+    "uploads/**",
+    "temp/**",
+    "*.log",
+    "*.tmp",
+    ".DS_Store"
+  ],
+  "automatedBackupSchedule": {
+    "critical": "every-commit",
+    "high": "every-commit",
+    "medium": "daily",
+    "low": "weekly"
+  },
+  "changeDetectionRules": {
+    "authenticationFiles": {
+      "pattern": "**/auth**",
+      "alertLevel": "critical",
+      "requiresReview": true
+    },
+    "financialFiles": {
+      "pattern": "**/wallet**|**/trading**|**/mining**",
+      "alertLevel": "critical",
+      "requiresReview": true
+    },
+    "databaseFiles": {
+      "pattern": "**/schema**|**/migration**",
+      "alertLevel": "high",
+      "requiresReview": true
+    },
+    "configurationFiles": {
+      "pattern": "*.config.*|package.json|tsconfig.json",
+      "alertLevel": "medium",
+      "requiresReview": false
+    }
+  },
+  "branchingStrategy": {
+    "main": {
+      "protection": "enabled",
+      "requiresPullRequest": true,
+      "requiresReview": true
+    },
+    "develop": {
+      "protection": "enabled",
+      "requiresPullRequest": false,
+      "requiresReview": false
+    },
+    "feature/*": {
+      "protection": "disabled",
+      "requiresPullRequest": false,
+      "requiresReview": false
+    },
+    "hotfix/*": {
+      "protection": "enabled",
+      "requiresPullRequest": true,
+      "requiresReview": true
+    }
+  },
+  "deploymentTracking": {
+    "enabled": true,
+    "environments": ["development", "staging", "production"],
+    "automaticTagging": true,
+    "rollbackSupport": true
+  }
+}

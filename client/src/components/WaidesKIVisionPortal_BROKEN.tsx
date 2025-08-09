@@ -207,21 +207,21 @@ export default function WaidesKIVisionPortal() {
   const handleKonsPowaPrediction = async () => {
     setIsProcessing(true);
     try {
-      // Use KonsAI Intelligence Engine for Kons Powa predictions instead of just database
+      // Use KonsAI Intelligence Engine for KonsPowa predictions instead of just database
       const response = await fetch('/api/konsai/enhanced-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: 'Generate a detailed Kons Powa ETH prediction with divine insights and strategic guidance',
+          message: 'Generate a detailed KonsPowa ETH prediction with divine insights and strategic guidance',
           mode: 'comprehensive',
           complexity: 'advanced'
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get Kons Powa intelligence response');
+        throw new Error('Failed to get KonsPowa intelligence response');
       }
 
       const data = await response.json();
@@ -233,7 +233,7 @@ export default function WaidesKIVisionPortal() {
         const prediction = konsPowaPrediction;
         
         if (prediction && typeof prediction === 'object') {
-          intelligentResponse = `**🔮 Kons Powa Enhanced Intelligence Prediction**
+          intelligentResponse = `**🔮 KonsPowa Enhanced Intelligence Prediction**
 
 ${intelligentResponse}
 
@@ -256,7 +256,7 @@ ${intelligentResponse}
 
       typeMessage(intelligentResponse, 'oracle', 95);
     } catch (error) {
-      console.error('Error fetching Kons Powa intelligence prediction:', error);
+      console.error('Error fetching KonsPowa intelligence prediction:', error);
       
       // Fallback to database-only if intelligence fails
       try {
@@ -264,7 +264,7 @@ ${intelligentResponse}
         const prediction = konsPowaPrediction;
         
         if (prediction && typeof prediction === 'object') {
-          let message = `**🔮 Kons Powa ETH Prediction (Database Fallback)**\n\n`;
+          let message = `**🔮 KonsPowa ETH Prediction (Database Fallback)**\n\n`;
           message += `**Price:** $${(prediction as any).ethPrice || 'N/A'}\n`;
           message += `**Prediction:** ${(prediction as any).prediction || 'N/A'}\n`;
           message += `**Confidence:** ${(prediction as any).confidence || 0}%\n`;
@@ -277,10 +277,10 @@ ${intelligentResponse}
           
           typeMessage(message, 'oracle', (prediction as any).confidence || 0);
         } else {
-          typeMessage('Kons Powa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
+          typeMessage('KonsPowa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
         }
       } catch (fallbackError) {
-        typeMessage('Kons Powa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
+        typeMessage('KonsPowa intelligence systems are temporarily processing. Please try again in a moment.', 'error', 0);
       }
     }
     setIsProcessing(false);
@@ -355,7 +355,7 @@ ${intelligentResponse}
           
           const konsPowaPrediction = (dashboardData as any).konsPowaPrediction;
           if (konsPowaPrediction) {
-            message += `**Kons Powa Recommendation:** ${konsPowaPrediction.prediction || 'N/A'}\n`;
+            message += `**KonsPowa Recommendation:** ${konsPowaPrediction.prediction || 'N/A'}\n`;
             message += `**Strategy:** ${konsPowaPrediction.strategy || 'N/A'}\n`;
             message += `**Risk Level:** ${konsPowaPrediction.riskLevel || 'N/A'}\n`;
           }
@@ -391,7 +391,7 @@ ${intelligentResponse}
     // Market analysis queries
     if (query.includes('market') || query.includes('analysis') || query.includes('price') || query.includes('chart')) {
       return {
-        message: `📊 **Market Analysis Available**\n\n**Current ETH Price:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n\n**Analysis Options:**\n• **Technical Analysis** - Charts, indicators, patterns\n• **Kons Powa Predictions** - Spiritual market readings\n• **Real-time Data** - Live price feeds and volume\n\n**Recommended Pages:**\n✅ **Charts** - View detailed technical analysis\n✅ **Dashboard** - Get market overview\n✅ **Live Data** - Real-time price monitoring\n\n**Quick Action:** Use the "Market Analysis" button above for instant insights!`,
+        message: `📊 **Market Analysis Available**\n\n**Current ETH Price:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n\n**Analysis Options:**\n• **Technical Analysis** - Charts, indicators, patterns\n• **KonsPowa Predictions** - Spiritual market readings\n• **Real-time Data** - Live price feeds and volume\n\n**Recommended Pages:**\n✅ **Charts** - View detailed technical analysis\n✅ **Dashboard** - Get market overview\n✅ **Live Data** - Real-time price monitoring\n\n**Quick Action:** Use the "Market Analysis" button above for instant insights!`,
         confidence: 85,
         recommendations: [
           { page: 'Charts', route: '/charts', description: 'View detailed technical analysis and live charts' },
@@ -404,7 +404,7 @@ ${intelligentResponse}
     // Strategy queries
     if (query.includes('strategy') || query.includes('trading plan') || query.includes('how to trade')) {
       return {
-        message: `🎯 **Trading Strategy Guidance**\n\n**Strategy Types:**\n• **Scalping** - Quick short-term trades\n• **Swing Trading** - Medium-term positions\n• **HODLing** - Long-term holding strategy\n• **Divine Guidance** - Kons Powa spiritual trading\n\n**Recommended Learning:**\n✅ **Trading Academy** - Complete education\n✅ **WaidBot Pro** - Advanced strategy analysis\n✅ **Risk Management** - Protect your capital\n\n**Get Started:** Click "Trading Strategies" button or visit the Learning page!`,
+        message: `🎯 **Trading Strategy Guidance**\n\n**Strategy Types:**\n• **Scalping** - Quick short-term trades\n• **Swing Trading** - Medium-term positions\n• **HODLing** - Long-term holding strategy\n• **Divine Guidance** - KonsPowa spiritual trading\n\n**Recommended Learning:**\n✅ **Trading Academy** - Complete education\n✅ **WaidBot Pro** - Advanced strategy analysis\n✅ **Risk Management** - Protect your capital\n\n**Get Started:** Click "Trading Strategies" button or visit the Learning page!`,
         confidence: 88,
         recommendations: [
           { page: 'Learning', route: '/learning', description: 'Complete trading education and academy' },
@@ -428,7 +428,7 @@ ${intelligentResponse}
     // General ETH queries
     if (query.includes('eth') || query.includes('ethereum')) {
       return {
-        message: `⚡ **Ethereum Trading Hub**\n\n**Current ETH:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n**24h Change:** ${enhancedDashboardData?.ethData?.priceChange24h?.toFixed(2) || 'N/A'}%\n\n**ETH Services:**\n• **Kons Powa Predictions** - Spiritual ETH analysis\n• **Technical Analysis** - Chart patterns and indicators\n• **Automated Trading** - ETH-focused bots\n• **Risk Management** - Position sizing and stops\n\n**Best Pages for ETH:**\n✅ **Dashboard** - ETH overview and metrics\n✅ **Charts** - ETH price analysis\n✅ **WaidBot Engine** - ETH trading automation\n\n**Pro Tip:** Use the "Kons Powa ETH Prediction" button for divine insights!`,
+        message: `⚡ **Ethereum Trading Hub**\n\n**Current ETH:** $${enhancedDashboardData?.ethData?.price || 'Loading...'}\n**24h Change:** ${enhancedDashboardData?.ethData?.priceChange24h?.toFixed(2) || 'N/A'}%\n\n**ETH Services:**\n• **KonsPowa Predictions** - Spiritual ETH analysis\n• **Technical Analysis** - Chart patterns and indicators\n• **Automated Trading** - ETH-focused bots\n• **Risk Management** - Position sizing and stops\n\n**Best Pages for ETH:**\n✅ **Dashboard** - ETH overview and metrics\n✅ **Charts** - ETH price analysis\n✅ **WaidBot Engine** - ETH trading automation\n\n**Pro Tip:** Use the "KonsPowa ETH Prediction" button for divine insights!`,
         confidence: 95,
         recommendations: [
           { page: 'Dashboard', route: '/dashboard', description: 'Complete ETH trading dashboard' },
@@ -605,14 +605,14 @@ ${intelligentResponse}
     },
     {
       id: 4,
-      title: 'Kons Powa Divine Wisdom',
-      description: 'Sacred trading insights and spiritual market guidance from Kons Powa',
+      title: 'KonsPowa Divine Wisdom',
+      description: 'Sacred trading insights and spiritual market guidance from KonsPowa',
       category: 'kons-powa-only',
       posts: 94,
       replies: 0,
       lastActivity: '3 minutes ago',
       isPinned: true,
-      tags: ['Kons Powa', 'Divine', 'Spiritual Trading']
+      tags: ['KonsPowa', 'Divine', 'Spiritual Trading']
     }
   ]);
 
@@ -635,7 +635,7 @@ ${intelligentResponse}
     {
       id: 2,
       topicId: 4,
-      speaker: 'Kons Powa',
+      speaker: 'KonsPowa',
       title: 'Cosmic Energy Alignment Reading',
       content: 'The ethereal currents flow strongly upward. Ancient wisdom whispers of a great ascension approaching. The sacred numbers align at $3,750 - a divine convergence point.',
       timestamp: new Date(Date.now() - 3 * 60 * 1000),
@@ -760,7 +760,7 @@ ${intelligentResponse}
     const newPost = {
       id: Date.now() + 1,
       topicId: 4,
-      speaker: 'Kons Powa',
+      speaker: 'KonsPowa',
       title,
       content,
       timestamp: new Date(),
@@ -991,7 +991,7 @@ ${intelligentResponse}
     refetchInterval: 12000,
   });
 
-  // Kons Powa ETH Prediction Query - fetched only when needed
+  // KonsPowa ETH Prediction Query - fetched only when needed
   const { data: konsPrediction, isLoading: isKonsPredictionLoading, refetch: refetchKonsPrediction } = useQuery<DivineResponse>({
     queryKey: ['/api/divine-signal'],
     enabled: false, // Only fetch when explicitly requested
@@ -1472,7 +1472,7 @@ ${intelligentResponse}
       
       if (data.success) {
         setIsAutonomousActive(true);
-        typeMessageKonsmik(`🚀 Kons Powa Autonomous Trading ACTIVATED! 
+        typeMessageKonsmik(`🚀 KonsPowa Autonomous Trading ACTIVATED! 
         
 Initial prediction: ${data.initialPrediction?.action || 'OBSERVE'}
 System is now monitoring ETH and executing trades based on divine signals.
@@ -1496,7 +1496,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
       
       if (data.success) {
         setIsAutonomousActive(false);
-        typeMessageKonsmik('⏹️ Kons Powa Autonomous Trading STOPPED. Returning to manual trading mode.', 'oracle', 85);
+        typeMessageKonsmik('⏹️ KonsPowa Autonomous Trading STOPPED. Returning to manual trading mode.', 'oracle', 85);
       } else {
         typeMessageKonsmik('Failed to stop autonomous trading.', 'error', 0);
       }
@@ -1591,9 +1591,9 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     ];
     const isKonsAiRequest = konsAiPatterns.some(pattern => message.includes(pattern));
 
-    // Kons Powa ETH prediction patterns
+    // KonsPowa ETH prediction patterns
     const konsPredictionPatterns = [
-      'kons powa', 'konspowa', 'eth prediction', 'price prediction', 'divine signal',
+      'konsPowa', 'konspowa', 'eth prediction', 'price prediction', 'divine signal',
       'market prediction', 'divine reading', 'prediction', 'forecast', 'signal'
     ];
     const isKonsPredictionRequest = konsPredictionPatterns.some(pattern => message.includes(pattern));
@@ -1602,7 +1602,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
     if (isCommand) {
       commandMutation.mutate(currentMessage);
     } else if (isKonsPredictionRequest) {
-      // Handle Kons Powa ETH prediction requests
+      // Handle KonsPowa ETH prediction requests
       handleKonsPowaPrediction();
     } else if (isKonsAiRequest && typeof aiPersonality === 'object' && (aiPersonality as any).mode === 'cosmic') {
       // Route to KonsAi for higher divine intelligence
@@ -1930,7 +1930,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   ) : (
                     <>
                       <TrendingUp className="w-4 h-4" />
-                      Kons Powa ETH Prediction
+                      KonsPowa ETH Prediction
                     </>
                   )}
                 </Button>
@@ -2290,7 +2290,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
               </div>
             </div>
             <div className="text-purple-300/80 text-lg">
-              Autonomous spiritual trading intelligence with kons powa consciousness
+              Autonomous spiritual trading intelligence with konsPowa consciousness
             </div>
           </div>
 
@@ -2309,7 +2309,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-300 font-semibold">Kons Powa Autonomous Trading Active</span>
+              <span className="text-green-300 font-semibold">KonsPowa Autonomous Trading Active</span>
             </div>
             <button
               onClick={() => setShowAutonomousPanel(!showAutonomousPanel)}
@@ -2423,7 +2423,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                      KonsAI × Kons Powa Forum
+                      KonsAI × KonsPowa Forum
                     </h2>
                     <p className="text-sm text-gray-400">Dynamic AI Trading Intelligence Hub - Live Conversations</p>
                   </div>
@@ -2514,7 +2514,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                                   'bg-green-600/40 text-green-200'
                                 } mb-2`}>
                                   {topic.category === 'konsai-only' ? 'KonsAI Only' :
-                                   topic.category === 'kons-powa-only' ? 'Kons Powa Only' :
+                                   topic.category === 'kons-powa-only' ? 'KonsPowa Only' :
                                    'User Discussion'}
                                 </Badge>
                                 <div className="text-gray-400">
@@ -2681,8 +2681,8 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                         <span className="text-purple-400 font-bold">{aiConversations.filter(post => post.speaker === 'KonsAI').length}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-400">Kons Powa Posts</span>
-                        <span className="text-yellow-400 font-bold">{aiConversations.filter(post => post.speaker === 'Kons Powa').length}</span>
+                        <span className="text-sm text-gray-400">KonsPowa Posts</span>
+                        <span className="text-yellow-400 font-bold">{aiConversations.filter(post => post.speaker === 'KonsPowa').length}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-gray-400">Active Users</span>
@@ -2708,7 +2708,7 @@ All trades will be logged and tracked automatically.`, 'oracle', 95);
                       <div className="flex items-center gap-2 p-2 bg-yellow-900/20 rounded">
                         <div className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-pulse"></div>
                         <div>
-                          <div className="text-sm font-medium text-yellow-300">Kons Powa Oracle</div>
+                          <div className="text-sm font-medium text-yellow-300">KonsPowa Oracle</div>
                           <div className="text-xs text-gray-400">Channeling divine wisdom...</div>
                         </div>
                       </div>
@@ -2850,7 +2850,7 @@ function SmaiSikaWalletTab() {
             <div className="text-sm text-gray-400">Divine Approval</div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -3055,7 +3055,7 @@ function SmaiSikaWalletTab() {
             )}
           </div>
         </CardContent>
-      </Card>
+        </Card>
     </div>
   );
 }
@@ -3240,7 +3240,7 @@ function LocalWalletTab() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
       {/* Advanced Analytics Dashboard */}
       <Card className="bg-slate-800/50 border-cyan-500/30">
@@ -3320,7 +3320,7 @@ function LocalWalletTab() {
             </div>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
       {/* Currency Exchange */}
       <Card className="bg-slate-800/50 border-cyan-500/30">
@@ -3368,7 +3368,7 @@ function LocalWalletTab() {
             Exchange Currency
           </Button>
         </CardContent>
-      </Card>
+        </Card>
 
       {/* Local Transactions */}
       <Card className="bg-slate-800/50 border-gray-500/30">
@@ -3401,7 +3401,7 @@ function LocalWalletTab() {
             ))}
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
 
     </div>

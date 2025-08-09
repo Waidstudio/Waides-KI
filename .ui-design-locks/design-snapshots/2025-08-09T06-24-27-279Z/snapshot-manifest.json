@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-08-09T06:24:27.280Z",
+  "designFiles": [
+    "client/src/index.css",
+    "tailwind.config.ts",
+    "postcss.config.js",
+    "client/src/components/ui/button.tsx",
+    "client/src/components/ui/card.tsx",
+    "client/src/components/ui/input.tsx",
+    "client/src/components/ui/dialog.tsx",
+    "client/src/components/ui/toast.tsx",
+    "client/src/components/ui/StableNavigation.tsx",
+    "components.json",
+    "client/src/lib/utils.ts",
+    "client/src/App.tsx",
+    "client/src/pages/ProfessionalWalletPage.tsx"
+  ],
+  "themeConfig": "theme-config.json"
+}

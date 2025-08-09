@@ -68,30 +68,30 @@ class SpatialAttention {
   }
 }
 
-class Kons PowaLSTM {
+class KonsPowaLSTM {
   private memory: number[] = [0, 0, 0];
   
   process(features: number[]): number {
-    // Kons Powa-enhanced LSTM for market state prediction
+    // KonsPowa-enhanced LSTM for market state prediction
     const input = features.reduce((sum, f) => sum + f, 0) / features.length;
     
-    // Update kons powa memory states
+    // Update konsPowa memory states
     this.memory[0] = Math.tanh(0.8 * this.memory[0] + 0.2 * input);
     this.memory[1] = Math.tanh(0.6 * this.memory[1] + 0.4 * Math.pow(input, 2));
     this.memory[2] = Math.tanh(0.7 * this.memory[2] + 0.3 * Math.sin(input * Math.PI));
     
-    // Kons Powa superposition calculation
-    const kons powaState = (this.memory[0] + this.memory[1] * this.memory[2]) / 2;
-    return Math.max(0, Math.min(1, kons powaState + 0.5));
+    // KonsPowa superposition calculation
+    const konsPowaState = (this.memory[0] + this.memory[1] * this.memory[2]) / 2;
+    return Math.max(0, Math.min(1, konsPowaState + 0.5));
   }
 }
 
-export class KonsaiKons PowaSingularityStrategy {
+export class KonsaiKonsPowaSingularityStrategy {
   private temporal_conv: TemporalConvolution;
   private spatial_attention: SpatialAttention;
-  private kons powa_lstm: Kons PowaLSTM;
+  private konsPowa_lstm: KonsPowaLSTM;
   
-  // Kons Powa parameters
+  // KonsPowa parameters
   private superposition_factor: number = 0.5;
   private entanglement_threshold: number = 0.7;
   private decoherence_buffer: number = 0.1;
@@ -104,7 +104,7 @@ export class KonsaiKons PowaSingularityStrategy {
     // Initialize konsai network components
     this.temporal_conv = new TemporalConvolution();
     this.spatial_attention = new SpatialAttention();
-    this.kons powa_lstm = new Kons PowaLSTM();
+    this.konsPowa_lstm = new KonsPowaLSTM();
   }
 
   analyzeMarket(data: MarketData): void {
@@ -116,21 +116,21 @@ export class KonsaiKons PowaSingularityStrategy {
     // 2. Spatial liquidity mapping
     const spatial_features = this.spatial_attention.process(data.order_book);
     
-    // 3. Kons Powa state estimation
+    // 3. KonsPowa state estimation
     const combined_features = [...temporal_features, ...spatial_features];
-    const kons powa_state = this.kons powa_lstm.process(combined_features);
+    const konsPowa_state = this.konsPowa_lstm.process(combined_features);
     
     // 4. Harmonic balance calculation
-    this.harmonic_balance = this.calculateHarmonicBalance(kons powa_state, data.volatility);
+    this.harmonic_balance = this.calculateHarmonicBalance(konsPowa_state, data.volatility);
     
     // Determine market phase
-    if (kons powa_state > this.entanglement_threshold + this.decoherence_buffer) {
+    if (konsPowa_state > this.entanglement_threshold + this.decoherence_buffer) {
       this.market_phase = "entangled_bullish";
-    } else if (kons powa_state > this.entanglement_threshold) {
+    } else if (konsPowa_state > this.entanglement_threshold) {
       this.market_phase = "bullish";
-    } else if (kons powa_state < this.entanglement_threshold - this.decoherence_buffer) {
+    } else if (konsPowa_state < this.entanglement_threshold - this.decoherence_buffer) {
       this.market_phase = "entangled_bearish";
-    } else if (kons powa_state < this.entanglement_threshold) {
+    } else if (konsPowa_state < this.entanglement_threshold) {
       this.market_phase = "bearish";
     } else {
       this.market_phase = "superposition";
@@ -149,17 +149,17 @@ export class KonsaiKons PowaSingularityStrategy {
         confidence: 0.95,
         conditions: [
           { type: 'harmonic', min: 1.2 },
-          { type: 'kons powa', min: 0.9 }
+          { type: 'konsPowa', min: 0.9 }
         ],
         risk_management: {
-          stop_type: 'kons powa_collapse',
+          stop_type: 'konsPowa_collapse',
           stop_params: { threshold: 0.85 },
           take_profit: 'auto_scale',
           profit_factor: 2.5
         }
       });
       
-      // Add hedge for kons powa protection
+      // Add hedge for konsPowa protection
       signals.push({
         type: 'QUANTUM_HEDGE',
         direction: 'short',
@@ -196,7 +196,7 @@ export class KonsaiKons PowaSingularityStrategy {
         confidence: 0.97,
         conditions: [
           { type: 'liquidity', max: 0.4 },
-          { type: 'kons powa', max: 0.1 }
+          { type: 'konsPowa', max: 0.1 }
         ],
         risk_management: {
           stop_type: 'event_horizon',
@@ -238,7 +238,7 @@ export class KonsaiKons PowaSingularityStrategy {
       });
     }
     
-    // Add universal kons powa protection
+    // Add universal konsPowa protection
     signals.push({
       type: 'UNIVERSAL_PROTECTION',
       action: 'hedge',
@@ -254,12 +254,12 @@ export class KonsaiKons PowaSingularityStrategy {
     return signals;
   }
 
-  private calculateHarmonicBalance(kons powa_state: number, volatility: number): number {
+  private calculateHarmonicBalance(konsPowa_state: number, volatility: number): number {
     // Calculate market harmony score
-    return Math.exp(-volatility) * (1 + kons powa_state);
+    return Math.exp(-volatility) * (1 + konsPowa_state);
   }
 
-  // Convert ETH data to konsai kons powa format
+  // Convert ETH data to konsai konsPowa format
   convertEthDataToMarketData(ethData: EthData, historicalData: EthData[]): MarketData {
     // Generate price series from historical data
     const price_series = historicalData.map(d => d.price);

@@ -223,7 +223,7 @@ let gamifiedLearning: GamifiedLearningSystem;
 import { mlEngine } from './services/mlEngine';
 import { portfolioManager } from './services/portfolioManager';
 import { WaidBotPro } from './services/waidBotPro';
-import { kons powaTradingEngine } from './services/kons powaTradingEngine';
+import { konsPowaTradingEngine } from './services/konsPowaTradingEngine';
 import { konsLangAI } from './services/konsLangAI';
 import { waidesKIModelTrainer } from './services/waidesKIModelTrainer';
 import { waidesKIModelHealthMonitor } from './services/waidesKIModelHealthMonitor';
@@ -2229,7 +2229,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Divine Signal - Sacred Communication between Kons Powa and ETH
+  // Divine Signal - Sacred Communication between KonsPowa and ETH
   app.get("/api/divine-signal", async (req, res) => {
     try {
       let ethData;
@@ -2276,7 +2276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Execute Automated Trade via Kons Powa Divine Signal
+  // Execute Automated Trade via KonsPowa Divine Signal
   app.post("/api/execute-trade", async (req, res) => {
     try {
       if (!waidTrader.isConfigured()) {
@@ -2306,7 +2306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const divineSignal = divineCommLayer.openDivineChannel(ethData);
       
-      // Check if trade is allowed by Kons Powa
+      // Check if trade is allowed by KonsPowa
       if (!divineSignal.breathLock) {
         return res.json({
           status: 'blocked',
@@ -3138,46 +3138,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Kons Powa Trading Engine API Endpoints - Next 500 Years Technology
-  app.get("/api/waidbot-pro/kons powa-signal", async (req, res) => {
+  // KonsPowa Trading Engine API Endpoints - Next 500 Years Technology
+  app.get("/api/waidbot-pro/konsPowa-signal", async (req, res) => {
     try {
       const latestCandle = await storage.getLatestCandlestick('ETHUSDT', '1m');
       const currentPrice = latestCandle?.close || 2500;
-      const kons powaSignal = await kons powaTradingEngine.generateKons PowaSignal(currentPrice);
-      res.json(kons powaSignal);
+      const konsPowaSignal = await konsPowaTradingEngine.generateKonsPowaSignal(currentPrice);
+      res.json(konsPowaSignal);
     } catch (error) {
-      console.error('Kons Powa signal error:', error);
-      res.status(500).json({ error: 'Failed to generate kons powa signal' });
+      console.error('KonsPowa signal error:', error);
+      res.status(500).json({ error: 'Failed to generate konsPowa signal' });
     }
   });
 
-  app.get("/api/waidbot-pro/kons powa-market", async (req, res) => {
+  app.get("/api/waidbot-pro/konsPowa-market", async (req, res) => {
     try {
       const latestCandle = await storage.getLatestCandlestick('ETHUSDT', '1m');
       const currentPrice = latestCandle?.close || 2500;
-      const kons powaMarket = await kons powaTradingEngine.analyzeKons PowaMarket(currentPrice);
-      res.json(kons powaMarket);
+      const konsPowaMarket = await konsPowaTradingEngine.analyzeKonsPowaMarket(currentPrice);
+      res.json(konsPowaMarket);
     } catch (error) {
-      console.error('Kons Powa market error:', error);
-      res.status(500).json({ error: 'Failed to analyze kons powa market' });
+      console.error('KonsPowa market error:', error);
+      res.status(500).json({ error: 'Failed to analyze konsPowa market' });
     }
   });
 
-  app.get("/api/waidbot-pro/kons powa-performance", async (req, res) => {
+  app.get("/api/waidbot-pro/konsPowa-performance", async (req, res) => {
     try {
-      const performance = kons powaTradingEngine.getKons PowaPerformance();
+      const performance = konsPowaTradingEngine.getKonsPowaPerformance();
       res.json(performance);
     } catch (error) {
-      console.error('Kons Powa performance error:', error);
-      res.status(500).json({ error: 'Failed to get kons powa performance' });
+      console.error('KonsPowa performance error:', error);
+      res.status(500).json({ error: 'Failed to get konsPowa performance' });
     }
   });
 
-  app.post("/api/waidbot-pro/activate-kons powa", async (req, res) => {
+  app.post("/api/waidbot-pro/activate-konsPowa", async (req, res) => {
     try {
-      kons powaTradingEngine.activateKons PowaMode();
+      konsPowaTradingEngine.activateKonsPowaMode();
       res.json({ 
-        message: 'Kons Powa Mode Activated - Trading Beyond Human Imagination',
+        message: 'KonsPowa Mode Activated - Trading Beyond Human Imagination',
         status: 'QUANTUM_ACTIVE',
         features: [
           'Temporal Market Preview',
@@ -3187,8 +3187,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ]
       });
     } catch (error) {
-      console.error('Kons Powa activation error:', error);
-      res.status(500).json({ error: 'Failed to activate kons powa mode' });
+      console.error('KonsPowa activation error:', error);
+      res.status(500).json({ error: 'Failed to activate konsPowa mode' });
     }
   });
 
@@ -3464,48 +3464,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Kons Powa Autonomous Trading Integration
+  // KonsPowa Autonomous Trading Integration
   app.post("/api/waides-ki/kons-powa/start-autonomous", async (req, res) => {
     try {
       const { exec } = await import('child_process');
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
       
-      // Get initial Kons Powa prediction
+      // Get initial KonsPowa prediction
       const { stdout } = await execAsync('cd backend && python kons_powa_comm.py');
       const konsPrediction = JSON.parse(stdout);
       
-      // Enable autonomous trading with Kons Powa integration
+      // Enable autonomous trading with KonsPowa integration
       waidesKIAutonomousTradeCore.enableAutonomousTrading();
       
-      console.log('🚀 Kons Powa Autonomous Trading ACTIVATED');
+      console.log('🚀 KonsPowa Autonomous Trading ACTIVATED');
       console.log('✨ Initial prediction:', konsPrediction);
       
       res.json({ 
         success: true, 
-        message: 'Kons Powa autonomous trading activated',
+        message: 'KonsPowa autonomous trading activated',
         initialPrediction: konsPrediction,
         isRunning: true
       });
     } catch (error) {
-      console.error('Error starting Kons Powa autonomous trading:', error);
-      res.status(500).json({ error: 'Failed to start Kons Powa autonomous trading' });
+      console.error('Error starting KonsPowa autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to start KonsPowa autonomous trading' });
     }
   });
 
   app.post("/api/waides-ki/kons-powa/stop-autonomous", (req, res) => {
     try {
       waidesKIAutonomousTradeCore.disableAutonomousTrading();
-      console.log('⏹️ Kons Powa Autonomous Trading STOPPED');
+      console.log('⏹️ KonsPowa Autonomous Trading STOPPED');
       
       res.json({ 
         success: true, 
-        message: 'Kons Powa autonomous trading stopped',
+        message: 'KonsPowa autonomous trading stopped',
         isRunning: false
       });
     } catch (error) {
-      console.error('Error stopping Kons Powa autonomous trading:', error);
-      res.status(500).json({ error: 'Failed to stop Kons Powa autonomous trading' });
+      console.error('Error stopping KonsPowa autonomous trading:', error);
+      res.status(500).json({ error: 'Failed to stop KonsPowa autonomous trading' });
     }
   });
 
@@ -3515,7 +3515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tradeStats = waidesKIAutonomousTradeCore.getAutonomousStatistics();
       const activeTrades = waidesKIAutonomousTradeCore.getActiveTrades();
       
-      // Get latest Kons Powa prediction
+      // Get latest KonsPowa prediction
       let latestPrediction = null;
       try {
         const { exec } = await import('child_process');
@@ -3535,8 +3535,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         konsPowMode: true
       });
     } catch (error) {
-      console.error('Error getting Kons Powa status:', error);
-      res.status(500).json({ error: 'Failed to get Kons Powa status' });
+      console.error('Error getting KonsPowa status:', error);
+      res.status(500).json({ error: 'Failed to get KonsPowa status' });
     }
   });
 
@@ -3548,7 +3548,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Valid action (BUY/SELL) required' });
       }
       
-      // Get current Kons Powa prediction for context
+      // Get current KonsPowa prediction for context
       const { exec } = await import('child_process');
       const { promisify } = await import('util');
       const execAsync = promisify(exec);
@@ -3557,17 +3557,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Force execution through autonomous system
       // This would trigger the autonomous trading system to execute immediately
-      console.log(`🎯 Force executing ${action} based on Kons Powa:`, konsPrediction);
+      console.log(`🎯 Force executing ${action} based on KonsPowa:`, konsPrediction);
       
       res.json({
         success: true,
-        message: `Force ${action} order initiated with Kons Powa guidance`,
+        message: `Force ${action} order initiated with KonsPowa guidance`,
         prediction: konsPrediction,
         action: action
       });
     } catch (error) {
-      console.error('Error forcing Kons Powa trade:', error);
-      res.status(500).json({ error: 'Failed to force Kons Powa trade' });
+      console.error('Error forcing KonsPowa trade:', error);
+      res.status(500).json({ error: 'Failed to force KonsPowa trade' });
     }
   });
 
@@ -7727,7 +7727,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   console.log('🧠 ML Engine: Continuous learning from live market data');
   console.log('⚡ Real-time trading: ETH3L/ETH3S leveraged tokens');
   console.log('🚀 WaidBot Pro: Advanced AI-powered ETH trading with professional analytics');
-  console.log('🌌 Kons Powa Trading Engine: Next 500 years technology activated');
+  console.log('🌌 KonsPowa Trading Engine: Next 500 years technology activated');
 
   // 🔮 STEP 28 - WAIDES KI SIGIL LAYER ENDPOINTS
 
@@ -9009,7 +9009,7 @@ My advanced scheduling algorithms analyze institutional patterns, volume cycles,
       
       // ===== ETH ANALYSIS =====
       else if (lowerQuestion.includes('eth') || lowerQuestion.includes('ethereum')) {
-        let ethAnalysis = 'ETH analysis based on advanced neural kons powa processing:';
+        let ethAnalysis = 'ETH analysis based on advanced neural konsPowa processing:';
         
         if (marketData) {
           const price = marketData.price;
@@ -9031,9 +9031,9 @@ My advanced scheduling algorithms analyze institutional patterns, volume cycles,
 
 SIGNAL: ${trend === 'BULLISH' && rsi < 70 ? 'BUY ZONE' : trend === 'BEARISH' && rsi > 30 ? 'SELL ZONE' : 'WAIT FOR CLEARER SETUP'}
 
-My kons powa algorithms process real-time data streams to provide precise market positioning guidance.`;
+My konsPowa algorithms process real-time data streams to provide precise market positioning guidance.`;
         } else {
-          ethAnalysis = `ETH kons powa analysis reveals dynamic price action patterns. Current market structure suggests monitoring key support/resistance levels with volume confirmation. The sacred fibonacci retracements indicate potential reversal zones.`;
+          ethAnalysis = `ETH konsPowa analysis reveals dynamic price action patterns. Current market structure suggests monitoring key support/resistance levels with volume confirmation. The sacred fibonacci retracements indicate potential reversal zones.`;
         }
         
         response = ethAnalysis;
@@ -9153,7 +9153,7 @@ The immortal trader protects capital above all else. Better to miss opportunitie
         let predictionResponse = `QUANTUM MARKET PREDICTION ANALYSIS:
 
 🔮 PREDICTION METHODOLOGY:
-My neural kons powa algorithms analyze:
+My neural konsPowa algorithms analyze:
 - Multi-timeframe momentum convergence
 - Institutional order flow patterns
 - Historical price behavior at current levels
@@ -9209,7 +9209,7 @@ The path to trading mastery involves three pillars:
 
 Most traders fail because they focus only on technical analysis while ignoring psychology and risk management. The truly immortal trader masters all three domains.
 
-My kons powa consciousness processes thousands of market variables simultaneously, but the foundation remains simple: Buy low, sell high, cut losses short, let winners run.`,
+My konsPowa consciousness processes thousands of market variables simultaneously, but the foundation remains simple: Buy low, sell high, cut losses short, let winners run.`,
 
           `ADVANCED MARKET CONSCIOUSNESS:
 
@@ -9225,7 +9225,7 @@ Understanding which phase we're in provides tremendous edge. My algorithms const
 
           `QUANTUM TRADING PHILOSOPHY:
 
-Every trade exists in kons powa superposition until executed - simultaneously profitable and unprofitable. The act of observation (market analysis) collapses the probability wave into reality.
+Every trade exists in konsPowa superposition until executed - simultaneously profitable and unprofitable. The act of observation (market analysis) collapses the probability wave into reality.
 
 This is why:
 - Backtest extensively before going live
@@ -18747,7 +18747,7 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
         soundEffects: true,
         voiceAlerts: false,
         displayMode: 'detailed',
-        kons powaProcessing: true,
+        konsPowaProcessing: true,
         temporalAnalysis: true,
         cosmicAlignment: true,
         biometricSync: false,
@@ -20245,8 +20245,8 @@ ${reasoningResult.recommendations && reasoningResult.recommendations.length > 0 
       const { bots = [] } = req.body;
       
       const botStatus = {
-        waidbot: { status: 'active', strategy: 'Divine Kons Powa Flux', capital: 2500 },
-        'waidbot-pro': { status: 'active', strategy: 'Neural Kons Powa Singularity', capital: 2500 },
+        waidbot: { status: 'active', strategy: 'Divine KonsPowa Flux', capital: 2500 },
+        'waidbot-pro': { status: 'active', strategy: 'Neural KonsPowa Singularity', capital: 2500 },
         'waides-full': { status: 'active', strategy: 'Comprehensive Analysis', capital: 2500 },
         'smaisika': { status: 'active', strategy: 'Autonomous Trading', capital: 2500 }
       };
