@@ -26,9 +26,8 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
 
-    // Demo credentials for testing
+    // Demo credentials for testing (excluding super admin)
     const demoAdmins = {
-      'superadmin@waideski.com': { password: 'SuperAdmin123!@#', level: 'super', name: 'Super Administrator' },
       'system@waideski.com': { password: 'SystemAdmin123!', level: 'system', name: 'System Administrator' },
       'trading@waideski.com': { password: 'TradingAdmin123!', level: 'trading', name: 'Trading Administrator' },
       'support@waideski.com': { password: 'SupportAdmin123!', level: 'support', name: 'Support Administrator' },

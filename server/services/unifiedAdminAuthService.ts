@@ -4,16 +4,8 @@ import { db } from '../db';
 import { adminUsers, adminSessions, adminActivityLogs, type AdminUser } from '@shared/schema';
 import { eq, and, gt } from 'drizzle-orm';
 
-// Define admin levels configuration
+// Define admin levels configuration (excluding super admin for unified login)
 export const adminLevels = {
-  super: {
-    name: 'Super Admin',
-    description: 'Ultimate system control with all permissions',
-    color: 'red',
-    icon: 'Crown',
-    permissions: ['*'], // All permissions
-    dashboardRoute: '/super-admin-dashboard',
-  },
   system: {
     name: 'System Admin',
     description: 'System configuration and user management',
@@ -68,6 +60,18 @@ export const adminLevels = {
     dashboardRoute: '/viewer-admin-dashboard',
   }
 } as const;
+
+// Super admin configuration (separate for super admin login only)
+export const superAdminConfig = {
+  super: {
+    name: 'Super Admin',
+    description: 'Ultimate system control with all permissions',
+    color: 'red',
+    icon: 'Crown',
+    permissions: ['*'], // All permissions
+    dashboardRoute: '/super-admin-dashboard',
+  }
+};
 
 export type AdminLevel = keyof typeof adminLevels;
 

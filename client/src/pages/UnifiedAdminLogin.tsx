@@ -229,7 +229,6 @@ function UnifiedAdminLogin() {
                         <div className="text-sm">
                           <p className="text-blue-400 font-medium mb-2">Demo Credentials:</p>
                           <div className="space-y-1 text-slate-300">
-                            <p>Super Admin: superadmin@waideski.com / SuperAdmin123!@#</p>
                             <p>System: system@waideski.com / SystemAdmin123!</p>
                             <p>Trading: trading@waideski.com / TradingAdmin123!</p>
                             <p>Support: support@waideski.com / SupportAdmin123!</p>
@@ -321,29 +320,20 @@ function UnifiedAdminLogin() {
           </Card>
         </div>
 
-        {/* Super Admin Direct Access */}
-        <Card className="bg-gradient-to-r from-red-950/30 to-red-900/30 border-red-800/30">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-3 bg-red-500/20 rounded-lg">
-                  <Crown className="w-6 h-6 text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-red-400 font-semibold">Super Admin Portal</h3>
-                  <p className="text-slate-400 text-sm">Ultimate system control and management</p>
-                </div>
-              </div>
-              <Button
-                onClick={() => setLocation('/super-admin-login')}
-                variant="outline"
-                className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-              >
-                Direct Access
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Superior Admin Access Link */}
+        <div className="text-center">
+          <p className="text-slate-400 text-sm">
+            Need superior admin access?{' '}
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => setLocation('/super-admin-login')}
+              className="text-red-400 hover:text-red-300 p-0 h-auto"
+            >
+              Superior Admin Portal
+            </Button>
+          </p>
+        </div>
       </div>
     </div>
   );
