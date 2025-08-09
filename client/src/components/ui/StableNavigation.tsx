@@ -306,45 +306,43 @@ const StableNavigation = () => {
             </div>
           </div>
 
-          {/* User Actions - Chat, Notifications, Profile (After Logo) */}
-          <div className="flex items-center space-x-4 ml-8">
+          {/* User Actions - Chat, Notifications, Profile */}
+          <div className="flex items-center space-x-2 ml-3">
             {/* Search */}
-            <div className="relative hidden lg:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="relative hidden xl:block">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 w-56"
+                className="pl-7 pr-3 py-1.5 bg-slate-700/50 border border-slate-600/50 rounded-md text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 w-36"
               />
             </div>
 
             {/* Chat Icon */}
             <Link href="/waidchat">
-              <Button variant="ghost" size="sm" className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2">
-                <MessageCircle className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-blue-500 hover:bg-blue-500 flex items-center justify-center">
+              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1.5 rounded-md">
+                <MessageCircle className="h-4 w-4" />
+                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 text-xs bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   2
-                </Badge>
-              </Button>
+                </span>
+              </button>
             </Link>
 
             {/* Notifications */}
             <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <button
                 onClick={() => toggleDropdown('notifications')}
-                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2"
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1.5 rounded-md"
               >
-                <Bell className="h-5 w-5" />
+                <Bell className="h-4 w-4" />
                 {notificationCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs bg-emerald-500 hover:bg-emerald-500 animate-pulse flex items-center justify-center">
+                  <span className="absolute -top-0.5 -right-0.5 h-3 w-3 text-xs bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold animate-pulse">
                     {notificationCount}
-                  </Badge>
+                  </span>
                 )}
-              </Button>
+              </button>
 
               {/* Notifications Dropdown */}
               {activeDropdown === 'notifications' && (
