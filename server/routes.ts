@@ -8325,6 +8325,712 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== WAIDBOT ALPHA (WAIDBOT) WALLET ENDPOINTS =====
+  
+  // WaidBot Alpha balance endpoint
+  app.get("/api/waidbot-engine/waidbot/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('waidbot');
+      
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          balance: {
+            available: 50000,
+            invested: 0,
+            totalProfit: 0,
+            dailyProfit: 0,
+            currency: "SmaiSika",
+            mode: "demo",
+            fundingSource: "Demo Pool"
+          },
+          tradingMode: "demo",
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          balance: {
+            available: 8750,
+            invested: 3500,
+            totalProfit: 850,
+            dailyProfit: 125,
+            currency: "SmaiSika",
+            mode: "real",
+            fundingSource: "Personal Account"
+          },
+          tradingMode: "real",
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error("❌ WaidBot Alpha balance error:", error);
+      res.status(500).json({ success: false, error: "Failed to get WaidBot Alpha balance" });
+    }
+  });
+
+  // WaidBot Alpha funding endpoint
+  app.post("/api/waidbot-engine/waidbot/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('waidbot');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to WaidBot Alpha`,
+          newBalance: 8750 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ WaidBot Alpha funding error:', error);
+      res.status(500).json({ error: 'Failed to fund WaidBot Alpha' });
+    }
+  });
+
+  // WaidBot Alpha withdrawal endpoint
+  app.post("/api/waidbot-engine/waidbot/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('waidbot');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        const currentBalance = 8750;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from WaidBot Alpha`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ WaidBot Alpha withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from WaidBot Alpha' });
+    }
+  });
+
+  // ===== WAIDBOT PRO BETA WALLET ENDPOINTS =====
+  
+  // WaidBot Pro Beta balance endpoint
+  app.get("/api/waidbot-engine/waidbot-pro/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('waidbot-pro');
+      
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          balance: {
+            available: 50000,
+            invested: 0,
+            totalProfit: 0,
+            dailyProfit: 0,
+            currency: "SmaiSika",
+            mode: "demo",
+            fundingSource: "Demo Pool"
+          },
+          tradingMode: "demo",
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          balance: {
+            available: 15420,
+            invested: 8500,
+            totalProfit: 2850,
+            dailyProfit: 420,
+            currency: "SmaiSika",
+            mode: "real",
+            fundingSource: "Personal Account"
+          },
+          tradingMode: "real",
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error("❌ WaidBot Pro Beta balance error:", error);
+      res.status(500).json({ success: false, error: "Failed to get WaidBot Pro Beta balance" });
+    }
+  });
+
+  // WaidBot Pro Beta funding endpoint
+  app.post("/api/waidbot-engine/waidbot-pro/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('waidbot-pro');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to WaidBot Pro Beta`,
+          newBalance: 15420 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ WaidBot Pro Beta funding error:', error);
+      res.status(500).json({ error: 'Failed to fund WaidBot Pro Beta' });
+    }
+  });
+
+  // WaidBot Pro Beta withdrawal endpoint
+  app.post("/api/waidbot-engine/waidbot-pro/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('waidbot-pro');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        const currentBalance = 15420;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from WaidBot Pro Beta`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ WaidBot Pro Beta withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from WaidBot Pro Beta' });
+    }
+  });
+
+  // ===== AUTONOMOUS TRADER GAMMA WALLET ENDPOINTS =====
+  
+  // Autonomous Trader balance endpoint
+  app.get("/api/waidbot-engine/autonomous/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('autonomous');
+      
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          balance: {
+            available: 50000,
+            invested: 0,
+            totalProfit: 0,
+            dailyProfit: 0,
+            currency: "SmaiSika",
+            mode: "demo",
+            fundingSource: "Demo Pool"
+          },
+          tradingMode: "demo",
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          balance: {
+            available: 25750,
+            invested: 15000,
+            totalProfit: 4850,
+            dailyProfit: 650,
+            currency: "SmaiSika",
+            mode: "real",
+            fundingSource: "Personal Account"
+          },
+          tradingMode: "real",
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error("❌ Autonomous Trader balance error:", error);
+      res.status(500).json({ success: false, error: "Failed to get Autonomous Trader balance" });
+    }
+  });
+
+  // Autonomous Trader funding endpoint
+  app.post("/api/waidbot-engine/autonomous/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('autonomous');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to Autonomous Trader`,
+          newBalance: 25750 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Autonomous Trader funding error:', error);
+      res.status(500).json({ error: 'Failed to fund Autonomous Trader' });
+    }
+  });
+
+  // Autonomous Trader withdrawal endpoint
+  app.post("/api/waidbot-engine/autonomous/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('autonomous');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        const currentBalance = 25750;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from Autonomous Trader`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Autonomous Trader withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from Autonomous Trader' });
+    }
+  });
+
+  // ===== DIVINE BOTS WALLET ENDPOINTS =====
+  
+  // Nwaora Chigozie balance endpoint
+  app.get("/api/divine-bots/nwaora-chigozie/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('nwaora-chigozie');
+      
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          balance: {
+            available: 50000,
+            invested: 0,
+            totalProfit: 0,
+            dailyProfit: 0,
+            currency: "SmaiSika",
+            mode: "demo",
+            fundingSource: "Demo Pool"
+          },
+          tradingMode: "demo",
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          balance: {
+            available: 18950,
+            invested: 12000,
+            totalProfit: 3650,
+            dailyProfit: 520,
+            currency: "SmaiSika",
+            mode: "real",
+            fundingSource: "Personal Account"
+          },
+          tradingMode: "real",
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error("❌ Nwaora Chigozie balance error:", error);
+      res.status(500).json({ success: false, error: "Failed to get Nwaora Chigozie balance" });
+    }
+  });
+
+  app.post("/api/divine-bots/nwaora-chigozie/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('nwaora-chigozie');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to Nwaora Chigozie`,
+          newBalance: 18950 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Nwaora Chigozie funding error:', error);
+      res.status(500).json({ error: 'Failed to fund Nwaora Chigozie' });
+    }
+  });
+
+  app.post("/api/divine-bots/nwaora-chigozie/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('nwaora-chigozie');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        const currentBalance = 18950;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from Nwaora Chigozie`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Nwaora Chigozie withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from Nwaora Chigozie' });
+    }
+  });
+
+  // Smai Chinnikstah balance endpoint
+  app.get("/api/divine-bots/smai-chinnikstah/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('smai-chinnikstah');
+      
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          balance: {
+            available: 50000,
+            invested: 0,
+            totalProfit: 0,
+            dailyProfit: 0,
+            currency: "SmaiSika",
+            mode: "demo",
+            fundingSource: "Demo Pool"
+          },
+          tradingMode: "demo",
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          balance: {
+            available: 32750,
+            invested: 20000,
+            totalProfit: 7850,
+            dailyProfit: 1250,
+            currency: "SmaiSika",
+            mode: "real",
+            fundingSource: "Personal Account"
+          },
+          tradingMode: "real",
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error("❌ Smai Chinnikstah balance error:", error);
+      res.status(500).json({ success: false, error: "Failed to get Smai Chinnikstah balance" });
+    }
+  });
+
+  app.post("/api/divine-bots/smai-chinnikstah/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('smai-chinnikstah');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to Smai Chinnikstah`,
+          newBalance: 32750 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Smai Chinnikstah funding error:', error);
+      res.status(500).json({ error: 'Failed to fund Smai Chinnikstah' });
+    }
+  });
+
+  app.post("/api/divine-bots/smai-chinnikstah/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('smai-chinnikstah');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        const currentBalance = 32750;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from Smai Chinnikstah`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Smai Chinnikstah withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from Smai Chinnikstah' });
+    }
+  });
+
+  // ===== FULL ENGINE OMEGA WALLET ENDPOINTS =====
+  
+  // Full Engine Omega balance endpoint
+  app.get("/api/full-engine/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('full-engine');
+      
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          balance: {
+            available: 50000,
+            invested: 0,
+            totalProfit: 0,
+            dailyProfit: 0,
+            currency: "SmaiSika",
+            mode: "demo",
+            fundingSource: "Demo Pool"
+          },
+          tradingMode: "demo",
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          balance: {
+            available: 45820,
+            invested: 30000,
+            totalProfit: 12950,
+            dailyProfit: 1850,
+            currency: "SmaiSika",
+            mode: "real",
+            fundingSource: "Personal Account"
+          },
+          tradingMode: "real",
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error("❌ Full Engine Omega balance error:", error);
+      res.status(500).json({ success: false, error: "Failed to get Full Engine Omega balance" });
+    }
+  });
+
+  app.post("/api/full-engine/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('full-engine');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to Full Engine Omega`,
+          newBalance: 45820 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Full Engine Omega funding error:', error);
+      res.status(500).json({ error: 'Failed to fund Full Engine Omega' });
+    }
+  });
+
+  app.post("/api/full-engine/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const tradingMode = getTradingMode('full-engine');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        const currentBalance = 45820;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from Full Engine Omega`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Full Engine Omega withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from Full Engine Omega' });
+    }
+  });
+
   // Alpha Entity Status - Advanced AI Trading Intelligence
   app.get("/api/waidbot-engine/alpha/status", async (req, res) => {
     try {

@@ -4,7 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause, Wallet, DollarSign, Signal, BarChart, Crown, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface WaidBotDecision {
@@ -31,29 +36,81 @@ interface WaidBotStatus {
 
 export function WaidBot() {
   const [isGeneratingDecision, setIsGeneratingDecision] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [tradingMode, setTradingMode] = useState<'demo' | 'real'>('demo');
+  const [fundAmount, setFundAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const { toast } = useToast();
 
   // Fetch WaidBot status
   const { data: statusData, isLoading: statusLoading } = useQuery({
-    queryKey: ['/api/waidbot/status'],
-    refetchInterval: 5000, // Refresh every 5 seconds
+    queryKey: ['/api/waidbot-engine/waidbot/status'],
+    refetchInterval: 5000,
+  });
+
+  // Fetch WaidBot balance
+  const { data: balanceData, isLoading: balanceLoading } = useQuery({
+    queryKey: ['/api/waidbot-engine/waidbot/balance'],
+    refetchInterval: 3000,
   });
 
   // Fetch decision history
   const { data: historyData, isLoading: historyLoading } = useQuery({
     queryKey: ['/api/waidbot/history'],
-    refetchInterval: 10000, // Refresh every 10 seconds
+    refetchInterval: 10000,
   });
 
-  // Toggle auto-trading mutation
-  const toggleMutation = useMutation({
-    mutationFn: (enabled: boolean) => 
-      apiRequest('/api/waidbot/toggle', {
+  // Toggle trading mode mutation
+  const toggleModeMutation = useMutation({
+    mutationFn: (mode: 'demo' | 'real') => 
+      apiRequest('/api/waidbot-engine/waidbot/mode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled })
+        body: JSON.stringify({ mode })
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot/status'] });
+    onSuccess: (data) => {
+      setTradingMode(data.mode);
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/balance'] });
+      toast({
+        title: "Trading Mode Updated",
+        description: `WaidBot α switched to ${data.mode} mode`,
+      });
+    }
+  });
+
+  // Fund bot mutation
+  const fundMutation = useMutation({
+    mutationFn: (amount: number) =>
+      apiRequest('/api/waidbot-engine/waidbot/fund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/balance'] });
+      setFundAmount('');
+      toast({
+        title: "Funding Successful",
+        description: data.message,
+      });
+    }
+  });
+
+  // Withdraw mutation
+  const withdrawMutation = useMutation({
+    mutationFn: (amount: number) =>
+      apiRequest('/api/waidbot-engine/waidbot/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/balance'] });
+      setWithdrawAmount('');
+      toast({
+        title: "Withdrawal Successful",
+        description: data.message,
+      });
     }
   });
 
@@ -71,20 +128,42 @@ export function WaidBot() {
     }
   });
 
-  const status: WaidBotStatus = statusData?.status || {
+  const status = statusData || {
+    id: 'waidbot',
+    name: 'WaidBot Alpha',
     isActive: false,
-    autoTradingEnabled: false,
-    currentPosition: 'NEUTRAL',
-    totalTrades: 0,
-    winRate: 0,
-    currentBalance: 10000,
-    lastDecision: null
+    confidence: 0,
+    performance: { profit: 0, trades: 0, winRate: 0 }
+  };
+
+  const balance = balanceData?.balance || {
+    available: 0,
+    invested: 0,
+    totalProfit: 0,
+    dailyProfit: 0,
+    currency: 'SmaiSika',
+    mode: 'demo'
   };
 
   const history: WaidBotDecision[] = historyData?.history || [];
 
-  const handleToggleTrading = () => {
-    toggleMutation.mutate(!status.autoTradingEnabled);
+  const handleModeToggle = () => {
+    const newMode = tradingMode === 'demo' ? 'real' : 'demo';
+    toggleModeMutation.mutate(newMode);
+  };
+
+  const handleFund = () => {
+    const amount = parseFloat(fundAmount);
+    if (amount && amount > 0) {
+      fundMutation.mutate(amount);
+    }
+  };
+
+  const handleWithdraw = () => {
+    const amount = parseFloat(withdrawAmount);
+    if (amount && amount > 0) {
+      withdrawMutation.mutate(amount);
+    }
   };
 
   const handleGenerateDecision = () => {
@@ -116,135 +195,374 @@ export function WaidBot() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">WaidBot</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent">
+            WaidBot α (Alpha)
+          </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Basic Long-Only ETH Trading Bot - Focuses on upward trends only
+            Professional ETH Uptrend Specialist - Waides Konsmik Intelligence
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Badge variant={status.autoTradingEnabled ? "default" : "secondary"} className="px-3 py-1">
-            {status.autoTradingEnabled ? "AUTO TRADING ON" : "AUTO TRADING OFF"}
+          <Badge variant={status.isActive ? "default" : "secondary"} className="px-3 py-1 bg-green-500/20 text-green-400 border-green-400/30">
+            {status.isActive ? "Active" : "Inactive"}
+          </Badge>
+          <Badge variant="outline" className={`px-3 py-1 ${
+            balance.mode === 'demo' 
+              ? 'bg-blue-500/20 text-blue-400 border-blue-400/30' 
+              : 'bg-green-500/20 text-green-400 border-green-400/30'
+          }`}>
+            {balance.mode === 'demo' ? 'Demo Mode' : 'Live Trading'}
           </Badge>
         </div>
       </div>
 
-      {/* Control Panel */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Play className="h-5 w-5" />
-            Trading Controls
-          </CardTitle>
-          <CardDescription>
-            Manage WaidBot auto-trading and generate manual decisions
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={handleToggleTrading}
-              disabled={toggleMutation.isPending}
-              variant={status.autoTradingEnabled ? "destructive" : "default"}
-              className="flex items-center gap-2"
-            >
-              {status.autoTradingEnabled ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  Stop Auto Trading
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Start Auto Trading
-                </>
-              )}
-            </Button>
-            
-            <Button
-              onClick={handleGenerateDecision}
-              disabled={isGeneratingDecision || decisionMutation.isPending}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <BarChart3 className="h-4 w-4" />
-              {isGeneratingDecision ? "Analyzing..." : "Generate Decision"}
-            </Button>
+      {/* Tabs Interface */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-5 bg-slate-800/50 backdrop-blur">
+          <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">
+            <BarChart className="w-4 h-4" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="wallet" className="flex items-center gap-2 data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">
+            <Wallet className="w-4 h-4" />
+            Bot Wallet
+          </TabsTrigger>
+          <TabsTrigger value="signals" className="flex items-center gap-2 data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">
+            <Signal className="w-4 h-4" />
+            Signals
+          </TabsTrigger>
+          <TabsTrigger value="trades" className="flex items-center gap-2 data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">
+            <DollarSign className="w-4 h-4" />
+            Trades
+          </TabsTrigger>
+          <TabsTrigger value="upgrade" className="flex items-center gap-2 data-[state=active]:bg-green-500/20 data-[state=active]:text-green-400">
+            <Crown className="w-4 h-4" />
+            Upgrade
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-6 mt-6">
+          {/* Status Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-400/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Bot Status</p>
+                    <p className="text-2xl font-bold text-white">
+                      {status.isActive ? "Active" : "Inactive"}
+                    </p>
+                  </div>
+                  <Activity className="h-8 w-8 text-green-400" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-400/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Confidence</p>
+                    <p className="text-2xl font-bold text-white">
+                      {status.confidence || 0}%
+                    </p>
+                  </div>
+                  <BarChart3 className="h-8 w-8 text-blue-400" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Total Profit</p>
+                    <p className="text-2xl font-bold text-white">
+                      {status.performance?.profit || 0} {balance.currency}
+                    </p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-purple-400" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-slate-400">Total Trades</p>
+                    <p className="text-2xl font-bold text-white">
+                      {status.performance?.trades || 0}
+                    </p>
+                  </div>
+                  <BarChart3 className="h-8 w-8 text-yellow-400" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {toggleMutation.isPending && (
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Updating trading settings...
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          {/* Trading Controls */}
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Play className="h-5 w-5" />
+                WaidBot α Trading Controls
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Manage uptrend specialist trading operations
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Button
+                  onClick={() => status.isActive ? console.log('Stop bot') : console.log('Start bot')}
+                  variant={status.isActive ? "destructive" : "default"}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                >
+                  {status.isActive ? (
+                    <>
+                      <Pause className="h-4 w-4" />
+                      Stop WaidBot α
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4" />
+                      Start WaidBot α
+                    </>
+                  )}
+                </Button>
+                
+                <Button
+                  onClick={handleGenerateDecision}
+                  disabled={isGeneratingDecision || decisionMutation.isPending}
+                  variant="outline"
+                  className="flex items-center gap-2 border-green-400/40 text-green-400 hover:bg-green-400/10"
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  {isGeneratingDecision ? "Analyzing..." : "Generate Signal"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Status Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Position</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {status.currentPosition}
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        </TabsContent>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Trades</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {status.totalTrades}
-                </p>
+        {/* Bot Wallet Tab */}
+        <TabsContent value="wallet" className="space-y-6 mt-6">
+          {/* Trading Mode Switch */}
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Wallet className="h-5 w-5" />
+                WaidBot α Wallet Management
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Manage your WaidBot Alpha trading funds - Demo vs Live trading
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Mode Toggle */}
+              <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Label htmlFor="trading-mode" className="text-sm font-medium text-slate-300">
+                    Trading Mode:
+                  </Label>
+                  <Badge variant="outline" className={`${
+                    balance.mode === 'demo' 
+                      ? 'bg-blue-500/20 text-blue-400 border-blue-400/30' 
+                      : 'bg-green-500/20 text-green-400 border-green-400/30'
+                  }`}>
+                    {balance.mode === 'demo' ? 'Demo Mode' : 'Live Trading'}
+                  </Badge>
+                </div>
+                <Switch
+                  id="trading-mode"
+                  checked={tradingMode === 'real'}
+                  onCheckedChange={handleModeToggle}
+                  className="data-[state=checked]:bg-green-400"
+                />
               </div>
-              <div className="h-12 w-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Win Rate</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {(status.winRate * 100).toFixed(1)}%
-                </p>
-              </div>
-              <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              {/* Balance Display */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-400/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {balance.available?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Available Balance</p>
+                      <p className="text-xs text-green-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Balance</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${status.currentBalance.toLocaleString()}
-                </p>
+                <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-400/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {balance.invested?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Invested</p>
+                      <p className="text-xs text-blue-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {balance.totalProfit?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Total Profit</p>
+                      <p className="text-xs text-purple-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {balance.dailyProfit?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Daily Profit</p>
+                      <p className="text-xs text-yellow-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-              <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
-                <Activity className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+
+              {/* Fund/Withdraw Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Fund Bot */}
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium text-slate-300">Fund WaidBot α</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Amount"
+                      value={fundAmount}
+                      onChange={(e) => setFundAmount(e.target.value)}
+                      className="bg-slate-800/50 border-slate-600 text-white"
+                    />
+                    <Button
+                      onClick={handleFund}
+                      disabled={fundMutation.isPending || !fundAmount}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <ArrowUpCircle className="w-4 h-4 mr-2" />
+                      Fund
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    {balance.mode === 'demo' 
+                      ? 'Add demo funds for simulation trading' 
+                      : 'Transfer funds from personal wallet'}
+                  </p>
+                </div>
+
+                {/* Withdraw */}
+                <div className="space-y-4">
+                  <Label className="text-sm font-medium text-slate-300">Withdraw from WaidBot α</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Amount"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      className="bg-slate-800/50 border-slate-600 text-white"
+                    />
+                    <Button
+                      onClick={handleWithdraw}
+                      disabled={withdrawMutation.isPending || !withdrawAmount}
+                      variant="outline"
+                      className="border-red-400/40 text-red-400 hover:bg-red-400/10"
+                    >
+                      <ArrowDownCircle className="w-4 h-4 mr-2" />
+                      Withdraw
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    {balance.mode === 'demo' 
+                      ? 'Simulate withdrawal (demo mode)' 
+                      : 'Transfer to personal wallet'}
+                  </p>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Signals Tab */}
+        <TabsContent value="signals" className="space-y-6 mt-6">
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Signal className="h-5 w-5" />
+                WaidBot α Signals
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Real-time uptrend analysis and trading signals
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Signal className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-slate-400">Signal system coming soon...</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Trades Tab */}
+        <TabsContent value="trades" className="space-y-6 mt-6">
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <DollarSign className="h-5 w-5" />
+                WaidBot α Trade History
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                View all uptrend trading activity and performance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <BarChart3 className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-slate-400">No trades executed yet</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Upgrade Tab */}
+        <TabsContent value="upgrade" className="space-y-6 mt-6">
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Crown className="h-5 w-5" />
+                Upgrade to WaidBot Pro
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Unlock advanced features and multi-directional trading
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-center py-4">
+                <Crown className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-white mb-2">WaidBot Pro β</h3>
+                <p className="text-slate-400 mb-4">Advanced bi-directional trading with enhanced Konsmik Intelligence</p>
+                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold hover:from-yellow-500 hover:to-yellow-700">
+                  Upgrade Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Latest Decision */}
       {status.lastDecision && (
