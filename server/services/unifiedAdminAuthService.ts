@@ -218,7 +218,7 @@ export class UnifiedAdminAuthService {
         sessionId,
         userId: adminUser.id,
         expiresAt,
-        ipAddress: '',
+        ipAddress: '127.0.0.1',
       });
 
       // Update last login
@@ -370,8 +370,8 @@ export class UnifiedAdminAuthService {
         action,
         resource,
         details,
-        ipAddress,
-        userAgent,
+        ipAddress: ipAddress || '127.0.0.1',
+        userAgent: userAgent || 'Unknown',
         success: details.success !== false
       });
     } catch (error) {

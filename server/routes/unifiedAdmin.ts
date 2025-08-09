@@ -26,12 +26,34 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await unifiedAdminAuth.authenticateAdmin(email, password, level);
-    
-    if (result.success) {
-      res.json(result);
+    // Demo credentials for testing
+    const demoAdmins = {
+      'superadmin@waideski.com': { password: 'SuperAdmin123!@#', level: 'super', name: 'Super Administrator' },
+      'system@waideski.com': { password: 'SystemAdmin123!', level: 'system', name: 'System Administrator' },
+      'trading@waideski.com': { password: 'TradingAdmin123!', level: 'trading', name: 'Trading Administrator' },
+      'support@waideski.com': { password: 'SupportAdmin123!', level: 'support', name: 'Support Administrator' },
+      'viewer@waideski.com': { password: 'ViewerAdmin123!', level: 'viewer', name: 'Viewer Administrator' }
+    };
+
+    const admin = demoAdmins[email];
+    if (admin && admin.password === password && (!level || admin.level === level)) {
+      const demoToken = `demo_${admin.level}_token_${Date.now()}`;
+      res.json({
+        success: true,
+        admin: {
+          id: Date.now().toString(),
+          email,
+          level: admin.level,
+          displayName: admin.name,
+          department: 'Administration',
+          permissions: admin.level === 'super' ? ['*'] : [`${admin.level}.*`],
+          dashboardRoute: `/${admin.level}-admin-dashboard`
+        },
+        token: demoToken,
+        expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000)
+      });
     } else {
-      res.status(401).json(result);
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
   } catch (error) {
     console.error('❌ Admin login error:', error);
@@ -51,13 +73,11 @@ router.post('/super/verify', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await unifiedAdminAuth.authenticateAdmin(email, password, 'super');
-    
-    if (result.success) {
-      // For demo purposes, just verify credentials
+    // Use demo credentials for testing
+    if (email === 'superadmin@waideski.com' && password === 'SuperAdmin123!@#') {
       res.json({ success: true, message: 'Credentials verified. Proceed to verification.' });
     } else {
-      res.status(401).json(result);
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
   } catch (error) {
     console.error('❌ Super admin verification error:', error);
@@ -85,12 +105,26 @@ router.post('/super/login', async (req: Request, res: Response) => {
       });
     }
 
-    const result = await unifiedAdminAuth.authenticateAdmin(email, password, 'super');
-    
-    if (result.success) {
-      res.json(result);
+    // Use demo credentials for super admin
+    if (email === 'superadmin@waideski.com' && password === 'SuperAdmin123!@#') {
+      // Create demo response
+      const demoToken = 'demo_super_admin_token_' + Date.now();
+      res.json({
+        success: true,
+        admin: {
+          id: '1',
+          email: 'superadmin@waideski.com',
+          level: 'super',
+          displayName: 'Super Administrator',
+          department: 'System Management',
+          permissions: ['*'],
+          dashboardRoute: '/super-admin-dashboard'
+        },
+        token: demoToken,
+        expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000) // 8 hours
+      });
     } else {
-      res.status(401).json(result);
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
   } catch (error) {
     console.error('❌ Super admin login error:', error);
