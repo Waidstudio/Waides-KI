@@ -19,7 +19,8 @@ import {
   Settings,
   Play,
   Pause,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -59,6 +60,8 @@ interface Trade {
 
 export default function PortfolioManager() {
   const [autoTradingEnabled, setAutoTradingEnabled] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState(Date.now());
+  const [refreshPaused, setRefreshPaused] = useState(false);
   const [riskParams, setRiskParams] = useState({
     maxPositionSize: 20,
     stopLossPercentage: 5,
@@ -67,39 +70,80 @@ export default function PortfolioManager() {
     maxDailyLoss: 5
   });
 
-  const { data: portfolioStats, isLoading: statsLoading } = useQuery<PortfolioStats>({
+  const { data: portfolioStats, isLoading: statsLoading, refetch: refetchStats } = useQuery<PortfolioStats>({
     queryKey: ['/api/portfolio/stats'],
-    refetchInterval: 5000,
+    refetchInterval: refreshPaused ? false : 30000, // User-controlled refresh
+    staleTime: 20000,
+    cacheTime: 60000,
+    enabled: !refreshPaused, // Allow manual pause
   });
 
-  const { data: recentTrades, isLoading: tradesLoading } = useQuery<Trade[]>({
+  const { data: recentTrades, isLoading: tradesLoading, refetch: refetchTrades } = useQuery<Trade[]>({
     queryKey: ['/api/portfolio/trades'],
-    refetchInterval: 10000,
+    refetchInterval: refreshPaused ? false : 60000, // User-controlled refresh
+    staleTime: 45000,
+    cacheTime: 120000,
+    enabled: !refreshPaused, // Allow manual pause
   });
 
-  const { data: mlPrediction } = useQuery({
+  const { data: mlPrediction, refetch: refetchML } = useQuery({
     queryKey: ['/api/ml/prediction'],
-    refetchInterval: 15000,
+    refetchInterval: refreshPaused ? false : 120000, // User-controlled refresh
+    staleTime: 90000,
+    cacheTime: 300000,
+    enabled: !refreshPaused, // Allow manual pause
   });
+
+  // Manual refresh function
+  const handleManualRefresh = () => {
+    setLastRefresh(Date.now());
+    refetchStats();
+    refetchTrades();
+    refetchML();
+  };
 
   const updateRiskParamsMutation = useMutation({
-    mutationFn: (params: any) => apiRequest('/api/portfolio/risk-params', 'POST', params),
+    mutationFn: async (params: any) => {
+      const response = await fetch('/api/portfolio/risk-params', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       console.log('Risk parameters updated successfully');
+      handleManualRefresh(); // Refresh data after update
     }
   });
 
   const openPositionMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/portfolio/position/open', 'POST', data),
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/portfolio/position/open', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       console.log('Position opened successfully');
+      handleManualRefresh(); // Refresh data after position open
     }
   });
 
   const closePositionMutation = useMutation({
-    mutationFn: (data: any) => apiRequest('/api/portfolio/position/close', 'POST', data),
+    mutationFn: async (data: any) => {
+      const response = await fetch('/api/portfolio/position/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       console.log('Position closed successfully');
+      handleManualRefresh(); // Refresh data after position close
     }
   });
 
@@ -167,8 +211,38 @@ export default function PortfolioManager() {
           <div className="flex items-center space-x-2">
             <BarChart3 className="w-5 h-5 text-blue-400" />
             <CardTitle>Portfolio Manager</CardTitle>
+            <div className="text-xs text-slate-400">
+              Last: {new Date(lastRefresh).toLocaleTimeString()}
+            </div>
           </div>
           <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setRefreshPaused(!refreshPaused)}
+              className="flex items-center space-x-1"
+            >
+              {refreshPaused ? (
+                <>
+                  <Play className="w-3 h-3" />
+                  <span>Resume</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3 h-3" />
+                  <span>Pause</span>
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleManualRefresh}
+              className="flex items-center space-x-1"
+            >
+              <RefreshCw className="w-3 h-3" />
+              <span>Refresh</span>
+            </Button>
             <Button
               variant={autoTradingEnabled ? "destructive" : "default"}
               size="sm"
@@ -191,6 +265,11 @@ export default function PortfolioManager() {
         </div>
         <CardDescription>
           Self-learning portfolio with ML-driven risk management
+          {refreshPaused && (
+            <span className="ml-2 px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded">
+              Auto-refresh paused
+            </span>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
