@@ -22,7 +22,7 @@ import {
   Cpu,
   Eye
 } from 'lucide-react';
-import StableNavigation from '@/components/ui/StableNavigation';
+
 
 interface QuantumState {
   id: string;
@@ -273,9 +273,7 @@ export default function QuantumAnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <StableNavigation />
-      
-      <div className="pt-16 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
