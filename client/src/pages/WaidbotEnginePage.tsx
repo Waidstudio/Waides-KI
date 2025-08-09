@@ -59,8 +59,13 @@ interface BotStatus {
 export default function WaidbotEnginePage() {
   const queryClient = useQueryClient();
   
-  // Global trading mode state
-  const [globalTradingMode, setGlobalTradingMode] = useState<'demo' | 'real'>('demo');
+  // Fetch global trading mode
+  const { data: globalTradingModeData } = useQuery<{success: boolean, mode: 'demo' | 'real'}>({
+    queryKey: ['/api/waidbot-engine/global/trading-mode'],
+    refetchInterval: 5000,
+  });
+  
+  const globalTradingMode = globalTradingModeData?.mode || 'demo';
 
   // Fetch status for all six entities
   const { data: waidBotStatus, isLoading: waidBotLoading } = useQuery<BotStatus>({
@@ -139,6 +144,28 @@ export default function WaidbotEnginePage() {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+    }
+  });
+
+  // Global trading mode toggle mutation
+  const setGlobalTradingMode = useMutation({
+    mutationFn: async (mode: 'demo' | 'real') => {
+      const response = await fetch('/api/waidbot-engine/global/set-trading-mode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mode }),
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      // Invalidate all bot status queries and global trading mode
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/global/trading-mode'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
     }
   });
@@ -224,15 +251,9 @@ export default function WaidbotEnginePage() {
     }
   });
 
-  // Global trading mode toggle
+  // Global trading mode toggle - now uses the new global endpoint
   const handleGlobalTradingModeToggle = (mode: 'demo' | 'real') => {
-    setGlobalTradingMode(mode);
-    
-    // Set trading mode for all bots
-    setWaidBotTradingMode.mutate(mode);
-    setWaidBotProTradingMode.mutate(mode);
-    setAutonomousTradingMode.mutate(mode);
-    setMaibotTradingMode.mutate(mode);
+    setGlobalTradingMode.mutate(mode);
   };
 
   // Additional bot mutations for Divine Bots and Full Engine

@@ -6657,6 +6657,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // WALLET ENGINE BOT CONTROL ENDPOINTS
   // =====================================
 
+  // Global Trading Mode Control - Sets mode for ALL bots
+  app.post("/api/waidbot-engine/global/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      console.log(`🌐 Setting GLOBAL trading mode to: ${mode.toUpperCase()}`);
+      
+      // Get all bot services
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      
+      // Set trading mode for all bots simultaneously
+      realTimeWaidBot.setTradingMode(mode);
+      realTimeWaidBotPro.setTradingMode(mode);
+      realTimeMaibot.setTradingMode(mode);
+      realTimeAutonomousTrader.setTradingMode(mode);
+      
+      console.log(`✅ All bots successfully switched to ${mode.toUpperCase()} mode`);
+      
+      res.json({ 
+        success: true, 
+        message: `All bots switched to ${mode} mode`, 
+        mode,
+        botsAffected: ['WaidBot', 'WaidBot Pro', 'Maibot', 'Autonomous Trader']
+      });
+    } catch (error) {
+      console.error('❌ Error setting global trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set global trading mode' });
+    }
+  });
+
+  // Get global trading mode status
+  app.get("/api/waidbot-engine/global/trading-mode", async (req, res) => {
+    try {
+      // Check mode from one bot (they should all be the same)
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      const status = realTimeWaidBot.getStatus();
+      
+      res.json({ 
+        success: true, 
+        mode: status.tradingMode || 'demo',
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Error getting global trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to get global trading mode' });
+    }
+  });
+
   // Maibot Control Endpoints
   app.post("/api/waidbot-engine/maibot/start", async (req, res) => {
     try {
