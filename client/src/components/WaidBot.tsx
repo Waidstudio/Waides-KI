@@ -116,7 +116,7 @@ export function WaidBot() {
 
   // Start/Stop bot mutations
   const startMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/start', { method: 'POST' }),
+    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/start', "POST"),
     onSuccess: (data) => {
       console.log("✅ WaidBot start response:", data);
       toast({
@@ -140,7 +140,7 @@ export function WaidBot() {
   });
 
   const stopMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/stop', { method: 'POST' }),
+    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/stop', "POST"),
     onSuccess: (data) => {
       console.log("✅ WaidBot stop response:", data);
       toast({
@@ -365,10 +365,23 @@ export function WaidBot() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Button
-                  onClick={() => status.isActive ? stopMutation.mutate() : startMutation.mutate()}
+                  onClick={() => {
+                    console.log("🔄 Button clicked! Current status:", status);
+                    if (status.isActive) {
+                      console.log("🛑 Stopping WaidBot...");
+                      stopMutation.mutate();
+                    } else {
+                      console.log("▶️ Starting WaidBot...");
+                      startMutation.mutate();
+                    }
+                  }}
                   disabled={startMutation.isPending || stopMutation.isPending}
                   variant={status.isActive ? "destructive" : "default"}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                  className={`flex items-center gap-2 ${
+                    status.isActive 
+                      ? "bg-red-600 hover:bg-red-700" 
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
                 >
                   {status.isActive ? (
                     <>
