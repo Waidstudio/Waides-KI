@@ -67,6 +67,12 @@ interface BotStatus {
     level: number;
     achievements: string[];
     streak: number;
+    winPercentage?: number;
+    allTimeDrawdown?: number;
+    currentStreak?: number;
+    streakType?: 'win' | 'loss';
+    profitFactor?: number;
+    sharpeRatio?: number;
   };
   real_time_metrics?: {
     current_decision: string;
@@ -568,6 +574,48 @@ export default function WaidbotEnginePageEnhanced() {
     },
   });
 
+  // Maibot mutations
+  const startMaibot = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/waidbot-engine/maibot/start', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+    },
+  });
+
+  const stopMaibot = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/waidbot-engine/maibot/stop', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+    },
+  });
+
+  // SmaiChinnikstah mutations
+  const startSmaiChinnikstah = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/waidbot-engine/smai-chinnikstah/start', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+    },
+  });
+
+  const stopSmaiChinnikstah = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/waidbot-engine/smai-chinnikstah/stop', { method: 'POST' });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+    },
+  });
+
   // Nwaora Chigozie Bot mutations
   const startNwaoraChigozie = useMutation({
     mutationFn: async () => {
@@ -887,10 +935,24 @@ export default function WaidbotEnginePageEnhanced() {
               {/* Control Buttons */}
               <div className="flex space-x-2">
                 <Button
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => maibotStatus?.isActive ? stopMaibot.mutate() : startMaibot.mutate()}
+                  disabled={startMaibot.isPending || stopMaibot.isPending}
+                  className={`flex-1 ${maibotStatus?.isActive 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
                 >
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Learning
+                  {maibotStatus?.isActive ? (
+                    <>
+                      <Pause className="w-4 h-4 mr-2" />
+                      Stop
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Start Learning
+                    </>
+                  )}
                 </Button>
                 <Button 
                   variant="outline" 
