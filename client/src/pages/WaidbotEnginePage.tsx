@@ -23,7 +23,10 @@ import {
   Activity,
   Timer,
   DollarSign,
-  TestTube
+  TestTube,
+  BookOpen,
+  Lightbulb,
+  Rocket
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -160,6 +163,43 @@ export default function WaidbotEnginePage() {
     }
   });
 
+  // Additional bot mutations for Divine Bots and Full Engine
+  const toggleSmaiChinnikstah = useMutation({
+    mutationFn: async (action: 'start' | 'stop') => {
+      const response = await fetch(`/api/divine-bots/smai-chinnikstah/${action}`, { 
+        method: 'POST' 
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+    }
+  });
+
+  const toggleNworaChigozie = useMutation({
+    mutationFn: async (action: 'start' | 'stop') => {
+      const response = await fetch(`/api/divine-bots/nwaora-chigozie/${action}`, { 
+        method: 'POST' 
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
+    }
+  });
+
+  const toggleFullEngine = useMutation({
+    mutationFn: async (action: 'start' | 'stop') => {
+      const response = await fetch(`/api/full-engine/${action}`, { 
+        method: 'POST' 
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
+    }
+  });
+
   // Trading mode mutations for all bots
   const toggleTradingMode = useMutation({
     mutationFn: async ({ botId, mode }: { botId: string; mode: 'demo' | 'real' }) => {
@@ -179,7 +219,23 @@ export default function WaidbotEnginePage() {
     },
   });
 
-  const isLoading = waidBotLoading || waidBotProLoading || autonomousLoading || maibotLoading || alphaLoading || betaLoading;
+  // Additional status queries for the new bots
+  const { data: smaiChinnikstahStatus, isLoading: smaiChinnikstahLoading } = useQuery<BotStatus>({
+    queryKey: ['/api/divine-bots/smai-chinnikstah/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: nworaChigozieStatus, isLoading: nworaChigozieLoading } = useQuery<BotStatus>({
+    queryKey: ['/api/divine-bots/nwaora-chigozie/status'],
+    refetchInterval: 2000,
+  });
+
+  const { data: fullEngineStatus, isLoading: fullEngineLoading } = useQuery<BotStatus>({
+    queryKey: ['/api/full-engine/status'],
+    refetchInterval: 2000,
+  });
+
+  const isLoading = waidBotLoading || waidBotProLoading || autonomousLoading || maibotLoading || alphaLoading || betaLoading || smaiChinnikstahLoading || nworaChigozieLoading || fullEngineLoading;
 
   if (isLoading) {
     return (
@@ -1141,52 +1197,502 @@ export default function WaidbotEnginePage() {
           </CardContent>
         </Card>
 
+        {/* Smai Chinnikstah - Divine Energy Central Hub */}
+        <Card className="bg-gradient-to-br from-orange-900/20 to-yellow-900/10 border-orange-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-orange-500/20 rounded-lg">
+                  <Zap className="w-6 h-6 text-orange-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-orange-400">Smai Chinnikstah</h2>
+                  <p className="text-orange-300/70 text-sm">Divine Energy Central Hub</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {smaiChinnikstahStatus?.isActive ? (
+                  <>
+                    <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                    <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">ENERGY ACTIVE</Badge>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">DORMANT</Badge>
+                  </>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Description */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+              <h3 className="font-semibold text-orange-400 mb-3">Divine Energy Overview</h3>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Zap className="w-4 h-4 text-orange-400" />
+                    <span className="text-slate-300">20% energy boost to all bots</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4 text-orange-400" />
+                    <span className="text-slate-300">Connected to WaidBot, WaidBot Pro, Nwaora</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-4 h-4 text-orange-400" />
+                    <span className="text-slate-300">Energy distribution mode: Active</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Brain className="w-4 h-4 text-orange-400" />
+                    <span className="text-slate-300">Spiritual AI integration</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-4 h-4 text-orange-400" />
+                    <span className="text-slate-300">Divine protection layer</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Timer className="w-4 h-4 text-orange-400" />
+                    <span className="text-slate-300">Real-time energy monitoring</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Energy Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">120%</div>
+                <div className="text-xs text-slate-400">Energy Level</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">8720</div>
+                <div className="text-xs text-slate-400">Energy Distributed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">3</div>
+                <div className="text-xs text-slate-400">Connected Bots</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-400">847.25</div>
+                <div className="text-xs text-slate-400">Daily Profit Boost</div>
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="smai-chinnikstah-mode" className="text-sm font-medium text-slate-300">
+                  Energy Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="smai-chinnikstah-mode"
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'smai-chinnikstah', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                Demo: 50,000 SmaiSika Funds
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex space-x-3">
+              {smaiChinnikstahStatus?.isActive ? (
+                <Button
+                  onClick={() => toggleSmaiChinnikstah.mutate('stop')}
+                  disabled={toggleSmaiChinnikstah.isPending}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <Pause className="w-4 h-4 mr-2" />
+                  Deactivate Energy Hub
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleSmaiChinnikstah.mutate('start')}
+                  disabled={toggleSmaiChinnikstah.isPending}
+                  className="flex-1 bg-orange-600 hover:bg-orange-500"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Activate Energy Hub
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                onClick={() => window.location.href = '/smai-chinnikstah'}
+              >
+                <Zap className="w-4 h-4 mr-2" />
+                Energy Center
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Nwaora Chigozie - Wisdom Keeper */}
+        <Card className="bg-gradient-to-br from-indigo-900/20 to-blue-900/10 border-indigo-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-indigo-500/20 rounded-lg">
+                  <BookOpen className="w-6 h-6 text-indigo-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-indigo-400">Nwaora Chigozie</h2>
+                  <p className="text-indigo-300/70 text-sm">Wisdom Keeper & Pattern Analyzer</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {nworaChigozieStatus?.isActive ? (
+                  <>
+                    <div className="w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></div>
+                    <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/30">ANALYZING</Badge>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">SLEEPING</Badge>
+                  </>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Description */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+              <h3 className="font-semibold text-indigo-400 mb-3">Wisdom Strategy</h3>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <BookOpen className="w-4 h-4 text-indigo-400" />
+                    <span className="text-slate-300">Pattern-based learning</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Brain className="w-4 h-4 text-indigo-400" />
+                    <span className="text-slate-300">Historical wisdom analysis</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-4 h-4 text-indigo-400" />
+                    <span className="text-slate-300">Strategic precision trading</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-4 h-4 text-indigo-400" />
+                    <span className="text-slate-300">Risk-aware positioning</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-indigo-400" />
+                    <span className="text-slate-300">Long-term perspective</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Lightbulb className="w-4 h-4 text-indigo-400" />
+                    <span className="text-slate-300">Insight-driven decisions</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Wisdom Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-indigo-400">1247</div>
+                <div className="text-xs text-slate-400">Patterns Learned</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-indigo-400">94.2%</div>
+                <div className="text-xs text-slate-400">Accuracy Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-indigo-400">567</div>
+                <div className="text-xs text-slate-400">Successful Insights</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-indigo-400">+1247.83</div>
+                <div className="text-xs text-slate-400">Wisdom Profit</div>
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="nwaora-chigozie-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="nwaora-chigozie-mode"
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'nwaora-chigozie', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                Demo: 50,000 SmaiSika Funds
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex space-x-3">
+              {nworaChigozieStatus?.isActive ? (
+                <Button
+                  onClick={() => toggleNworaChigozie.mutate('stop')}
+                  disabled={toggleNworaChigozie.isPending}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <Pause className="w-4 h-4 mr-2" />
+                  Sleep Wisdom
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleNworaChigozie.mutate('start')}
+                  disabled={toggleNworaChigozie.isPending}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-500"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Activate Wisdom
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10"
+                onClick={() => window.location.href = '/nwaora-chigozie'}
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Wisdom Center
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Full Engine Omega - Ultimate Trading System */}
+        <Card className="bg-gradient-to-br from-red-900/20 to-pink-900/10 border-red-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-red-500/20 rounded-lg">
+                  <Rocket className="w-6 h-6 text-red-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-red-400">Full Engine Omega</h2>
+                  <p className="text-red-300/70 text-sm">Ultimate Multi-Asset Trading System</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {fullEngineStatus?.isActive ? (
+                  <>
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <Badge className="bg-red-500/20 text-red-400 border-red-500/30">OMEGA ACTIVE</Badge>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">OFFLINE</Badge>
+                  </>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Description */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+              <h3 className="font-semibold text-red-400 mb-3">Omega Strategy</h3>
+              <div className="grid md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Rocket className="w-4 h-4 text-red-400" />
+                    <span className="text-slate-300">Multi-asset coordination</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4 text-red-400" />
+                    <span className="text-slate-300">Cross-market arbitrage</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Zap className="w-4 h-4 text-red-400" />
+                    <span className="text-slate-300">Maximum performance mode</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Brain className="w-4 h-4 text-red-400" />
+                    <span className="text-slate-300">AI consciousness integration</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Timer className="w-4 h-4 text-red-400" />
+                    <span className="text-slate-300">Real-time optimization</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Shield className="w-4 h-4 text-red-400" />
+                    <span className="text-slate-300">Advanced risk management</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Omega Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-400">2847</div>
+                <div className="text-xs text-slate-400">Total Trades</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-400">96.8%</div>
+                <div className="text-xs text-slate-400">Success Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-400">8</div>
+                <div className="text-xs text-slate-400">Active Markets</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-400">+5847.25</div>
+                <div className="text-xs text-slate-400">Omega Profit</div>
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="full-engine-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="full-engine-mode"
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'full-engine', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                Demo: 50,000 SmaiSika Funds
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex space-x-3">
+              {fullEngineStatus?.isActive ? (
+                <Button
+                  onClick={() => toggleFullEngine.mutate('stop')}
+                  disabled={toggleFullEngine.isPending}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <Pause className="w-4 h-4 mr-2" />
+                  Shutdown Omega Engine
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleFullEngine.mutate('start')}
+                  disabled={toggleFullEngine.isPending}
+                  className="flex-1 bg-red-600 hover:bg-red-500"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Launch Omega Engine
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                onClick={() => window.location.href = '/full-engine'}
+              >
+                <Rocket className="w-4 h-4 mr-2" />
+                Omega Dashboard
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Comparison Table */}
         <Card className="bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-xl text-slate-100">Quick Comparison</CardTitle>
+            <CardTitle className="text-xl text-slate-100">Complete Bot Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th className="text-left py-3 text-slate-400">Feature</th>
+                    <th className="text-left py-3 text-slate-400">Bot Entity</th>
                     <th className="text-center py-3 text-green-400">WaidBot</th>
                     <th className="text-center py-3 text-blue-400">WaidBot Pro</th>
                     <th className="text-center py-3 text-purple-400">Autonomous</th>
+                    <th className="text-center py-3 text-cyan-400">Maibot</th>
+                    <th className="text-center py-3 text-amber-400">Alpha</th>
+                    <th className="text-center py-3 text-emerald-400">Beta</th>
+                    <th className="text-center py-3 text-orange-400">Smai</th>
+                    <th className="text-center py-3 text-indigo-400">Nwaora</th>
+                    <th className="text-center py-3 text-red-400">Omega</th>
                   </tr>
                 </thead>
                 <tbody className="space-y-2">
                   <tr className="border-b border-slate-700/50">
-                    <td className="py-3 text-slate-300">Trading Direction</td>
-                    <td className="text-center py-3 text-green-400">Uptrend Only</td>
-                    <td className="text-center py-3 text-blue-400">Bidirectional</td>
-                    <td className="text-center py-3 text-purple-400">Both Ways</td>
-                  </tr>
-                  <tr className="border-b border-slate-700/50">
-                    <td className="py-3 text-slate-300">Assets</td>
-                    <td className="text-center py-3 text-green-400">ETH</td>
+                    <td className="py-3 text-slate-300">Trading Focus</td>
+                    <td className="text-center py-3 text-green-400">ETH Uptrend</td>
                     <td className="text-center py-3 text-blue-400">ETH3L/ETH3S</td>
-                    <td className="text-center py-3 text-purple-400">All Available</td>
+                    <td className="text-center py-3 text-purple-400">24/7 Scanning</td>
+                    <td className="text-center py-3 text-cyan-400">Learning</td>
+                    <td className="text-center py-3 text-amber-400">AI Intelligence</td>
+                    <td className="text-center py-3 text-emerald-400">Risk Management</td>
+                    <td className="text-center py-3 text-orange-400">Energy Hub</td>
+                    <td className="text-center py-3 text-indigo-400">Pattern Analysis</td>
+                    <td className="text-center py-3 text-red-400">Multi-Asset</td>
                   </tr>
                   <tr className="border-b border-slate-700/50">
-                    <td className="py-3 text-slate-300">Trade Duration</td>
-                    <td className="text-center py-3 text-green-400">1 Hour</td>
-                    <td className="text-center py-3 text-blue-400">4 Hours</td>
-                    <td className="text-center py-3 text-purple-400">Variable</td>
-                  </tr>
-                  <tr className="border-b border-slate-700/50">
-                    <td className="py-3 text-slate-300">Best Time</td>
-                    <td className="text-center py-3 text-green-400">USA Opening</td>
-                    <td className="text-center py-3 text-blue-400">USA + Asia</td>
-                    <td className="text-center py-3 text-purple-400">24/7</td>
-                  </tr>
-                  <tr>
                     <td className="py-3 text-slate-300">Risk Level</td>
                     <td className="text-center py-3 text-green-400">Conservative</td>
                     <td className="text-center py-3 text-blue-400">Moderate</td>
                     <td className="text-center py-3 text-purple-400">Dynamic</td>
+                    <td className="text-center py-3 text-cyan-400">Learning</td>
+                    <td className="text-center py-3 text-amber-400">Advanced</td>
+                    <td className="text-center py-3 text-emerald-400">Guardian</td>
+                    <td className="text-center py-3 text-orange-400">Balanced</td>
+                    <td className="text-center py-3 text-indigo-400">Strategic</td>
+                    <td className="text-center py-3 text-red-400">Maximum</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 text-slate-300">Demo Mode</td>
+                    <td className="text-center py-3 text-green-400">✓</td>
+                    <td className="text-center py-3 text-blue-400">✓</td>
+                    <td className="text-center py-3 text-purple-400">✓</td>
+                    <td className="text-center py-3 text-cyan-400">✓</td>
+                    <td className="text-center py-3 text-amber-400">✓</td>
+                    <td className="text-center py-3 text-emerald-400">✓</td>
+                    <td className="text-center py-3 text-orange-400">✓</td>
+                    <td className="text-center py-3 text-indigo-400">✓</td>
+                    <td className="text-center py-3 text-red-400">✓</td>
                   </tr>
                 </tbody>
               </table>

@@ -132,6 +132,54 @@ export function WaidBotPro() {
     }
   });
 
+  // Start mutation
+  const startMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot-pro/start', "POST"),
+    onSuccess: (data) => {
+      console.log("✅ WaidBot Pro start response:", data);
+      toast({
+        title: "WaidBot Pro Started",
+        description: data?.message || "Professional trading bot is now active",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      }, 1000);
+    },
+    onError: (error) => {
+      console.error("❌ WaidBot Pro start error:", error);
+      toast({
+        title: "Start Failed",
+        description: error.message || "Failed to start WaidBot Pro",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Stop mutation
+  const stopMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot-pro/stop', "POST"),
+    onSuccess: (data) => {
+      console.log("✅ WaidBot Pro stop response:", data);
+      toast({
+        title: "WaidBot Pro Stopped",
+        description: data?.message || "Professional trading bot has been deactivated",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      }, 1000);
+    },
+    onError: (error) => {
+      console.error("❌ WaidBot Pro stop error:", error);
+      toast({
+        title: "Stop Failed",
+        description: error.message || "Failed to stop WaidBot Pro",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Generate decision mutation
   const decisionMutation = useMutation({
     mutationFn: () => 
@@ -275,47 +323,65 @@ export function WaidBotPro() {
             <Zap className="h-5 w-5" />
             Advanced Trading Controls
           </CardTitle>
-          <CardDescription>
-            Manage WaidBot Pro auto-trading with sophisticated risk management
-          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={handleToggleTrading}
-              disabled={toggleMutation.isPending}
-              variant={status.autoTradingEnabled ? "destructive" : "default"}
-              className="flex items-center gap-2"
-            >
-              {status.autoTradingEnabled ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  Stop Pro Trading
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Start Pro Trading
-                </>
-              )}
-            </Button>
-            
-            <Button
-              onClick={handleGenerateDecision}
-              disabled={isGeneratingDecision || decisionMutation.isPending}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <BarChart3 className="h-4 w-4" />
-              {isGeneratingDecision ? "Analyzing..." : "Generate Pro Decision"}
-            </Button>
-          </div>
-
-          {toggleMutation.isPending && (
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              Updating pro trading settings...
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Start/Stop Buttons */}
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => startMutation.mutate()}
+                  disabled={status.isActive || startMutation.isPending}
+                  className={`${
+                    status.isActive 
+                      ? 'bg-gray-500 dark:bg-gray-600' 
+                      : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
+                  } text-white`}
+                >
+                  {startMutation.isPending ? (
+                    <Activity className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Play className="h-4 w-4 mr-2" />
+                  )}
+                  {startMutation.isPending ? 'Starting...' : 'Start'}
+                </Button>
+                
+                <Button
+                  onClick={() => stopMutation.mutate()}
+                  disabled={!status.isActive || stopMutation.isPending}
+                  className={`${
+                    !status.isActive 
+                      ? 'bg-gray-500 dark:bg-gray-600' 
+                      : 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+                  } text-white`}
+                >
+                  {stopMutation.isPending ? (
+                    <Activity className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Pause className="h-4 w-4 mr-2" />
+                  )}
+                  {stopMutation.isPending ? 'Stopping...' : 'Stop'}
+                </Button>
+              </div>
+              
+              {/* Demo/Real Mode Toggle */}
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-medium">Demo Mode</Label>
+                <Switch 
+                  checked={tradingMode === 'real'}
+                  onCheckedChange={handleModeToggle}
+                  disabled={toggleModeMutation.isPending}
+                />
+                <Label className="text-sm font-medium">Real Trading</Label>
+              </div>
             </div>
-          )}
+            
+            <div className="flex items-center gap-2">
+              <Badge variant={status.isActive ? "default" : "secondary"} className="px-3 py-1">
+                {status.isActive ? "🟢 Active" : "🔴 Inactive"}
+              </Badge>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
