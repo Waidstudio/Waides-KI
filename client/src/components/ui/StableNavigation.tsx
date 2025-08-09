@@ -546,10 +546,12 @@ const StableNavigation = () => {
           </div>
         </div>
 
-        {/* Enhanced Mobile Navigation */}
+        {/* COMPLETELY NEW Mobile Navigation - No Category Issues */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-slate-700 py-3 animate-in slide-in-from-top-2 duration-300">
             <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent px-2">
+              
+              {/* ALL Navigation Items as Simple List - No Complex Dropdowns */}
               {/* Simple Mobile Items */}
               {simpleNavItems.map((item) => {
                 const Icon = item.icon;
@@ -558,104 +560,72 @@ const StableNavigation = () => {
                 return (
                   <Link key={item.path} href={item.path}>
                     <div
-                      onClick={(e) => {
-                        console.log('Mobile simple navigation clicked:', item.path, item.name);
-                        handleNavigationClick(item.path, true);
+                      onClick={() => {
+                        setIsMobileMenuOpen(false); // Always close menu on click
                       }}
-                        className={`
-                          flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer
-                          ${isActive 
-                            ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
-                            : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
-                          }
-                        `}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="text-sm font-medium">{item.name}</span>
-                      </div>
-                  </Link>
-                );
-              })}
-
-              {/* Enhanced Mobile Dropdown Sections */}
-              {dropdownNavItems.map((dropdown) => {
-                const Icon = dropdown.icon;
-                const isActive = isPathInDropdown(dropdown.items);
-                const isOpen = activeDropdown === dropdown.key;
-                
-                return (
-                  <div key={dropdown.key} className="space-y-1">
-                    <button
-                      onClick={() => toggleDropdown(dropdown.key)}
                       className={`
-                        w-full flex items-center justify-between space-x-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer
+                        flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer
                         ${isActive 
                           ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
                           : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
                         }
                       `}
                     >
-                      <div className="flex items-center space-x-3">
-                        <Icon className="h-5 w-5" />
-                        <div>
-                          <span className="text-sm font-medium">{dropdown.name}</span>
-                          <div className={`text-xs bg-gradient-to-r ${dropdown.color} bg-clip-text text-transparent font-medium`}>
-                            {dropdown.items.length} items
+                      <Icon className="h-4 w-4" />
+                      <span className="text-sm font-medium">{item.name}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+
+              {/* Convert All Dropdown Items to Simple Mobile Links */}
+              {dropdownNavItems.map((dropdown) => {
+                return dropdown.items.map((item) => {
+                  const ItemIcon = item.icon;
+                  const isItemActive = location === item.path;
+                  const Icon = dropdown.icon;
+                  
+                  return (
+                    <Link 
+                      key={item.path} 
+                      href={item.path}
+                    >
+                      <div
+                        onClick={() => {
+                          setIsMobileMenuOpen(false); // Always close menu on click
+                        }}
+                        className={`
+                          flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer group
+                          ${isItemActive 
+                            ? 'bg-blue-600/20 text-blue-300 border-l-4 border-l-blue-400' 
+                            : 'text-gray-300 hover:text-white hover:bg-slate-700/30'
+                          }
+                        `}
+                      >
+                        <div className="flex items-center space-x-3 flex-1">
+                          {ItemIcon ? (
+                            <ItemIcon className={`h-4 w-4 transition-all duration-200 ${
+                              isItemActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'
+                            }`} />
+                          ) : (
+                            <Icon className={`h-4 w-4 opacity-60 transition-all duration-200 ${
+                              isItemActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'
+                            }`} />
+                          )}
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">{item.name}</div>
+                            <div className={`text-xs opacity-70 bg-gradient-to-r ${dropdown.color} bg-clip-text text-transparent`}>
+                              {dropdown.name}
+                            </div>
                           </div>
                         </div>
+                        <div className="text-xs text-gray-500">
+                          →
+                        </div>
                       </div>
-                      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                    </button>
-
-                    {/* Mobile Dropdown Items */}
-                    {isOpen && (
-                      <div className="pl-4 space-y-1 border-l border-slate-600/50 ml-4 animate-in slide-in-from-top-2 duration-300">
-                        {dropdown.items.map((item, index) => {
-                          const ItemIcon = item.icon;
-                          const isItemActive = location === item.path;
-                          return (
-                            <Link 
-                              key={item.path} 
-                              href={item.path}
-                            >
-                              <div
-                                onClick={(e) => {
-                                  console.log('Mobile dropdown navigation clicked:', item.path, item.name);
-                                  handleNavigationClick(item.path, true);
-                                }}
-                                  className={`
-                                    flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer group
-                                    ${isItemActive 
-                                      ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
-                                      : 'text-gray-400 hover:text-white hover:bg-slate-700/30'
-                                    }
-                                  `}
-                                  style={{
-                                    animationDelay: `${index * 30}ms`,
-                                    animation: isOpen ? 'fadeInUp 0.2s ease-out forwards' : ''
-                                  }}
-                                >
-                                  {ItemIcon && (
-                                    <ItemIcon className={`h-4 w-4 transition-all duration-200 ${
-                                      isItemActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-white'
-                                    }`} />
-                                  )}
-                                  <div className="flex-1">
-                                    <div className="text-sm font-medium">{item.name}</div>
-                                    {item.description && (
-                                      <div className="text-xs text-gray-500 group-hover:text-gray-400">
-                                        {item.description}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
+                    </Link>
+                  );
+                });
               })}
 
               {/* Mobile Actions */}

@@ -129,7 +129,7 @@ export const SmaiWalletProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Transform data for context
   const walletData: SmaiWalletData | null = React.useMemo(() => {
-    const baseData: any = konsMeshData?.success ? konsMeshData : fallbackData;
+    const baseData: any = (konsMeshData as any)?.success ? konsMeshData : fallbackData;
     
     if (!baseData) return null;
 

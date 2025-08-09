@@ -109,8 +109,14 @@ const ProfessionalWalletPage = () => {
   } : balance;
 
   const transferMutation = useMutation({
-    mutationFn: (data: { amount: number; currency: string; recipient: string }) =>
-      apiRequest('/api/wallet/transfer', { method: 'POST', body: data }),
+    mutationFn: async (data: { amount: number; currency: string; recipient: string }) => {
+      const response = await fetch('/api/wallet/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       toast({ title: 'Transfer completed successfully' });
       setTransferAmount('');
