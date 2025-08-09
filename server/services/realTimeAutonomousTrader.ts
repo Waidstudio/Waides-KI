@@ -75,8 +75,8 @@ export class RealTimeAutonomousTrader extends EventEmitter {
         profit: 0,
         todayTrades: 0
       },
-      currentAction: 'Waiting for activation',
-      nextAction: 'Start 24/7 market scanning',
+      currentAction: 'New account - Ready for first activation',
+      nextAction: 'Begin 24/7 autonomous market scanning',
       confidence: 0,
       activeStrategies: [],
       scanningPairs: []

@@ -20,7 +20,7 @@ class RealTimeMaibot {
       winRate: 0,
       lastTradeTime: null
     };
-    this.confidence = 65; // Lower confidence for entry-level bot
+    this.confidence = 0; // Starts at 0, builds with real learning
     this.strategies = ['basic_trend_following', 'simple_rsi', 'support_resistance'];
     this.currentStrategy = 'basic_trend_following';
     this.riskLevel = 'conservative'; // Very conservative for beginners
@@ -34,9 +34,9 @@ class RealTimeMaibot {
     };
     this.pendingSignals = [];
     
-    // Initialize gamified metrics
+    // Initialize gamified metrics - all start at 0 for new account
     this.gamifiedMetrics = {
-      confidenceLevel: 65,
+      confidenceLevel: 0, // Builds with real experience
       lastActive: Date.now(),
       tradingStreak: 0,
       experiencePoints: 0

@@ -68,8 +68,8 @@ export class RealTimeWaidBotPro extends EventEmitter {
         profit: 0,
         todayTrades: 0
       },
-      currentAction: 'Waiting for activation',
-      nextAction: 'Start scanning ETH3L/ETH3S opportunities',
+      currentAction: 'New account - Ready for first activation',
+      nextAction: 'Begin ETH3L/ETH3S opportunity scanning',
       confidence: 0
     };
   }

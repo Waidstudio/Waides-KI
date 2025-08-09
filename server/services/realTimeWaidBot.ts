@@ -66,8 +66,8 @@ export class RealTimeWaidBot extends EventEmitter {
         profit: 0,
         todayTrades: 0
       },
-      currentAction: 'Waiting for activation',
-      nextAction: 'Start monitoring ETH trends',
+      currentAction: 'New account - Ready for first activation',
+      nextAction: 'Begin real-time ETH trend monitoring',
       confidence: 0
     };
   }

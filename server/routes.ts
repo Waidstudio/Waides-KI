@@ -1553,7 +1553,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         volume24h: ethData.volume,
         nextHourTarget: ethData.price + (ethData.priceChange24h * 0.1), // Simple projection
         next24hTarget: ethData.price + (ethData.priceChange24h * 1.2),
-        confidence: 65 + Math.random() * 30,
+        confidence: 0, // New account - no prediction confidence yet
         direction: ethData.priceChange24h > 0 ? 'upward' : 'downward',
         strength: Math.abs(ethData.priceChange24h) > 3 ? 'strong' : 'moderate',
         textAnalysis: prediction
@@ -8722,17 +8722,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...status,
         gamifiedMetrics,
         wallet: {
-          balance: 5120,
+          balance: 0, // New account - starts at 0
           currency: "SmaiSika",
-          totalInvested: 5000,
-          dailyProfit: 45
+          totalInvested: 0, // No investments yet
+          dailyProfit: 0 // No profit yet
         },
         tradingMode: getTradingMode('maibot'),
         liveActivity: [
-          "🆓 Free tier active",
-          "📚 Learning basic patterns",
-          "🎯 Small profitable trades",
-          "🚀 Ready for upgrade"
+          "🆓 Free tier - New account ready",
+          "📚 Ready to begin learning",
+          "🎯 Awaiting first activation",
+          "🚀 Ready for setup"
         ],
         timestamp: Date.now()
       });
@@ -9612,14 +9612,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: "Alpha Entity",
         isActive: false,
         performance: {
-          totalTrades: 892,
-          winRate: 87,
-          profit: 23.4,
-          todayTrades: 47
+          totalTrades: 0, // New account - starts at 0
+          winRate: 0, // No trades yet
+          profit: 0, // No profit yet
+          todayTrades: 0 // No trades today
         },
-        currentAction: "Advanced pattern recognition",
-        nextAction: "Deep learning optimization",
-        confidence: 91,
+        currentAction: "New account - Ready for first activation",
+        nextAction: "Begin advanced pattern recognition",
+        confidence: 0, // Builds with real trading experience
         gamifiedMetrics,
         wallet: {
           balance: 25480,
@@ -9654,14 +9654,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: "Beta Entity",
         isActive: false,
         performance: {
-          totalTrades: 654,
-          winRate: 92,
-          profit: 18.7,
-          todayTrades: 32
+          totalTrades: 0, // New account - starts at 0
+          winRate: 0, // No trades yet
+          profit: 0, // No profit yet
+          todayTrades: 0 // No trades today
         },
-        currentAction: "Risk assessment active",
-        nextAction: "Portfolio rebalancing",
-        confidence: 94,
+        currentAction: "New account - Ready for first activation",
+        nextAction: "Begin risk assessment protocols",
+        confidence: 0, // Builds with real trading experience
         gamifiedMetrics,
         wallet: {
           balance: 18740,
@@ -13553,7 +13553,7 @@ Ask me about specific market conditions, upload files for analysis, or request K
         },
         recent_predictions: [
           { timestamp: Date.now() - 3600000, prediction: 'BUY', confidence: 82, result: 'WIN' },
-          { timestamp: Date.now() - 7200000, prediction: 'HOLD', confidence: 65, result: 'WIN' },
+          { timestamp: Date.now() - 7200000, prediction: 'HOLD', confidence: 0, result: 'NEW_ACCOUNT' },
           { timestamp: Date.now() - 10800000, prediction: 'BUY', confidence: 78, result: 'LOSS' }
         ]
       }

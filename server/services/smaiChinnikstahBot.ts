@@ -27,7 +27,7 @@ export class SmaiChinnikstahBot {
   private isActive: boolean = false;
   private isRunning: boolean = false;
   private energyLevel: number = 120; // 20% boost over standard 100%
-  private distributionMode: string = 'DIVINE_STANDBY';
+  private distributionMode: string = 'NEW_ACCOUNT_STANDBY';
   private connectedBots: string[] = ['WaidBot', 'WaidBot Pro', 'Nwaora Chigozie'];
   
   private currentBalance = {
