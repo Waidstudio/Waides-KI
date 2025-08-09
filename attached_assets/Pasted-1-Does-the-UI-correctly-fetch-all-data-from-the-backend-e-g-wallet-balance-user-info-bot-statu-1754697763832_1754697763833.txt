@@ -1,0 +1,20 @@
+1. Does the UI correctly fetch all data from the backend (e.g., wallet balance, user info, bot status)?
+2. Is the **wallet balance** always fetched from the backend and displayed accurately on the UI without relying on cached data or local storage?
+3. Are the **bot funding** actions correctly connected to the backend, ensuring the wallet balance is updated in real-time?
+4. Are all **page links** (from the navbar, dashboard, etc.) correctly routing to the appropriate backend endpoints and displaying data dynamically?
+5. Does the UI correctly display the **conversion of USD to Smaisika** in real-time, reflecting the changes in the backend without inconsistencies?
+6. Are all **bot activities** (e.g., trading, monitoring) pulling data from the backend for status updates, performance metrics, and balance changes?
+7. Does the **user authentication** system properly connect the UI with the backend for user login, registration, and session management (using JWT or other methods)?
+8. Are all **dropdown menus** and navigation elements displaying the correct, real-time data fetched from the backend when clicked?
+9. Does the **real-time trading data** (e.g., trades, profits, active systems) on the dashboard update automatically based on backend changes?
+10. Is the UI **responsive** and properly adjusted for both **desktop** and **mobile devices**, ensuring smooth interaction and correct layout?
+11. Does clicking a **page link** or interacting with a UI component trigger the correct **backend function** (such as fetching user data, wallet updates, or bot actions)?
+12. Are the **bot pages** (e.g., bot engine, dashboard) fully connected to the backend to ensure live data display and updates without static information?
+13. Are all **API calls** from the frontend to the backend optimized, ensuring minimal delay and real-time data syncing?
+14. Is the **funding** process (when converting or depositing funds) working correctly, with all **transactions logged** and reflected on both the UI and backend?
+15. Does the **transaction history** in the wallet section display **accurate logs** fetched from the backend, including time, amount, and conversion details?
+16. Is the **currency conversion** (USD to Smaisika and vice versa) reflected properly in both the backend and the UI, with no discrepancies?
+17. Does the app maintain **correct page state** when switching between the **demo account** and **real account**, ensuring the backend updates match the frontend display?
+18. Are there **error-handling** mechanisms in place to display appropriate messages if something goes wrong (e.g., API errors, failed transactions)?
+19. Are **admin functions** (e.g., bot management, user management) fully integrated with the backend, ensuring no data is lost or misrepresented?
+20. Does the scan ensure that the **code structure and layout** of the UI are **maintained**, with no unintended changes or alterations to the existing codebase during this process?

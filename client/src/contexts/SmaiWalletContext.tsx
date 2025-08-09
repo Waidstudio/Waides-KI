@@ -75,17 +75,20 @@ export const SmaiWalletProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Fallback wallet data for compatibility
   const { data: fallbackData, isLoading: isFallbackLoading, refetch: refetchFallback } = useQuery({
     queryKey: ['/api/wallet/balance'],
-    enabled: !konsMeshData?.success, // Only fetch if KonsMesh data is unavailable
+    enabled: !(konsMeshData as any)?.success, // Only fetch if KonsMesh data is unavailable
     refetchInterval: 10000,
   });
 
   // Convert USD to SmaiSika
   const convertMutation = useMutation({
-    mutationFn: (request: ConversionRequest) =>
-      apiRequest('/api/konsmesh/convert', {
+    mutationFn: async (request: ConversionRequest) => {
+      const response = await fetch('/api/konsmesh/convert', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
-      }),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/konsmesh/wallet'] });
       queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
@@ -94,11 +97,14 @@ export const SmaiWalletProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Fund bot with SmaiSika
   const fundBotMutation = useMutation({
-    mutationFn: (request: BotFundingRequest) =>
-      apiRequest('/api/konsmesh/fund-bot', {
+    mutationFn: async (request: BotFundingRequest) => {
+      const response = await fetch('/api/konsmesh/fund-bot', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
-      }),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/konsmesh/wallet'] });
       queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
@@ -107,11 +113,14 @@ export const SmaiWalletProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Switch account mode
   const switchModeMutation = useMutation({
-    mutationFn: ({ mode, mfaToken }: { mode: 'demo' | 'real'; mfaToken?: string }) =>
-      apiRequest('/api/konsmesh/switch-mode', {
+    mutationFn: async ({ mode, mfaToken }: { mode: 'demo' | 'real'; mfaToken?: string }) => {
+      const response = await fetch('/api/konsmesh/switch-mode', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ targetMode: mode, mfaToken }),
-      }),
+      });
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/konsmesh/wallet'] });
       queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
@@ -120,13 +129,13 @@ export const SmaiWalletProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Transform data for context
   const walletData: SmaiWalletData | null = React.useMemo(() => {
-    const baseData = konsMeshData?.success ? konsMeshData : fallbackData;
+    const baseData: any = konsMeshData?.success ? konsMeshData : fallbackData;
     
     if (!baseData) return null;
 
     const localBalance = baseData.localBalance || baseData.balance || 0;
     const smaiBalance = baseData.smaiBalance || 0;
-    const wallet = konsMeshData?.wallet || null;
+    const wallet = (konsMeshData as any)?.wallet || null;
 
     return {
       // KonsMesh canonical data
