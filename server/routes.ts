@@ -1777,9 +1777,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/smaisika/stats", async (req, res) => {
     try {
       const userId = 1; // Demo user
-      
-      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
-      const stats = await smaisikaMiningEngine.getUserStats(userId);
+      const { modeService } = await import('./services/modeService.js');
+      const stats = modeService.getUserStats(userId);
       
       res.json({ success: true, stats });
     } catch (error) {
@@ -1917,11 +1916,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Enhanced wallet balance endpoint with detailed breakdown
+  // Demo/Real Mode Switching API
+  app.post("/api/mode/switch", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const userId = 1; // Demo user ID
+      
+      if (!['demo', 'real'].includes(mode)) {
+        return res.status(400).json({ success: false, message: 'Invalid mode. Use "demo" or "real"' });
+      }
+      
+      const { modeService } = await import('./services/modeService.js');
+      modeService.setUserMode(userId, mode);
+      
+      res.json({ 
+        success: true, 
+        mode, 
+        message: `Switched to ${mode.toUpperCase()} mode`
+      });
+    } catch (error) {
+      console.error('❌ Mode switch error:', error);
+      res.status(500).json({ success: false, message: 'Failed to switch mode' });
+    }
+  });
+
+  app.get("/api/mode/current", async (req, res) => {
+    try {
+      const userId = 1; // Demo user ID
+      const { modeService } = await import('./services/modeService.js');
+      const currentMode = modeService.getUserMode(userId);
+      
+      res.json({ 
+        success: true, 
+        mode: currentMode 
+      });
+    } catch (error) {
+      console.error('❌ Get mode error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get current mode' });
+    }
+  });
+
+  // Enhanced wallet balance endpoint with demo/real mode support
   app.get("/api/wallet/balance", async (req, res) => {
     try {
-      const userId = "1"; // Hardcoded for demo
-      const walletData = await storage.getWalletBalance(userId);
+      const userId = 1; // Demo user ID
+      const { modeService } = await import('./services/modeService.js');
+      const walletData = await modeService.getWalletData(userId);
       
       res.json({
         success: true,
@@ -1933,9 +1973,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Legacy support
         balance: walletData.hasConverted ? walletData.smaiBalance : walletData.localBalance,
         currency: walletData.hasConverted ? 'SS' : walletData.localCurrency,
-        available: walletData.hasConverted ? walletData.smaiBalance : walletData.localBalance - 1500,
-        locked: 1500,
-        pending: 250,
+        available: walletData.hasConverted ? walletData.smaiBalance : Math.max(0, walletData.localBalance - 1500),
+        locked: walletData.localBalance > 0 ? 1500 : 0,
+        pending: walletData.localBalance > 0 ? 250 : 0,
         last_updated: new Date().toISOString()
       });
     } catch (error) {
@@ -1944,41 +1984,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Wallet portfolio data
-  app.get("/api/wallet/portfolio", (req, res) => {
-    res.json({
-      totalValue: 10000,
-      currency: "USD",
-      allocation: [
-        {
-          asset: "USDT",
-          amount: 5000,
-          value: 5000,
-          percentage: 50,
-          change24h: 0.1
-        },
-        {
-          asset: "ETH",
-          amount: 1.5,
-          value: 3708,
-          percentage: 37,
-          change24h: 2.3
-        },
-        {
-          asset: "BTC",
-          amount: 0.05,
-          value: 1292,
-          percentage: 13,
-          change24h: 1.8
-        }
-      ],
-      performance: {
-        day: 2.1,
-        week: 8.5,
-        month: 15.2,
-        year: 45.7
-      }
-    });
+  // Wallet portfolio data with demo/real mode support
+  app.get("/api/wallet/portfolio", async (req, res) => {
+    try {
+      const userId = 1; // Demo user ID
+      const { modeService } = await import('./services/modeService.js');
+      const portfolioData = modeService.getPortfolioData(userId);
+      
+      res.json(portfolioData);
+    } catch (error) {
+      console.error('Portfolio fetch error:', error);
+      res.status(500).json({ error: "Failed to get portfolio data" });
+    }
+  });
+
+  // Bot performance data with demo/real mode support
+  app.get("/api/bot/:botId/performance", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const userId = 1; // Demo user ID
+      const { modeService } = await import('./services/modeService.js');
+      const performance = modeService.getBotPerformanceData(userId, botId);
+      
+      res.json({ success: true, performance });
+    } catch (error) {
+      console.error('❌ Bot performance error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get bot performance data' });
+    }
+  });
+
+  // Trading history with demo/real mode support
+  app.get("/api/wallet/transactions", async (req, res) => {
+    try {
+      const userId = 1; // Demo user ID
+      const { modeService } = await import('./services/modeService.js');
+      const transactions = modeService.getTradingHistory(userId);
+      
+      res.json(transactions);
+    } catch (error) {
+      console.error('❌ Trading history error:', error);
+      res.status(500).json({ error: "Failed to get trading history" });
+    }
   });
 
   // Convert local currency to SmaiSika

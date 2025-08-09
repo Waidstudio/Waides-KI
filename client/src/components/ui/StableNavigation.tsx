@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
+import { useModeSwitch } from '../../hooks/useModeSwitch';
 import { 
   Home, 
   TrendingUp, 
@@ -60,7 +61,7 @@ const StableNavigation = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
-  const [globalTradingMode, setGlobalTradingMode] = useState<'demo' | 'real'>('demo');
+  const { currentMode, switchMode, isLoading } = useModeSwitch();
   const dropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});
   
   const { user, isAuthenticated, logout } = useUserAuth();
@@ -252,13 +253,16 @@ const StableNavigation = () => {
               <button
                 onClick={() => toggleDropdown('trading-mode')}
                 className={`p-2 rounded-lg transition-all duration-200 ${
-                  globalTradingMode === 'demo' 
+                  currentMode === 'demo' 
                     ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30' 
                     : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
-                }`}
-                title={globalTradingMode === 'demo' ? 'Demo Mode' : 'Real Trading'}
+                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                title={currentMode === 'demo' ? 'Demo Mode' : 'Real Trading'}
+                disabled={isLoading}
               >
-                {globalTradingMode === 'demo' ? (
+                {isLoading ? (
+                  <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : currentMode === 'demo' ? (
                   <TestTube className="h-4 w-4" />
                 ) : (
                   <DollarSign className="h-4 w-4" />
@@ -271,36 +275,40 @@ const StableNavigation = () => {
                   <div className="py-1">
                     <div 
                       onClick={() => {
-                        setGlobalTradingMode('demo');
+                        if (!isLoading && currentMode !== 'demo') {
+                          switchMode('demo');
+                        }
                         setActiveDropdown(null);
                       }}
                       className={`flex items-center space-x-2 px-3 py-2 text-xs transition-all duration-200 cursor-pointer ${
-                        globalTradingMode === 'demo' 
+                        currentMode === 'demo' 
                           ? 'bg-purple-500/20 text-purple-300' 
                           : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
-                      }`}
+                      } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <TestTube className="h-3 w-3" />
                       <span className="font-medium">Demo</span>
-                      {globalTradingMode === 'demo' && (
+                      {currentMode === 'demo' && (
                         <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse ml-auto"></div>
                       )}
                     </div>
                     
                     <div 
                       onClick={() => {
-                        setGlobalTradingMode('real');
+                        if (!isLoading && currentMode !== 'real') {
+                          switchMode('real');
+                        }
                         setActiveDropdown(null);
                       }}
                       className={`flex items-center space-x-2 px-3 py-2 text-xs transition-all duration-200 cursor-pointer ${
-                        globalTradingMode === 'real' 
+                        currentMode === 'real' 
                           ? 'bg-amber-500/20 text-amber-300' 
                           : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
-                      }`}
+                      } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <DollarSign className="h-3 w-3" />
                       <span className="font-medium">Real</span>
-                      {globalTradingMode === 'real' && (
+                      {currentMode === 'real' && (
                         <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse ml-auto"></div>
                       )}
                     </div>
