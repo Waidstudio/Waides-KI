@@ -7989,6 +7989,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Import enhanced bot services
   const { enhancedBotConfiguration } = await import('./services/enhancedBotConfiguration.js');
   const { botAdvancedFeatures } = await import('./services/botAdvancedFeatures.js');
+  
+  // Trading Mode Storage (in-memory for now, would be database in production)
+  const botTradingModes = new Map();
+  
+  // Helper function to get trading mode
+  const getTradingMode = (botId) => {
+    return botTradingModes.get(botId) || 'real'; // Default to real mode
+  };
+  
+  // Helper function to set trading mode
+  const setTradingMode = (botId, mode) => {
+    botTradingModes.set(botId, mode);
+  };
 
   // WaidBot (ETH Uptrend Only) Status - Enhanced with Gamified Metrics
   app.get("/api/waidbot-engine/waidbot/status", async (req, res) => {
@@ -8006,7 +8019,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 10000,
           dailyProfit: 234
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('waidbot'),
         liveActivity: [
           "📈 Monitoring ETH uptrend signals",
           "⏰ Optimal trading window: 9:30-10:30 EST",
@@ -8064,7 +8077,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 15000,
           dailyProfit: 567
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('waidbot-pro'),
         liveActivity: [
           "🔄 Bidirectional strategy active",
           "📊 ETH3L position: +2.1%",
@@ -8122,7 +8135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 5000,
           dailyProfit: 45
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('maibot'),
         liveActivity: [
           "🆓 Free tier active",
           "📚 Learning basic patterns",
@@ -8305,7 +8318,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid trading mode. Use "demo" or "real".' });
       }
       
-      // Store trading mode preference (would be in database in production)
+      // Store trading mode preference 
+      setTradingMode(botId, mode);
+      
       const response = {
         success: true,
         message: `${botId} trading mode switched to ${mode}`,
@@ -8659,7 +8674,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 10000,
           dailyProfit: 847
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('autonomous'),
         liveActivity: [
           "🔍 Scanning 247 market patterns",
           "📊 Detected bullish divergence on ETH",
@@ -8696,7 +8711,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 20000,
           dailyProfit: 1234
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('alpha'),
         liveActivity: [
           "🧠 Neural network training active",
           "📊 Pattern recognition: 91% accuracy",
@@ -8754,7 +8769,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 18000,
           dailyProfit: 987
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('beta'),
         liveActivity: [
           "🛡️ Risk management active",
           "⚖️ Portfolio balance: optimal",
