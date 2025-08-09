@@ -200,24 +200,7 @@ export default function WaidbotEnginePage() {
     }
   });
 
-  // Trading mode mutations for all bots
-  const toggleTradingMode = useMutation({
-    mutationFn: async ({ botId, mode }: { botId: string; mode: 'demo' | 'real' }) => {
-      const response = await fetch(`/api/trading-mode/${botId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode }),
-      });
-      if (!response.ok) throw new Error('Failed to switch trading mode');
-      return response.json();
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/waidbot-engine/${variables.botId}/status`] });
-    },
-    onError: (error) => {
-      console.error('Trading mode toggle error:', error);
-    },
-  });
+
 
   // Additional status queries for the new bots
   const { data: smaiChinnikstahStatus, isLoading: smaiChinnikstahLoading } = useQuery<BotStatus>({
@@ -393,33 +376,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="waidbot-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="waidbot-mode"
-                    checked={waidBotStatus?.tradingMode === 'demo'}
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'waidbot', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                {waidBotStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -569,33 +526,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="waidbot-pro-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="waidbot-pro-mode"
-                    checked={waidBotProStatus?.tradingMode === 'demo'}
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'waidbot-pro', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                {waidBotProStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -745,33 +676,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="autonomous-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="autonomous-mode"
-                    checked={autonomousStatus?.tradingMode === 'demo'}
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'autonomous', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                {autonomousStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -875,33 +780,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="maibot-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="maibot-mode"
-                    checked={maibotStatus?.tradingMode === 'demo'}
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'maibot', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                {maibotStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -1005,33 +884,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="alpha-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="alpha-mode"
-                    checked={alphaStatus?.tradingMode === 'demo'}
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'alpha', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                {alphaStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -1135,33 +988,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="beta-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="beta-mode"
-                    checked={betaStatus?.tradingMode === 'demo'}
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'beta', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                {betaStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -1282,32 +1109,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="smai-chinnikstah-mode" className="text-sm font-medium text-slate-300">
-                  Energy Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="smai-chinnikstah-mode"
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'smai-chinnikstah', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                Demo: 50,000 SmaiSika Funds
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -1428,32 +1230,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="nwaora-chigozie-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="nwaora-chigozie-mode"
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'nwaora-chigozie', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                Demo: 50,000 SmaiSika Funds
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
@@ -1574,32 +1351,7 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Trading Mode Switch */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Label htmlFor="full-engine-mode" className="text-sm font-medium text-slate-300">
-                  Trading Mode:
-                </Label>
-                <div className="flex items-center space-x-2">
-                  <DollarSign className="w-4 h-4 text-amber-400" />
-                  <span className="text-xs text-slate-400">Real</span>
-                  <Switch
-                    id="full-engine-mode"
-                    onCheckedChange={(checked) => 
-                      toggleTradingMode.mutate({ 
-                        botId: 'full-engine', 
-                        mode: checked ? 'demo' : 'real' 
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-400">Demo</span>
-                  <TestTube className="w-4 h-4 text-purple-400" />
-                </div>
-              </div>
-              <div className="text-xs text-slate-500">
-                Demo: 50,000 SmaiSika Funds
-              </div>
-            </div>
+
 
             {/* Controls */}
             <div className="flex space-x-3">
