@@ -41,6 +41,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import EnhancedBotManagement from "@/components/EnhancedBotManagement";
+import { CelebrationTooltip, useCelebrationTooltip, celebrationMessages } from '@/components/ui/celebration-tooltip';
 
 interface BotStatus {
   id: string;
@@ -240,6 +241,9 @@ export default function WaidbotEnginePageEnhanced() {
   const [showBotModal, setShowBotModal] = useState<string | null>(null);
   const [fundAmount, setFundAmount] = useState('');
   const queryClient = useQueryClient();
+  
+  // Celebration tooltip hook
+  const { celebrations, triggerCelebration, clearCelebration } = useCelebrationTooltip();
 
   // All 6 Bot Entities Configuration
   const BOT_ENTITIES = [
@@ -496,6 +500,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      triggerCelebration('waidbot-start', celebrationMessages.botActivated('WaidBot α'), 'activation');
     },
   });
 
@@ -506,6 +511,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      triggerCelebration('waidbot-stop', celebrationMessages.botStopped('WaidBot α'), 'success');
     },
   });
 
@@ -516,6 +522,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      triggerCelebration('waidbot-pro-start', celebrationMessages.botActivated('WaidBot Pro β'), 'activation');
     },
   });
 
@@ -526,6 +533,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/status'] });
+      triggerCelebration('waidbot-pro-stop', celebrationMessages.botStopped('WaidBot Pro β'), 'success');
     },
   });
 
@@ -536,6 +544,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+      triggerCelebration('autonomous-start', celebrationMessages.botActivated('Autonomous Trader γ'), 'activation');
     },
   });
 
@@ -546,6 +555,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+      triggerCelebration('autonomous-stop', celebrationMessages.botStopped('Autonomous Trader γ'), 'success');
     },
   });
 
@@ -559,6 +569,7 @@ export default function WaidbotEnginePageEnhanced() {
       queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
       queryClient.invalidateQueries({ queryKey: ['/api/full-engine/analytics'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+      triggerCelebration('full-engine-start', celebrationMessages.botActivated('Full Engine Ω'), 'divine');
     },
   });
 
@@ -571,6 +582,7 @@ export default function WaidbotEnginePageEnhanced() {
       queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
       queryClient.invalidateQueries({ queryKey: ['/api/full-engine/analytics'] });
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+      triggerCelebration('full-engine-stop', celebrationMessages.botStopped('Full Engine Ω'), 'success');
     },
   });
 
@@ -582,6 +594,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+      triggerCelebration('maibot-start', celebrationMessages.botActivated('Maibot'), 'activation');
     },
   });
 
@@ -592,6 +605,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+      triggerCelebration('maibot-stop', celebrationMessages.botStopped('Maibot'), 'success');
     },
   });
 
@@ -603,6 +617,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+      triggerCelebration('smai-chinnikstah-start', celebrationMessages.botActivated('SmaiChinnikstah δ'), 'divine');
     },
   });
 
@@ -613,6 +628,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/smai-chinnikstah/status'] });
+      triggerCelebration('smai-chinnikstah-stop', celebrationMessages.botStopped('SmaiChinnikstah δ'), 'success');
     },
   });
 
@@ -624,6 +640,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
+      triggerCelebration('nwaora-chigozie-start', celebrationMessages.botActivated('Nwaora Chigozie ε'), 'activation');
     },
   });
 
@@ -634,6 +651,7 @@ export default function WaidbotEnginePageEnhanced() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
+      triggerCelebration('nwaora-chigozie-stop', celebrationMessages.botStopped('Nwaora Chigozie ε'), 'success');
     },
   });
 
@@ -934,26 +952,31 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Control Buttons */}
               <div className="flex space-x-2">
-                <Button
-                  onClick={() => maibotStatus?.isActive ? stopMaibot.mutate() : startMaibot.mutate()}
-                  disabled={startMaibot.isPending || stopMaibot.isPending}
-                  className={`flex-1 ${maibotStatus?.isActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
+                <CelebrationTooltip 
+                  celebration={celebrations['maibot-start'] || celebrations['maibot-stop']}
+                  onClear={() => clearCelebration(celebrations['maibot-start'] ? 'maibot-start' : 'maibot-stop')}
                 >
-                  {maibotStatus?.isActive ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Stop
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start Learning
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    onClick={() => maibotStatus?.isActive ? stopMaibot.mutate() : startMaibot.mutate()}
+                    disabled={startMaibot.isPending || stopMaibot.isPending}
+                    className={`flex-1 ${maibotStatus?.isActive 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {maibotStatus?.isActive ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Start Learning
+                      </>
+                    )}
+                  </Button>
+                </CelebrationTooltip>
                 <Button 
                   variant="outline" 
                   className="border-blue-400/40 text-blue-400 hover:bg-blue-400/10"
@@ -1094,26 +1117,31 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Control Buttons */}
               <div className="flex space-x-2">
-                <Button
-                  onClick={() => waidbotStatus?.isActive ? stopWaidBot.mutate() : startWaidBot.mutate()}
-                  disabled={startWaidBot.isPending || stopWaidBot.isPending}
-                  className={`flex-1 ${waidbotStatus?.isActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                  }`}
+                <CelebrationTooltip 
+                  celebration={celebrations['waidbot-start'] || celebrations['waidbot-stop']}
+                  onClear={() => clearCelebration(celebrations['waidbot-start'] ? 'waidbot-start' : 'waidbot-stop')}
                 >
-                  {waidbotStatus?.isActive ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Stop
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    onClick={() => waidbotStatus?.isActive ? stopWaidBot.mutate() : startWaidBot.mutate()}
+                    disabled={startWaidBot.isPending || stopWaidBot.isPending}
+                    className={`flex-1 ${waidbotStatus?.isActive 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                    }`}
+                  >
+                    {waidbotStatus?.isActive ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Start
+                      </>
+                    )}
+                  </Button>
+                </CelebrationTooltip>
                 <Button 
                   variant="outline" 
                   className="border-green-400/40 text-green-400 hover:bg-green-400/10"
@@ -1266,26 +1294,31 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Control Buttons */}
               <div className="flex space-x-2">
-                <Button
-                  onClick={() => waidbotProStatus?.isActive ? stopWaidBotPro.mutate() : startWaidBotPro.mutate()}
-                  disabled={startWaidBotPro.isPending || stopWaidBotPro.isPending}
-                  className={`flex-1 ${waidbotProStatus?.isActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
+                <CelebrationTooltip 
+                  celebration={celebrations['waidbot-pro-start'] || celebrations['waidbot-pro-stop']}
+                  onClear={() => clearCelebration(celebrations['waidbot-pro-start'] ? 'waidbot-pro-start' : 'waidbot-pro-stop')}
                 >
-                  {waidbotProStatus?.isActive ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Stop
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    onClick={() => waidbotProStatus?.isActive ? stopWaidBotPro.mutate() : startWaidBotPro.mutate()}
+                    disabled={startWaidBotPro.isPending || stopWaidBotPro.isPending}
+                    className={`flex-1 ${waidbotProStatus?.isActive 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    {waidbotProStatus?.isActive ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Start
+                      </>
+                    )}
+                  </Button>
+                </CelebrationTooltip>
                 <Button 
                   variant="outline" 
                   className="border-blue-400/40 text-blue-400 hover:bg-blue-400/10"
@@ -1441,26 +1474,31 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Control Buttons */}
               <div className="flex space-x-2">
-                <Button
-                  onClick={() => autonomousStatus?.isActive ? stopAutonomous.mutate() : startAutonomous.mutate()}
-                  disabled={startAutonomous.isPending || stopAutonomous.isPending}
-                  className={`flex-1 ${autonomousStatus?.isActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
-                  }`}
+                <CelebrationTooltip 
+                  celebration={celebrations['autonomous-start'] || celebrations['autonomous-stop']}
+                  onClear={() => clearCelebration(celebrations['autonomous-start'] ? 'autonomous-start' : 'autonomous-stop')}
                 >
-                  {autonomousStatus?.isActive ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Stop
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    onClick={() => autonomousStatus?.isActive ? stopAutonomous.mutate() : startAutonomous.mutate()}
+                    disabled={startAutonomous.isPending || stopAutonomous.isPending}
+                    className={`flex-1 ${autonomousStatus?.isActive 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    }`}
+                  >
+                    {autonomousStatus?.isActive ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Start
+                      </>
+                    )}
+                  </Button>
+                </CelebrationTooltip>
                 <Button 
                   variant="outline" 
                   className="border-purple-400/40 text-purple-400 hover:bg-purple-400/10"
@@ -1569,26 +1607,31 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Control Buttons */}
               <div className="flex space-x-2">
-                <Button
-                  onClick={() => fullEngineStatus?.engine_status?.is_active ? stopFullEngine.mutate() : startFullEngine.mutate()}
-                  disabled={startFullEngine.isPending || stopFullEngine.isPending}
-                  className={`flex-1 ${fullEngineStatus?.engine_status?.is_active 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-orange-600 hover:bg-orange-700 text-white'
-                  }`}
+                <CelebrationTooltip 
+                  celebration={celebrations['full-engine-start'] || celebrations['full-engine-stop']}
+                  onClear={() => clearCelebration(celebrations['full-engine-start'] ? 'full-engine-start' : 'full-engine-stop')}
                 >
-                  {fullEngineStatus?.engine_status?.is_active ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Stop
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    onClick={() => fullEngineStatus?.engine_status?.is_active ? stopFullEngine.mutate() : startFullEngine.mutate()}
+                    disabled={startFullEngine.isPending || stopFullEngine.isPending}
+                    className={`flex-1 ${fullEngineStatus?.engine_status?.is_active 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-orange-600 hover:bg-orange-700 text-white'
+                    }`}
+                  >
+                    {fullEngineStatus?.engine_status?.is_active ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Start
+                      </>
+                    )}
+                  </Button>
+                </CelebrationTooltip>
                 <Button 
                   variant="outline" 
                   className="border-orange-400/40 text-orange-400 hover:bg-orange-400/10"
@@ -1699,26 +1742,31 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Control Buttons */}
               <div className="flex space-x-2">
-                <Button
-                  onClick={() => nwaoraChigozieStatus?.isActive ? stopNwaoraChigozie.mutate() : startNwaoraChigozie.mutate()}
-                  disabled={startNwaoraChigozie.isPending || stopNwaoraChigozie.isPending}
-                  className={`flex-1 ${nwaoraChigozieStatus?.isActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
-                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  }`}
+                <CelebrationTooltip 
+                  celebration={celebrations['nwaora-chigozie-start'] || celebrations['nwaora-chigozie-stop']}
+                  onClear={() => clearCelebration(celebrations['nwaora-chigozie-start'] ? 'nwaora-chigozie-start' : 'nwaora-chigozie-stop')}
                 >
-                  {nwaoraChigozieStatus?.isActive ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-2" />
-                      Stop
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      Start
-                    </>
-                  )}
-                </Button>
+                  <Button
+                    onClick={() => nwaoraChigozieStatus?.isActive ? stopNwaoraChigozie.mutate() : startNwaoraChigozie.mutate()}
+                    disabled={startNwaoraChigozie.isPending || stopNwaoraChigozie.isPending}
+                    className={`flex-1 ${nwaoraChigozieStatus?.isActive 
+                      ? 'bg-red-600 hover:bg-red-700 text-white' 
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    }`}
+                  >
+                    {nwaoraChigozieStatus?.isActive ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-2" />
+                        Stop
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Start
+                      </>
+                    )}
+                  </Button>
+                </CelebrationTooltip>
                 <Button 
                   variant="outline" 
                   className="border-emerald-400/40 text-emerald-400 hover:bg-emerald-400/10"
