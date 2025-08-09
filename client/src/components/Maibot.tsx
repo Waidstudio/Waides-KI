@@ -43,6 +43,13 @@ export default function Maibot() {
     refetchInterval: 15000,
   });
 
+  // Ensure proper fallback for balanceData
+  const balance = balanceData || {
+    balance: 0,
+    tradingMode: 'demo',
+    currency: 'SmaiSika'
+  };
+
   // Start/Stop Maibot mutations
   const startMutation = useMutation({
     mutationFn: () => apiRequest("/api/waidbot-engine/maibot/start", "POST"),
@@ -89,7 +96,7 @@ export default function Maibot() {
     onSuccess: () => {
       toast({
         title: "Trading Mode Changed", 
-        description: `Maibot switched to ${balanceData?.tradingMode === 'demo' ? 'real' : 'demo'} mode`,
+        description: `Maibot switched to ${balance?.tradingMode === 'demo' ? 'real' : 'demo'} mode`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/status"] });
       queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/balance"] });
@@ -107,10 +114,10 @@ export default function Maibot() {
   const fundMutation = useMutation({
     mutationFn: (amount: number) => 
       apiRequest("/api/waidbot-engine/maibot/fund", "POST", { amount }),
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: "Funding Successful",
-        description: data.message,
+        description: data?.message || "Maibot funded successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/balance"] });
       setFundAmount('');
@@ -128,10 +135,10 @@ export default function Maibot() {
   const withdrawMutation = useMutation({
     mutationFn: (amount: number) => 
       apiRequest("/api/waidbot-engine/maibot/withdraw", "POST", { amount }),
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: "Withdrawal Successful",
-        description: data.message,
+        description: data?.message || "Withdrawal completed successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/balance"] });
       setWithdrawAmount('');
@@ -246,22 +253,22 @@ export default function Maibot() {
               <div>
                 <p className="font-semibold text-gray-900">Trading Mode</p>
                 <p className="text-sm text-gray-600">
-                  {balanceData?.tradingMode === 'demo' ? 'SmaiSika Simulation Pool (Safe Testing)' : 'Real Trading with Personal Funds'}
+                  {balance?.tradingMode === 'demo' ? 'SmaiSika Simulation Pool (Safe Testing)' : 'Real Trading with Personal Funds'}
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-sm font-medium text-gray-700">Real</span>
               <Switch
-                checked={balanceData?.tradingMode === 'demo'}
+                checked={balance?.tradingMode === 'demo'}
                 onCheckedChange={(checked) => 
                   tradingModeMutation.mutate(checked ? 'demo' : 'real')
                 }
                 disabled={tradingModeMutation.isPending}
               />
               <span className="text-sm font-medium text-gray-700">Demo</span>
-              <Badge variant={balanceData?.tradingMode === 'demo' ? 'default' : 'secondary'} className="ml-2">
-                {balanceData?.tradingMode === 'demo' ? 'DEMO MODE' : 'REAL MODE'}
+              <Badge variant={balance?.tradingMode === 'demo' ? 'default' : 'secondary'} className="ml-2">
+                {balance?.tradingMode === 'demo' ? 'DEMO MODE' : 'REAL MODE'}
               </Badge>
             </div>
           </div>
@@ -364,35 +371,35 @@ export default function Maibot() {
                   Bot Balance
                 </CardTitle>
                 <CardDescription>
-                  {balanceData?.tradingMode === 'demo' ? 'SmaiSika simulation funds' : 'Real trading funds'}
+                  {balance?.tradingMode === 'demo' ? 'SmaiSika simulation funds' : 'Real trading funds'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-emerald-700">
-                    {balanceData?.balance?.available?.toLocaleString() || '0'} SmaiSika
+                    {balance?.balance?.toLocaleString() || '0'} SmaiSika
                   </div>
                   <div className="text-sm text-emerald-600">
-                    {balanceData?.balance?.currency || 'Available Balance'}
+                    {balance?.currency || 'Available Balance'}
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="text-center">
                     <div className="font-semibold text-gray-700">Invested</div>
-                    <div className="text-blue-600">{balanceData?.balance?.invested?.toLocaleString() || '0'}</div>
+                    <div className="text-blue-600">{balance?.invested?.toLocaleString() || '0'}</div>
                   </div>
                   <div className="text-center">
                     <div className="font-semibold text-gray-700">Profit</div>
-                    <div className="text-green-600">+{balanceData?.balance?.totalProfit?.toLocaleString() || '0'}</div>
+                    <div className="text-green-600">+{balance?.totalProfit?.toLocaleString() || '0'}</div>
                   </div>
                 </div>
 
                 <Badge 
-                  variant={balanceData?.balance?.mode === 'demo' ? 'default' : 'secondary'}
+                  variant={balance?.tradingMode === 'demo' ? 'default' : 'secondary'}
                   className="w-full justify-center"
                 >
-                  {balanceData?.balance?.mode === 'demo' ? '🧪 DEMO MODE' : '💰 REAL MODE'}
+                  {balance?.tradingMode === 'demo' ? '🧪 DEMO MODE' : '💰 REAL MODE'}
                 </Badge>
               </CardContent>
             </Card>
@@ -433,7 +440,7 @@ export default function Maibot() {
                     </Button>
                   </div>
                   <div className="text-xs text-gray-500">
-                    {balanceData?.balance?.mode === 'demo' 
+                    {balance?.tradingMode === 'demo' 
                       ? 'Unlimited demo funding available' 
                       : 'Funds transferred from main wallet'
                     }
@@ -468,7 +475,7 @@ export default function Maibot() {
                     </Button>
                   </div>
                   <div className="text-xs text-gray-500">
-                    {balanceData?.balance?.mode === 'demo' 
+                    {balance?.tradingMode === 'demo' 
                       ? 'Demo withdrawal simulation only' 
                       : 'Funds returned to main wallet'
                     }

@@ -114,6 +114,29 @@ export function WaidBot() {
     }
   });
 
+  // Start/Stop bot mutations
+  const startMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/start', { method: 'POST' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      toast({
+        title: "WaidBot α Started",
+        description: "Alpha bot is now actively trading ETH uptrends",
+      });
+    }
+  });
+
+  const stopMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/stop', { method: 'POST' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      toast({
+        title: "WaidBot α Stopped",
+        description: "Alpha bot trading has been paused",
+      });
+    }
+  });
+
   // Generate decision mutation
   const decisionMutation = useMutation({
     mutationFn: () => 
@@ -316,7 +339,8 @@ export function WaidBot() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Button
-                  onClick={() => status.isActive ? console.log('Stop bot') : console.log('Start bot')}
+                  onClick={() => status.isActive ? stopMutation.mutate() : startMutation.mutate()}
+                  disabled={startMutation.isPending || stopMutation.isPending}
                   variant={status.isActive ? "destructive" : "default"}
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                 >
@@ -402,6 +426,173 @@ export function WaidBot() {
                   <CardContent className="p-4">
                     <div className="text-center">
                       <p className="text-2xl font-bold text-white">
+                        {balance.invested?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Currently Invested</p>
+                      <p className="text-xs text-blue-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {balance.totalProfit?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Total Profit</p>
+                      <p className="text-xs text-purple-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
+                  <CardContent className="p-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-white">
+                        {balance.dailyProfit?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-slate-400">Daily Profit</p>
+                      <p className="text-xs text-yellow-400">{balance.currency}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Fund & Withdraw Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-400/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-green-400 text-sm">
+                      <ArrowUpCircle className="h-4 w-4" />
+                      Fund WaidBot α
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fund-amount" className="text-slate-300">Amount ({balance.currency})</Label>
+                      <Input
+                        id="fund-amount"
+                        type="number"
+                        placeholder="Enter amount to fund"
+                        value={fundAmount}
+                        onChange={(e) => setFundAmount(e.target.value)}
+                        className="bg-slate-800/50 border-green-400/30 focus:border-green-400"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleFund}
+                      disabled={!fundAmount || fundMutation.isPending}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      {fundMutation.isPending ? "Processing..." : "Fund Bot"}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-red-500/10 to-pink-600/10 border-red-400/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-red-400 text-sm">
+                      <ArrowDownCircle className="h-4 w-4" />
+                      Withdraw from WaidBot α
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="withdraw-amount" className="text-slate-300">Amount ({balance.currency})</Label>
+                      <Input
+                        id="withdraw-amount"
+                        type="number"
+                        placeholder="Enter amount to withdraw"
+                        value={withdrawAmount}
+                        onChange={(e) => setWithdrawAmount(e.target.value)}
+                        className="bg-slate-800/50 border-red-400/30 focus:border-red-400"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleWithdraw}
+                      disabled={!withdrawAmount || withdrawMutation.isPending}
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      {withdrawMutation.isPending ? "Processing..." : "Withdraw"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Signals Tab */}
+        <TabsContent value="signals" className="space-y-6 mt-6">
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Signal className="h-5 w-5" />
+                WaidBot α Trading Signals
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Real-time uptrend detection signals and market analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Signal className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-slate-400">Real-time signals will appear here</p>
+                <p className="text-sm text-slate-500 mt-2">WaidBot α continuously analyzes ETH uptrend patterns</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Trades Tab */}
+        <TabsContent value="trades" className="space-y-6 mt-6">
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <DollarSign className="h-5 w-5" />
+                WaidBot α Trade History
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Complete trading history and performance metrics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <DollarSign className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-slate-400">Trade history will appear here</p>
+                <p className="text-sm text-slate-500 mt-2">All WaidBot α transactions and performance data</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Upgrade Tab */}
+        <TabsContent value="upgrade" className="space-y-6 mt-6">
+          <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Crown className="h-5 w-5" />
+                WaidBot α Advanced Features
+              </CardTitle>
+              <CardDescription className="text-slate-400">
+                Unlock premium trading capabilities and advanced AI models
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Crown className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-slate-400">Advanced features coming soon</p>
+                <p className="text-sm text-slate-500 mt-2">Enhanced AI models, custom strategies, and more</p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
                         {balance.invested?.toLocaleString() || 0}
                       </p>
                       <p className="text-xs text-slate-400">Invested</p>

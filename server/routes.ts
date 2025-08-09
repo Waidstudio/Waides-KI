@@ -6424,15 +6424,560 @@ export async function registerRoutes(app: Express): Promise<Server> {
           amount: 750,
           currency: 'ETH',
           status: 'completed',
-          created_at: '2025-01-27T22:15:00Z',
+          created_at: '2025-01-28T05:30:00Z',
           gateway: 'binance',
-        },
+        }
       ];
       res.json(transactions);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });
+
+  // =====================================
+  // WALLET ENGINE BOT CONTROL ENDPOINTS
+  // =====================================
+
+  // Maibot Control Endpoints
+  app.post("/api/waidbot-engine/maibot/start", async (req, res) => {
+    try {
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      const result = await realTimeMaibot.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting Maibot:', error);
+      res.status(500).json({ success: false, message: 'Failed to start Maibot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/maibot/stop", async (req, res) => {
+    try {
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      const result = await realTimeMaibot.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping Maibot:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop Maibot' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/maibot/balance", async (req, res) => {
+    try {
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      const balance = realTimeMaibot.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting Maibot balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/maibot/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      realTimeMaibot.fundBot(amount);
+      res.json({ success: true, message: `Funded Maibot with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding Maibot:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/maibot/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      realTimeMaibot.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from Maibot` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from Maibot:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/maibot/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const realTimeMaibot = await serviceRegistry.get('realTimeMaibot');
+      realTimeMaibot.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting Maibot trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // WaidBot Alpha Control Endpoints
+  app.post("/api/waidbot-engine/waidbot/start", async (req, res) => {
+    try {
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      const result = await realTimeWaidBot.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting WaidBot:', error);
+      res.status(500).json({ success: false, message: 'Failed to start WaidBot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot/stop", async (req, res) => {
+    try {
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      const result = await realTimeWaidBot.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping WaidBot:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop WaidBot' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/waidbot/balance", async (req, res) => {
+    try {
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      const balance = realTimeWaidBot.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting WaidBot balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      realTimeWaidBot.fundBot(amount);
+      res.json({ success: true, message: `Funded WaidBot with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding WaidBot:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      realTimeWaidBot.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from WaidBot` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from WaidBot:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const realTimeWaidBot = await serviceRegistry.get('realTimeWaidBot');
+      realTimeWaidBot.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting WaidBot trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // WaidBot Pro Control Endpoints 
+  app.post("/api/waidbot-engine/waidbot-pro/start", async (req, res) => {
+    try {
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      const result = await realTimeWaidBotPro.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting WaidBot Pro:', error);
+      res.status(500).json({ success: false, message: 'Failed to start WaidBot Pro' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot-pro/stop", async (req, res) => {
+    try {
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      const result = await realTimeWaidBotPro.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping WaidBot Pro:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop WaidBot Pro' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/waidbot-pro/balance", async (req, res) => {
+    try {
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      const balance = realTimeWaidBotPro.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting WaidBot Pro balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot-pro/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      realTimeWaidBotPro.fundBot(amount);
+      res.json({ success: true, message: `Funded WaidBot Pro with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding WaidBot Pro:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot-pro/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      realTimeWaidBotPro.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from WaidBot Pro` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from WaidBot Pro:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/waidbot-pro/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const realTimeWaidBotPro = await serviceRegistry.get('realTimeWaidBotPro');
+      realTimeWaidBotPro.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting WaidBot Pro trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // Nwaora Chigozie Control Endpoints
+  app.post("/api/waidbot-engine/nwaora-chigozie/start", async (req, res) => {
+    try {
+      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
+      const result = nwaoraChigozieBot.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting Nwaora Chigozie:', error);
+      res.status(500).json({ success: false, message: 'Failed to start Nwaora Chigozie' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/nwaora-chigozie/stop", async (req, res) => {
+    try {
+      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
+      const result = nwaoraChigozieBot.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping Nwaora Chigozie:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop Nwaora Chigozie' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/nwaora-chigozie/balance", async (req, res) => {
+    try {
+      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
+      const balance = nwaoraChigozieBot.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting Nwaora Chigozie balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/nwaora-chigozie/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
+      nwaoraChigozieBot.fundBot(amount);
+      res.json({ success: true, message: `Funded Nwaora Chigozie with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding Nwaora Chigozie:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/nwaora-chigozie/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
+      nwaoraChigozieBot.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from Nwaora Chigozie` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from Nwaora Chigozie:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/nwaora-chigozie/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
+      nwaoraChigozieBot.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting Nwaora Chigozie trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // Smai Chinnikstah Control Endpoints
+  app.post("/api/waidbot-engine/smai-chinnikstah/start", async (req, res) => {
+    try {
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      const result = smaiChinnikstahBot.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting Smai Chinnikstah:', error);
+      res.status(500).json({ success: false, message: 'Failed to start Smai Chinnikstah' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/smai-chinnikstah/stop", async (req, res) => {
+    try {
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      const result = smaiChinnikstahBot.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping Smai Chinnikstah:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop Smai Chinnikstah' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/smai-chinnikstah/balance", async (req, res) => {
+    try {
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      const balance = smaiChinnikstahBot.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting Smai Chinnikstah balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/smai-chinnikstah/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      smaiChinnikstahBot.fundBot(amount);
+      res.json({ success: true, message: `Funded Smai Chinnikstah with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding Smai Chinnikstah:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/smai-chinnikstah/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      smaiChinnikstahBot.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from Smai Chinnikstah` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from Smai Chinnikstah:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/smai-chinnikstah/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      smaiChinnikstahBot.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting Smai Chinnikstah trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // Full Engine Omega Control Endpoints
+  app.post("/api/waidbot-engine/full-engine/start", async (req, res) => {
+    try {
+      const waidesFullEngine = await serviceRegistry.get('waidesFullEngine');
+      const result = waidesFullEngine.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting Full Engine:', error);
+      res.status(500).json({ success: false, message: 'Failed to start Full Engine' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/full-engine/stop", async (req, res) => {
+    try {
+      const waidesFullEngine = await serviceRegistry.get('waidesFullEngine');
+      const result = waidesFullEngine.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping Full Engine:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop Full Engine' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/full-engine/balance", async (req, res) => {
+    try {
+      const waidesFullEngine = await serviceRegistry.get('waidesFullEngine');
+      const balance = waidesFullEngine.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting Full Engine balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/full-engine/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const waidesFullEngine = await serviceRegistry.get('waidesFullEngine');
+      waidesFullEngine.fundBot(amount);
+      res.json({ success: true, message: `Funded Full Engine with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding Full Engine:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/full-engine/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const waidesFullEngine = await serviceRegistry.get('waidesFullEngine');
+      waidesFullEngine.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from Full Engine` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from Full Engine:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/full-engine/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const waidesFullEngine = await serviceRegistry.get('waidesFullEngine');
+      waidesFullEngine.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting Full Engine trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // Autonomous Trader Control Endpoints
+  app.post("/api/waidbot-engine/autonomous-trader/start", async (req, res) => {
+    try {
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      const result = await realTimeAutonomousTrader.start();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error starting Autonomous Trader:', error);
+      res.status(500).json({ success: false, message: 'Failed to start Autonomous Trader' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/autonomous-trader/stop", async (req, res) => {
+    try {
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      const result = await realTimeAutonomousTrader.stop();
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Error stopping Autonomous Trader:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop Autonomous Trader' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/autonomous-trader/balance", async (req, res) => {
+    try {
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      const balance = realTimeAutonomousTrader.getBalance();
+      res.json({ 
+        success: true, 
+        balance: balance.smaiSika,
+        invested: balance.invested || 0,
+        totalProfit: balance.totalProfit || 0,
+        currency: 'SmaiSika',
+        tradingMode: balance.mode || 'demo'
+      });
+    } catch (error) {
+      console.error('❌ Error getting Autonomous Trader balance:', error);
+      res.status(500).json({ success: false, message: 'Failed to get balance' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/autonomous-trader/fund", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      realTimeAutonomousTrader.fundBot(amount);
+      res.json({ success: true, message: `Funded Autonomous Trader with ${amount} SmaiSika` });
+    } catch (error) {
+      console.error('❌ Error funding Autonomous Trader:', error);
+      res.status(500).json({ success: false, message: 'Failed to fund bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/autonomous-trader/withdraw", async (req, res) => {
+    try {
+      const { amount } = req.body;
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      realTimeAutonomousTrader.withdrawFromBot(amount);
+      res.json({ success: true, message: `Withdrew ${amount} SmaiSika from Autonomous Trader` });
+    } catch (error) {
+      console.error('❌ Error withdrawing from Autonomous Trader:', error);
+      res.status(500).json({ success: false, message: 'Failed to withdraw from bot' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/autonomous-trader/set-trading-mode", async (req, res) => {
+    try {
+      const { mode } = req.body;
+      const realTimeAutonomousTrader = await serviceRegistry.get('realTimeAutonomousTrader');
+      realTimeAutonomousTrader.setTradingMode(mode);
+      res.json({ success: true, message: `Trading mode set to ${mode}`, mode });
+    } catch (error) {
+      console.error('❌ Error setting Autonomous Trader trading mode:', error);
+      res.status(500).json({ success: false, message: 'Failed to set trading mode' });
+    }
+  });
+
+  // END WALLET ENGINE BOT CONTROL ENDPOINTS
 
   app.post('/api/admin/system/control', (req, res) => {
     try {
