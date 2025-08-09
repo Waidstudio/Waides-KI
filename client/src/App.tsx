@@ -73,6 +73,7 @@ import SMSConfigPage from "@/pages/SMSConfigPage";
 import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import AdminExchangePoolPage from "@/pages/AdminExchangePoolPage";
 import KonsPowaPage from "@/pages/KonsPowaPage";
+import SmaisikaMining from "@/pages/SmaisikaMining";
 import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
@@ -107,6 +108,7 @@ function Router() {
     { path: "/strategy-autogen", label: "Strategy Autogen" },
     { path: "/voice-command", label: "Voice Command" },
     { path: "/kons-powa", label: "KonsPowa Engine" },
+    { path: "/smaisika-mining", label: "SmaiSika Mining" },
     { path: "/live-data", label: "Live Data" },
     { path: "/learning", label: "Trading Academy" },
     { path: "/dream-vision", label: "Dream Vision" },
@@ -371,6 +373,13 @@ function Router() {
             {() => (
               <ProtectedRoute requiredRole={["admin", "super_admin"]}>
                 <KonsPowaPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/smaisika-mining">
+            {() => (
+              <ProtectedRoute>
+                <SmaisikaMining />
               </ProtectedRoute>
             )}
           </Route>

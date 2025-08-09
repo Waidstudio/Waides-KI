@@ -49,6 +49,75 @@ export const wallets = pgTable("wallets", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Smaisika Mining System Tables
+export const smaisikaMining = pgTable("smaisika_mining", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  sessionId: text("session_id").notNull().unique(),
+  miningType: text("mining_type").notNull(), // "cpu", "gpu", "quiz", "puzzle"
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time"),
+  duration: integer("duration"), // seconds
+  difficulty: integer("difficulty").default(1), // 1-10 scale
+  hashRate: numeric("hash_rate", { precision: 15, scale: 8 }).default("0.00000000"), // Virtual hash rate
+  smaiSikaEarned: numeric("smai_sika_earned", { precision: 15, scale: 8 }).default("0.00000000"),
+  smaiOnyixScore: integer("smai_onyix_score").default(100), // Reputation bonus
+  puzzlesSolved: integer("puzzles_solved").default(0),
+  quizzesCompleted: integer("quizzes_completed").default(0),
+  isActive: boolean("is_active").default(true),
+  metadata: jsonb("metadata").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const smaiPins = pgTable("smai_pins", {
+  id: serial("id").primaryKey(),
+  pinCode: text("pin_code").notNull().unique(),
+  creatorId: integer("creator_id").notNull().references(() => users.id),
+  recipientId: integer("recipient_id").references(() => users.id),
+  smaiSikaAmount: numeric("smai_sika_amount", { precision: 15, scale: 8 }).notNull(),
+  validityPeriod: integer("validity_period").default(86400), // 24 hours in seconds
+  creationTime: timestamp("creation_time").defaultNow(),
+  expiryTime: timestamp("expiry_time").notNull(),
+  redeemedAt: timestamp("redeemed_at"),
+  isRedeemed: boolean("is_redeemed").default(false),
+  isExpired: boolean("is_expired").default(false),
+  transferMessage: text("transfer_message"),
+  metadata: jsonb("metadata").default("{}"),
+});
+
+export const smaiSikaSwaps = pgTable("smai_sika_swaps", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  swapId: text("swap_id").notNull().unique(),
+  fromCurrency: text("from_currency").default("SMAISIKA"),
+  toCurrency: text("to_currency").notNull(), // "MONERO", "USDT", "BTC", "ETH"
+  fromAmount: numeric("from_amount", { precision: 15, scale: 8 }).notNull(),
+  toAmount: numeric("to_amount", { precision: 15, scale: 8 }).notNull(),
+  exchangeRate: numeric("exchange_rate", { precision: 15, scale: 8 }).notNull(),
+  fees: numeric("fees", { precision: 15, scale: 8 }).default("0.00000000"),
+  status: text("status").default("pending"), // "pending", "processing", "completed", "failed"
+  toWalletAddress: text("to_wallet_address"),
+  transactionHash: text("transaction_hash"),
+  blockchainNetwork: text("blockchain_network"),
+  completedAt: timestamp("completed_at"),
+  metadata: jsonb("metadata").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userReputation = pgTable("user_reputation", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id).unique(),
+  smaiOnyixScore: integer("smai_onyix_score").default(100), // Main reputation score
+  miningEfficiency: numeric("mining_efficiency", { precision: 5, scale: 2 }).default("1.00"), // Mining bonus multiplier
+  behavioralId: text("behavioral_id").unique(), // Unique behavioral pattern ID
+  patternHistory: jsonb("pattern_history").default("[]"),
+  achievements: jsonb("achievements").default("[]"),
+  miningStats: jsonb("mining_stats").default("{}"),
+  interactionPatterns: jsonb("interaction_patterns").default("{}"),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Conversion History Table for tracking all currency conversions
 export const conversionHistory = pgTable("conversion_history", {
   id: serial("id").primaryKey(),

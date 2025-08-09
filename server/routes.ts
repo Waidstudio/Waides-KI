@@ -1686,6 +1686,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Smaisika Mining System API Routes
+  app.post("/api/smaisika/mining/start", async (req, res) => {
+    try {
+      const { miningType, difficulty } = req.body;
+      const userId = 1; // Demo user
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.startMining(userId, miningType, difficulty);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Mining start error:', error);
+      res.status(500).json({ success: false, message: 'Failed to start mining' });
+    }
+  });
+
+  app.post("/api/smaisika/mining/stop", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.stopMining(sessionId);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Mining stop error:', error);
+      res.status(500).json({ success: false, message: 'Failed to stop mining' });
+    }
+  });
+
+  app.get("/api/smaisika/mining/challenge/:type", async (req, res) => {
+    try {
+      const { type } = req.params;
+      const { difficulty } = req.query;
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const challenge = await smaisikaMiningEngine.getMiningChallenge(type as 'quiz' | 'puzzle', parseInt(difficulty as string) || 1);
+      
+      res.json({ success: true, challenge });
+    } catch (error) {
+      console.error('❌ Mining challenge error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get mining challenge' });
+    }
+  });
+
+  app.post("/api/smaisika/mining/submit-answer", async (req, res) => {
+    try {
+      const { sessionId, answer, challengeId } = req.body;
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.submitChallengeAnswer(sessionId, answer, challengeId);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ Mining answer submission error:', error);
+      res.status(500).json({ success: false, message: 'Failed to submit answer' });
+    }
+  });
+
+  app.get("/api/smaisika/mining/session/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const session = smaisikaMiningEngine.getMiningSession(sessionId);
+      
+      if (session) {
+        const currentTime = new Date();
+        const duration = Math.floor((currentTime.getTime() - session.startTime.getTime()) / 1000);
+        const estimatedReward = (0.001 * duration * session.difficulty * 1.5 * (session.smaiOnyixScore / 100));
+        
+        res.json({
+          success: true,
+          session: {
+            ...session,
+            duration,
+            estimatedReward: estimatedReward.toFixed(8)
+          }
+        });
+      } else {
+        res.json({ success: false, message: 'Session not found' });
+      }
+    } catch (error) {
+      console.error('❌ Mining session error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get session' });
+    }
+  });
+
+  app.get("/api/smaisika/stats", async (req, res) => {
+    try {
+      const userId = 1; // Demo user
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const stats = await smaisikaMiningEngine.getUserStats(userId);
+      
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error('❌ Mining stats error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get mining stats' });
+    }
+  });
+
+  // SmaiPin Management API Routes
+  app.post("/api/smaisika/pin/create", async (req, res) => {
+    try {
+      const { amount, validityHours, message } = req.body;
+      const userId = 1; // Demo user
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.createSmaiPin(userId, amount, validityHours, message);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ SmaiPin creation error:', error);
+      res.status(500).json({ success: false, message: 'Failed to create SmaiPin' });
+    }
+  });
+
+  app.post("/api/smaisika/pin/redeem", async (req, res) => {
+    try {
+      const { pinCode } = req.body;
+      const userId = 1; // Demo user
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.redeemSmaiPin(userId, pinCode);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ SmaiPin redemption error:', error);
+      res.status(500).json({ success: false, message: 'Failed to redeem SmaiPin' });
+    }
+  });
+
+  // SmaiSika Swap API Routes
+  app.post("/api/smaisika/swap", async (req, res) => {
+    try {
+      const { amount, toCurrency, walletAddress } = req.body;
+      const userId = 1; // Demo user
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.swapSmaiSika(userId, amount, toCurrency, walletAddress);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ SmaiSika swap error:', error);
+      res.status(500).json({ success: false, message: 'Failed to initiate swap' });
+    }
+  });
+
+  app.get("/api/smaisika/exchange-rates", (req, res) => {
+    const rates = {
+      'MONERO': { rate: 0.00001, symbol: 'XMR', name: 'Monero' },
+      'USDT': { rate: 0.001, symbol: 'USDT', name: 'Tether USD' },
+      'BTC': { rate: 0.000000001, symbol: 'BTC', name: 'Bitcoin' },
+      'ETH': { rate: 0.0000001, symbol: 'ETH', name: 'Ethereum' }
+    };
+    
+    res.json({ success: true, rates });
+  });
+
   // Enhanced wallet balance endpoint with detailed breakdown
   app.get("/api/wallet/balance", async (req, res) => {
     try {
