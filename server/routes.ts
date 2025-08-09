@@ -1876,6 +1876,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced mining analytics and distributed stats
+  app.get("/api/smaisika/mining/distributed-stats", async (req, res) => {
+    try {
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const stats = smaisikaMiningEngine.getDistributedMiningStats();
+      
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error('❌ Distributed mining stats error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get distributed mining stats' });
+    }
+  });
+
+  app.get("/api/smaisika/mining/realtime-performance", async (req, res) => {
+    try {
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const performance = smaisikaMiningEngine.getRealtimeMiningPerformance();
+      
+      res.json({ success: true, performance });
+    } catch (error) {
+      console.error('❌ Realtime mining performance error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get realtime mining performance' });
+    }
+  });
+
+  // SmaiSika staking for enhanced mining rewards
+  app.post("/api/smaisika/staking/stake", async (req, res) => {
+    try {
+      const { amount, stakingPeriod } = req.body;
+      const userId = 1; // Demo user
+      
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const result = await smaisikaMiningEngine.stakeSmaiSika(userId, amount, stakingPeriod);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('❌ SmaiSika staking error:', error);
+      res.status(500).json({ success: false, message: 'Failed to process staking request' });
+    }
+  });
+
   // Enhanced wallet balance endpoint with detailed breakdown
   app.get("/api/wallet/balance", async (req, res) => {
     try {

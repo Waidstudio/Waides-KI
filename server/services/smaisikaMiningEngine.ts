@@ -778,4 +778,5 @@ class SmaisikaMiningEngine {
   }
 }
 
+// Export singleton instance
 export const smaisikaMiningEngine = new SmaisikaMiningEngine();
