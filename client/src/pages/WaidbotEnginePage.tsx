@@ -38,12 +38,19 @@ interface BotStatus {
   currentAction: string;
   nextAction: string;
   confidence: number;
+  wallet?: {
+    balance: number;
+    currency: string;
+    totalInvested: number;
+    dailyProfit: number;
+  };
+  liveActivity?: string[];
 }
 
 export default function WaidbotEnginePage() {
   const queryClient = useQueryClient();
 
-  // Fetch status for all three bots
+  // Fetch status for all six entities
   const { data: waidBotStatus, isLoading: waidBotLoading } = useQuery<BotStatus>({
     queryKey: ['/api/waidbot-engine/waidbot/status'],
     refetchInterval: 3000,
@@ -56,6 +63,21 @@ export default function WaidbotEnginePage() {
 
   const { data: autonomousStatus, isLoading: autonomousLoading } = useQuery<BotStatus>({
     queryKey: ['/api/waidbot-engine/autonomous/status'],
+    refetchInterval: 3000,
+  });
+
+  const { data: maibotStatus, isLoading: maibotLoading } = useQuery<BotStatus>({
+    queryKey: ['/api/waidbot-engine/maibot/status'],
+    refetchInterval: 3000,
+  });
+
+  const { data: alphaStatus, isLoading: alphaLoading } = useQuery<BotStatus>({
+    queryKey: ['/api/waidbot-engine/alpha/status'],
+    refetchInterval: 3000,
+  });
+
+  const { data: betaStatus, isLoading: betaLoading } = useQuery<BotStatus>({
+    queryKey: ['/api/waidbot-engine/beta/status'],
     refetchInterval: 3000,
   });
 
@@ -96,7 +118,44 @@ export default function WaidbotEnginePage() {
     }
   });
 
-  const isLoading = waidBotLoading || waidBotProLoading || autonomousLoading;
+  // Toggle mutations for all entities
+  const toggleMaibot = useMutation({
+    mutationFn: async (action: 'start' | 'stop') => {
+      const response = await fetch(`/api/waidbot-engine/maibot/${action}`, { 
+        method: 'POST' 
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/maibot/status'] });
+    }
+  });
+
+  const toggleAlpha = useMutation({
+    mutationFn: async (action: 'start' | 'stop') => {
+      const response = await fetch(`/api/waidbot-engine/alpha/${action}`, { 
+        method: 'POST' 
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/alpha/status'] });
+    }
+  });
+
+  const toggleBeta = useMutation({
+    mutationFn: async (action: 'start' | 'stop') => {
+      const response = await fetch(`/api/waidbot-engine/beta/${action}`, { 
+        method: 'POST' 
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/beta/status'] });
+    }
+  });
+
+  const isLoading = waidBotLoading || waidBotProLoading || autonomousLoading || maibotLoading || alphaLoading || betaLoading;
 
   if (isLoading) {
     return (
@@ -136,7 +195,7 @@ export default function WaidbotEnginePage() {
             </h1>
           </div>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            Choose your trading companion: Three distinct AI-powered trading bots designed for different market strategies and timeframes
+            Command your trading army: Six powerful AI entities with unique personalities, strategies, and SmaiSika wallet integration for real-time profit tracking
           </p>
         </div>
 
@@ -205,8 +264,12 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Performance Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Wallet & Performance Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">{waidBotStatus?.wallet?.balance || 0}</div>
+                <div className="text-xs text-slate-400">{waidBotStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+              </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{waidBotStatus?.performance.totalTrades || 0}</div>
                 <div className="text-xs text-slate-400">Total Trades</div>
@@ -216,8 +279,8 @@ export default function WaidbotEnginePage() {
                 <div className="text-xs text-slate-400">Win Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">+{waidBotStatus?.performance.profit || 0}%</div>
-                <div className="text-xs text-slate-400">Total Profit</div>
+                <div className="text-2xl font-bold text-green-400">+{waidBotStatus?.wallet?.dailyProfit || 0}</div>
+                <div className="text-xs text-slate-400">Daily Profit</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{waidBotStatus?.performance.todayTrades || 0}</div>
@@ -343,8 +406,12 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Performance Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Wallet & Performance Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">{waidBotProStatus?.wallet?.balance || 0}</div>
+                <div className="text-xs text-slate-400">{waidBotProStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+              </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-400">{waidBotProStatus?.performance.totalTrades || 0}</div>
                 <div className="text-xs text-slate-400">Total Trades</div>
@@ -354,8 +421,8 @@ export default function WaidbotEnginePage() {
                 <div className="text-xs text-slate-400">Win Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">+{waidBotProStatus?.performance.profit || 0}%</div>
-                <div className="text-xs text-slate-400">Total Profit</div>
+                <div className="text-2xl font-bold text-blue-400">+{waidBotProStatus?.wallet?.dailyProfit || 0}</div>
+                <div className="text-xs text-slate-400">Daily Profit</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-400">{waidBotProStatus?.performance.todayTrades || 0}</div>
@@ -481,8 +548,12 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
-            {/* Performance Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Wallet & Performance Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">{autonomousStatus?.wallet?.balance || 0}</div>
+                <div className="text-xs text-slate-400">{autonomousStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+              </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-400">{autonomousStatus?.performance.totalTrades || 0}</div>
                 <div className="text-xs text-slate-400">Total Trades</div>
@@ -492,8 +563,8 @@ export default function WaidbotEnginePage() {
                 <div className="text-xs text-slate-400">Win Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-400">+{autonomousStatus?.performance.profit || 0}%</div>
-                <div className="text-xs text-slate-400">Total Profit</div>
+                <div className="text-2xl font-bold text-purple-400">+{autonomousStatus?.wallet?.dailyProfit || 0}</div>
+                <div className="text-xs text-slate-400">Daily Profit</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-400">{autonomousStatus?.performance.todayTrades || 0}</div>
@@ -549,6 +620,312 @@ export default function WaidbotEnginePage() {
               >
                 <Globe className="w-4 h-4 mr-2" />
                 Full Engine
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Maibot - Free Entry Level */}
+        <Card className="bg-gradient-to-br from-cyan-900/20 to-teal-900/10 border-cyan-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-cyan-500/20 rounded-lg">
+                  <Bot className="w-6 h-6 text-cyan-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-cyan-400">Maibot</h2>
+                  <p className="text-cyan-300/70 text-sm">Free Entry-Level Trading Assistant</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {maibotStatus?.isActive ? (
+                  <>
+                    <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
+                    <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30">LEARNING</Badge>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">OFFLINE</Badge>
+                  </>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Wallet & Performance Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-400">{maibotStatus?.wallet?.balance || 0}</div>
+                <div className="text-xs text-slate-400">{maibotStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-400">{maibotStatus?.performance.totalTrades || 0}</div>
+                <div className="text-xs text-slate-400">Total Trades</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-400">{maibotStatus?.performance.winRate || 0}%</div>
+                <div className="text-xs text-slate-400">Win Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-400">+{maibotStatus?.wallet?.dailyProfit || 0}</div>
+                <div className="text-xs text-slate-400">Daily Profit</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-400">{maibotStatus?.performance.todayTrades || 0}</div>
+                <div className="text-xs text-slate-400">Today's Trades</div>
+              </div>
+            </div>
+
+            {/* Live Activity */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+              <h3 className="font-semibold text-cyan-400 mb-3">Live Activity</h3>
+              <div className="space-y-2">
+                {maibotStatus?.liveActivity?.map((activity, index) => (
+                  <div key={index} className="text-sm text-cyan-200">{activity}</div>
+                )) || [
+                  <div key={0} className="text-sm text-cyan-200">🆓 Free tier active</div>,
+                  <div key={1} className="text-sm text-cyan-200">📚 Learning basic patterns</div>,
+                  <div key={2} className="text-sm text-cyan-200">🎯 Small profitable trades</div>
+                ]}
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex space-x-3">
+              {maibotStatus?.isActive ? (
+                <Button
+                  onClick={() => toggleMaibot.mutate('stop')}
+                  disabled={toggleMaibot.isPending}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <Pause className="w-4 h-4 mr-2" />
+                  Stop Maibot
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleMaibot.mutate('start')}
+                  disabled={toggleMaibot.isPending}
+                  className="flex-1 bg-cyan-600 hover:bg-cyan-500"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Maibot
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                onClick={() => window.location.href = '/maibot'}
+              >
+                <Bot className="w-4 h-4 mr-2" />
+                View Maibot
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Alpha Entity - Advanced AI */}
+        <Card className="bg-gradient-to-br from-amber-900/20 to-orange-900/10 border-amber-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-amber-500/20 rounded-lg">
+                  <Brain className="w-6 h-6 text-amber-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-amber-400">Alpha Entity</h2>
+                  <p className="text-amber-300/70 text-sm">Advanced AI Trading Intelligence</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {alphaStatus?.isActive ? (
+                  <>
+                    <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+                    <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">NEURAL</Badge>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">STANDBY</Badge>
+                  </>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Wallet & Performance Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-400">{alphaStatus?.wallet?.balance || 0}</div>
+                <div className="text-xs text-slate-400">{alphaStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-400">{alphaStatus?.performance.totalTrades || 0}</div>
+                <div className="text-xs text-slate-400">Total Trades</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-400">{alphaStatus?.performance.winRate || 0}%</div>
+                <div className="text-xs text-slate-400">Win Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-400">+{alphaStatus?.wallet?.dailyProfit || 0}</div>
+                <div className="text-xs text-slate-400">Daily Profit</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-400">{alphaStatus?.performance.todayTrades || 0}</div>
+                <div className="text-xs text-slate-400">Today's Trades</div>
+              </div>
+            </div>
+
+            {/* Live Activity */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+              <h3 className="font-semibold text-amber-400 mb-3">AI Intelligence Activity</h3>
+              <div className="space-y-2">
+                {alphaStatus?.liveActivity?.map((activity, index) => (
+                  <div key={index} className="text-sm text-amber-200">{activity}</div>
+                )) || [
+                  <div key={0} className="text-sm text-amber-200">🧠 Neural network training active</div>,
+                  <div key={1} className="text-sm text-amber-200">📊 Pattern recognition: 91% accuracy</div>,
+                  <div key={2} className="text-sm text-amber-200">🎯 Identified 12 profitable signals</div>
+                ]}
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex space-x-3">
+              {alphaStatus?.isActive ? (
+                <Button
+                  onClick={() => toggleAlpha.mutate('stop')}
+                  disabled={toggleAlpha.isPending}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <Pause className="w-4 h-4 mr-2" />
+                  Stop Alpha
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleAlpha.mutate('start')}
+                  disabled={toggleAlpha.isPending}
+                  className="flex-1 bg-amber-600 hover:bg-amber-500"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Alpha
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                onClick={() => window.location.href = '/alpha-entity'}
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                Alpha Engine
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Beta Entity - Risk Management */}
+        <Card className="bg-gradient-to-br from-emerald-900/20 to-green-900/10 border-emerald-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-emerald-500/20 rounded-lg">
+                  <Shield className="w-6 h-6 text-emerald-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-emerald-400">Beta Entity</h2>
+                  <p className="text-emerald-300/70 text-sm">Advanced Risk Management System</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {betaStatus?.isActive ? (
+                  <>
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">GUARDIAN</Badge>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                    <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">DORMANT</Badge>
+                  </>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Wallet & Performance Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-400">{betaStatus?.wallet?.balance || 0}</div>
+                <div className="text-xs text-slate-400">{betaStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-400">{betaStatus?.performance.totalTrades || 0}</div>
+                <div className="text-xs text-slate-400">Total Trades</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-400">{betaStatus?.performance.winRate || 0}%</div>
+                <div className="text-xs text-slate-400">Win Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-400">+{betaStatus?.wallet?.dailyProfit || 0}</div>
+                <div className="text-xs text-slate-400">Daily Profit</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-400">{betaStatus?.performance.todayTrades || 0}</div>
+                <div className="text-xs text-slate-400">Today's Trades</div>
+              </div>
+            </div>
+
+            {/* Live Activity */}
+            <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+              <h3 className="font-semibold text-emerald-400 mb-3">Risk Guardian Activity</h3>
+              <div className="space-y-2">
+                {betaStatus?.liveActivity?.map((activity, index) => (
+                  <div key={index} className="text-sm text-emerald-200">{activity}</div>
+                )) || [
+                  <div key={0} className="text-sm text-emerald-200">🛡️ Risk management active</div>,
+                  <div key={1} className="text-sm text-emerald-200">⚖️ Portfolio balance: optimal</div>,
+                  <div key={2} className="text-sm text-emerald-200">📈 Volatility analysis complete</div>
+                ]}
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex space-x-3">
+              {betaStatus?.isActive ? (
+                <Button
+                  onClick={() => toggleBeta.mutate('stop')}
+                  disabled={toggleBeta.isPending}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  <Pause className="w-4 h-4 mr-2" />
+                  Stop Beta
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => toggleBeta.mutate('start')}
+                  disabled={toggleBeta.isPending}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500"
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Start Beta
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
+                onClick={() => window.location.href = '/beta-entity'}
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Beta Engine
               </Button>
             </div>
           </CardContent>
