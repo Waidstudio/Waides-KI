@@ -758,7 +758,7 @@ export default function WaidbotEnginePageEnhanced() {
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
                   {comprehensiveMetrics?.real_time_metrics?.konsai_networks_active || 
                    ((maibotStatus?.isActive ? 1 : 0) + (waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0) + (fullEngineStatus?.engine_status?.is_active ? 1 : 0) + (smaiChinnikstahStatus?.isActive ? 1 : 0) + (nwaoraChigozieStatus?.isActive ? 1 : 0))}
-                  /{comprehensiveMetrics?.real_time_metrics?.total_systems || 7}
+                  /{comprehensiveMetrics?.real_time_metrics?.total_systems || 6}
                 </p>
                 <p className="text-sm text-blue-400">Active Systems</p>
               </div>
