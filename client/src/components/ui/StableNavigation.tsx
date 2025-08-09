@@ -305,15 +305,15 @@ const StableNavigation = () => {
                 </div>
               )}
             </div>
-            {/* Search */}
-            <div className="relative hidden xl:block">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+            {/* Search - Only on very large screens */}
+            <div className="relative hidden 2xl:block">
+              <Search className="absolute left-1 top-1/2 transform -translate-y-1/2 h-2.5 w-2.5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-7 pr-3 py-1.5 bg-slate-700/50 border border-slate-600/50 rounded-md text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 w-36"
+                className="pl-5 pr-2 py-1 bg-slate-700/50 border border-slate-600/50 rounded text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 w-16"
               />
             </div>
 
