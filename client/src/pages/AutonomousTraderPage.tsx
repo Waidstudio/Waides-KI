@@ -19,11 +19,30 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
+// TypeScript interfaces for API responses
+interface TraderStatus {
+  isActive?: boolean;
+  activeMarkets?: number;
+  performance?: {
+    winRate?: number;
+    profit?: number;
+  };
+  confidence?: number;
+  real_time_metrics?: {
+    current_decision?: string;
+  };
+}
+
+interface MLEngineData {
+  accuracy?: number;
+  processingSpeed?: string;
+}
+
 export default function AutonomousTraderPage() {
   const [isActive, setIsActive] = useState(false);
 
   // Fetch autonomous trader status from centralized engine
-  const { data: traderStatus } = useQuery({
+  const { data: traderStatus } = useQuery<TraderStatus>({
     queryKey: ['/api/waidbot-engine/autonomous/status'],
     refetchInterval: 3000
   });
@@ -44,6 +63,12 @@ export default function AutonomousTraderPage() {
   const { data: profitLossData } = useQuery({
     queryKey: ['/api/waidbot-engine/autonomous/profit-loss'],
     refetchInterval: 4000
+  });
+
+  // Fetch ML engine data
+  const { data: mlEngineData } = useQuery<MLEngineData>({
+    queryKey: ['/api/waidbot-engine/autonomous/advanced-analysis'],
+    refetchInterval: 6000
   });
 
   return (
