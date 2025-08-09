@@ -74,6 +74,7 @@ import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import AdminExchangePoolPage from "@/pages/AdminExchangePoolPage";
 import KonsPowaPage from "@/pages/KonsPowaPage";
 import SmaisikaMining from "@/pages/SmaisikaMining";
+import AdminMining from "@/pages/AdminMining";
 import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
@@ -380,6 +381,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <SmaisikaMining />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/admin-mining">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <AdminMining />
               </ProtectedRoute>
             )}
           </Route>

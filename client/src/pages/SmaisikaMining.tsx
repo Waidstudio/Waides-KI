@@ -84,17 +84,7 @@ export default function SmaisikaMining() {
     queryKey: ['/api/smaisika/exchange-rates']
   });
 
-  // Fetch admin wallet reserves
-  const { data: adminReservesData } = useQuery({
-    queryKey: ['/api/smaisika/admin-reserves'],
-    refetchInterval: 15000
-  });
-
-  // Fetch mining pool status
-  const { data: miningPoolsData } = useQuery({
-    queryKey: ['/api/smaisika/mining-pools'],
-    refetchInterval: 20000
-  });
+  // Admin data removed for user interface - admin functionality moved to separate admin panel
 
   // Mining mutations
   const startMiningMutation = useMutation({
@@ -323,31 +313,7 @@ export default function SmaisikaMining() {
         </p>
       </div>
 
-      {/* Admin Crypto Reserves */}
-      {adminReservesData?.success && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Coins className="h-5 w-5" />
-              Admin Wallet Reserves (Available for Swaps)
-            </CardTitle>
-            <CardDescription>
-              Real cryptocurrency reserves backing SmaiSika swaps
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.entries(adminReservesData.reserves).map(([currency, amount]) => (
-                <div key={currency} className="p-3 bg-muted rounded-lg">
-                  <div className="text-sm text-muted-foreground">{currency}</div>
-                  <div className="text-lg font-bold">{(amount as number).toFixed(8)}</div>
-                  <div className="text-xs text-green-600">Available</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* User Mining Platform - Admin functionality moved to /admin-mining */}
 
       {/* Balance and Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
