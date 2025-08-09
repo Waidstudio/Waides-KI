@@ -319,4 +319,65 @@ Set up automated responses to violations:
 }
 ```
 
+## UI Design Protection System
+
+### Lock Design Elements
+```bash
+# Lock all UI design files and theme configuration
+node scripts/ui-design-lock-system.cjs lock
+
+# Verify design integrity
+node scripts/ui-design-lock-system.cjs verify
+
+# Create design snapshot
+node scripts/ui-design-lock-system.cjs snapshot
+
+# Generate design report
+node scripts/ui-design-lock-system.cjs report
+```
+
+### Style Protection Commands
+```bash
+# Initialize style protection rules
+node scripts/style-protection-system.cjs init
+
+# Scan for style violations
+node scripts/style-protection-system.cjs scan
+
+# Generate enforcement CSS
+node scripts/style-protection-system.cjs enforce
+
+# Create style protection report
+node scripts/style-protection-system.cjs report
+```
+
+### Protected Design Elements
+
+#### Critical Level (Immediate protection)
+- **Color Palette**: Primary blue/emerald gradient system
+- **Typography**: Inter font family and sizing system
+- **Theme Configuration**: Global design tokens and variables
+
+#### High Level (Daily monitoring)
+- **Component Styling**: Navigation, cards, buttons appearance
+- **Layout System**: Container spacing and breakpoints
+- **Brand Elements**: Logo placement and styling
+
+#### Medium Level (Weekly monitoring)
+- **Border System**: Radius and shadow definitions
+- **Spacing Standards**: Padding and margin consistency
+- **Visual Effects**: Hover states and transitions
+
+### Comprehensive Style Locking
+
+The system protects:
+- **Background colors and gradients**
+- **Text colors and typography**
+- **Card styling and layouts**
+- **Button appearances and states**
+- **Navigation design and behavior**
+- **Spacing and sizing standards**
+- **Border radius and shadows**
+- **Component consistency**
+
 This comprehensive protection system ensures your Waides KI application remains stable and secure while allowing productive development.

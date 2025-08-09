@@ -1,0 +1,35 @@
+{
+  "enforcement": {
+    "strict": true,
+    "allowedDeviations": 5,
+    "requireApproval": true
+  },
+  "protectionLevels": {
+    "critical": [
+      "colors.primary",
+      "colors.background",
+      "typography.fontFamily"
+    ],
+    "high": [
+      "spacing.container",
+      "borders.radius",
+      "components.navigation"
+    ],
+    "medium": [
+      "shadows",
+      "components.card",
+      "components.button"
+    ]
+  },
+  "violations": {
+    "colorChange": "CRITICAL",
+    "fontChange": "CRITICAL",
+    "spacingChange": "HIGH",
+    "componentChange": "MEDIUM"
+  },
+  "exceptions": {
+    "developmentMode": true,
+    "temporaryOverrides": true,
+    "approvedVariations": []
+  }
+}

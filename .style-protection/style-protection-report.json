@@ -1,0 +1,603 @@
+{
+  "timestamp": "2025-08-09T06:22:38.071Z",
+  "styleStatus": "VIOLATIONS_DETECTED",
+  "totalViolations": 72,
+  "criticalViolations": 72,
+  "highViolations": 0,
+  "mediumViolations": 0,
+  "violations": [
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(215, 28%, 17%)",
+      "line": 32,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(60, 4.8%, 95.9%)",
+      "line": 34,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(25, 5.3%, 44.7%)",
+      "line": 35,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(215, 28%, 17%)",
+      "line": 32,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(215, 28%, 17%)",
+      "line": 32,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(20, 5.9%, 90%)",
+      "line": 40,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(20, 5.9%, 90%)",
+      "line": 40,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(207, 90%, 54%)",
+      "line": 42,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(211, 100%, 99%)",
+      "line": 43,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(60, 4.8%, 95.9%)",
+      "line": 34,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(24, 9.8%, 10%)",
+      "line": 45,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(60, 4.8%, 95.9%)",
+      "line": 34,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(24, 9.8%, 10%)",
+      "line": 45,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(60, 9.1%, 97.8%)",
+      "line": 49,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(20, 14.3%, 4.1%)",
+      "line": 50,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 26%, 8%)",
+      "line": 54,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 24%, 11%)",
+      "line": 55,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 18%, 15%)",
+      "line": 56,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(151, 100%, 50%)",
+      "line": 57,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(351, 100%, 64%)",
+      "line": 58,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(33, 100%, 52%)",
+      "line": 59,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(217, 9%, 61%)",
+      "line": 61,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 26%, 8%)",
+      "line": 54,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 18%, 15%)",
+      "line": 56,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(217, 9%, 61%)",
+      "line": 61,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 24%, 11%)",
+      "line": 55,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 24%, 11%)",
+      "line": 55,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 18%, 15%)",
+      "line": 56,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 18%, 15%)",
+      "line": 56,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(151, 100%, 50%)",
+      "line": 57,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 26%, 8%)",
+      "line": 54,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 18%, 15%)",
+      "line": 56,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(220, 18%, 15%)",
+      "line": 56,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(351, 100%, 64%)",
+      "line": 58,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(210, 40%, 95%)",
+      "line": 60,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(217, 9%, 61%)",
+      "line": 61,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(151, 100%, 50%, 0.3)",
+      "line": 225,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ffff",
+      "line": 230,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ffff",
+      "line": 230,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #bf00ff",
+      "line": 235,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #bf00ff",
+      "line": 235,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #0080ff",
+      "line": 245,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #0080ff",
+      "line": 245,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ffff",
+      "line": 230,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #bf00ff",
+      "line": 235,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ff41",
+      "line": 240,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ffff",
+      "line": 230,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #ff0040",
+      "line": 408,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #00ffff",
+      "line": 230,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(351, 100%, 64%, 0.3)",
+      "line": 443,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: hsl(33, 100%, 52%, 0.3)",
+      "line": 447,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #9333ea",
+      "line": 456,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #9333ea",
+      "line": 456,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #1f2937",
+      "line": 460,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #1f2937",
+      "line": 460,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #9333ea",
+      "line": 456,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #a855f7",
+      "line": 480,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_COLOR",
+      "severity": "CRITICAL",
+      "message": "Unauthorized color found: #1f2937",
+      "line": 460,
+      "suggestion": "hsl(221.2, 83.2%, 53.3%)"
+    },
+    {
+      "file": "client/src/index.css",
+      "type": "UNAUTHORIZED_FONT",
+      "severity": "CRITICAL",
+      "message": "Unauthorized font family: 'Courier New', monospace",
+      "line": 364
+    }
+  ],
+  "protectedElements": [
+    "Primary color palette (blue/emerald gradient)",
+    "Typography system (Inter font family)",
+    "Spacing and layout standards",
+    "Component styling consistency",
+    "Border radius and shadow system",
+    "Navigation and header appearance",
+    "Card and button styling"
+  ],
+  "recommendations": [
+    "IMMEDIATE: Critical style violations detected",
+    "Review and revert unauthorized color/font changes",
+    "Update colors to use protected palette variables",
+    "Apply enforcement CSS classes to components",
+    "Standardize font usage to Inter/system fonts",
+    "Run style enforcement after fixes",
+    "Test visual consistency across all pages"
+  ]
+}

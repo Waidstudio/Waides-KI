@@ -56,6 +56,50 @@ node scripts/component-lock-system.cjs dev-mode
 node scripts/component-lock-system.cjs backup
 ```
 
+## UI Design Protection Commands
+
+### Lock UI Design Elements
+```bash
+node scripts/ui-design-lock-system.cjs lock
+```
+
+### Verify Design Integrity
+```bash
+node scripts/ui-design-lock-system.cjs verify
+```
+
+### Create Design Snapshot
+```bash
+node scripts/ui-design-lock-system.cjs snapshot
+```
+
+### Generate Design Report
+```bash
+node scripts/ui-design-lock-system.cjs report
+```
+
+## Style Protection Commands
+
+### Initialize Style Protection
+```bash
+node scripts/style-protection-system.cjs init
+```
+
+### Scan for Style Violations
+```bash
+node scripts/style-protection-system.cjs scan
+```
+
+### Generate Enforcement CSS
+```bash
+node scripts/style-protection-system.cjs enforce
+```
+
+### Create Style Report
+```bash
+node scripts/style-protection-system.cjs report
+```
+
 ## Automated Monitoring
 
 The version control system automatically tracks:

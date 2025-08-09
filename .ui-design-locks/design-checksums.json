@@ -1,0 +1,15 @@
+{
+  "client/src/index.css": "6c30c6afc6325224e666daefc0e9ed62d774d74166a44d61ba7d94b97a2c8cd3",
+  "tailwind.config.ts": "590f5fb388a02036d43ff1af36f00401d87a7676737bc9645a207d02e3d673df",
+  "postcss.config.js": "190c877db466995bf1482f4a16abd06e04a89ede3119341e2a86ff96e1737b27",
+  "client/src/components/ui/button.tsx": "415ccc47cf69a2a87db699cc6da7f1fdcb799a1f40dab3a6220d91ac8da8abbe",
+  "client/src/components/ui/card.tsx": "69afcf9c8e58ca6c3acf43c5b1ec9186bb6c88952f0ff49345dd2666f93d5480",
+  "client/src/components/ui/input.tsx": "b326e2af874b14aa2ac18096ddbec512c6258f3fafc20ba6c8262818d48e6a5b",
+  "client/src/components/ui/dialog.tsx": "60d5246653c714fc12a67743ee5951331ecd2548cdaef9a599922bcb14da26db",
+  "client/src/components/ui/toast.tsx": "99f9f4a3e897f71d89b01c6772b2f5db51b888cecb2c8214fb2c2dbb2b3e6356",
+  "client/src/components/ui/StableNavigation.tsx": "50a4760a8c55db99adb549b07091d2f3ab3f987fc87993c59fd523b96d5508b7",
+  "components.json": "ac24a8e743f3be926f7ff2bce97563097ed0c69f88fc57a7e6ec94af3615a031",
+  "client/src/lib/utils.ts": "7c8c3dfc0cdd370d44932828eb067ef771c8fe7996693221d5d4b90af6d54f2d",
+  "client/src/App.tsx": "d8dcb594904e95e62a56ab08f0d6770f5f44aa1a811b7d4f465c15cab0cee91f",
+  "client/src/pages/ProfessionalWalletPage.tsx": "a6d664aa53b09dd4d622968f226bbb5d3c8593734314b2239d4dbd7aa797622c"
+}
