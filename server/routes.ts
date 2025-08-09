@@ -8006,6 +8006,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 10000,
           dailyProfit: 234
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "📈 Monitoring ETH uptrend signals",
           "⏰ Optimal trading window: 9:30-10:30 EST",
@@ -8063,6 +8064,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 15000,
           dailyProfit: 567
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🔄 Bidirectional strategy active",
           "📊 ETH3L position: +2.1%",
@@ -8120,6 +8122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 5000,
           dailyProfit: 45
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🆓 Free tier active",
           "📚 Learning basic patterns",
@@ -8204,6 +8207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 20000,
           dailyProfit: 1234
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🧠 Neural network training active",
           "📊 Pattern recognition: 91% accuracy",
@@ -8245,6 +8249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 15000,
           dailyProfit: 678
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🛡️ Risk management active",
           "⚖️ Portfolio balance: optimal",
@@ -8259,7 +8264,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Start/Stop Beta
+  app.post("/api/waidbot-engine/beta/:action", async (req, res) => {
+    try {
+      const { action } = req.params;
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta'];
+      
+      if (!validBots.includes('beta')) {
+        return res.status(400).json({ error: 'Invalid bot ID' });
+      }
+      
+      const botState = { 
+        success: true, 
+        message: `beta ${action}${action.endsWith('e') ? 'd' : 'ed'} successfully`, 
+        botId: 'beta',
+        status: action === 'start' ? 'active' : 'inactive',
+        timestamp: Date.now()
+      };
+      
+      res.json(botState);
+    } catch (error) {
+      console.error('❌ Beta toggle error:', error);
+      res.status(500).json({ error: 'Failed to toggle Beta' });
+    }
+  });
 
+  // Trading Mode Switch Endpoints for All Bots
+  app.post("/api/trading-mode/:botId", async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const { mode } = req.body;
+      
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta'];
+      
+      if (!validBots.includes(botId)) {
+        return res.status(400).json({ error: 'Invalid bot ID' });
+      }
+      
+      if (!['demo', 'real'].includes(mode)) {
+        return res.status(400).json({ error: 'Invalid trading mode. Use "demo" or "real".' });
+      }
+      
+      // Store trading mode preference (would be in database in production)
+      const response = {
+        success: true,
+        message: `${botId} trading mode switched to ${mode}`,
+        botId,
+        tradingMode: mode,
+        funding: mode === 'demo' ? 'SmaiSika Simulated Funds' : 'Real Account Funds',
+        demoBalance: mode === 'demo' ? 50000 : null, // 50k SmaiSika for demo
+        timestamp: Date.now()
+      };
+      
+      console.log(`🔄 ${botId} trading mode switched to ${mode} - ${mode === 'demo' ? 'Demo with SmaiSika funding' : 'Real trading'}`);
+      
+      res.json(response);
+    } catch (error) {
+      console.error('❌ Trading mode switch error:', error);
+      res.status(500).json({ error: 'Failed to switch trading mode' });
+    }
+  });
 
   // ===== PHASE 2: SUBSCRIPTION-BASED ACCESS CONTROL API ENDPOINTS =====
 
@@ -8595,6 +8659,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 10000,
           dailyProfit: 847
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🔍 Scanning 247 market patterns",
           "📊 Detected bullish divergence on ETH",
@@ -8631,6 +8696,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 20000,
           dailyProfit: 1234
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🧠 Neural network training active",
           "📊 Pattern recognition: 91% accuracy",
@@ -8688,6 +8754,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 18000,
           dailyProfit: 987
         },
+        tradingMode: 'demo', // Default to demo for safe testing
         liveActivity: [
           "🛡️ Risk management active",
           "⚖️ Portfolio balance: optimal",

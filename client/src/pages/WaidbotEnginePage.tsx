@@ -21,14 +21,19 @@ import {
   ArrowUp,
   ArrowDown,
   Activity,
-  Timer
+  Timer,
+  DollarSign,
+  TestTube
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface BotStatus {
   id: string;
   name: string;
   isActive: boolean;
+  tradingMode?: 'demo' | 'real';
   performance: {
     totalTrades: number;
     winRate: number;
@@ -153,6 +158,25 @@ export default function WaidbotEnginePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/beta/status'] });
     }
+  });
+
+  // Trading mode mutations for all bots
+  const toggleTradingMode = useMutation({
+    mutationFn: async ({ botId, mode }: { botId: string; mode: 'demo' | 'real' }) => {
+      const response = await fetch(`/api/trading-mode/${botId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      if (!response.ok) throw new Error('Failed to switch trading mode');
+      return response.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/waidbot-engine/${variables.botId}/status`] });
+    },
+    onError: (error) => {
+      console.error('Trading mode toggle error:', error);
+    },
   });
 
   const isLoading = waidBotLoading || waidBotProLoading || autonomousLoading || maibotLoading || alphaLoading || betaLoading;
@@ -310,6 +334,34 @@ export default function WaidbotEnginePage() {
                   <span className="text-green-400 font-medium">{waidBotStatus?.confidence || 0}%</span>
                 </div>
                 <Progress value={waidBotStatus?.confidence || 0} className="h-2" />
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="waidbot-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="waidbot-mode"
+                    checked={waidBotStatus?.tradingMode === 'demo' || true}
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'waidbot', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                {waidBotStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
               </div>
             </div>
 
