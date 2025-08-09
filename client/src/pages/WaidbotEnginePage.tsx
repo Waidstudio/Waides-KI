@@ -267,8 +267,12 @@ export default function WaidbotEnginePage() {
             {/* Wallet & Performance Metrics */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">{waidBotStatus?.wallet?.balance || 0}</div>
-                <div className="text-xs text-slate-400">{waidBotStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+                <div className="text-2xl font-bold text-green-400">
+                  {waidBotStatus?.wallet?.balance || waidBotStatus?.currentBalance?.totalValue || 0}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {waidBotStatus?.wallet?.currency || 'SmaiSika'} Balance
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{waidBotStatus?.performance.totalTrades || 0}</div>
@@ -279,8 +283,10 @@ export default function WaidbotEnginePage() {
                 <div className="text-xs text-slate-400">Win Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">+{waidBotStatus?.wallet?.dailyProfit || 0}</div>
-                <div className="text-xs text-slate-400">Daily Profit</div>
+                <div className="text-2xl font-bold text-green-400">
+                  +{waidBotStatus?.wallet?.dailyProfit || waidBotStatus?.performance?.profit || 0}
+                </div>
+                <div className="text-xs text-slate-400">Daily Profit (SmaiSika)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">{waidBotStatus?.performance.todayTrades || 0}</div>
@@ -409,8 +415,12 @@ export default function WaidbotEnginePage() {
             {/* Wallet & Performance Metrics */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">{waidBotProStatus?.wallet?.balance || 0}</div>
-                <div className="text-xs text-slate-400">{waidBotProStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+                <div className="text-2xl font-bold text-blue-400">
+                  {waidBotProStatus?.wallet?.balance || waidBotProStatus?.currentBalance?.totalValue || 0}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {waidBotProStatus?.wallet?.currency || 'SmaiSika'} Balance
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-400">{waidBotProStatus?.performance.totalTrades || 0}</div>
@@ -421,8 +431,10 @@ export default function WaidbotEnginePage() {
                 <div className="text-xs text-slate-400">Win Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-400">+{waidBotProStatus?.wallet?.dailyProfit || 0}</div>
-                <div className="text-xs text-slate-400">Daily Profit</div>
+                <div className="text-2xl font-bold text-blue-400">
+                  +{waidBotProStatus?.wallet?.dailyProfit || waidBotProStatus?.performance?.profit || 0}
+                </div>
+                <div className="text-xs text-slate-400">Daily Profit (SmaiSika)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-400">{waidBotProStatus?.performance.todayTrades || 0}</div>
@@ -551,8 +563,12 @@ export default function WaidbotEnginePage() {
             {/* Wallet & Performance Metrics */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-400">{autonomousStatus?.wallet?.balance || 0}</div>
-                <div className="text-xs text-slate-400">{autonomousStatus?.wallet?.currency || 'SmaiSika'} Balance</div>
+                <div className="text-2xl font-bold text-purple-400">
+                  {autonomousStatus?.wallet?.balance || autonomousStatus?.currentBalance?.totalValue || 0}
+                </div>
+                <div className="text-xs text-slate-400">
+                  {autonomousStatus?.wallet?.currency || 'SmaiSika'} Balance
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-400">{autonomousStatus?.performance.totalTrades || 0}</div>
@@ -563,8 +579,10 @@ export default function WaidbotEnginePage() {
                 <div className="text-xs text-slate-400">Win Rate</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-400">+{autonomousStatus?.wallet?.dailyProfit || 0}</div>
-                <div className="text-xs text-slate-400">Daily Profit</div>
+                <div className="text-2xl font-bold text-purple-400">
+                  +{autonomousStatus?.wallet?.dailyProfit || autonomousStatus?.performance?.profit || 0}
+                </div>
+                <div className="text-xs text-slate-400">Daily Profit (SmaiSika)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-400">{autonomousStatus?.performance.todayTrades || 0}</div>
@@ -671,7 +689,7 @@ export default function WaidbotEnginePage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-cyan-400">+{maibotStatus?.wallet?.dailyProfit || 0}</div>
-                <div className="text-xs text-slate-400">Daily Profit</div>
+                <div className="text-xs text-slate-400">Daily Profit (SmaiSika)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-cyan-400">{maibotStatus?.performance.todayTrades || 0}</div>
@@ -773,7 +791,7 @@ export default function WaidbotEnginePage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-400">+{alphaStatus?.wallet?.dailyProfit || 0}</div>
-                <div className="text-xs text-slate-400">Daily Profit</div>
+                <div className="text-xs text-slate-400">Daily Profit (SmaiSika)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-400">{alphaStatus?.performance.todayTrades || 0}</div>
@@ -875,7 +893,7 @@ export default function WaidbotEnginePage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-emerald-400">+{betaStatus?.wallet?.dailyProfit || 0}</div>
-                <div className="text-xs text-slate-400">Daily Profit</div>
+                <div className="text-xs text-slate-400">Daily Profit (SmaiSika)</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-emerald-400">{betaStatus?.performance.todayTrades || 0}</div>

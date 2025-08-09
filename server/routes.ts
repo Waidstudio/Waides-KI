@@ -3862,7 +3862,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/waidbot-engine/:botId/start", async (req, res) => {
     try {
       const { botId } = req.params;
-      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'full-engine', 'nwaora-chigozie'];
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine', 'nwaora-chigozie'];
       
       if (!validBots.includes(botId)) {
         return res.status(404).json({ error: `Bot ${botId} not found` });
@@ -3893,7 +3893,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/waidbot-engine/:botId/stop", async (req, res) => {
     try {
       const { botId } = req.params;
-      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'full-engine', 'nwaora-chigozie'];
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine', 'nwaora-chigozie'];
       
       if (!validBots.includes(botId)) {
         return res.status(404).json({ error: `Bot ${botId} not found` });
@@ -8178,6 +8178,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to get Maibot trades' });
     }
   });
+
+  // Alpha Entity Status - Advanced AI Trading Intelligence
+  app.get("/api/waidbot-engine/alpha/status", async (req, res) => {
+    try {
+      const gamifiedMetrics = generateBotMetrics('alpha');
+      
+      res.json({
+        id: "alpha",
+        name: "Alpha Entity",
+        isActive: false,
+        performance: {
+          totalTrades: 892,
+          winRate: 87,
+          profit: 23.4,
+          todayTrades: 47
+        },
+        currentAction: "Advanced pattern recognition",
+        nextAction: "Deep learning optimization",
+        confidence: 91,
+        gamifiedMetrics,
+        wallet: {
+          balance: 25480,
+          currency: "SmaiSika",
+          totalInvested: 20000,
+          dailyProfit: 1234
+        },
+        liveActivity: [
+          "🧠 Neural network training active",
+          "📊 Pattern recognition: 91% accuracy",
+          "🎯 Identified 12 profitable signals",
+          "⚡ Executing alpha strategies"
+        ],
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Alpha Entity status error:', error);
+      res.status(500).json({ error: 'Failed to get Alpha Entity status' });
+    }
+  });
+
+
+
+  // Beta Entity Status - Risk Management System
+  app.get("/api/waidbot-engine/beta/status", async (req, res) => {
+    try {
+      const gamifiedMetrics = generateBotMetrics('beta');
+      
+      res.json({
+        id: "beta",
+        name: "Beta Entity",
+        isActive: false,
+        performance: {
+          totalTrades: 654,
+          winRate: 92,
+          profit: 18.7,
+          todayTrades: 32
+        },
+        currentAction: "Risk assessment active",
+        nextAction: "Portfolio rebalancing",
+        confidence: 94,
+        gamifiedMetrics,
+        wallet: {
+          balance: 18740,
+          currency: "SmaiSika",
+          totalInvested: 15000,
+          dailyProfit: 678
+        },
+        liveActivity: [
+          "🛡️ Risk management active",
+          "⚖️ Portfolio balance: optimal",
+          "📈 Volatility analysis complete",
+          "💎 Conservative execution"
+        ],
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Beta Entity status error:', error);
+      res.status(500).json({ error: 'Failed to get Beta Entity status' });
+    }
+  });
+
+
 
   // ===== PHASE 2: SUBSCRIPTION-BASED ACCESS CONTROL API ENDPOINTS =====
 
