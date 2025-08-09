@@ -242,8 +242,9 @@ const StableNavigation = () => {
             </Link>
           </div>
 
-          {/* Mini Trading Mode Icon */}
-          <div className="flex items-center ml-2">
+          {/* User Actions - Trading Mode, Chat, Notifications, Profile */}
+          <div className="flex items-center space-x-1 ml-2">
+            {/* Mini Trading Mode Icon */}
             <div className="relative" ref={(el) => { dropdownRefs.current['trading-mode'] = el; }}>
               <button
                 onClick={() => toggleDropdown('trading-mode')}
@@ -304,10 +305,6 @@ const StableNavigation = () => {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* User Actions - Chat, Notifications, Profile */}
-          <div className="flex items-center space-x-2 ml-3">
             {/* Search */}
             <div className="relative hidden xl:block">
               <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
