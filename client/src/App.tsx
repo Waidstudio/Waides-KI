@@ -80,6 +80,7 @@ import AdminMining from "@/pages/AdminMining";
 import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
 import SystemAdminDashboard from "@/pages/SystemAdminDashboard";
 import TradingAdminDashboard from "@/pages/TradingAdminDashboard";
+import SupportAdminDashboard from "@/pages/SupportAdminDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
@@ -621,6 +622,13 @@ function Router() {
             {() => (
               <ProtectedRoute requiredRole={["admin", "super_admin"]}>
                 <TradingAdminDashboard />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/support-admin-dashboard">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <SupportAdminDashboard />
               </ProtectedRoute>
             )}
           </Route>
