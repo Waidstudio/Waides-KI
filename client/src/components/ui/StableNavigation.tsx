@@ -473,42 +473,46 @@ const StableNavigation = () => {
                           const ItemIcon = item.icon;
                           const isItemActive = location === item.path;
                           return (
-                            <div
-                              key={item.path}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                console.log('Desktop navigation clicked:', item.path, item.name);
-                                handleNavigationClick(item.path, false);
-                              }}
-                              className={`
-                                px-4 py-3 transition-all duration-200 cursor-pointer border-b border-slate-700/30 last:border-0
-                                hover:bg-slate-700/30 group
-                                ${isItemActive 
-                                  ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
-                                  : 'text-gray-300 hover:text-white'
-                                }
-                              `}
-                              style={{
-                                animationDelay: `${index * 50}ms`,
-                                animation: isOpen ? 'fadeInUp 0.3s ease-out forwards' : ''
-                              }}
+                            <Link 
+                              key={item.path} 
+                              href={item.path}
                             >
-                                <div className="flex items-start space-x-3">
-                                  {ItemIcon && (
-                                    <ItemIcon className={`h-4 w-4 mt-0.5 transition-all duration-200 ${
-                                      isItemActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'
-                                    }`} />
-                                  )}
-                                  <div className="flex-1">
-                                    <div className="font-medium text-sm">{item.name}</div>
-                                    {item.description && (
-                                      <div className="text-xs text-gray-400 group-hover:text-gray-300 mt-1">
-                                        {item.description}
-                                      </div>
+                              <div
+                                onClick={(e) => {
+                                  console.log('Desktop navigation clicked:', item.path, item.name);
+                                  // Close dropdown on desktop after navigation
+                                  setTimeout(() => setActiveDropdown(null), 100);
+                                }}
+                                className={`
+                                  px-4 py-3 transition-all duration-200 cursor-pointer border-b border-slate-700/30 last:border-0
+                                  hover:bg-slate-700/30 group
+                                  ${isItemActive 
+                                    ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
+                                    : 'text-gray-300 hover:text-white'
+                                  }
+                                `}
+                                style={{
+                                  animationDelay: `${index * 50}ms`,
+                                  animation: isOpen ? 'fadeInUp 0.3s ease-out forwards' : ''
+                                }}
+                              >
+                                  <div className="flex items-start space-x-3">
+                                    {ItemIcon && (
+                                      <ItemIcon className={`h-4 w-4 mt-0.5 transition-all duration-200 ${
+                                        isItemActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'
+                                      }`} />
                                     )}
+                                    <div className="flex-1">
+                                      <div className="font-medium text-sm">{item.name}</div>
+                                      {item.description && (
+                                        <div className="text-xs text-gray-400 group-hover:text-gray-300 mt-1">
+                                          {item.description}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                            </div>
+                              </div>
+                            </Link>
                           );
                         })}
                       </div>
@@ -552,24 +556,24 @@ const StableNavigation = () => {
                 const isActive = location === item.path;
                 
                 return (
-                  <div
-                    key={item.path}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log('Mobile simple navigation clicked:', item.path, item.name);
-                      handleNavigationClick(item.path, true);
-                    }}
-                      className={`
-                        flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer
-                        ${isActive 
-                          ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
-                          : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
-                        }
-                      `}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span className="text-sm font-medium">{item.name}</span>
-                    </div>
+                  <Link key={item.path} href={item.path}>
+                    <div
+                      onClick={(e) => {
+                        console.log('Mobile simple navigation clicked:', item.path, item.name);
+                        handleNavigationClick(item.path, true);
+                      }}
+                        className={`
+                          flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer
+                          ${isActive 
+                            ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
+                            : 'text-gray-300 hover:text-white hover:bg-slate-700/50'
+                          }
+                        `}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span className="text-sm font-medium">{item.name}</span>
+                      </div>
+                  </Link>
                 );
               })}
 
@@ -610,39 +614,42 @@ const StableNavigation = () => {
                           const ItemIcon = item.icon;
                           const isItemActive = location === item.path;
                           return (
-                            <div
-                              key={item.path}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                console.log('Mobile dropdown navigation clicked:', item.path, item.name);
-                                handleNavigationClick(item.path, true);
-                              }}
-                                className={`
-                                  flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer group
-                                  ${isItemActive 
-                                    ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
-                                    : 'text-gray-400 hover:text-white hover:bg-slate-700/30'
-                                  }
-                                `}
-                                style={{
-                                  animationDelay: `${index * 30}ms`,
-                                  animation: isOpen ? 'fadeInUp 0.2s ease-out forwards' : ''
+                            <Link 
+                              key={item.path} 
+                              href={item.path}
+                            >
+                              <div
+                                onClick={(e) => {
+                                  console.log('Mobile dropdown navigation clicked:', item.path, item.name);
+                                  handleNavigationClick(item.path, true);
                                 }}
-                              >
-                                {ItemIcon && (
-                                  <ItemIcon className={`h-4 w-4 transition-all duration-200 ${
-                                    isItemActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-white'
-                                  }`} />
-                                )}
-                                <div className="flex-1">
-                                  <div className="text-sm font-medium">{item.name}</div>
-                                  {item.description && (
-                                    <div className="text-xs text-gray-500 group-hover:text-gray-400">
-                                      {item.description}
-                                    </div>
+                                  className={`
+                                    flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer group
+                                    ${isItemActive 
+                                      ? 'bg-blue-600/20 text-blue-300 border-l-2 border-l-blue-400' 
+                                      : 'text-gray-400 hover:text-white hover:bg-slate-700/30'
+                                    }
+                                  `}
+                                  style={{
+                                    animationDelay: `${index * 30}ms`,
+                                    animation: isOpen ? 'fadeInUp 0.2s ease-out forwards' : ''
+                                  }}
+                                >
+                                  {ItemIcon && (
+                                    <ItemIcon className={`h-4 w-4 transition-all duration-200 ${
+                                      isItemActive ? 'text-blue-400' : 'text-gray-500 group-hover:text-white'
+                                    }`} />
                                   )}
+                                  <div className="flex-1">
+                                    <div className="text-sm font-medium">{item.name}</div>
+                                    {item.description && (
+                                      <div className="text-xs text-gray-500 group-hover:text-gray-400">
+                                        {item.description}
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
+                            </Link>
                           );
                         })}
                       </div>
@@ -655,13 +662,13 @@ const StableNavigation = () => {
               <div className="border-t border-slate-700/50 pt-4 mt-4">
                 <div className="space-y-2">
                   {/* Mobile Chat */}
-                  <div
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      navigate('/forum');
-                    }}
-                    className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer"
-                  >
+                  <Link href="/forum">
+                    <div
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer"
+                    >
                       <div className="flex items-center space-x-3">
                         <MessageCircle className="h-5 w-5" />
                         <span className="text-sm font-medium">Community Chat</span>
@@ -670,6 +677,7 @@ const StableNavigation = () => {
                         2
                       </Badge>
                     </div>
+                  </Link>
 
                   {/* Mobile Notifications */}
                   <div className="flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-200 cursor-pointer">
