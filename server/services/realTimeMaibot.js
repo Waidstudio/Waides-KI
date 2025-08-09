@@ -6,6 +6,9 @@
 
 class RealTimeMaibot {
   constructor() {
+    this.instanceId = `maibot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    console.log(`🤖 RealTimeMaibot constructor called - Instance ID: ${this.instanceId}`);
+    
     this.isActive = false;
     this.startTime = null;
     this.trades = [];
@@ -30,6 +33,8 @@ class RealTimeMaibot {
       learning_score: 0
     };
     this.pendingSignals = [];
+    
+    console.log(`✅ RealTimeMaibot instance ${this.instanceId} initialized with isActive: ${this.isActive}`);
   }
 
   /**
@@ -103,7 +108,9 @@ class RealTimeMaibot {
    * Get current Maibot status
    */
   getStatus() {
-    return {
+    console.log('🔍 Maibot getStatus() called - Current state: isActive =', this.isActive, 'startTime =', this.startTime);
+    
+    const status = {
       isActive: this.isActive,
       startTime: this.startTime,
       currentStrategy: this.currentStrategy,
@@ -119,6 +126,9 @@ class RealTimeMaibot {
         automationLevel: 'manual_approval_only'
       }
     };
+    
+    console.log('📊 Maibot getStatus() returning:', JSON.stringify(status, null, 2));
+    return status;
   }
 
   /**
@@ -343,4 +353,9 @@ class RealTimeMaibot {
 }
 
 // Export singleton instance
-export const realTimeMaibot = new RealTimeMaibot();
+const maibotInstance = new RealTimeMaibot();
+
+// Add logging to track instance state
+console.log('🤖 RealTimeMaibot singleton instance created');
+
+export const realTimeMaibot = maibotInstance;

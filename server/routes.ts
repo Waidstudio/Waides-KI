@@ -3864,8 +3864,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { botId } = req.params;
       const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine', 'nwaora-chigozie'];
       
+      console.log(`🔧 Generic start route called for botId: ${botId}`);
+      
       if (!validBots.includes(botId)) {
         return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      // Handle specific bot instances for bots that have real implementations
+      let result;
+      if (botId === 'maibot') {
+        console.log(`🔧 Starting real Maibot instance...`);
+        const bot = await getRealTimeMaibot();
+        result = await bot.start();
+        console.log(`🔧 Maibot start result:`, result);
+      } else if (botId === 'waidbot') {
+        const bot = await getRealTimeWaidBot();
+        result = await bot.start();
+      } else if (botId === 'waidbot-pro') {
+        const bot = await getRealTimeWaidBotPro();
+        result = await bot.start();
+      } else if (botId === 'autonomous') {
+        const bot = await getRealTimeAutonomousTrader();
+        result = await bot.start();
       }
       
       // Update bot status to active
@@ -3881,7 +3901,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: `${botId} started successfully`,
         botId,
         status: 'active',
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        ...(result && { botResult: result })
       });
     } catch (error) {
       console.error(`❌ Error starting ${req.params.botId}:`, error);
@@ -8150,32 +8171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Start/Stop Maibot
-  app.post("/api/waidbot-engine/maibot/:action", async (req, res) => {
-    try {
-      const { action } = req.params;
-      const bot = await getRealTimeMaibot();
-      
-      let result;
-      if (action === 'start') {
-        result = await bot.start();
-      } else if (action === 'stop') {
-        result = await bot.stop();
-      } else {
-        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
-      }
-      
-      res.json({ 
-        ...result,
-        action,
-        timestamp: new Date().toISOString(),
-        status: bot.getStatus()
-      });
-    } catch (error) {
-      console.error('❌ Maibot toggle error:', error);
-      res.status(500).json({ error: 'Failed to toggle Maibot' });
-    }
-  });
+  // Note: Maibot start/stop is now handled by the generic /api/waidbot-engine/:botId/:action route above
 
   // Get Maibot trades
   app.get("/api/waidbot-engine/maibot/trades", async (req, res) => {
