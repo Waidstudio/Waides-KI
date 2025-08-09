@@ -3916,8 +3916,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { botId } = req.params;
       const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine', 'nwaora-chigozie'];
       
+      console.log(`🔧 Generic stop route called for botId: ${botId}`);
+      
       if (!validBots.includes(botId)) {
         return res.status(404).json({ error: `Bot ${botId} not found` });
+      }
+      
+      // Handle specific bot instances for bots that have real implementations
+      let result;
+      if (botId === 'maibot') {
+        console.log(`🔧 Stopping real Maibot instance...`);
+        const bot = await getRealTimeMaibot();
+        result = await bot.stop();
+        console.log(`🔧 Maibot stop result:`, result);
+      } else if (botId === 'waidbot') {
+        const bot = await getRealTimeWaidBot();
+        result = await bot.stop();
+      } else if (botId === 'waidbot-pro') {
+        const bot = await getRealTimeWaidBotPro();
+        result = await bot.stop();
+      } else if (botId === 'autonomous') {
+        const bot = await getRealTimeAutonomousTrader();
+        result = await bot.stop();
       }
       
       // Update bot status to inactive
@@ -3933,7 +3953,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: `${botId} stopped successfully`,
         botId,
         status: 'inactive',
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        ...(result && { botResult: result })
       });
     } catch (error) {
       console.error(`❌ Error stopping ${req.params.botId}:`, error);
