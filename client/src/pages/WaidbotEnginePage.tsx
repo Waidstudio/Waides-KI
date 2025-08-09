@@ -857,7 +857,7 @@ export default function WaidbotEnginePage() {
                   className="flex-1"
                 >
                   <Pause className="w-4 h-4 mr-2" />
-                  Stop Maibot
+                  Stop Learning
                 </Button>
               ) : (
                 <Button
@@ -866,7 +866,7 @@ export default function WaidbotEnginePage() {
                   className="flex-1 bg-cyan-600 hover:bg-cyan-500"
                 >
                   <Play className="w-4 h-4 mr-2" />
-                  Start Maibot
+                  Start Learning
                 </Button>
               )}
               <Button 

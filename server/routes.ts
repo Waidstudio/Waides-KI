@@ -8195,6 +8195,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get Maibot learning status
+  app.get("/api/waidbot-engine/maibot/learning-status", async (req, res) => {
+    try {
+      const bot = await getRealTimeMaibot();
+      const learningStatus = bot.getLearningStatus();
+      
+      res.json({
+        success: true,
+        ...learningStatus,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Maibot learning status error:', error);
+      res.status(500).json({ error: 'Failed to get Maibot learning status' });
+    }
+  });
+
   // Alpha Entity Status - Advanced AI Trading Intelligence
   app.get("/api/waidbot-engine/alpha/status", async (req, res) => {
     try {

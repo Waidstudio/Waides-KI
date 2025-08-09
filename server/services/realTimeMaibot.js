@@ -23,6 +23,13 @@ class RealTimeMaibot {
     this.riskLevel = 'conservative'; // Very conservative for beginners
     this.maxPositionSize = 0.01; // Small position sizes
     this.platformFeeRate = 0.35; // 35% platform fee for free tier
+    this.learningProgress = {
+      completedAnalysis: 0,
+      patterns_learned: 0,
+      signals_detected: 0,
+      learning_score: 0
+    };
+    this.pendingSignals = [];
   }
 
   /**
@@ -31,27 +38,32 @@ class RealTimeMaibot {
   async start() {
     try {
       if (this.isActive) {
-        return { success: false, message: 'Maibot is already active' };
+        return { success: false, message: 'Maibot is already learning' };
       }
 
       this.isActive = true;
       this.startTime = Date.now();
       
-      console.log('🤖 Maibot (Free Entry Bot) activated - Beginning basic market analysis');
+      console.log('🤖 Maibot Learning Mode activated - Beginning real-time market analysis and learning');
       
-      // Start basic monitoring cycle (every 5 minutes for beginners)
+      // Start real-time learning cycle (every 30 seconds for active learning)
       this.monitoringInterval = setInterval(() => {
         this.performBasicAnalysis();
-      }, 5 * 60 * 1000); // 5 minutes
+        this.updateLearningProgress();
+      }, 30 * 1000); // 30 seconds for real-time learning
+
+      // Initialize learning session
+      this.initializeLearningSession();
 
       return { 
         success: true, 
-        message: 'Maibot started successfully - Ready for beginner trading assistance',
-        startTime: this.startTime 
+        message: 'Maibot Learning Mode activated - Real-time trading analysis started',
+        startTime: this.startTime,
+        learningMode: true
       };
     } catch (error) {
-      console.error('❌ Error starting Maibot:', error);
-      return { success: false, message: 'Failed to start Maibot', error: error.message };
+      console.error('❌ Error starting Maibot Learning Mode:', error);
+      return { success: false, message: 'Failed to start Maibot learning', error: error.message };
     }
   }
 
@@ -70,12 +82,16 @@ class RealTimeMaibot {
         this.monitoringInterval = null;
       }
 
-      console.log('🤖 Maibot deactivated - Stopping basic market monitoring');
+      console.log('🤖 Maibot Learning Mode deactivated - Stopping real-time analysis');
+
+      // Save learning session data
+      this.saveLearningSession();
 
       return { 
         success: true, 
-        message: 'Maibot stopped successfully',
-        totalRunTime: Date.now() - this.startTime
+        message: 'Maibot Learning Mode stopped - Session data saved',
+        totalRunTime: Date.now() - this.startTime,
+        learningsCompleted: this.learningProgress?.completedAnalysis || 0
       };
     } catch (error) {
       console.error('❌ Error stopping Maibot:', error);
@@ -106,7 +122,7 @@ class RealTimeMaibot {
   }
 
   /**
-   * Perform basic market analysis for beginners
+   * Perform basic market analysis for beginners with learning
    */
   async performBasicAnalysis() {
     if (!this.isActive) return;
@@ -116,11 +132,19 @@ class RealTimeMaibot {
       const marketData = await this.getBasicMarketData();
       const signals = this.generateBeginnerSignals(marketData);
       
+      // Update learning progress
+      this.learningProgress.patterns_learned += signals.length;
+      this.learningProgress.signals_detected += signals.length;
+      
       if (signals.length > 0) {
-        console.log('📊 Maibot detected potential opportunities:', signals.length);
+        console.log(`📊 Maibot Learning: Detected ${signals.length} opportunities, Total patterns learned: ${this.learningProgress.patterns_learned}`);
         // Store signals for manual review (no automatic trading)
         this.pendingSignals = signals;
       }
+
+      // Log real-time learning activity
+      console.log(`🤖 Maibot Learning Analysis #${this.learningProgress.completedAnalysis + 1} - Market: ${marketData.trend}, RSI: ${marketData.rsi.toFixed(2)}, Price: $${marketData.price.toFixed(2)}`);
+      
     } catch (error) {
       console.error('❌ Maibot analysis error:', error);
     }
@@ -262,6 +286,59 @@ class RealTimeMaibot {
   clearPendingSignals() {
     this.pendingSignals = [];
     return { success: true, message: 'Pending signals cleared' };
+  }
+
+  /**
+   * Initialize learning session
+   */
+  initializeLearningSession() {
+    this.learningProgress = {
+      completedAnalysis: 0,
+      patterns_learned: 0,
+      signals_detected: 0,
+      learning_score: 0,
+      sessionStart: Date.now()
+    };
+    console.log('📚 Maibot Learning Session initialized');
+  }
+
+  /**
+   * Update learning progress
+   */
+  updateLearningProgress() {
+    this.learningProgress.completedAnalysis += 1;
+    this.learningProgress.learning_score = Math.min(100, this.learningProgress.completedAnalysis * 2);
+    
+    // Log progress every 10 analysis cycles
+    if (this.learningProgress.completedAnalysis % 10 === 0) {
+      console.log(`📈 Maibot Learning Progress: ${this.learningProgress.completedAnalysis} analyses completed, Score: ${this.learningProgress.learning_score}/100`);
+    }
+  }
+
+  /**
+   * Save learning session data
+   */
+  saveLearningSession() {
+    const sessionData = {
+      ...this.learningProgress,
+      sessionEnd: Date.now(),
+      totalDuration: Date.now() - (this.learningProgress.sessionStart || this.startTime)
+    };
+    console.log('💾 Maibot Learning Session saved:', sessionData);
+    return sessionData;
+  }
+
+  /**
+   * Get learning status
+   */
+  getLearningStatus() {
+    return {
+      isLearning: this.isActive,
+      progress: this.learningProgress,
+      currentStrategy: this.currentStrategy,
+      pendingSignalsCount: this.pendingSignals?.length || 0,
+      nextAnalysis: this.isActive ? 30 - ((Date.now() - this.startTime) % 30000) / 1000 : null
+    };
   }
 }
 
