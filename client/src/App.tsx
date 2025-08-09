@@ -78,6 +78,7 @@ import SuperAdminLogin from "@/pages/SuperAdminLogin";
 import SmaisikaMining from "@/pages/SmaisikaMining";
 import AdminMining from "@/pages/AdminMining";
 import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
+import SystemAdminDashboard from "@/pages/SystemAdminDashboard";
 import BiometricTradingInterface from "@/components/BiometricTradingInterface";
 import InteractiveMarketTrendStorytellingEngine from "@/components/InteractiveMarketTrendStorytellingEngine";
 import ExpandedAdminConfigPage from "@/pages/ExpandedAdminConfigPage";
@@ -606,6 +607,16 @@ function Router() {
               </ProtectedRoute>
             )}
           </Route>
+          
+          {/* Admin Dashboard Routes */}
+          <Route path="/system-admin-dashboard">
+            {() => (
+              <ProtectedRoute requiredRole={["admin", "super_admin"]}>
+                <SystemAdminDashboard />
+              </ProtectedRoute>
+            )}
+          </Route>
+          
           <Route component={NotFound} />
         </Switch>
       </main>

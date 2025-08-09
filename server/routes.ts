@@ -14257,6 +14257,11 @@ Ask me about specific market conditions, upload files for analysis, or request K
   // === UNIFIED ADMIN ROUTES ===
   app.use('/api/admin', unifiedAdminRoutes.default);
   console.log('🔐 Unified admin routes registered');
+  
+  // === SYSTEM ADMIN ROUTES ===
+  const { default: systemAdminRoutes } = await import('./routes/systemAdminRoutes.js');
+  app.use('/api/admin', systemAdminRoutes);
+  console.log('⚙️ System admin routes registered');
 
   // Initialize Enhanced WebSocket Systems
   // 1. KonsMesh WebSocket for real-time system synchronization

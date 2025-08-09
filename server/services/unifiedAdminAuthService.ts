@@ -332,16 +332,16 @@ export class UnifiedAdminAuthService {
 
       if (admin.length === 0) return false;
 
-      const adminLevelConfig = adminLevels[admin[0].role as AdminLevel];
+      const adminLevelConfig = adminLevels[admin[0].role as keyof typeof adminLevels];
       if (!adminLevelConfig) return false;
 
       const permissions = adminLevelConfig.permissions;
       
       // Super admin has all permissions
-      if (permissions.includes('*')) return true;
+      if (permissions.includes('*' as any)) return true;
       
       // Check specific permission
-      return permissions.includes(permission);
+      return permissions.includes(permission as any);
     } catch (error) {
       return false;
     }
