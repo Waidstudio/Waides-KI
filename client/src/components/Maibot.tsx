@@ -53,14 +53,20 @@ export default function Maibot() {
   // Start/Stop Maibot mutations
   const startMutation = useMutation({
     mutationFn: () => apiRequest("/api/waidbot-engine/maibot/start", "POST"),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("✅ Maibot start response:", data);
       toast({
         title: "Maibot Started",
-        description: "Your free trading assistant is now active and monitoring the market.",
+        description: data?.message || "Your free trading assistant is now active and monitoring the market.",
       });
+      // Force immediate refetch
       queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/status"] });
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["/api/waidbot-engine/maibot/status"] });
+      }, 1000);
     },
     onError: (error) => {
+      console.error("❌ Maibot start error:", error);
       toast({
         title: "Start Failed",
         description: error.message || "Failed to start Maibot",
@@ -72,14 +78,20 @@ export default function Maibot() {
 
   const stopMutation = useMutation({
     mutationFn: () => apiRequest("/api/waidbot-engine/maibot/stop", "POST"),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("✅ Maibot stop response:", data);
       toast({
         title: "Maibot Stopped",
-        description: "Your trading assistant has been deactivated.",
+        description: data?.message || "Your trading assistant has been deactivated.",
       });
+      // Force immediate refetch
       queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/status"] });
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ["/api/waidbot-engine/maibot/status"] });
+      }, 1000);
     },
     onError: (error) => {
+      console.error("❌ Maibot stop error:", error);
       toast({
         title: "Stop Failed",
         description: error.message || "Failed to stop Maibot",

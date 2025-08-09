@@ -117,22 +117,48 @@ export function WaidBot() {
   // Start/Stop bot mutations
   const startMutation = useMutation({
     mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/start', { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+    onSuccess: (data) => {
+      console.log("✅ WaidBot start response:", data);
       toast({
         title: "WaidBot α Started",
-        description: "Alpha bot is now actively trading ETH uptrends",
+        description: data?.message || "Alpha bot is now actively trading ETH uptrends",
+      });
+      // Force immediate refetch
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      }, 1000);
+    },
+    onError: (error) => {
+      console.error("❌ WaidBot start error:", error);
+      toast({
+        title: "Start Failed", 
+        description: error.message || "Failed to start WaidBot",
+        variant: "destructive",
       });
     }
   });
 
   const stopMutation = useMutation({
     mutationFn: () => apiRequest('/api/waidbot-engine/waidbot/stop', { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+    onSuccess: (data) => {
+      console.log("✅ WaidBot stop response:", data);
       toast({
         title: "WaidBot α Stopped",
-        description: "Alpha bot trading has been paused",
+        description: data?.message || "Alpha bot trading has been paused",
+      });
+      // Force immediate refetch
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/waidbot-engine/waidbot/status'] });
+      }, 1000);
+    },
+    onError: (error) => {
+      console.error("❌ WaidBot stop error:", error);
+      toast({
+        title: "Stop Failed",
+        description: error.message || "Failed to stop WaidBot", 
+        variant: "destructive",
       });
     }
   });
