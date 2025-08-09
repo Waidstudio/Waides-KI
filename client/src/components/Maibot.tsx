@@ -5,9 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Play, Square, TrendingUp, AlertCircle, Star, Lock } from "lucide-react";
+import { Play, Square, TrendingUp, AlertCircle, Star, Lock, DollarSign, ArrowUpCircle, ArrowDownCircle, TestTube, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
@@ -17,6 +20,8 @@ import { useToast } from "@/hooks/use-toast";
 export default function Maibot() {
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
+  const [fundAmount, setFundAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -30,6 +35,12 @@ export default function Maibot() {
   const { data: tradesData } = useQuery({
     queryKey: ["/api/waidbot-engine/maibot/trades"],
     refetchInterval: 30000,
+  });
+
+  // Fetch Maibot balance
+  const { data: balanceData } = useQuery({
+    queryKey: ["/api/waidbot-engine/maibot/balance"],
+    refetchInterval: 15000,
   });
 
   // Start/Stop Maibot mutations
@@ -69,6 +80,69 @@ export default function Maibot() {
       });
     },
     onSettled: () => setIsStopping(false),
+  });
+
+  // Trading mode toggle mutation
+  const tradingModeMutation = useMutation({
+    mutationFn: (mode: 'demo' | 'real') => 
+      apiRequest(`/api/trading-mode/maibot`, "POST", { mode }),
+    onSuccess: () => {
+      toast({
+        title: "Trading Mode Changed", 
+        description: `Maibot switched to ${balanceData?.tradingMode === 'demo' ? 'real' : 'demo'} mode`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/status"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/balance"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Mode Switch Failed",
+        description: error.message || "Failed to switch trading mode",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Fund bot mutation
+  const fundMutation = useMutation({
+    mutationFn: (amount: number) => 
+      apiRequest("/api/waidbot-engine/maibot/fund", "POST", { amount }),
+    onSuccess: (data) => {
+      toast({
+        title: "Funding Successful",
+        description: data.message,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/balance"] });
+      setFundAmount('');
+    },
+    onError: (error) => {
+      toast({
+        title: "Funding Failed",
+        description: error.message || "Failed to fund Maibot",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Withdraw from bot mutation
+  const withdrawMutation = useMutation({
+    mutationFn: (amount: number) => 
+      apiRequest("/api/waidbot-engine/maibot/withdraw", "POST", { amount }),
+    onSuccess: (data) => {
+      toast({
+        title: "Withdrawal Successful",
+        description: data.message,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/waidbot-engine/maibot/balance"] });
+      setWithdrawAmount('');
+    },
+    onError: (error) => {
+      toast({
+        title: "Withdrawal Failed",
+        description: error.message || "Failed to withdraw from Maibot",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleStart = () => {
@@ -161,10 +235,44 @@ export default function Maibot() {
         </CardContent>
       </Card>
 
+      {/* Trading Mode Switch */}
+      <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <TestTube className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900">Trading Mode</p>
+                <p className="text-sm text-gray-600">
+                  {balanceData?.tradingMode === 'demo' ? 'SmaiSika Simulation Pool (Safe Testing)' : 'Real Trading with Personal Funds'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-sm font-medium text-gray-700">Real</span>
+              <Switch
+                checked={balanceData?.tradingMode === 'demo'}
+                onCheckedChange={(checked) => 
+                  tradingModeMutation.mutate(checked ? 'demo' : 'real')
+                }
+                disabled={tradingModeMutation.isPending}
+              />
+              <span className="text-sm font-medium text-gray-700">Demo</span>
+              <Badge variant={balanceData?.tradingMode === 'demo' ? 'default' : 'secondary'} className="ml-2">
+                {balanceData?.tradingMode === 'demo' ? 'DEMO MODE' : 'REAL MODE'}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Main Dashboard */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="wallet">Bot Wallet</TabsTrigger>
           <TabsTrigger value="signals">Signals</TabsTrigger>
           <TabsTrigger value="trades">Trades</TabsTrigger>
           <TabsTrigger value="upgrade">Upgrade</TabsTrigger>
@@ -243,6 +351,149 @@ export default function Maibot() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Bot Wallet Tab */}
+        <TabsContent value="wallet" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Current Balance */}
+            <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <Wallet className="w-5 h-5 mr-2 text-emerald-600" />
+                  Bot Balance
+                </CardTitle>
+                <CardDescription>
+                  {balanceData?.tradingMode === 'demo' ? 'SmaiSika simulation funds' : 'Real trading funds'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-emerald-700">
+                    {balanceData?.balance?.available?.toLocaleString() || '0'} SmaiSika
+                  </div>
+                  <div className="text-sm text-emerald-600">
+                    {balanceData?.balance?.currency || 'Available Balance'}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="text-center">
+                    <div className="font-semibold text-gray-700">Invested</div>
+                    <div className="text-blue-600">{balanceData?.balance?.invested?.toLocaleString() || '0'}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-semibold text-gray-700">Profit</div>
+                    <div className="text-green-600">+{balanceData?.balance?.totalProfit?.toLocaleString() || '0'}</div>
+                  </div>
+                </div>
+
+                <Badge 
+                  variant={balanceData?.balance?.mode === 'demo' ? 'default' : 'secondary'}
+                  className="w-full justify-center"
+                >
+                  {balanceData?.balance?.mode === 'demo' ? '🧪 DEMO MODE' : '💰 REAL MODE'}
+                </Badge>
+              </CardContent>
+            </Card>
+
+            {/* Funding & Withdrawal */}
+            <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardHeader>
+                <CardTitle className="text-lg">Manage Funds</CardTitle>
+                <CardDescription>
+                  Add or withdraw funds from your bot
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Fund Bot */}
+                <div className="space-y-3">
+                  <Label htmlFor="fund-amount" className="text-sm font-medium">Fund Bot</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="fund-amount"
+                      type="number"
+                      placeholder="Enter amount"
+                      value={fundAmount}
+                      onChange={(e) => setFundAmount(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => {
+                        const amount = parseFloat(fundAmount);
+                        if (amount > 0) {
+                          fundMutation.mutate(amount);
+                        }
+                      }}
+                      disabled={!fundAmount || fundMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <ArrowUpCircle className="w-4 h-4 mr-2" />
+                      Fund
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {balanceData?.balance?.mode === 'demo' 
+                      ? 'Unlimited demo funding available' 
+                      : 'Funds transferred from main wallet'
+                    }
+                  </div>
+                </div>
+
+                {/* Withdraw from Bot */}
+                <div className="space-y-3">
+                  <Label htmlFor="withdraw-amount" className="text-sm font-medium">Withdraw</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="withdraw-amount"
+                      type="number"
+                      placeholder="Enter amount"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => {
+                        const amount = parseFloat(withdrawAmount);
+                        if (amount > 0) {
+                          withdrawMutation.mutate(amount);
+                        }
+                      }}
+                      disabled={!withdrawAmount || withdrawMutation.isPending}
+                      variant="outline"
+                      className="border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      <ArrowDownCircle className="w-4 h-4 mr-2" />
+                      Withdraw
+                    </Button>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {balanceData?.balance?.mode === 'demo' 
+                      ? 'Demo withdrawal simulation only' 
+                      : 'Funds returned to main wallet'
+                    }
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Transaction Status */}
+          {(fundMutation.isPending || withdrawMutation.isPending) && (
+            <Card className="border-yellow-200 bg-yellow-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center space-x-3">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600"></div>
+                  <div>
+                    <p className="font-medium text-yellow-800">Processing Transaction...</p>
+                    <p className="text-sm text-yellow-700">
+                      {fundMutation.isPending ? 'Adding funds to bot' : 'Withdrawing funds from bot'}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Signals Tab */}

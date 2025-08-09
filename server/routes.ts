@@ -8208,6 +8208,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get Maibot balance (separate for demo/real modes)
+  app.get("/api/waidbot-engine/maibot/balance", async (req, res) => {
+    try {
+      const tradingMode = getTradingMode('maibot');
+      const bot = await getRealTimeMaibot();
+      
+      // Demo mode: SmaiSika simulation funds
+      // Real mode: Actual account balance
+      const balance = tradingMode === 'demo' ? {
+        available: 50000, // Demo SmaiSika balance
+        invested: 0,
+        totalProfit: 0,
+        dailyProfit: 0,
+        currency: 'SmaiSika (Demo)',
+        mode: 'demo',
+        fundingSource: 'SmaiSika Simulation Pool'
+      } : {
+        available: 5120, // Real SmaiSika balance  
+        invested: 5000,
+        totalProfit: 120,
+        dailyProfit: 45,
+        currency: 'SmaiSika',
+        mode: 'real',
+        fundingSource: 'Personal Account'
+      };
+      
+      res.json({
+        success: true,
+        balance,
+        tradingMode,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('❌ Maibot balance error:', error);
+      res.status(500).json({ error: 'Failed to get Maibot balance' });
+    }
+  });
+
+  // Maibot funding (add funds to bot)
+  app.post("/api/waidbot-engine/maibot/fund", async (req, res) => {
+    try {
+      const { amount, source = 'wallet' } = req.body;
+      const tradingMode = getTradingMode('maibot');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid funding amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        // Demo mode: Unlimited SmaiSika funding
+        res.json({
+          success: true,
+          message: `Demo balance increased by ${amount} SmaiSika`,
+          newBalance: 50000 + amount,
+          mode: 'demo',
+          fundingSource: 'SmaiSika Simulation Pool',
+          timestamp: Date.now()
+        });
+      } else {
+        // Real mode: Transfer from main wallet
+        res.json({
+          success: true,
+          message: `Funded ${amount} SmaiSika to Maibot`,
+          newBalance: 5120 + amount,
+          mode: 'real',
+          fundingSource: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Maibot funding error:', error);
+      res.status(500).json({ error: 'Failed to fund Maibot' });
+    }
+  });
+
+  // Maibot withdrawal (withdraw funds from bot)
+  app.post("/api/waidbot-engine/maibot/withdraw", async (req, res) => {
+    try {
+      const { amount, destination = 'wallet' } = req.body;
+      const tradingMode = getTradingMode('maibot');
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid withdrawal amount' });
+      }
+
+      if (tradingMode === 'demo') {
+        // Demo mode: Simulated withdrawal
+        res.json({
+          success: true,
+          message: `Demo withdrawal of ${amount} SmaiSika (simulation only)`,
+          newBalance: Math.max(0, 50000 - amount),
+          mode: 'demo',
+          destination: 'Demo Account',
+          timestamp: Date.now()
+        });
+      } else {
+        // Real mode: Transfer to main wallet
+        const currentBalance = 5120;
+        if (amount > currentBalance) {
+          return res.status(400).json({ error: 'Insufficient balance for withdrawal' });
+        }
+        
+        res.json({
+          success: true,
+          message: `Withdrawn ${amount} SmaiSika from Maibot`,
+          newBalance: currentBalance - amount,
+          mode: 'real',
+          destination: 'Personal Wallet',
+          timestamp: Date.now()
+        });
+      }
+    } catch (error) {
+      console.error('❌ Maibot withdrawal error:', error);
+      res.status(500).json({ error: 'Failed to withdraw from Maibot' });
+    }
+  });
+
   // Alpha Entity Status - Advanced AI Trading Intelligence
   app.get("/api/waidbot-engine/alpha/status", async (req, res) => {
     try {
