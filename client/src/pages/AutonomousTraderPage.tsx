@@ -40,6 +40,10 @@ interface MLEngineData {
 
 export default function AutonomousTraderPage() {
   const [isActive, setIsActive] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [tradingMode, setTradingMode] = useState<'demo' | 'real'>('demo');
+  const [fundAmount, setFundAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
 
   // Fetch autonomous trader status from centralized engine
   const { data: traderStatus } = useQuery<TraderStatus>({

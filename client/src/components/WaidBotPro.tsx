@@ -4,7 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause, Target, Shield, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause, Target, Shield, Zap, Wallet, DollarSign, Signal, Crown, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface WaidBotProDecision {
@@ -44,11 +48,22 @@ interface TechnicalAnalysis {
 
 export function WaidBotPro() {
   const [isGeneratingDecision, setIsGeneratingDecision] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [tradingMode, setTradingMode] = useState<'demo' | 'real'>('demo');
+  const [fundAmount, setFundAmount] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const { toast } = useToast();
 
   // Fetch WaidBot Pro status
   const { data: statusData, isLoading: statusLoading } = useQuery({
-    queryKey: ['/api/waidbot-pro/status'],
+    queryKey: ['/api/waidbot-engine/waidbot-pro/status'],
     refetchInterval: 5000,
+  });
+
+  // Fetch WaidBot Pro balance
+  const { data: balanceData, isLoading: balanceLoading } = useQuery({
+    queryKey: ['/api/waidbot-engine/waidbot-pro/balance'],
+    refetchInterval: 3000,
   });
 
   // Fetch decision history
@@ -63,12 +78,57 @@ export function WaidBotPro() {
     refetchInterval: 15000,
   });
 
-  // Toggle auto-trading mutation
-  const toggleMutation = useMutation({
-    mutationFn: (enabled: boolean) => 
-      apiRequest('/api/waidbot-pro/toggle', 'POST', { enabled }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/status'] });
+  // Toggle trading mode mutation
+  const toggleModeMutation = useMutation({
+    mutationFn: (mode: 'demo' | 'real') => 
+      apiRequest('/api/waidbot-engine/waidbot-pro/mode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      }),
+    onSuccess: (data) => {
+      setTradingMode(data.mode);
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/balance'] });
+      toast({
+        title: "Trading Mode Updated",
+        description: `WaidBot Pro β switched to ${data.mode} mode`,
+      });
+    }
+  });
+
+  // Fund bot mutation
+  const fundMutation = useMutation({
+    mutationFn: (amount: number) =>
+      apiRequest('/api/waidbot-engine/waidbot-pro/fund', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/balance'] });
+      setFundAmount('');
+      toast({
+        title: "Funding Successful",
+        description: data.message,
+      });
+    }
+  });
+
+  // Withdraw mutation
+  const withdrawMutation = useMutation({
+    mutationFn: (amount: number) =>
+      apiRequest('/api/waidbot-engine/waidbot-pro/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      }),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/waidbot-pro/balance'] });
+      setWithdrawAmount('');
+      toast({
+        title: "Withdrawal Successful",
+        description: data.message,
+      });
     }
   });
 
@@ -84,15 +144,21 @@ export function WaidBotPro() {
     }
   });
 
-  const status: WaidBotProStatus = statusData || {
+  const status = statusData || {
+    id: 'waidbot-pro',
+    name: 'WaidBot Pro β',
     isActive: false,
-    autoTradingEnabled: false,
-    currentPosition: 'NEUTRAL',
-    totalTrades: 0,
-    winRate: 0,
-    currentBalance: 10000,
-    lastDecision: null,
-    currentRisk: 0.05
+    confidence: 0,
+    performance: { profit: 0, trades: 0, winRate: 0 }
+  };
+
+  const balance = balanceData?.balance || {
+    available: 0,
+    invested: 0,
+    totalProfit: 0,
+    dailyProfit: 0,
+    currency: 'SmaiSika',
+    mode: 'demo'
   };
 
   const history: WaidBotProDecision[] = Array.isArray(historyData) ? historyData : [];
@@ -114,8 +180,23 @@ export function WaidBotPro() {
     priceChange24h: 0
   };
 
-  const handleToggleTrading = () => {
-    toggleMutation.mutate(!status.autoTradingEnabled);
+  const handleModeToggle = () => {
+    const newMode = tradingMode === 'demo' ? 'real' : 'demo';
+    toggleModeMutation.mutate(newMode);
+  };
+
+  const handleFund = () => {
+    const amount = parseFloat(fundAmount);
+    if (amount && amount > 0) {
+      fundMutation.mutate(amount);
+    }
+  };
+
+  const handleWithdraw = () => {
+    const amount = parseFloat(withdrawAmount);
+    if (amount && amount > 0) {
+      withdrawMutation.mutate(amount);
+    }
   };
 
   const handleGenerateDecision = () => {
@@ -166,14 +247,23 @@ export function WaidBotPro() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">WaidBot Pro</h1>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+            WaidBot Pro β (Beta)
+          </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Advanced AI-Powered ETH Trading System - Long/Short positions, profitable in all market conditions
+            Advanced Bi-Directional ETH Specialist - Waides Konsmik Intelligence
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Badge variant={status.autoTradingEnabled ? "default" : "secondary"} className="px-3 py-1">
-            {status.autoTradingEnabled ? "PRO TRADING ON" : "PRO TRADING OFF"}
+          <Badge variant={status.isActive ? "default" : "secondary"} className="px-3 py-1 bg-blue-500/20 text-blue-400 border-blue-400/30">
+            {status.isActive ? "Active" : "Inactive"}
+          </Badge>
+          <Badge variant="outline" className={`px-3 py-1 ${
+            balance.mode === 'demo' 
+              ? 'bg-blue-500/20 text-blue-400 border-blue-400/30' 
+              : 'bg-green-500/20 text-green-400 border-green-400/30'
+          }`}>
+            {balance.mode === 'demo' ? 'Demo Mode' : 'Live Trading'}
           </Badge>
         </div>
       </div>
@@ -229,12 +319,29 @@ export function WaidBotPro() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analysis">Technical Analysis</TabsTrigger>
-          <TabsTrigger value="history">Decision History</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
+      {/* Tabs Interface */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-5 bg-slate-800/50 backdrop-blur">
+          <TabsTrigger value="overview" className="flex items-center gap-2 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+            <BarChart3 className="w-4 h-4" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="wallet" className="flex items-center gap-2 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+            <Wallet className="w-4 h-4" />
+            Bot Wallet
+          </TabsTrigger>
+          <TabsTrigger value="signals" className="flex items-center gap-2 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+            <Signal className="w-4 h-4" />
+            Signals
+          </TabsTrigger>
+          <TabsTrigger value="trades" className="flex items-center gap-2 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+            <DollarSign className="w-4 h-4" />
+            Trades
+          </TabsTrigger>
+          <TabsTrigger value="upgrade" className="flex items-center gap-2 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+            <Crown className="w-4 h-4" />
+            Advanced
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
