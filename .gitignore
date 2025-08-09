@@ -1,6 +1,53 @@
-node_modules
-dist
+# Dependencies
+node_modules/
+dist/
 .DS_Store
-server/public
+server/public/
 vite.config.ts.*
 *.tar.gz
+
+# Environment & Secrets
+.env
+.env.local
+.env.production
+.env.development
+*.pem
+*.key
+
+# API Keys & Credentials
+**/secrets/
+**/credentials/
+api-keys.json
+config/secrets.json
+
+# Temporary & Build Files
+*.log
+*.tmp
+.cache/
+uploads/
+temp/
+
+# Database
+*.sqlite
+*.db
+database.json
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Replit specific
+.replit_secrets
+.replit.nix

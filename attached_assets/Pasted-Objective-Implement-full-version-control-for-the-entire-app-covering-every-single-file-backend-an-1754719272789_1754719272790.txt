@@ -1,0 +1,35 @@
+Objective: Implement full version control for the entire app, covering every single file, backend and frontend components, configuration files, third-party integrations, and databases. Ensure the following:
+Complete File Scanning:
+Scan every directory and file in the project, including:
+Backend code: __init__.py, app.py, eth_connector.py, kons_powa_comm.py, waidbot.py
+Frontend components: accordion.tsx, alert-dialog.tsx, alert.tsx, and any other UI components in the frontend.
+Configuration files: .env, settings.py, database_config.json, etc.
+API endpoints and any third-party integrations.
+All modules and external libraries in use, especially those related to AI, cryptocurrency, trading, etc.
+Version Control Setup:
+Ensure all code is tracked and versioned in GitHub or a similar version control system, with each commit logged by author and date.
+Provide the option for auto-backups before each commit to ensure no data is lost during code changes.
+Ensure all branches are created with specific naming conventions based on feature, bugfix, or release (e.g., feature/ui-enhancement, bugfix/api-crash).
+Change Detection:
+Automatically detect any changes to the codebase, no matter how small.
+Ensure a log of changes (including file additions, modifications, and deletions) is generated with detailed descriptions, timestamps, and author information.
+Merge & Conflict Resolution:
+Implement tools for automatic merging where possible (especially for UI-related changes), but notify the developers in case of merge conflicts.
+Automatically flag conflicts in files that affect key components like authentication, payment systems, or database configurations.
+Database & Storage Sync:
+Track any database schema changes or migrations (if applicable) and ensure they're synced with the version control system.
+If using a decentralized storage system, ensure all changes are logged for future reference.
+Documentation & Commenting:
+Ensure the version control system generates changelogs and release notes for major commits/releases.
+Ensure every commit includes detailed comments about the changes, especially for complex sections like trading algorithms, AI decision-making, or any critical system components.
+Deployment/Release Tracking:
+Implement automatic version control for any deployment configurations or scripts.
+Ensure that every release is tagged and has clear documentation outlining the version and changes made.
+Security & Integrity:
+Ensure version control logs are protected against unauthorized access.
+Provide an automatic audit trail for critical changes (like financial transaction systems or security features).
+Verify that all sensitive keys, credentials, or API secrets are never committed to the version control system. They should be excluded or replaced with environment variables.
+Backup & Recovery:
+Set up automatic backups to ensure that no critical changes are lost.
+Provide rollback features to revert the project to any previous working state.
+Summary: We want to establish full version control across all app files (backend, frontend, configuration, etc.) to ensure every line of code is tracked, changes are logged, and the project can be rolled back to any previous state if needed. All changes should be documented with timestamps and author information.

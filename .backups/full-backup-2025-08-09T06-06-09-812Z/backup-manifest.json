@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-08-09T06:06:09.892Z",
+  "type": "full-backup",
+  "files": [
+    "server/routes.ts",
+    "server/services/modeService.ts",
+    "server/services/smaisikaMiningEngine.ts",
+    "server/services/autonomousBotEngine.ts",
+    "shared/schema.ts",
+    "client/src/App.tsx",
+    "client/src/components/ui/StableNavigation.tsx",
+    "client/src/hooks/useModeSwitch.tsx",
+    "package.json",
+    "tsconfig.json",
+    "drizzle.config.ts",
+    "replit.md",
+    "tailwind.config.ts",
+    "vite.config.ts",
+    "postcss.config.js",
+    "components.json",
+    "VERSION_CONTROL_IMPLEMENTATION.md",
+    "CHANGELOG.md",
+    "FILE_TRACKING_MANIFEST.json"
+  ],
+  "projectVersion": "1.0.0",
+  "backupPath": "/home/runner/workspace/.backups/full-backup-2025-08-09T06-06-09-812Z"
+}
