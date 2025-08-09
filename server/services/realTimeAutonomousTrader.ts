@@ -44,7 +44,7 @@ interface AutonomousTraderState {
 
 export class RealTimeAutonomousTrader extends EventEmitter {
   private state: AutonomousTraderState;
-  private readonly DEMO_STARTING_BALANCE = 20000; // $20,000 USDT
+  private readonly DEMO_STARTING_BALANCE = 0; // New account starts with 0
   private readonly MIN_TRADE_AMOUNT = 150; // Minimum $150 per trade
   private readonly MAX_TRADE_PERCENTAGE = 0.08; // Max 8% of balance per trade
   private readonly TRADING_INTERVAL = 30000; // 30 second intervals

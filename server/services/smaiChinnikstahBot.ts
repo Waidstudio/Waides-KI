@@ -46,38 +46,9 @@ export class SmaiChinnikstahBot {
   private recentTrades: any[] = [];
 
   private async initializeRecentTrades() {
-    try {
-      // Get real ETH price for historical trades
-      const response = await fetch('http://localhost:5000/api/eth/current-price');
-      const ethData = await response.json();
-      const currentPrice = ethData.price || 3200;
-      
-      this.recentTrades = [
-        {
-          id: 'SMAI_001',
-          pair: 'ETH/USD',
-          action: 'BUY',
-          amount: 2.5,
-          price: currentPrice * 0.97, // Bought at 3% lower
-          profit: (currentPrice - (currentPrice * 0.97)) * 2.5,
-          timestamp: Date.now() - 1800000,
-          realTimePrice: currentPrice
-        },
-        {
-          id: 'SMAI_002', 
-          pair: 'ETH/USD',
-          action: 'SELL',
-          amount: 1.8,
-          price: currentPrice * 1.02, // Sold at 2% higher
-          profit: ((currentPrice * 1.02) - currentPrice) * 1.8,
-          timestamp: Date.now() - 3600000,
-          realTimePrice: currentPrice
-        }
-      ];
-    } catch (error) {
-      console.error('❌ SmaiChinnikstah failed to initialize with real ETH data:', error);
-      this.recentTrades = []; // Start with no trades until real data available
-    }
+    // New account - no trades yet, only real trades will be added
+    this.recentTrades = [];
+    console.log('🔥 SmaiChinnikstah initialized - New account with no prior trades');
   }
 
   async start(): Promise<{ success: boolean; message: string }> {

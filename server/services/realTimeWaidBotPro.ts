@@ -40,7 +40,7 @@ interface WaidBotProState {
 
 export class RealTimeWaidBotPro extends EventEmitter {
   private state: WaidBotProState;
-  private readonly DEMO_STARTING_BALANCE = 15000; // $15,000 USDT
+  private readonly DEMO_STARTING_BALANCE = 0; // New account starts with 0
   private readonly MIN_TRADE_AMOUNT = 100; // Minimum $100 per trade
   private readonly MAX_TRADE_PERCENTAGE = 0.15; // Max 15% of balance per trade
   private readonly TRADING_INTERVAL = 45000; // 45 second intervals

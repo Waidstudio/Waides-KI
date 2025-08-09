@@ -4681,7 +4681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Simulate biometric verification
       const verificationResult = {
         verified: Math.random() > 0.1, // 90% success rate
-        confidence: Math.random() * 30 + 70, // 70-100% confidence
+        confidence: 0, // New account - no confidence data yet
         biometricType,
         verificationTime: new Date().toISOString()
       };
@@ -4838,7 +4838,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         recognized: !!commandHandler,
         command,
         ...result,
-        confidence: Math.random() * 20 + 80 // 80-100% confidence
+        confidence: 0 // New account - no confidence data yet
       });
     } catch (error) {
       console.error('Voice command error:', error);
@@ -6187,17 +6187,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/analytics-dashboard", async (req, res) => {
     try {
       res.json({
-        totalTrades: 1847,
-        successRate: 73.2,
-        totalProfit: 12485.67,
-        activeBots: 3,
-        dailyVolume: 45600.00,
-        riskScore: 65,
+        totalTrades: 0,
+        successRate: 0,
+        totalProfit: 0,
+        activeBots: 0,
+        dailyVolume: 0,
+        riskScore: 0,
         lastUpdated: new Date().toISOString(),
         botPerformance: {
-          waidbot: { trades: 624, winRate: 71.2, profit: 4245.89 },
-          waidbotPro: { trades: 789, winRate: 75.1, profit: 5890.34 },
-          fullEngine: { trades: 434, winRate: 72.8, profit: 2349.44 }
+          waidbot: { trades: 0, winRate: 0, profit: 0 },
+          waidbotPro: { trades: 0, winRate: 0, profit: 0 },
+          fullEngine: { trades: 0, winRate: 0, profit: 0 }
         }
       });
     } catch (error) {
@@ -8477,20 +8477,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enhanced Gamified Metrics Generator for WaidBot Engine
   function generateBotMetrics(botType: string) {
     const baseMetrics = {
-      allTimeDrawdown: Math.max(0, Math.random() * 15), // 0-15% drawdown
-      winPercentage: 75 + Math.random() * 20, // 75-95% win rate
-      consecutiveWins: Math.floor(Math.random() * 12) + 1,
-      consecutiveLosses: Math.floor(Math.random() * 3),
-      maxDrawdownDate: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      profitFactor: 1.5 + Math.random() * 2, // 1.5-3.5 profit factor
-      sharpeRatio: 1.2 + Math.random() * 1.8, // 1.2-3.0 Sharpe ratio
-      tradeFrequency: Math.floor(Math.random() * 50) + 10, // 10-60 trades per month
-      avgHoldTime: Math.floor(Math.random() * 120) + 30, // 30-150 minutes
-      riskScore: Math.floor(Math.random() * 3) + 2, // 2-4 risk score
-      confidenceLevel: 85 + Math.random() * 15, // 85-100% confidence
-      lastActive: Date.now() - Math.random() * 600000, // Last active within 10 minutes
-      streakType: Math.random() > 0.5 ? 'win' : 'loss',
-      currentStreak: Math.floor(Math.random() * 8) + 1
+      allTimeDrawdown: 0, // New account - no drawdown yet
+      winPercentage: 0, // New account - no win rate yet
+      consecutiveWins: 0,
+      consecutiveLosses: 0,
+      maxDrawdownDate: null,
+      profitFactor: 0, // New account - no profit factor yet
+      sharpeRatio: 0, // New account - no Sharpe ratio yet
+      tradeFrequency: 0, // New account - no trades yet
+      avgHoldTime: 0, // New account - no hold time yet
+      riskScore: 0, // New account - no risk score yet
+      confidenceLevel: 0, // New account - no confidence data yet
+      lastActive: null, // New account - not active yet
+      streakType: 'none',
+      currentStreak: 0
     };
 
     // Bot-specific customizations
@@ -8500,18 +8500,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...baseMetrics,
           specialization: 'ETH Uptrend Only',
           expertiseLevel: 'Advanced',
-          winPercentage: 82 + Math.random() * 13, // Higher win rate for specialized bot
-          riskScore: 2, // Lower risk for uptrend-only
-          avgHoldTime: Math.floor(Math.random() * 60) + 45 // 45-105 minutes
+          winPercentage: 0, // New account - no win rate yet
+          riskScore: 0, // New account - no risk score yet
+          avgHoldTime: 0 // New account - no hold time yet
         };
       case 'waidbot-pro':
         return {
           ...baseMetrics,
           specialization: 'Bidirectional ETH3L/ETH3S',
           expertiseLevel: 'Expert',
-          winPercentage: 77 + Math.random() * 18, // Wider range for complex strategies
-          riskScore: 3, // Medium risk for bidirectional
-          avgHoldTime: Math.floor(Math.random() * 90) + 30 // 30-120 minutes
+          winPercentage: 0, // New account - no win rate yet
+          riskScore: 0, // New account - no risk score yet
+          avgHoldTime: 0 // New account - no hold time yet
         };
       case 'autonomous':
         return {
