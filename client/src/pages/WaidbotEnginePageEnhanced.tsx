@@ -552,7 +552,7 @@ export default function WaidbotEnginePageEnhanced() {
   // Full Engine mutations (unified system)
   const startFullEngine = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/full-engine/start', { method: 'POST' });
+      const response = await fetch('/api/waidbot-engine/full-engine/start', { method: 'POST' });
       return response.json();
     },
     onSuccess: () => {
@@ -564,7 +564,7 @@ export default function WaidbotEnginePageEnhanced() {
 
   const stopFullEngine = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/full-engine/stop', { method: 'POST' });
+      const response = await fetch('/api/waidbot-engine/full-engine/stop', { method: 'POST' });
       return response.json();
     },
     onSuccess: () => {
@@ -757,8 +757,8 @@ export default function WaidbotEnginePageEnhanced() {
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
                   {comprehensiveMetrics?.real_time_metrics?.konsai_networks_active || 
-                   ((waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0) + (fullEngineStatus?.engine_status?.is_active ? 1 : 0))}
-                  /{comprehensiveMetrics?.real_time_metrics?.total_systems || 6}
+                   ((maibotStatus?.isActive ? 1 : 0) + (waidbotStatus?.isActive ? 1 : 0) + (waidbotProStatus?.isActive ? 1 : 0) + (autonomousStatus?.isActive ? 1 : 0) + (fullEngineStatus?.engine_status?.is_active ? 1 : 0) + (smaiChinnikstahStatus?.isActive ? 1 : 0) + (nwaoraChigozieStatus?.isActive ? 1 : 0))}
+                  /{comprehensiveMetrics?.real_time_metrics?.total_systems || 7}
                 </p>
                 <p className="text-sm text-blue-400">Active Systems</p>
               </div>
