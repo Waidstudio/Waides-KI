@@ -6,7 +6,7 @@ import crypto from 'crypto';
 interface MiningSession {
   sessionId: string;
   userId: number;
-  miningType: 'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu';
+  miningType: 'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu' | 'quiz' | 'puzzle';
   difficulty: number;
   isActive: boolean;
   startTime: Date;
@@ -38,11 +38,14 @@ class SmaisikaMiningEngine {
   private miningPools: Map<string, any> = new Map();
   private adminWallet: Map<string, number> = new Map();
   private exchangeRates: Map<string, number> = new Map();
+  private quizBank: any[] = [];
+  private puzzleBank: any[] = [];
 
   constructor() {
     this.initializeMiningPools();
     this.initializeAdminWallet();
     this.initializeExchangeRates();
+    this.initializeChallenges();
     console.log('⛏️ Real Cryptocurrency Mining Engine initialized');
     console.log('💰 Admin wallet loaded with real cryptocurrency reserves');
   }
@@ -99,8 +102,25 @@ class SmaisikaMiningEngine {
     console.log('📊 Real-time exchange rates initialized');
   }
 
+  private initializeChallenges() {
+    // Initialize quiz and puzzle banks for interactive mining
+    this.quizBank = [
+      { id: 1, question: "What algorithm does Monero use for mining?", options: ["SHA-256", "RandomX", "Ethash", "Scrypt"], correct: 1, difficulty: 1, reward: 0.5 },
+      { id: 2, question: "What is the current Bitcoin block reward?", options: ["25 BTC", "12.5 BTC", "6.25 BTC", "3.125 BTC"], correct: 2, difficulty: 2, reward: 1.0 },
+      { id: 3, question: "Which cryptocurrency is primarily mined with GPUs?", options: ["Bitcoin", "Monero", "Ethereum", "Litecoin"], correct: 2, difficulty: 1, reward: 0.5 }
+    ];
+
+    this.puzzleBank = [
+      { id: 1, question: "Calculate: 2^8 =", answer: "256", difficulty: 1, reward: 0.3 },
+      { id: 2, question: "Hash this: What is SHA-256 of 'SmaiSika'?", answer: "computational", difficulty: 3, reward: 2.0 },
+      { id: 3, question: "Solve: 15 * 23 + 47 =", answer: "392", difficulty: 2, reward: 1.0 }
+    ];
+    
+    console.log('🧩 Mining challenges initialized');
+  }
+
   // Start real cryptocurrency mining session
-  async startMining(userId: number, miningType: 'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu', difficulty: number = 1): Promise<{ success: boolean; sessionId?: string; message: string; miningPool?: string }> {
+  async startMining(userId: number, miningType: 'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu' | 'quiz' | 'puzzle', difficulty: number = 1): Promise<{ success: boolean; sessionId?: string; message: string; miningPool?: string }> {
     try {
       // Check user reputation and mining efficiency
       const userRep = await this.getUserReputation(userId);
@@ -232,7 +252,7 @@ class SmaisikaMiningEngine {
   }
 
   private mapMiningTypeToRealCrypto(type: string): string {
-    const mapping = {
+    const mapping: { [key: string]: string } = {
       'monero': 'monero',
       'bitcoin': 'bitcoin',
       'ethereum': 'ethereum',
@@ -244,7 +264,7 @@ class SmaisikaMiningEngine {
 
   private calculateRealHashRate(type: string, efficiency: number): number {
     // Real hashrates based on device type and cryptocurrency
-    const baseRates = {
+    const baseRates: { [key: string]: number } = {
       'monero': 2000,      // H/s for Monero RandomX
       'bitcoin': 14000000, // H/s for Bitcoin SHA-256
       'ethereum': 25000000, // H/s for Ethereum Ethash
@@ -255,7 +275,7 @@ class SmaisikaMiningEngine {
   }
 
   private getBlockReward(cryptocurrency: string): number {
-    const rewards = {
+    const rewards: { [key: string]: number } = {
       'monero': 0.6,      // XMR block reward
       'bitcoin': 6.25,    // BTC block reward (post halving)
       'ethereum': 2.0     // ETH block reward
@@ -398,13 +418,16 @@ class SmaisikaMiningEngine {
       if (isCorrect) {
         await this.addSmaiSikaToWallet(session.userId, reward);
         
-        // Update mining record
-        await db.update(smaisikaMining)
-          .set({
-            [session.miningType === 'quiz' ? 'quizzesCompleted' : 'puzzlesSolved']: 
-            (session.miningType === 'quiz' ? 1 : 1)
-          })
-          .where(eq(smaisikaMining.sessionId, sessionId));
+        // Update mining record based on type
+        if (session.miningType === 'quiz') {
+          await db.update(smaisikaMining)
+            .set({ quizzesCompleted: 1 })
+            .where(eq(smaisikaMining.sessionId, sessionId));
+        } else {
+          await db.update(smaisikaMining)
+            .set({ puzzlesSolved: 1 })
+            .where(eq(smaisikaMining.sessionId, sessionId));
+        }
       }
 
       return {
@@ -504,7 +527,7 @@ class SmaisikaMiningEngine {
 
   private getExchangeRate(currency: string): number {
     // Real exchange rates: SmaiSika to Real Crypto (1 SmaiSika = X Real Crypto)
-    const rates = {
+    const rates: { [key: string]: number } = {
       'MONERO': 0.0000656,    // 1 SmaiSika = 0.0000656 XMR (1 XMR = 15,244 SmaiSika)
       'USDT': 0.01,           // 1 SmaiSika = 0.01 USDT (1 USDT = 100 SmaiSika)
       'BTC': 0.00000023,      // 1 SmaiSika = 0.00000023 BTC (1 BTC = 4,325,000 SmaiSika)
@@ -514,7 +537,7 @@ class SmaisikaMiningEngine {
   }
 
   private generateTransactionHash(currency: string): string {
-    const prefixes = {
+    const prefixes: { [key: string]: string } = {
       'MONERO': '',           // Monero uses different format
       'BTC': '0x',
       'ETH': '0x',
@@ -571,9 +594,12 @@ class SmaisikaMiningEngine {
     const efficiency = smaiSikaEarned / (miningDuration / 3600); // SmaiSika per hour
     const bonusScore = Math.floor(efficiency * 10);
 
+    const currentRep = await db.select().from(userReputation).where(eq(userReputation.userId, userId)).limit(1);
+    const currentScore = currentRep[0]?.smaiOnyixScore || 100;
+    
     await db.update(userReputation)
       .set({
-        smaiOnyixScore: Math.min(200, (userReputation.smaiOnyixScore || 100) + bonusScore),
+        smaiOnyixScore: Math.min(200, currentScore + bonusScore),
         lastUpdated: new Date()
       })
       .where(eq(userReputation.userId, userId));
@@ -620,6 +646,135 @@ class SmaisikaMiningEngine {
   // Get all active sessions for user
   getUserActiveSessions(userId: number): MiningSession[] {
     return Array.from(this.activeSessions.values()).filter(session => session.userId === userId);
+  }
+
+  // Get distributed mining statistics across entire platform
+  getDistributedMiningStats(): {
+    totalActiveMiners: number;
+    totalHashRate: number;
+    miningPools: any;
+    adminReserves: any;
+    dailyDistribution: number;
+  } {
+    const activeMiners = this.activeSessions.size;
+    const totalHashRate = Array.from(this.activeSessions.values())
+      .reduce((total, session) => total + session.hashRate, 0);
+    
+    const dailyDistribution = Array.from(this.activeSessions.values())
+      .reduce((total, session) => {
+        const duration = (Date.now() - session.startTime.getTime()) / 1000;
+        return total + this.calculateReward(session, duration);
+      }, 0);
+
+    return {
+      totalActiveMiners: activeMiners,
+      totalHashRate: totalHashRate,
+      miningPools: Object.fromEntries(this.miningPools),
+      adminReserves: Object.fromEntries(this.adminWallet),
+      dailyDistribution: dailyDistribution
+    };
+  }
+
+  // Enhanced mining integration with trading bots
+  async integrateMiningWithTrading(userId: number, botType: string, profitAmount: number): Promise<{ success: boolean; smaiSikaBonus: number; message: string }> {
+    try {
+      // Calculate mining bonus based on trading profit
+      const miningBonus = profitAmount * 0.05; // 5% of trading profit as SmaiSika bonus
+      
+      // Add mining bonus to user wallet
+      await this.addSmaiSikaToWallet(userId, miningBonus);
+      
+      // Update user reputation with trading activity
+      await this.updateUserReputation(userId, 3600, miningBonus); // 1 hour equivalent
+      
+      console.log(`🤖💰 Trading-Mining Integration: ${botType} profit of $${profitAmount} earned ${miningBonus} SmaiSika bonus`);
+      
+      return {
+        success: true,
+        smaiSikaBonus: miningBonus,
+        message: `Trading profit generated ${miningBonus.toFixed(8)} SmaiSika mining bonus`
+      };
+    } catch (error) {
+      console.error('❌ Failed to integrate mining with trading:', error);
+      return { success: false, smaiSikaBonus: 0, message: 'Failed to process mining bonus' };
+    }
+  }
+
+  // Real-time mining performance monitoring
+  getRealtimeMiningPerformance(): {
+    activeSessions: any[];
+    totalRewards: number;
+    avgHashRate: number;
+    miningEfficiency: number;
+  } {
+    const sessions = Array.from(this.activeSessions.values());
+    const totalRewards = sessions.reduce((total, session) => {
+      const duration = (Date.now() - session.startTime.getTime()) / 1000;
+      return total + this.calculateReward(session, duration);
+    }, 0);
+    
+    const avgHashRate = sessions.length > 0 
+      ? sessions.reduce((total, session) => total + session.hashRate, 0) / sessions.length
+      : 0;
+    
+    const miningEfficiency = sessions.length > 0
+      ? totalRewards / sessions.length
+      : 0;
+
+    return {
+      activeSessions: sessions.map(session => ({
+        sessionId: session.sessionId,
+        userId: session.userId,
+        miningType: session.miningType,
+        realCryptocurrency: session.realCryptocurrency,
+        hashRate: session.hashRate,
+        duration: Math.floor((Date.now() - session.startTime.getTime()) / 1000),
+        estimatedReward: this.calculateReward(session, Math.floor((Date.now() - session.startTime.getTime()) / 1000))
+      })),
+      totalRewards,
+      avgHashRate,
+      miningEfficiency
+    };
+  }
+
+  // Advanced SmaiSika staking for enhanced mining
+  async stakeSmaiSika(userId: number, amount: number, stakingPeriod: number): Promise<{ success: boolean; stakingReward: number; message: string }> {
+    try {
+      // Check user balance
+      const userWallet = await db.select().from(wallets).where(eq(wallets.userId, userId)).limit(1);
+      
+      if (!userWallet[0] || parseFloat(userWallet[0].smaiBalance || '0') < amount) {
+        return { success: false, stakingReward: 0, message: 'Insufficient SmaiSika balance for staking' };
+      }
+
+      // Calculate staking rewards based on period and amount
+      const annualRate = 0.12; // 12% annual staking reward
+      const dailyRate = annualRate / 365;
+      const stakingReward = amount * dailyRate * stakingPeriod;
+
+      // Lock SmaiSika for staking period
+      const currentBalance = parseFloat(userWallet[0].smaiBalance || '0');
+      const lockedAmount = parseFloat(userWallet[0].locked || '0');
+      
+      await db.update(wallets)
+        .set({ 
+          smaiBalance: (currentBalance - amount).toString(),
+          locked: (lockedAmount + amount).toString(),
+          lockedUntil: new Date(Date.now() + stakingPeriod * 24 * 60 * 60 * 1000)
+        })
+        .where(eq(wallets.userId, userId));
+
+      console.log(`🔒 SmaiSika staking initiated: ${amount} SS for ${stakingPeriod} days, expected reward: ${stakingReward} SS`);
+
+      return {
+        success: true,
+        stakingReward,
+        message: `Staked ${amount} SmaiSika for ${stakingPeriod} days. Expected reward: ${stakingReward.toFixed(8)} SS`
+      };
+    } catch (error) {
+      console.error('❌ Failed to stake SmaiSika:', error);
+      return { success: false, stakingReward: 0, message: 'Failed to process staking request' };
+    }
   }
 }
 
