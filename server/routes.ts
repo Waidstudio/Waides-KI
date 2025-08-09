@@ -14262,6 +14262,11 @@ Ask me about specific market conditions, upload files for analysis, or request K
   const { default: systemAdminRoutes } = await import('./routes/systemAdminRoutes.js');
   app.use('/api/admin', systemAdminRoutes);
   console.log('⚙️ System admin routes registered');
+  
+  // === TRADING ADMIN ROUTES ===
+  const { default: tradingAdminRoutes } = await import('./routes/tradingAdminRoutes.js');
+  app.use('/api/admin', tradingAdminRoutes);
+  console.log('📈 Trading admin routes registered');
 
   // Initialize Enhanced WebSocket Systems
   // 1. KonsMesh WebSocket for real-time system synchronization
