@@ -223,7 +223,7 @@ const StableNavigation = () => {
   return (
     <nav className="bg-slate-800/95 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 transition-all duration-300">
-        <div className="flex justify-between items-center h-14 md:h-16">
+        <div className="flex justify-between items-center h-14 md:h-16 gap-4">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/dashboard">
@@ -243,7 +243,7 @@ const StableNavigation = () => {
           </div>
 
           {/* User Actions - Trading Mode, Chat, Notifications, Profile */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
             {/* Mini Trading Mode Icon */}
             <div className="relative" ref={(el) => { dropdownRefs.current['trading-mode'] = el; }}>
               <button
@@ -319,7 +319,7 @@ const StableNavigation = () => {
 
             {/* Chat Icon */}
             <Link href="/waidchat">
-              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2 rounded-lg mx-1">
+              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2 rounded-lg">
                 <MessageCircle className="h-4 w-4" />
                 <span className="absolute -top-1 -right-1 h-4 w-4 text-xs bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
                   2
@@ -328,7 +328,7 @@ const StableNavigation = () => {
             </Link>
 
             {/* Notifications */}
-            <div className="relative mx-1" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
+            <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
               <button
                 onClick={() => toggleDropdown('notifications')}
                 className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2 rounded-lg"
@@ -389,7 +389,7 @@ const StableNavigation = () => {
             </div>
 
             {/* Profile Dropdown */}
-            <div className="relative mx-1" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
+            <div className="relative" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
               <button
                 onClick={() => toggleDropdown('profile')}
                 className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 flex items-center space-x-2 p-2 rounded-lg"
@@ -466,7 +466,7 @@ const StableNavigation = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-4">
             {/* Simple Navigation Items */}
             {simpleNavItems.map((item) => {
               const Icon = item.icon;
