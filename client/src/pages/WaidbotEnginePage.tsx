@@ -292,7 +292,7 @@ export default function WaidbotEnginePage() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-400">
-                  {waidBotStatus?.wallet?.balance || waidBotStatus?.currentBalance?.totalValue || 0}
+                  {waidBotStatus?.wallet?.balance || 0}
                 </div>
                 <div className="text-xs text-slate-400">
                   {waidBotStatus?.wallet?.currency || 'SmaiSika'} Balance
@@ -348,7 +348,7 @@ export default function WaidbotEnginePage() {
                   <span className="text-xs text-slate-400">Real</span>
                   <Switch
                     id="waidbot-mode"
-                    checked={waidBotStatus?.tradingMode === 'demo' || true}
+                    checked={waidBotStatus?.tradingMode === 'demo'}
                     onCheckedChange={(checked) => 
                       toggleTradingMode.mutate({ 
                         botId: 'waidbot', 
@@ -468,7 +468,7 @@ export default function WaidbotEnginePage() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-400">
-                  {waidBotProStatus?.wallet?.balance || waidBotProStatus?.currentBalance?.totalValue || 0}
+                  {waidBotProStatus?.wallet?.balance || 0}
                 </div>
                 <div className="text-xs text-slate-400">
                   {waidBotProStatus?.wallet?.currency || 'SmaiSika'} Balance
@@ -510,6 +510,34 @@ export default function WaidbotEnginePage() {
                   <span className="text-blue-400 font-medium">{waidBotProStatus?.confidence || 0}%</span>
                 </div>
                 <Progress value={waidBotProStatus?.confidence || 0} className="h-2" />
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="waidbot-pro-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="waidbot-pro-mode"
+                    checked={waidBotProStatus?.tradingMode === 'demo'}
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'waidbot-pro', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                {waidBotProStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
               </div>
             </div>
 
@@ -616,7 +644,7 @@ export default function WaidbotEnginePage() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-400">
-                  {autonomousStatus?.wallet?.balance || autonomousStatus?.currentBalance?.totalValue || 0}
+                  {autonomousStatus?.wallet?.balance || 0}
                 </div>
                 <div className="text-xs text-slate-400">
                   {autonomousStatus?.wallet?.currency || 'SmaiSika'} Balance
@@ -658,6 +686,34 @@ export default function WaidbotEnginePage() {
                   <span className="text-purple-400 font-medium">{autonomousStatus?.confidence || 0}%</span>
                 </div>
                 <Progress value={autonomousStatus?.confidence || 0} className="h-2" />
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="autonomous-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="autonomous-mode"
+                    checked={autonomousStatus?.tradingMode === 'demo'}
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'autonomous', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                {autonomousStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
               </div>
             </div>
 
@@ -763,6 +819,34 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="maibot-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="maibot-mode"
+                    checked={maibotStatus?.tradingMode === 'demo'}
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'maibot', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                {maibotStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
+              </div>
+            </div>
+
             {/* Controls */}
             <div className="flex space-x-3">
               {maibotStatus?.isActive ? (
@@ -865,6 +949,34 @@ export default function WaidbotEnginePage() {
               </div>
             </div>
 
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="alpha-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="alpha-mode"
+                    checked={alphaStatus?.tradingMode === 'demo'}
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'alpha', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                {alphaStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
+              </div>
+            </div>
+
             {/* Controls */}
             <div className="flex space-x-3">
               {alphaStatus?.isActive ? (
@@ -964,6 +1076,34 @@ export default function WaidbotEnginePage() {
                   <div key={1} className="text-sm text-emerald-200">⚖️ Portfolio balance: optimal</div>,
                   <div key={2} className="text-sm text-emerald-200">📈 Volatility analysis complete</div>
                 ]}
+              </div>
+            </div>
+
+            {/* Trading Mode Switch */}
+            <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <Label htmlFor="beta-mode" className="text-sm font-medium text-slate-300">
+                  Trading Mode:
+                </Label>
+                <div className="flex items-center space-x-2">
+                  <DollarSign className="w-4 h-4 text-amber-400" />
+                  <span className="text-xs text-slate-400">Real</span>
+                  <Switch
+                    id="beta-mode"
+                    checked={betaStatus?.tradingMode === 'demo'}
+                    onCheckedChange={(checked) => 
+                      toggleTradingMode.mutate({ 
+                        botId: 'beta', 
+                        mode: checked ? 'demo' : 'real' 
+                      })
+                    }
+                  />
+                  <span className="text-xs text-slate-400">Demo</span>
+                  <TestTube className="w-4 h-4 text-purple-400" />
+                </div>
+              </div>
+              <div className="text-xs text-slate-500">
+                {betaStatus?.tradingMode === 'demo' ? 'SmaiSika Funded' : 'Real Funds'}
               </div>
             </div>
 
