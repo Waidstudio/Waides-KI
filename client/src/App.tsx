@@ -73,6 +73,8 @@ import SMSConfigPage from "@/pages/SMSConfigPage";
 import PaymentGatewayAdminPage from "@/pages/PaymentGatewayAdminPage";
 import AdminExchangePoolPage from "@/pages/AdminExchangePoolPage";
 import KonsPowaPage from "@/pages/KonsPowaPage";
+import UnifiedAdminLogin from "@/pages/UnifiedAdminLogin";
+import SuperAdminLogin from "@/pages/SuperAdminLogin";
 import SmaisikaMining from "@/pages/SmaisikaMining";
 import AdminMining from "@/pages/AdminMining";
 import SystemValidationDashboard from "@/pages/SystemValidationDashboard";
@@ -143,7 +145,9 @@ function Router() {
         <Switch>
           {/* Authentication Routes */}
           <Route path="/login" component={LoginPage} />
-          <Route path="/admin-login" component={AdminLoginPage} />
+          <Route path="/admin-login" component={UnifiedAdminLogin} />
+          <Route path="/super-admin-login" component={SuperAdminLogin} />
+          <Route path="/admin-login-old" component={AdminLoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           

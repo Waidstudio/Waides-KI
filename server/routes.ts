@@ -56,12 +56,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Initialize unified admin authentication system
+  const { unifiedAdminAuth } = await import('./services/unifiedAdminAuthService.js');
+  unifiedAdminAuth.initializeDefaultAdmins();
+
   // Import admin exchange pool service
   const { adminExchangePoolService } = await import('./services/adminExchangePoolService.js');
   
   // Import chat routes
   const chatRoutes = await import('./routes/chat.js');
   const waidchatRoutes = await import('./routes/waidchat.js');
+  
+  // Import unified admin routes
+  const unifiedAdminRoutes = await import('./routes/unifiedAdmin.js');
 
   // Remove duplicate authentication middleware definitions (already imported at top)
 
@@ -14041,6 +14048,10 @@ Ask me about specific market conditions, upload files for analysis, or request K
   app.use('/api/chat', chatRoutes.default);
   app.use('/api/waidchat', waidchatRoutes.default);
   console.log('💬 Chat system routes registered');
+  
+  // === UNIFIED ADMIN ROUTES ===
+  app.use('/api/admin', unifiedAdminRoutes.default);
+  console.log('🔐 Unified admin routes registered');
 
   // Initialize WebSocket for WaidChat
   const { chatWebSocketManager } = await import('./websocket/chatWebSocket.js');
