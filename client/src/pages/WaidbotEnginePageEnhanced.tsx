@@ -837,7 +837,7 @@ export default function WaidbotEnginePageEnhanced() {
               </div>
               <div>
                 <p className="text-2xl lg:text-3xl font-bold text-white mb-1">
-                  {comprehensiveMetrics?.real_time_metrics?.active_users || (27 + Math.floor(Math.random() * 8))}
+                  {comprehensiveMetrics?.real_time_metrics?.active_users || 0}
                 </p>
                 <p className="text-sm text-orange-400">Live Sessions</p>
               </div>

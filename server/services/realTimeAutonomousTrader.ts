@@ -163,12 +163,10 @@ export class RealTimeAutonomousTrader extends EventEmitter {
         await this.executeBuyOrder(bestOpportunity);
       } else if (bestOpportunity.action === 'SELL' && this.hasPositionFor(bestOpportunity.symbol)) {
         await this.executeSellOrder(bestOpportunity);
+      } else if (bestOpportunity.action === 'HOLD') {
+        this.state.nextAction = `Monitoring ${this.getActivePositionsCount()} positions - next scan in 30s`;
       } else {
-        if (bestOpportunity.action === 'HOLD') {
-          this.state.nextAction = `Monitoring ${this.getActivePositionsCount()} positions - next scan in 30s`;
-        } else {
-          this.state.nextAction = `Waiting for ${bestOpportunity.strategy} signal - scanning continues`;
-        }
+        this.state.nextAction = `Waiting for ${bestOpportunity.strategy} signal - scanning continues`;
       }
 
       this.emit('decision', { decision: bestOpportunity, marketData, status: this.getStatus() });

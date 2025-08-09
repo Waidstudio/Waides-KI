@@ -91,13 +91,13 @@ export class WaidesFullEngine {
     this.symbol = symbol;
     this.quoteAmount = quoteAmount;
     this.engineMetrics = {
-      cpu_usage: 0,
-      memory_usage: 0,
-      loop_latency: 0,
-      active_trades: 0,
-      total_trades: 0,
-      win_rate: 0,
-      emotional_temperature: 0,
+      cpu_usage: 0, // Real system data when available
+      memory_usage: 0, // Real system data when available
+      loop_latency: 0, // Real system data when available
+      active_trades: 0, // Starts at 0, grows with real trades
+      total_trades: 0, // Starts at 0, grows with real trades
+      win_rate: 0, // Starts at 0, grows with real performance
+      emotional_temperature: 0, // Real data based on actual market conditions
       risk_level: 'MEDIUM'
     };
   }

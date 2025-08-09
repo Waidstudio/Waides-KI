@@ -31,16 +31,16 @@ export class SmaiChinnikstahBot {
   private connectedBots: string[] = ['WaidBot', 'WaidBot Pro', 'Nwaora Chigozie'];
   
   private currentBalance = {
-    totalValue: 15000,
-    availableForTrading: 12000,
-    lockedInTrades: 3000,
+    totalValue: 0, // Start at 0, will grow with real trades
+    availableForTrading: 0,
+    lockedInTrades: 0,
   };
   
   private performance = {
-    totalTrades: 342,
-    winRate: 89.7,
-    dailyProfit: 847.25,
-    energyDistributed: 8720,
+    totalTrades: 0, // Start at 0, will grow with real trades
+    winRate: 0,
+    dailyProfit: 0,
+    energyDistributed: 0,
   };
   
   private recentTrades: any[] = [];
@@ -76,7 +76,7 @@ export class SmaiChinnikstahBot {
       ];
     } catch (error) {
       console.error('❌ SmaiChinnikstah failed to initialize with real ETH data:', error);
-      this.recentTrades = [];
+      this.recentTrades = []; // Start with no trades until real data available
     }
   }
 
