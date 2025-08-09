@@ -93,6 +93,7 @@ import NeuralTradingPage from "@/pages/NeuralTradingPage";
 import QuantumAnalyticsPage from "@/pages/QuantumAnalyticsPage";
 import BiometricAuthPage from "@/pages/BiometricAuthPage";
 import MarketScannerPage from "@/pages/MarketScannerPage";
+import KYCVerificationPage from "@/pages/KYCVerificationPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -518,6 +519,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <MarketScannerPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/kyc-verification">
+            {() => (
+              <ProtectedRoute>
+                <KYCVerificationPage />
               </ProtectedRoute>
             )}
           </Route>

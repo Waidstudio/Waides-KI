@@ -8054,6 +8054,188 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===============================
+  // KYC Verification System API Endpoints
+  // ===============================
+
+  // Get KYC status for current user
+  app.get("/api/kyc/status", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?.userId || '1';
+      
+      // Get KYC status from storage or default values
+      const kycStatus = {
+        overall: 'not_started',
+        completionPercentage: 0,
+        documents: [],
+        personalInfo: {
+          fullName: '',
+          dateOfBirth: '',
+          address: '',
+          nationality: '',
+          phoneNumber: ''
+        },
+        riskScore: 0,
+        kycLevel: 'basic',
+        lastUpdated: new Date().toISOString()
+      };
+
+      res.json(kycStatus);
+    } catch (error: any) {
+      console.error('Error fetching KYC status:', error);
+      res.status(500).json({ error: 'Failed to fetch KYC status' });
+    }
+  });
+
+  // Upload KYC document
+  app.post("/api/kyc/upload-document", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?.userId || '1';
+      
+      // Handle document upload (this would typically save to file storage)
+      const documentType = req.body.documentType;
+      
+      // Simulate AI verification score
+      const aiVerificationScore = Math.floor(Math.random() * 20) + 80; // 80-100%
+      
+      // Create document record
+      const document = {
+        id: Date.now().toString(),
+        type: documentType,
+        status: 'uploaded',
+        fileName: `document_${Date.now()}`,
+        uploadDate: new Date().toISOString(),
+        aiVerificationScore,
+        konsaiValidation: aiVerificationScore > 85
+      };
+
+      res.json({
+        success: true,
+        document,
+        message: 'Document uploaded successfully'
+      });
+    } catch (error: any) {
+      console.error('Error uploading document:', error);
+      res.status(500).json({ error: 'Failed to upload document' });
+    }
+  });
+
+  // Submit personal information
+  app.post("/api/kyc/personal-info", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?.userId || '1';
+      const personalInfo = req.body;
+      
+      // Validate personal information
+      const requiredFields = ['fullName', 'dateOfBirth', 'address', 'nationality', 'phoneNumber'];
+      const missingFields = requiredFields.filter(field => !personalInfo[field]);
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({ 
+          error: `Missing required fields: ${missingFields.join(', ')}` 
+        });
+      }
+
+      // Save personal information (would typically save to database)
+      res.json({
+        success: true,
+        message: 'Personal information saved successfully'
+      });
+    } catch (error: any) {
+      console.error('Error saving personal information:', error);
+      res.status(500).json({ error: 'Failed to save personal information' });
+    }
+  });
+
+  // Trigger KonsAI verification
+  app.post("/api/kyc/trigger-verification", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?.userId || '1';
+      
+      // Simulate KonsAI verification process
+      const verificationResult = {
+        verificationId: `kyc_${Date.now()}`,
+        status: 'processing',
+        estimatedCompletion: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5 minutes
+        aiScore: Math.floor(Math.random() * 20) + 75, // 75-95%
+        riskAssessment: 'low',
+        konsaiValidation: true
+      };
+
+      // Simulate updating overall KYC status
+      setTimeout(() => {
+        // In real implementation, this would update the database
+        console.log(`KYC verification completed for user ${userId}`);
+      }, 3000);
+
+      res.json({
+        success: true,
+        verificationResult,
+        message: 'KonsAI verification initiated successfully'
+      });
+    } catch (error: any) {
+      console.error('Error triggering verification:', error);
+      res.status(500).json({ error: 'Failed to trigger verification' });
+    }
+  });
+
+  // Get KYC verification history
+  app.get("/api/kyc/history", requireAnyAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id || req.user?.userId || '1';
+      
+      // Return verification history (would typically query database)
+      const history = [
+        {
+          id: '1',
+          action: 'Personal information submitted',
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          status: 'completed'
+        },
+        {
+          id: '2',
+          action: 'Government ID uploaded',
+          timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+          status: 'completed'
+        },
+        {
+          id: '3',
+          action: 'KonsAI verification initiated',
+          timestamp: new Date().toISOString(),
+          status: 'processing'
+        }
+      ];
+
+      res.json({ history });
+    } catch (error: any) {
+      console.error('Error fetching KYC history:', error);
+      res.status(500).json({ error: 'Failed to fetch KYC history' });
+    }
+  });
+
+  // Check if user is KYC verified (for use by other services)
+  app.get("/api/kyc/verification-status/:userId", async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      
+      // Check KYC status (would typically query database)
+      const isVerified = false; // Default to not verified
+      const kycLevel = 'basic';
+      const riskScore = 25;
+
+      res.json({
+        userId,
+        isVerified,
+        kycLevel,
+        riskScore,
+        lastVerified: isVerified ? new Date().toISOString() : null
+      });
+    } catch (error: any) {
+      console.error('Error checking verification status:', error);
+      res.status(500).json({ error: 'Failed to check verification status' });
+    }
+  });
+
   // Enhanced WebSocket status endpoint
   app.get("/api/websocket/status", (req, res) => {
     try {

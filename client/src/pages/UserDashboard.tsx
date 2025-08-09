@@ -168,6 +168,14 @@ const UserDashboard = () => {
       color: 'bg-gradient-to-r from-cyan-500 to-blue-500',
       href: '/holographic-ui',
       badge: 'FUTURE'
+    },
+    {
+      title: 'KYC Verification',
+      description: 'Secure identity verification with KonsAI',
+      icon: Shield,
+      color: 'bg-gradient-to-r from-green-500 to-emerald-500',
+      href: '/kyc-verification',
+      badge: 'SECURE'
     }
   ];
 

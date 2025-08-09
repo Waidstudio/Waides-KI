@@ -166,7 +166,8 @@ const StableNavigation = () => {
         { name: 'Expanded Config', path: '/expanded-config', description: 'Advanced settings', icon: Layers },
         { name: 'SMS Config', path: '/sms-config', description: 'SMS settings', icon: MessageCircle },
         { name: 'API Documentation', path: '/api-docs', description: 'API reference', icon: BookOpen },
-        { name: 'Security', path: '/security', description: 'Security settings', icon: Lock }
+        { name: 'Security', path: '/security', description: 'Security settings', icon: Lock },
+        { name: 'KYC Verification', path: '/kyc-verification', description: 'Identity verification', icon: Shield }
       ]
     }
   ];
