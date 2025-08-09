@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Shield, 
   Lock, 
-  Crown, 
   Settings, 
   TrendingUp, 
   Headphones, 
@@ -32,7 +31,6 @@ interface AdminLevel {
 
 const getAdminIcon = (iconName: string) => {
   const icons = {
-    Crown,
     Settings,
     TrendingUp,
     Headphones,
@@ -43,7 +41,6 @@ const getAdminIcon = (iconName: string) => {
 
 const getColorClasses = (color: string) => {
   const colorMap = {
-    red: 'bg-red-500/20 border-red-500/30 text-red-400',
     purple: 'bg-purple-500/20 border-purple-500/30 text-purple-400',
     blue: 'bg-blue-500/20 border-blue-500/30 text-blue-400',
     green: 'bg-green-500/20 border-green-500/30 text-green-400',
@@ -320,20 +317,7 @@ function UnifiedAdminLogin() {
           </Card>
         </div>
 
-        {/* Superior Admin Access Link */}
-        <div className="text-center">
-          <p className="text-slate-400 text-sm">
-            Need superior admin access?{' '}
-            <Button
-              type="button"
-              variant="link"
-              onClick={() => setLocation('/super-admin-login')}
-              className="text-red-400 hover:text-red-300 p-0 h-auto"
-            >
-              Superior Admin Portal
-            </Button>
-          </p>
-        </div>
+
       </div>
     </div>
   );

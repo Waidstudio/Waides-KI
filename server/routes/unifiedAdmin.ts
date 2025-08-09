@@ -45,7 +45,7 @@ router.post('/login', async (req: Request, res: Response) => {
           level: admin.level,
           displayName: admin.name,
           department: 'Administration',
-          permissions: admin.level === 'super' ? ['*'] : [`${admin.level}.*`],
+          permissions: [`${admin.level}.*`],
           dashboardRoute: `/${admin.level}-admin-dashboard`
         },
         token: demoToken,
