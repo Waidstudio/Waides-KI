@@ -632,28 +632,8 @@ export default function WaidbotEnginePageEnhanced() {
     },
   });
 
-  // Nwaora Chigozie Bot mutations
-  const startNwaoraChigozie = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/divine-bots/nwaora-chigozie/start', { method: 'POST' });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
-      triggerCelebration('nwaora-chigozie-start', celebrationMessages.botActivated('Nwaora Chigozie ε'), 'activation');
-    },
-  });
-
-  const stopNwaoraChigozie = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/divine-bots/nwaora-chigozie/stop', { method: 'POST' });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/divine-bots/nwaora-chigozie/status'] });
-      triggerCelebration('nwaora-chigozie-stop', celebrationMessages.botStopped('Nwaora Chigozie ε'), 'success');
-    },
-  });
+  // Nwaora Chigozie ε is Always-On Guardian System - No manual controls
+  // This bot operates continuously as a safety guardian and cannot be manually started/stopped
 
   // Enhanced bot information
   const botDetails: Record<string, DetailedBotInfo> = {
@@ -1740,33 +1720,18 @@ export default function WaidbotEnginePageEnhanced() {
                 </div>
               </div>
 
-              {/* Control Buttons */}
+              {/* Always-On Guardian Status - No Manual Controls */}
               <div className="flex space-x-2">
-                <CelebrationTooltip 
-                  celebration={celebrations['nwaora-chigozie-start'] || celebrations['nwaora-chigozie-stop']}
-                  onClear={() => clearCelebration(celebrations['nwaora-chigozie-start'] ? 'nwaora-chigozie-start' : 'nwaora-chigozie-stop')}
-                >
-                  <Button
-                    onClick={() => nwaoraChigozieStatus?.isActive ? stopNwaoraChigozie.mutate() : startNwaoraChigozie.mutate()}
-                    disabled={startNwaoraChigozie.isPending || stopNwaoraChigozie.isPending}
-                    className={`flex-1 ${nwaoraChigozieStatus?.isActive 
-                      ? 'bg-red-600 hover:bg-red-700 text-white' 
-                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    }`}
-                  >
-                    {nwaoraChigozieStatus?.isActive ? (
-                      <>
-                        <Pause className="w-4 h-4 mr-2" />
-                        Stop
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 mr-2" />
-                        Start
-                      </>
-                    )}
-                  </Button>
-                </CelebrationTooltip>
+                <div className="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 text-white px-4 py-2 rounded-md">
+                  <div className="flex items-center justify-center space-x-2">
+                    <Shield className="w-4 h-4" />
+                    <span className="text-sm font-medium">Always-On Guardian</span>
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                  <div className="text-xs text-center text-emerald-100 mt-1">
+                    24/7 Safety & Monitoring
+                  </div>
+                </div>
                 <Button 
                   variant="outline" 
                   className="border-emerald-400/40 text-emerald-400 hover:bg-emerald-400/10"

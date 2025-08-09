@@ -3862,7 +3862,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/waidbot-engine/:botId/start", async (req, res) => {
     try {
       const { botId } = req.params;
-      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine', 'nwaora-chigozie'];
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine'];
+      // Note: Nwaora Chigozie is always-on guardian and cannot be manually started
       
       console.log(`🔧 Generic start route called for botId: ${botId}`);
       
@@ -3917,7 +3918,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/waidbot-engine/:botId/stop", async (req, res) => {
     try {
       const { botId } = req.params;
-      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine', 'nwaora-chigozie'];
+      const validBots = ['waidbot', 'waidbot-pro', 'autonomous', 'maibot', 'alpha', 'beta', 'full-engine'];
+      // Note: Nwaora Chigozie is always-on guardian and cannot be manually stopped
       
       console.log(`🔧 Generic stop route called for botId: ${botId}`);
       
@@ -6696,28 +6698,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Nwaora Chigozie Control Endpoints
-  app.post("/api/waidbot-engine/nwaora-chigozie/start", async (req, res) => {
-    try {
-      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
-      const result = nwaoraChigozieBot.start();
-      res.json(result);
-    } catch (error) {
-      console.error('❌ Error starting Nwaora Chigozie:', error);
-      res.status(500).json({ success: false, message: 'Failed to start Nwaora Chigozie' });
-    }
-  });
-
-  app.post("/api/waidbot-engine/nwaora-chigozie/stop", async (req, res) => {
-    try {
-      const nwaoraChigozieBot = await serviceRegistry.get('nwaoraChigozieBot');
-      const result = nwaoraChigozieBot.stop();
-      res.json(result);
-    } catch (error) {
-      console.error('❌ Error stopping Nwaora Chigozie:', error);
-      res.status(500).json({ success: false, message: 'Failed to stop Nwaora Chigozie' });
-    }
-  });
+  // Nwaora Chigozie ε - Always-On Guardian System
+  // No start/stop endpoints - this bot runs continuously as a safety guardian
 
   app.get("/api/waidbot-engine/nwaora-chigozie/balance", async (req, res) => {
     try {
@@ -10615,31 +10597,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Start/Stop Nwaora Chigozie Bot
+  // Nwaora Chigozie ε is Always-On Guardian - No start/stop actions allowed
   app.post("/api/divine-bots/nwaora-chigozie/:action", async (req, res) => {
-    try {
-      const { action } = req.params;
-      const bot = await getNwaoraChigozieBot();
-      
-      let result;
-      if (action === 'start') {
-        result = bot.start();
-      } else if (action === 'stop') {
-        result = bot.stop();
-      } else {
-        return res.status(400).json({ error: 'Invalid action. Use start or stop.' });
-      }
-      
-      res.json({ 
-        ...result,
-        action,
-        timestamp: new Date().toISOString(),
-        status: bot.getStatus()
-      });
-    } catch (error) {
-      console.error('❌ Nwaora Chigozie toggle error:', error);
-      res.status(500).json({ error: 'Failed to toggle Nwaora Chigozie Bot' });
-    }
+    res.status(400).json({ 
+      error: 'Nwaora Chigozie ε is an always-on guardian system and cannot be manually controlled',
+      message: 'This bot operates continuously as a safety guardian for system protection',
+      guardianMode: 'ALWAYS_ACTIVE'
+    });
   });
 
   // Nwaora Chigozie Backup Operations
