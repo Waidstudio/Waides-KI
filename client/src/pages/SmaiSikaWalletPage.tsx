@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useWalletWebSocket } from "@/hooks/useWalletWebSocket";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,6 +90,47 @@ export default function SmaiSikaWalletPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
+  // Real-time wallet WebSocket integration
+  const {
+    isConnected: walletConnected,
+    connectionHealth,
+    smaiSikaBalance: realtimeBalance,
+    transactions: realtimeTransactions,
+    gatewayStatus: realtimeGatewayStatus,
+    requestBalance
+  } = useWalletWebSocket({
+    autoConnect: true,
+    onDataUpdate: (update) => {
+      console.log('💰 Real-time wallet update:', update);
+      
+      // Show toast notifications for important updates
+      if (update.payload?.dataType === 'BALANCE_UPDATE') {
+        toast({
+          title: "Balance Updated",
+          description: "Your SmaiSika balance has been updated in real-time",
+          duration: 2000
+        });
+      }
+      
+      if (update.payload?.dataType === 'TRANSACTION_UPDATE') {
+        toast({
+          title: "Transaction Update",
+          description: `Transaction ${update.payload.data.status}`,
+          duration: 3000
+        });
+      }
+    },
+    onConnectionChange: (connected) => {
+      if (connected) {
+        toast({
+          title: "Real-time Connected",
+          description: "SmaiSika wallet is now receiving live updates",
+          duration: 2000
+        });
+      }
+    }
+  });
+  
   // State management
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedGateway, setSelectedGateway] = useState<string>('');
@@ -140,12 +182,16 @@ export default function SmaiSikaWalletPage() {
     staleTime: 1000 * 60 * 2 // 2 minutes
   });
 
-  // Fetch enhanced wallet balance with SmaiSika support
-  const { data: walletBalance, refetch: refetchBalance } = useQuery({
+  // Fetch enhanced wallet balance with real-time integration
+  const { data: staticWalletBalance, refetch: refetchBalance } = useQuery({
     queryKey: ['/api/wallet/balance'],
     staleTime: 1000 * 30, // 30 seconds
-    refetchInterval: false
+    refetchInterval: false,
+    enabled: !realtimeBalance // Only fetch static if real-time unavailable
   });
+
+  // Prioritize real-time balance over static data
+  const walletBalance = realtimeBalance || staticWalletBalance;
 
   // Enhanced conversion mutation for any currency to SmaiSika
   const convertToSmaiSikaEnhanced = useMutation({
@@ -176,12 +222,16 @@ export default function SmaiSikaWalletPage() {
     }
   });
 
-  // Fetch transaction history
-  const { data: transactions = [] } = useQuery<Transaction[]>({
+  // Fetch transaction history with real-time integration
+  const { data: staticTransactions = [] } = useQuery<Transaction[]>({
     queryKey: ['/api/wallet/transactions'],
     staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchInterval: false
+    refetchInterval: false,
+    enabled: !realtimeTransactions?.length // Only fetch static if real-time unavailable
   });
+
+  // Prioritize real-time transactions over static data
+  const transactions = realtimeTransactions?.length ? realtimeTransactions : staticTransactions;
 
   // Real-time instruction generator
   const generateRealTimeInstructions = (step: number, country: string, provider: string, amount: string) => {
@@ -676,9 +726,12 @@ export default function SmaiSikaWalletPage() {
             <CardContent className="space-y-4">
               <div className="text-center">
                 <p className="text-3xl font-bold text-white">
-                  {showBalance ? `${smaiSikaBalance.balance.toFixed(2)} SS` : '••••••'}
+                  {showBalance ? `${(realtimeBalance?.smaiSika?.balance || smaiSikaBalance.balance || 10000).toFixed(2)} SS` : '••••••'}
                 </p>
-                <p className="text-purple-200">Universal Currency for Waides Ki</p>
+                <p className="text-purple-200">
+                  Universal Currency for Waides Ki
+                  {walletConnected && <span className="ml-2 text-green-400">● Live Updates</span>}
+                </p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">

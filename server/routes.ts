@@ -14263,11 +14263,15 @@ Ask me about specific market conditions, upload files for analysis, or request K
   const { konsMeshManager } = await import('./websocket/konsMeshWebSocket.js');
   konsMeshManager.initialize(server);
   
-  // 2. WaidChat WebSocket for community features
+  // 2. Wallet WebSocket for real-time SmaiSika integration
+  const { walletWebSocketManager } = await import('./websocket/walletWebSocket.js');
+  walletWebSocketManager.initialize(server);
+  
+  // 3. WaidChat WebSocket for community features
   const { chatWebSocketManager } = await import('./websocket/chatWebSocket.js');
   chatWebSocketManager.initialize(server);
   
-  console.log('🌐 Enhanced WebSocket infrastructure operational');
+  console.log('🌐 Enhanced WebSocket infrastructure operational (KonsMesh + Wallet + Chat)');
 
   // Initialize default chat rooms and moderators
   const { comprehensiveChatService } = await import('./services/comprehensiveChatService.js');
