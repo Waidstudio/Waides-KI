@@ -23,7 +23,7 @@ import {
   Calendar,
   RefreshCw
 } from "lucide-react";
-import { useUserAuth } from "@/contexts/UserAuthContext";
+import { useUserAuth } from "@/context/UserAuthContext";
 
 interface UserAnalytics {
   totalTrades: number;

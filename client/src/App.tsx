@@ -26,6 +26,7 @@ import GlobalFooterNav from "@/components/ui/GlobalFooterNav";
 import ProfessionalLanding from "@/components/ui/ProfessionalLanding";
 import HomePage from "@/components/HomePage";
 import ProfessionalWalletPage from "@/pages/ProfessionalWalletPage";
+import AnalyticsPage from "@/pages/AnalyticsPage";
 import AboutWaidesKI from "@/pages/AboutWaidesKI";
 import EnhancedWalletPage from "@/pages/EnhancedWalletPage";
 import LoginPage from "@/pages/LoginPage";
@@ -189,6 +190,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <ProfessionalWalletPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/analytics">
+            {() => (
+              <ProtectedRoute>
+                <AnalyticsPage />
               </ProtectedRoute>
             )}
           </Route>
