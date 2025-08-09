@@ -248,7 +248,7 @@ const StableNavigation = () => {
             <div className="relative" ref={(el) => { dropdownRefs.current['trading-mode'] = el; }}>
               <button
                 onClick={() => toggleDropdown('trading-mode')}
-                className={`p-1 rounded-full transition-all duration-200 ${
+                className={`p-2 rounded-lg transition-all duration-200 ${
                   globalTradingMode === 'demo' 
                     ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30' 
                     : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
@@ -256,9 +256,9 @@ const StableNavigation = () => {
                 title={globalTradingMode === 'demo' ? 'Demo Mode' : 'Real Trading'}
               >
                 {globalTradingMode === 'demo' ? (
-                  <TestTube className="h-3 w-3" />
+                  <TestTube className="h-4 w-4" />
                 ) : (
-                  <DollarSign className="h-3 w-3" />
+                  <DollarSign className="h-4 w-4" />
                 )}
               </button>
 
@@ -319,23 +319,23 @@ const StableNavigation = () => {
 
             {/* Chat Icon */}
             <Link href="/waidchat">
-              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1 rounded-md">
-                <MessageCircle className="h-3 w-3" />
-                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-xs bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2 rounded-lg mx-1">
+                <MessageCircle className="h-4 w-4" />
+                <span className="absolute -top-1 -right-1 h-4 w-4 text-xs bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
                   2
                 </span>
               </button>
             </Link>
 
             {/* Notifications */}
-            <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
+            <div className="relative mx-1" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
               <button
                 onClick={() => toggleDropdown('notifications')}
-                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1 rounded-md"
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-2 rounded-lg"
               >
-                <Bell className="h-3 w-3" />
+                <Bell className="h-4 w-4" />
                 {notificationCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-xs bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold animate-pulse">
+                  <span className="absolute -top-1 -right-1 h-4 w-4 text-xs bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold animate-pulse">
                     {notificationCount}
                   </span>
                 )}
@@ -389,17 +389,15 @@ const StableNavigation = () => {
             </div>
 
             {/* Profile Dropdown */}
-            <div className="relative" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+            <div className="relative mx-1" ref={(el) => { dropdownRefs.current['profile'] = el; }}>
+              <button
                 onClick={() => toggleDropdown('profile')}
-                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 flex items-center space-x-2 p-2"
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 flex items-center space-x-2 p-2 rounded-lg"
               >
-                <User className="h-5 w-5" />
+                <User className="h-4 w-4" />
                 {user && <span className="text-sm hidden lg:block">{user.username}</span>}
                 <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${activeDropdown === 'profile' ? 'rotate-180' : ''}`} />
-              </Button>
+              </button>
 
               {/* Profile Dropdown */}
               {activeDropdown === 'profile' && (
