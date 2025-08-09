@@ -243,12 +243,12 @@ const StableNavigation = () => {
           </div>
 
           {/* User Actions - Trading Mode, Chat, Notifications, Profile */}
-          <div className="flex items-center space-x-1 ml-2">
+          <div className="flex items-center">
             {/* Mini Trading Mode Icon */}
             <div className="relative" ref={(el) => { dropdownRefs.current['trading-mode'] = el; }}>
               <button
                 onClick={() => toggleDropdown('trading-mode')}
-                className={`p-1.5 rounded-full transition-all duration-200 ${
+                className={`p-1 rounded-full transition-all duration-200 ${
                   globalTradingMode === 'demo' 
                     ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30' 
                     : 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
@@ -256,9 +256,9 @@ const StableNavigation = () => {
                 title={globalTradingMode === 'demo' ? 'Demo Mode' : 'Real Trading'}
               >
                 {globalTradingMode === 'demo' ? (
-                  <TestTube className="h-3.5 w-3.5" />
+                  <TestTube className="h-3 w-3" />
                 ) : (
-                  <DollarSign className="h-3.5 w-3.5" />
+                  <DollarSign className="h-3 w-3" />
                 )}
               </button>
 
@@ -319,9 +319,9 @@ const StableNavigation = () => {
 
             {/* Chat Icon */}
             <Link href="/waidchat">
-              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1.5 rounded-md">
-                <MessageCircle className="h-4 w-4" />
-                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 text-xs bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+              <button className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1 rounded-md">
+                <MessageCircle className="h-3 w-3" />
+                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-xs bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   2
                 </span>
               </button>
@@ -331,11 +331,11 @@ const StableNavigation = () => {
             <div className="relative" ref={(el) => { dropdownRefs.current['notifications'] = el; }}>
               <button
                 onClick={() => toggleDropdown('notifications')}
-                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1.5 rounded-md"
+                className="relative text-gray-300 hover:text-white hover:bg-slate-700/50 transition-all duration-200 p-1 rounded-md"
               >
-                <Bell className="h-4 w-4" />
+                <Bell className="h-3 w-3" />
                 {notificationCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 h-3 w-3 text-xs bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold animate-pulse">
+                  <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-xs bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold animate-pulse">
                     {notificationCount}
                   </span>
                 )}
