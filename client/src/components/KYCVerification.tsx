@@ -111,10 +111,17 @@ export const KYCVerification: React.FC = () => {
   // Personal info submission mutation
   const submitPersonalInfoMutation = useMutation({
     mutationFn: async (info: any) => {
-      return apiRequest('/api/kyc/personal-info', {
+      const response = await fetch('/api/kyc/personal-info', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(info)
       });
+      if (!response.ok) {
+        throw new Error('Failed to submit personal information');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -136,9 +143,16 @@ export const KYCVerification: React.FC = () => {
   // KYC verification trigger mutation
   const triggerVerificationMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('/api/kyc/trigger-verification', {
-        method: 'POST'
+      const response = await fetch('/api/kyc/trigger-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
+      if (!response.ok) {
+        throw new Error('Failed to trigger verification');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
