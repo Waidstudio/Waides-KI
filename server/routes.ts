@@ -8220,7 +8220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 20000,
           dailyProfit: 1234
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('alpha'),
         liveActivity: [
           "🧠 Neural network training active",
           "📊 Pattern recognition: 91% accuracy",
@@ -8262,7 +8262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalInvested: 15000,
           dailyProfit: 678
         },
-        tradingMode: 'demo', // Default to demo for safe testing
+        tradingMode: getTradingMode('beta'),
         liveActivity: [
           "🛡️ Risk management active",
           "⚖️ Portfolio balance: optimal",
