@@ -34,6 +34,14 @@ class RealTimeMaibot {
     };
     this.pendingSignals = [];
     
+    // Initialize gamified metrics
+    this.gamifiedMetrics = {
+      confidenceLevel: 65,
+      lastActive: Date.now(),
+      tradingStreak: 0,
+      experiencePoints: 0
+    };
+    
     console.log(`✅ RealTimeMaibot instance ${this.instanceId} initialized with isActive: ${this.isActive}`);
   }
 

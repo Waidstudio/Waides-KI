@@ -133,8 +133,14 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Check if this is Nwaora Chigozie for special configuration
+  // Bot-specific configurations
+  const isMaibot = botId === 'maibot';
+  const isWaidBot = botId === 'waidbot';
+  const isWaidBotPro = botId === 'waidbot-pro';
+  const isAutonomous = botId === 'autonomous';
+  const isFullEngine = botId === 'full-engine';
   const isNwaoraChigozie = botId === 'nwaora-chigozie';
+  const isSmaiChinnikstah = botId === 'smai-chinnikstah';
 
   // Fetch bot settings
   const { data: settings, isLoading: settingsLoading } = useQuery<BotSettings>({
@@ -267,11 +273,11 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
   if (settingsLoading || profitLossLoading || performanceLoading) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div className="bg-black border border-slate-700 rounded-lg p-8 max-w-md w-full mx-4">
           <div className="text-center">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Loading Enhanced Bot Management</h3>
-            <p className="text-gray-600">Fetching comprehensive bot data...</p>
+            <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-white" />
+            <h3 className="text-lg font-semibold mb-2 text-white">Loading Enhanced Bot Management</h3>
+            <p className="text-slate-400">Fetching comprehensive bot data...</p>
           </div>
         </div>
       </div>
@@ -280,7 +286,7 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-lg max-w-7xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
+      <div className="bg-black border border-slate-700 rounded-lg max-w-7xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
         <div className={`p-4 sm:p-6 border-b ${isNwaoraChigozie 
           ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600' 
           : 'bg-gradient-to-r from-blue-600 to-purple-600'} text-white`}>
@@ -302,9 +308,9 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
           </div>
         </div>
 
-        <div className="overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)]">
+        <div className="overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-120px)] bg-black">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 sticky top-0 bg-white dark:bg-gray-800 z-10 text-xs sm:text-sm">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 sticky top-0 bg-slate-900 border-slate-700 z-10 text-xs sm:text-sm">
               <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
               <TabsTrigger value="settings" className="text-xs sm:text-sm">Settings</TabsTrigger>
               <TabsTrigger value="performance" className="text-xs sm:text-sm hidden sm:block">Performance</TabsTrigger>
@@ -314,11 +320,11 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
             </TabsList>
             
             {/* Mobile-only secondary tab navigation */}
-            <div className="sm:hidden bg-gray-50 dark:bg-gray-800 px-2 py-1">
-              <TabsList className="grid w-full grid-cols-3 h-8">
-                <TabsTrigger value="performance" className="text-xs">Performance</TabsTrigger>
-                <TabsTrigger value="signals" className="text-xs">Signals</TabsTrigger>
-                <TabsTrigger value="trades" className="text-xs">Trades</TabsTrigger>
+            <div className="sm:hidden bg-slate-900 border-slate-700 px-2 py-1">
+              <TabsList className="grid w-full grid-cols-3 h-8 bg-slate-800 border-slate-600">
+                <TabsTrigger value="performance" className="text-xs text-white">Performance</TabsTrigger>
+                <TabsTrigger value="signals" className="text-xs text-white">Signals</TabsTrigger>
+                <TabsTrigger value="trades" className="text-xs text-white">Trades</TabsTrigger>
               </TabsList>
             </div>
 
@@ -470,112 +476,494 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
             </TabsContent>
 
             {/* Settings Tab */}
-            <TabsContent value="settings" className="p-3 sm:p-6">
+            <TabsContent value="settings" className="p-3 sm:p-6 bg-black">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                {/* Special Cosmic Intelligence Settings for Nwaora Chigozie */}
-                {isNwaoraChigozie && (
-                  <Card className="col-span-full border-purple-300 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950">
+                
+                {/* Maibot - Free Tier Settings */}
+                {isMaibot && (
+                  <Card className="col-span-full border-blue-500/30 bg-gradient-to-br from-blue-950/50 to-slate-900/50">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        🌌 Cosmic Intelligence Configuration
-                        <span className="text-purple-500">✨</span>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        🎓 Maibot Learning Assistant Settings
+                        <span className="text-blue-400">📚</span>
                       </CardTitle>
-                      <CardDescription>Divine and spiritual trading parameters</CardDescription>
+                      <CardDescription className="text-slate-300">Free tier trading education and manual approval settings</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="divineIntuition">Divine Intuition Level</Label>
-                          <Select defaultValue="high">
-                            <SelectTrigger className="text-xs sm:text-sm">
+                          <Label htmlFor="learningMode" className="text-white">Learning Mode</Label>
+                          <Select defaultValue="educational">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="low">Low (Earth-based)</SelectItem>
-                              <SelectItem value="medium">Medium (Celestial)</SelectItem>
-                              <SelectItem value="high">High (Divine)</SelectItem>
-                              <SelectItem value="cosmic">Cosmic (Universal)</SelectItem>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="educational">Educational Only</SelectItem>
+                              <SelectItem value="simulation">Paper Trading</SelectItem>
+                              <SelectItem value="guided">Guided Practice</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div className="space-y-2">
-                          <Label htmlFor="spiritualAlignment">Spiritual Alignment</Label>
-                          <Select defaultValue="balanced">
-                            <SelectTrigger className="text-xs sm:text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="aggressive">Aggressive (Fire)</SelectItem>
-                              <SelectItem value="balanced">Balanced (Harmony)</SelectItem>
-                              <SelectItem value="conservative">Conservative (Earth)</SelectItem>
-                              <SelectItem value="transcendent">Transcendent (Light)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="cosmicFrequency">Cosmic Frequency (Hz)</Label>
+                          <Label htmlFor="maxPositionSize" className="text-white">Max Position Size</Label>
                           <Input
-                            id="cosmicFrequency"
                             type="number"
-                            min="432"
-                            max="963"
-                            defaultValue="528"
-                            className="text-xs sm:text-sm"
+                            step="0.001"
+                            max="0.01"
+                            defaultValue="0.005"
+                            className="bg-slate-800 border-slate-600 text-white"
+                            placeholder="0.005 ETH"
                           />
                         </div>
-
                         <div className="space-y-2">
-                          <Label htmlFor="chakraAlignment">Chakra Focus</Label>
-                          <Select defaultValue="crown">
-                            <SelectTrigger className="text-xs sm:text-sm">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="root">Root (Security)</SelectItem>
-                              <SelectItem value="sacral">Sacral (Creativity)</SelectItem>
-                              <SelectItem value="solar">Solar Plexus (Power)</SelectItem>
-                              <SelectItem value="heart">Heart (Balance)</SelectItem>
-                              <SelectItem value="throat">Throat (Communication)</SelectItem>
-                              <SelectItem value="third-eye">Third Eye (Intuition)</SelectItem>
-                              <SelectItem value="crown">Crown (Divine Connection)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-4 mt-4">
-                        <div className="flex items-center space-x-2">
-                          <Switch id="astralProjection" defaultChecked />
-                          <Label htmlFor="astralProjection" className="text-xs sm:text-sm">Enable Astral Projection Trading</Label>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <Switch id="moonPhaseSync" defaultChecked />
-                          <Label htmlFor="moonPhaseSync" className="text-xs sm:text-sm">Synchronize with Moon Phases</Label>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <Switch id="crystalEnergy" />
-                          <Label htmlFor="crystalEnergy" className="text-xs sm:text-sm">Crystal Energy Amplification</Label>
+                          <Label htmlFor="approvalRequired" className="text-white">Manual Approval</Label>
+                          <div className="flex items-center space-x-2">
+                            <Switch defaultChecked />
+                            <span className="text-slate-300 text-sm">Required for all trades</span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
                 )}
 
-                {/* Basic Settings */}
-                <Card className={isNwaoraChigozie ? "border-purple-200" : ""}>
+                {/* WaidBot α - Basic ETH Uptrend */}
+                {isWaidBot && (
+                  <Card className="col-span-full border-green-500/30 bg-gradient-to-br from-green-950/50 to-slate-900/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        📈 WaidBot α Uptrend Specialist Settings
+                        <span className="text-green-400">⬆️</span>
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">ETH uptrend-only trading configuration</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="uptrendConfidence" className="text-white">Uptrend Confidence %</Label>
+                          <Input
+                            type="number"
+                            min="60"
+                            max="95"
+                            defaultValue="75"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="trendTimeframe" className="text-white">Trend Timeframe</Label>
+                          <Select defaultValue="4h">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="1h">1 Hour</SelectItem>
+                              <SelectItem value="4h">4 Hours</SelectItem>
+                              <SelectItem value="1d">1 Day</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="stopLoss" className="text-white">Stop Loss %</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="10"
+                            step="0.1"
+                            defaultValue="3.5"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="takeProfit" className="text-white">Take Profit %</Label>
+                          <Input
+                            type="number"
+                            min="2"
+                            max="20"
+                            step="0.1"
+                            defaultValue="8.0"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* WaidBot Pro β - Bidirectional Trading */}
+                {isWaidBotPro && (
+                  <Card className="col-span-full border-purple-500/30 bg-gradient-to-br from-purple-950/50 to-slate-900/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        ⚡ WaidBot Pro β Advanced Settings
+                        <span className="text-purple-400">🔄</span>
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">Bidirectional KonsAi trading configuration</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="tradingDirection" className="text-white">Trading Direction</Label>
+                          <Select defaultValue="bidirectional">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="long_only">Long Only</SelectItem>
+                              <SelectItem value="short_only">Short Only</SelectItem>
+                              <SelectItem value="bidirectional">Bidirectional</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="konsaiSignals" className="text-white">KonsAi Signal Strength</Label>
+                          <Select defaultValue="medium">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="low">Conservative</SelectItem>
+                              <SelectItem value="medium">Balanced</SelectItem>
+                              <SelectItem value="high">Aggressive</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="leverageMultiplier" className="text-white">Leverage Multiplier</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="5"
+                            step="0.1"
+                            defaultValue="2.0"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="riskPerTrade" className="text-white">Risk Per Trade %</Label>
+                          <Input
+                            type="number"
+                            min="0.5"
+                            max="5"
+                            step="0.1"
+                            defaultValue="2.0"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Autonomous Trader γ - Advanced Autonomous */}
+                {isAutonomous && (
+                  <Card className="col-span-full border-orange-500/30 bg-gradient-to-br from-orange-950/50 to-slate-900/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        🤖 Autonomous Trader γ Settings
+                        <span className="text-orange-400">🧠</span>
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">Advanced autonomous trading configuration</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="autonomyLevel" className="text-white">Autonomy Level</Label>
+                          <Select defaultValue="semi_autonomous">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="manual">Manual Approval</SelectItem>
+                              <SelectItem value="semi_autonomous">Semi-Autonomous</SelectItem>
+                              <SelectItem value="full_autonomous">Full Autonomous</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="aiModelVersion" className="text-white">AI Model Version</Label>
+                          <Select defaultValue="v3_enhanced">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="v2_stable">V2 Stable</SelectItem>
+                              <SelectItem value="v3_enhanced">V3 Enhanced</SelectItem>
+                              <SelectItem value="v4_experimental">V4 Experimental</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="maxConcurrentTrades" className="text-white">Max Concurrent Trades</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="10"
+                            defaultValue="3"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="riskTolerance" className="text-white">Risk Tolerance</Label>
+                          <Select defaultValue="moderate">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="conservative">Conservative</SelectItem>
+                              <SelectItem value="moderate">Moderate</SelectItem>
+                              <SelectItem value="aggressive">Aggressive</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Full Engine Ω - Complete System */}
+                {isFullEngine && (
+                  <Card className="col-span-full border-cyan-500/30 bg-gradient-to-br from-cyan-950/50 to-slate-900/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        🌟 Full Engine Ω Master Control
+                        <span className="text-cyan-400">∞</span>
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">Complete system orchestration and master settings</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="orchestrationMode" className="text-white">Orchestration Mode</Label>
+                          <Select defaultValue="intelligent">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="manual">Manual Control</SelectItem>
+                              <SelectItem value="intelligent">Intelligent Auto</SelectItem>
+                              <SelectItem value="master">Master Override</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="botSyncEnabled" className="text-white">Bot Synchronization</Label>
+                          <div className="flex items-center space-x-2">
+                            <Switch defaultChecked />
+                            <span className="text-slate-300 text-sm">Sync all bots</span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="globalRiskLimit" className="text-white">Global Risk Limit %</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="15"
+                            step="0.5"
+                            defaultValue="5.0"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="diversificationRules" className="text-white">Diversification</Label>
+                          <Select defaultValue="advanced">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="basic">Basic</SelectItem>
+                              <SelectItem value="advanced">Advanced</SelectItem>
+                              <SelectItem value="dynamic">Dynamic</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="emergencyProtocol" className="text-white">Emergency Protocol</Label>
+                          <Select defaultValue="conservative">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="conservative">Conservative</SelectItem>
+                              <SelectItem value="balanced">Balanced</SelectItem>
+                              <SelectItem value="aggressive">Aggressive</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Nwaora Chigozie ε - Guardian System */}
+                {isNwaoraChigozie && (
+                  <Card className="col-span-full border-emerald-500/30 bg-gradient-to-br from-emerald-950/50 to-slate-900/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        🛡️ Nwaora Chigozie ε Guardian Settings
+                        <span className="text-emerald-400">👁️</span>
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">Guardian backup and protection system configuration</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="guardianMode" className="text-white">Guardian Mode</Label>
+                          <Select defaultValue="active_protection">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="passive">Passive Monitoring</SelectItem>
+                              <SelectItem value="active_protection">Active Protection</SelectItem>
+                              <SelectItem value="guardian_override">Guardian Override</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="backupFrequency" className="text-white">Backup Frequency</Label>
+                          <Select defaultValue="real_time">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="hourly">Hourly</SelectItem>
+                              <SelectItem value="real_time">Real-time</SelectItem>
+                              <SelectItem value="every_trade">Every Trade</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="protectedValue" className="text-white">Protected Value $</Label>
+                          <Input
+                            type="number"
+                            min="1000"
+                            max="1000000"
+                            step="1000"
+                            defaultValue="85200"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="interventionThreshold" className="text-white">Intervention Threshold %</Label>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="20"
+                            step="0.5"
+                            defaultValue="5.0"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <Switch defaultChecked />
+                          <span className="text-slate-300 text-sm">Emergency Backup Protocol</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Switch defaultChecked />
+                          <span className="text-slate-300 text-sm">Automatic Recovery</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Switch />
+                          <span className="text-slate-300 text-sm">Guardian Notifications</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* SmaiChinnikstah - Additional SmaiChinnikstah settings if it's a separate bot */}
+                {isSmaiChinnikstah && (
+                  <Card className="col-span-full border-pink-500/30 bg-gradient-to-br from-pink-950/50 to-slate-900/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-white">
+                        💎 SmaiChinnikstah Divine Intelligence
+                        <span className="text-pink-400">✨</span>
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">Advanced cosmic and metaphysical trading configuration</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="divineConnection" className="text-white">Divine Connection Level</Label>
+                          <Select defaultValue="cosmic">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="earthly">Earthly (Basic)</SelectItem>
+                              <SelectItem value="spiritual">Spiritual (Enhanced)</SelectItem>
+                              <SelectItem value="cosmic">Cosmic (Advanced)</SelectItem>
+                              <SelectItem value="universal">Universal (Master)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="energyAlignment" className="text-white">Energy Alignment</Label>
+                          <Select defaultValue="harmony">
+                            <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-600">
+                              <SelectItem value="harmony">Harmony (Balanced)</SelectItem>
+                              <SelectItem value="power">Power (Aggressive)</SelectItem>
+                              <SelectItem value="wisdom">Wisdom (Conservative)</SelectItem>
+                              <SelectItem value="transcendence">Transcendence (Ultimate)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="cosmicFrequency" className="text-white">Cosmic Frequency Hz</Label>
+                          <Input
+                            type="number"
+                            min="432"
+                            max="963"
+                            defaultValue="528"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="intuitionStrength" className="text-white">Intuition Strength %</Label>
+                          <Input
+                            type="number"
+                            min="50"
+                            max="100"
+                            step="5"
+                            defaultValue="85"
+                            className="bg-slate-800 border-slate-600 text-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <Switch defaultChecked />
+                          <span className="text-slate-300 text-sm">Mystical Vision Mode</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Switch defaultChecked />
+                          <span className="text-slate-300 text-sm">Crystal Energy Amplification</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Switch />
+                          <span className="text-slate-300 text-sm">Celestial Event Sync</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Basic Settings - Updated with black theme */}
+                <Card className="border-slate-700 bg-slate-900/50">
                   <CardHeader>
-                    <CardTitle className="text-sm sm:text-base">
+                    <CardTitle className="text-white text-sm sm:text-base">
                       {isNwaoraChigozie ? "Earthly Trading Parameters" : "Basic Settings"}
                     </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Core trading parameters</CardDescription>
+                    <CardDescription className="text-slate-300 text-xs sm:text-sm">Core trading parameters</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3 sm:space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="autoTrading">Auto Trading</Label>
+                      <Label htmlFor="autoTrading" className="text-white">Auto Trading</Label>
                       <Switch
                         id="autoTrading"
                         checked={settings?.settings?.autoTrading || false}
@@ -584,15 +972,15 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="riskLevel">Risk Level</Label>
+                      <Label htmlFor="riskLevel" className="text-white">Risk Level</Label>
                       <Select 
                         value={settings?.settings?.riskLevel || 'moderate'}
                         onValueChange={(value) => handleSettingUpdate('riskLevel', value)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-slate-800 border-slate-600">
                           <SelectItem value="conservative">Conservative</SelectItem>
                           <SelectItem value="moderate">Moderate</SelectItem>
                           <SelectItem value="aggressive">Aggressive</SelectItem>
@@ -601,7 +989,7 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="maxPositionSize">Max Position Size (%)</Label>
+                      <Label htmlFor="maxPositionSize" className="text-white">Max Position Size (%)</Label>
                       <Input
                         id="maxPositionSize"
                         type="number"
@@ -610,53 +998,56 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                         max="1"
                         value={settings?.settings?.maxPositionSize || 0.05}
                         onChange={(e) => handleSettingUpdate('maxPositionSize', parseFloat(e.target.value))}
+                        className="bg-slate-800 border-slate-600 text-white"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="stopLoss">Stop Loss (%)</Label>
+                        <Label htmlFor="stopLoss" className="text-white">Stop Loss (%)</Label>
                         <Input
                           id="stopLoss"
                           type="number"
                           value={settings?.settings?.stopLoss || -5}
                           onChange={(e) => handleSettingUpdate('stopLoss', parseFloat(e.target.value))}
+                          className="bg-slate-800 border-slate-600 text-white"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="takeProfit">Take Profit (%)</Label>
+                        <Label htmlFor="takeProfit" className="text-white">Take Profit (%)</Label>
                         <Input
                           id="takeProfit"
                           type="number"
                           value={settings?.settings?.takeProfit || 10}
                           onChange={(e) => handleSettingUpdate('takeProfit', parseFloat(e.target.value))}
+                          className="bg-slate-800 border-slate-600 text-white"
                         />
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Advanced Settings */}
-                <Card className={isNwaoraChigozie ? "border-purple-200" : ""}>
+                {/* Advanced Settings - Updated with black theme */}
+                <Card className="border-slate-700 bg-slate-900/50">
                   <CardHeader>
-                    <CardTitle className="text-sm sm:text-base">
+                    <CardTitle className="text-white text-sm sm:text-base">
                       {isNwaoraChigozie ? "Divine AI Configuration" : "Advanced Settings"}
                     </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
+                    <CardDescription className="text-slate-300 text-xs sm:text-sm">
                       {isNwaoraChigozie ? "Spiritual AI and cosmic strategy configuration" : "AI and strategy configuration"}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3 sm:space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="activeStrategy">Active Strategy</Label>
+                      <Label htmlFor="activeStrategy" className="text-white">Active Strategy</Label>
                       <Select 
                         value={settings?.settings?.activeStrategy || 'trend_following'}
                         onValueChange={(value) => handleSettingUpdate('activeStrategy', value)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-slate-800 border-slate-600">
                           {settings?.settings?.strategies?.map((strategy: string) => (
                             <SelectItem key={strategy} value={strategy}>
                               {strategy.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
@@ -667,15 +1058,15 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="activeTimeframe">Active Timeframe</Label>
+                      <Label htmlFor="activeTimeframe" className="text-white">Active Timeframe</Label>
                       <Select 
                         value={settings?.settings?.activeTimeframe || '15m'}
                         onValueChange={(value) => handleSettingUpdate('activeTimeframe', value)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-slate-800 border-slate-600">
                           {settings?.settings?.timeframes?.map((timeframe: string) => (
                             <SelectItem key={timeframe} value={timeframe}>
                               {timeframe}
@@ -686,43 +1077,28 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="maxDailyTrades">Max Daily Trades</Label>
+                      <Label htmlFor="maxDailyTrades" className="text-white">Max Daily Trades</Label>
                       <Input
                         id="maxDailyTrades"
                         type="number"
                         min="1"
                         value={settings?.settings?.maxDailyTrades || 10}
                         onChange={(e) => handleSettingUpdate('maxDailyTrades', parseInt(e.target.value))}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="confidenceThreshold">Confidence Threshold</Label>
-                      <Input
-                        id="confidenceThreshold"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max="1"
-                        value={settings?.settings?.advanced?.confidenceThreshold || 0.7}
-                        onChange={(e) => handleSettingUpdate('advanced', {
-                          ...settings?.settings?.advanced,
-                          confidenceThreshold: parseFloat(e.target.value)
-                        })}
+                        className="bg-slate-800 border-slate-600 text-white"
                       />
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Emergency Controls */}
-                <Card>
+                <Card className="border-slate-700 bg-slate-900/50">
                   <CardHeader>
-                    <CardTitle>Emergency Controls</CardTitle>
-                    <CardDescription>Safety and risk management</CardDescription>
+                    <CardTitle className="text-white">Emergency Controls</CardTitle>
+                    <CardDescription className="text-slate-300">Safety and risk management</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="emergencyStopEnabled">Emergency Stop Enabled</Label>
+                      <Label htmlFor="emergencyStopEnabled" className="text-white">Emergency Stop Enabled</Label>
                       <Switch
                         id="emergencyStopEnabled"
                         checked={settings?.settings?.emergencyStop?.enabled || false}
@@ -734,7 +1110,7 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="maxDailyLoss">Max Daily Loss ($)</Label>
+                      <Label htmlFor="maxDailyLoss" className="text-white">Max Daily Loss ($)</Label>
                       <Input
                         id="maxDailyLoss"
                         type="number"
@@ -743,11 +1119,12 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                           ...settings?.settings?.emergencyStop,
                           maxDailyLoss: parseFloat(e.target.value)
                         })}
+                        className="bg-slate-800 border-slate-600 text-white"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="consecutiveLossLimit">Consecutive Loss Limit</Label>
+                      <Label htmlFor="consecutiveLossLimit" className="text-white">Consecutive Loss Limit</Label>
                       <Input
                         id="consecutiveLossLimit"
                         type="number"
@@ -757,20 +1134,21 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                           ...settings?.settings?.emergencyStop,
                           consecutiveLossLimit: parseInt(e.target.value)
                         })}
+                        className="bg-slate-800 border-slate-600 text-white"
                       />
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Notifications */}
-                <Card>
+                <Card className="border-slate-700 bg-slate-900/50">
                   <CardHeader>
-                    <CardTitle>Notifications</CardTitle>
-                    <CardDescription>Alert preferences</CardDescription>
+                    <CardTitle className="text-white">Notifications</CardTitle>
+                    <CardDescription className="text-slate-300">Alert preferences</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="emailNotifications">Email Notifications</Label>
+                      <Label htmlFor="emailNotifications" className="text-white">Email Notifications</Label>
                       <Switch
                         id="emailNotifications"
                         checked={settings?.settings?.notifications?.email || false}
@@ -782,7 +1160,7 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="inAppNotifications">In-App Notifications</Label>
+                      <Label htmlFor="inAppNotifications" className="text-white">In-App Notifications</Label>
                       <Switch
                         id="inAppNotifications"
                         checked={settings?.settings?.notifications?.inApp !== false}
@@ -795,7 +1173,7 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="profitThreshold">Profit Alert ($)</Label>
+                        <Label htmlFor="profitThreshold" className="text-white">Profit Alert ($)</Label>
                         <Input
                           id="profitThreshold"
                           type="number"
@@ -804,10 +1182,11 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                             ...settings?.settings?.notifications,
                             profitThreshold: parseFloat(e.target.value)
                           })}
+                          className="bg-slate-800 border-slate-600 text-white"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="lossThreshold">Loss Alert ($)</Label>
+                        <Label htmlFor="lossThreshold" className="text-white">Loss Alert ($)</Label>
                         <Input
                           id="lossThreshold"
                           type="number"
@@ -816,6 +1195,7 @@ export default function EnhancedBotManagement({ botId, botName, onClose }: Enhan
                             ...settings?.settings?.notifications,
                             lossThreshold: parseFloat(e.target.value)
                           })}
+                          className="bg-slate-800 border-slate-600 text-white"
                         />
                       </div>
                     </div>
