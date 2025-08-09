@@ -20,7 +20,7 @@ import {
 interface MiningSession {
   sessionId: string;
   userId: number;
-  miningType: 'cpu' | 'gpu' | 'quiz' | 'puzzle';
+  miningType: 'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu';
   difficulty: number;
   isActive: boolean;
   startTime: string;
@@ -28,6 +28,8 @@ interface MiningSession {
   hashRate: number;
   estimatedReward: string;
   smaiOnyixScore: number;
+  realCryptocurrency?: string;
+  miningPool?: string;
 }
 
 interface UserStats {
@@ -49,7 +51,7 @@ interface Challenge {
 
 export default function SmaisikaMining() {
   const [activeMiningSession, setActiveMiningSession] = useState<MiningSession | null>(null);
-  const [miningType, setMiningType] = useState<'cpu' | 'gpu' | 'quiz' | 'puzzle'>('cpu');
+  const [miningType, setMiningType] = useState<'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu'>('monero');
   const [difficulty, setDifficulty] = useState(1);
   const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
   const [challengeAnswer, setChallengeAnswer] = useState('');
@@ -82,6 +84,18 @@ export default function SmaisikaMining() {
     queryKey: ['/api/smaisika/exchange-rates']
   });
 
+  // Fetch admin wallet reserves
+  const { data: adminReservesData } = useQuery({
+    queryKey: ['/api/smaisika/admin-reserves'],
+    refetchInterval: 15000
+  });
+
+  // Fetch mining pool status
+  const { data: miningPoolsData } = useQuery({
+    queryKey: ['/api/smaisika/mining-pools'],
+    refetchInterval: 20000
+  });
+
   // Mining mutations
   const startMiningMutation = useMutation({
     mutationFn: async ({ miningType, difficulty }: { miningType: string; difficulty: number }) => {
@@ -105,7 +119,8 @@ export default function SmaisikaMining() {
           hashRate: 0,
           estimatedReward: '0',
           smaiOnyixScore: 100,
-          userId: 1
+          userId: 1,
+          miningPool: data.miningPool
         });
         setMiningTimer(0);
       } else {
@@ -215,20 +230,24 @@ export default function SmaisikaMining() {
     return () => clearInterval(interval);
   }, [activeMiningSession?.isActive]);
 
-  // Fetch mining challenge
-  const fetchChallenge = async (type: 'quiz' | 'puzzle') => {
-    try {
-      const response = await fetch(`/api/smaisika/mining/challenge/${type}?difficulty=${difficulty}`);
-      const data = await response.json();
-      if (data.success) {
-        setCurrentChallenge(data.challenge);
-        setChallengeAnswer('');
-        setSelectedOption(null);
-      }
-    } catch (error) {
-      toast({ title: "Challenge Failed", description: "Failed to fetch challenge", variant: "destructive" });
+  // Real-time mining session monitoring
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (activeMiningSession?.isActive && activeMiningSession.sessionId) {
+      interval = setInterval(async () => {
+        try {
+          const response = await fetch(`/api/smaisika/mining/session/${activeMiningSession.sessionId}`);
+          const data = await response.json();
+          if (data.success) {
+            setActiveMiningSession(prev => prev ? { ...prev, ...data.session } : null);
+          }
+        } catch (error) {
+          console.error('Failed to fetch mining session status:', error);
+        }
+      }, 5000); // Update every 5 seconds
     }
-  };
+    return () => clearInterval(interval);
+  }, [activeMiningSession?.sessionId]);
 
   // Submit challenge answer
   const submitAnswer = async () => {
@@ -273,9 +292,6 @@ export default function SmaisikaMining() {
   };
 
   const startMining = async () => {
-    if (miningType === 'quiz' || miningType === 'puzzle') {
-      await fetchChallenge(miningType);
-    }
     startMiningMutation.mutate({ miningType, difficulty });
   };
 
@@ -300,12 +316,38 @@ export default function SmaisikaMining() {
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-          Smaisika Mining Portal
+          Real Cryptocurrency Mining Portal
         </h1>
         <p className="text-muted-foreground">
-          Mine SmaiSika cryptocurrency through computational work and knowledge challenges
+          Mine real cryptocurrencies (Monero, Bitcoin, Ethereum) and earn SmaiSika tokens
         </p>
       </div>
+
+      {/* Admin Crypto Reserves */}
+      {adminReservesData?.success && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Coins className="h-5 w-5" />
+              Admin Wallet Reserves (Available for Swaps)
+            </CardTitle>
+            <CardDescription>
+              Real cryptocurrency reserves backing SmaiSika swaps
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.entries(adminReservesData.reserves).map(([currency, amount]) => (
+                <div key={currency} className="p-3 bg-muted rounded-lg">
+                  <div className="text-sm text-muted-foreground">{currency}</div>
+                  <div className="text-lg font-bold">{(amount as number).toFixed(8)}</div>
+                  <div className="text-xs text-green-600">Available</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Balance and Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -393,35 +435,41 @@ export default function SmaisikaMining() {
                   <Label>Mining Type</Label>
                   <Select 
                     value={miningType} 
-                    onValueChange={(value: 'cpu' | 'gpu' | 'quiz' | 'puzzle') => setMiningType(value)}
+                    onValueChange={(value: 'monero' | 'bitcoin' | 'ethereum' | 'cpu' | 'gpu') => setMiningType(value)}
                     disabled={activeMiningSession?.isActive}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="monero">
+                        <div className="flex items-center gap-2">
+                          <Cpu className="h-4 w-4" />
+                          Monero (XMR) - RandomX
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="bitcoin">
+                        <div className="flex items-center gap-2">
+                          <Zap className="h-4 w-4" />
+                          Bitcoin (BTC) - SHA-256
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="ethereum">
+                        <div className="flex items-center gap-2">
+                          <Trophy className="h-4 w-4" />
+                          Ethereum (ETH) - Ethash
+                        </div>
+                      </SelectItem>
                       <SelectItem value="cpu">
                         <div className="flex items-center gap-2">
                           <Cpu className="h-4 w-4" />
-                          CPU Mining (1x)
+                          CPU Mining (Monero)
                         </div>
                       </SelectItem>
                       <SelectItem value="gpu">
                         <div className="flex items-center gap-2">
                           <Zap className="h-4 w-4" />
-                          GPU Mining (2.5x)
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="quiz">
-                        <div className="flex items-center gap-2">
-                          <Brain className="h-4 w-4" />
-                          Knowledge Quiz (1.5x)
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="puzzle">
-                        <div className="flex items-center gap-2">
-                          <Trophy className="h-4 w-4" />
-                          Math Puzzle (2x)
+                          GPU Mining (Ethereum)
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -486,9 +534,15 @@ export default function SmaisikaMining() {
                       <Badge variant="outline">{formatTime(miningTimer)}</Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Type:</span>
-                      <Badge>{activeMiningSession.miningType.toUpperCase()}</Badge>
+                      <span className="text-sm font-medium">Mining:</span>
+                      <Badge>{activeMiningSession.realCryptocurrency?.toUpperCase() || activeMiningSession.miningType.toUpperCase()}</Badge>
                     </div>
+                    {activeMiningSession.miningPool && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Pool:</span>
+                        <Badge variant="outline">{activeMiningSession.miningPool}</Badge>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Difficulty:</span>
                       <Badge variant="secondary">Level {activeMiningSession.difficulty}</Badge>
@@ -504,54 +558,55 @@ export default function SmaisikaMining() {
               </CardContent>
             </Card>
 
-            {/* Challenge Panel */}
-            {(miningType === 'quiz' || miningType === 'puzzle') && currentChallenge && activeMiningSession?.isActive && (
+            {/* Real Mining Status Panel */}
+            {activeMiningSession?.isActive && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Brain className="h-5 w-5" />
-                    {miningType === 'quiz' ? 'Knowledge Quiz' : 'Math Puzzle'}
+                    <Zap className="h-5 w-5" />
+                    Real-Time Mining Status
                   </CardTitle>
                   <CardDescription>
-                    Answer correctly to earn bonus SmaiSika
+                    Live connection to {activeMiningSession.realCryptocurrency?.toUpperCase()} mining pool
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-4 bg-muted rounded-lg">
-                    <p className="font-medium">{currentChallenge.question}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground">Hashrate</div>
+                      <div className="text-lg font-mono">{activeMiningSession.hashRate.toLocaleString()} H/s</div>
+                    </div>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <div className="text-sm text-muted-foreground">Real Crypto</div>
+                      <div className="text-lg font-bold">{activeMiningSession.realCryptocurrency?.toUpperCase()}</div>
+                    </div>
                   </div>
 
-                  {currentChallenge.options ? (
-                    <div className="space-y-2">
-                      {currentChallenge.options.map((option, index) => (
-                        <Button
-                          key={index}
-                          variant={selectedOption === index ? "default" : "outline"}
-                          className="w-full justify-start"
-                          onClick={() => setSelectedOption(index)}
-                        >
-                          {String.fromCharCode(65 + index)}. {option}
-                        </Button>
-                      ))}
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium">Mining Pool Connected</span>
                     </div>
-                  ) : (
-                    <Input
-                      value={challengeAnswer}
-                      onChange={(e) => setChallengeAnswer(e.target.value)}
-                      placeholder="Enter your answer..."
-                    />
-                  )}
+                    <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      {activeMiningSession.miningPool}
+                    </div>
+                  </div>
 
-                  <Button 
-                    onClick={submitAnswer}
-                    disabled={(!challengeAnswer && selectedOption === null)}
-                    className="w-full"
-                  >
-                    Submit Answer
-                  </Button>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Real {activeMiningSession.realCryptocurrency?.toUpperCase()} Mined:</span>
+                      <span className="font-mono">
+                        {(parseFloat(activeMiningSession.estimatedReward || '0') / 1000).toFixed(8)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>SmaiSika Earned:</span>
+                      <span className="font-mono">{activeMiningSession.estimatedReward}</span>
+                    </div>
+                  </div>
 
-                  <div className="text-center text-sm text-muted-foreground">
-                    Reward: {currentChallenge.reward} SmaiSika
+                  <div className="text-center text-xs text-muted-foreground">
+                    * Real cryptocurrency is automatically converted to SmaiSika
                   </div>
                 </CardContent>
               </Card>

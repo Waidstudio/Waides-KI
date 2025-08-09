@@ -1837,13 +1837,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/smaisika/exchange-rates", (req, res) => {
     const rates = {
-      'MONERO': { rate: 0.00001, symbol: 'XMR', name: 'Monero' },
-      'USDT': { rate: 0.001, symbol: 'USDT', name: 'Tether USD' },
-      'BTC': { rate: 0.000000001, symbol: 'BTC', name: 'Bitcoin' },
-      'ETH': { rate: 0.0000001, symbol: 'ETH', name: 'Ethereum' }
+      'MONERO': { rate: 0.0000656, symbol: 'XMR', name: 'Monero' },
+      'USDT': { rate: 0.01, symbol: 'USDT', name: 'Tether USD' },
+      'BTC': { rate: 0.00000023, symbol: 'BTC', name: 'Bitcoin' },
+      'ETH': { rate: 0.0000041, symbol: 'ETH', name: 'Ethereum' }
     };
     
     res.json({ success: true, rates });
+  });
+
+  // Admin wallet reserves endpoint
+  app.get("/api/smaisika/admin-reserves", async (req, res) => {
+    try {
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const reserves = smaisikaMiningEngine.getAdminWalletReserves();
+      
+      res.json({ success: true, reserves });
+    } catch (error) {
+      console.error('❌ Admin reserves error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get admin reserves' });
+    }
+  });
+
+  // Mining pool status endpoint
+  app.get("/api/smaisika/mining-pools", async (req, res) => {
+    try {
+      const { smaisikaMiningEngine } = await import('./services/smaisikaMiningEngine.js');
+      const pools = {
+        monero: smaisikaMiningEngine.getMiningPoolStatus('monero'),
+        bitcoin: smaisikaMiningEngine.getMiningPoolStatus('bitcoin'),
+        ethereum: smaisikaMiningEngine.getMiningPoolStatus('ethereum')
+      };
+      
+      res.json({ success: true, pools });
+    } catch (error) {
+      console.error('❌ Mining pools error:', error);
+      res.status(500).json({ success: false, message: 'Failed to get mining pool status' });
+    }
   });
 
   // Enhanced wallet balance endpoint with detailed breakdown
