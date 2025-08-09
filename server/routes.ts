@@ -3886,6 +3886,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (botId === 'autonomous') {
         const bot = await getRealTimeAutonomousTrader();
         result = await bot.start();
+      } else if (botId === 'full-engine') {
+        const engine = await getWaidesFullEngine();
+        result = engine.start();
       }
       
       // Update bot status to active
@@ -3938,6 +3941,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (botId === 'autonomous') {
         const bot = await getRealTimeAutonomousTrader();
         result = await bot.stop();
+      } else if (botId === 'full-engine') {
+        const engine = await getWaidesFullEngine();
+        result = engine.stop();
       }
       
       // Update bot status to inactive
