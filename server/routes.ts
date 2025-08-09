@@ -32,8 +32,9 @@ import { transactionSecurityService } from "./services/transactionSecurityServic
 // Import KonsMesh wallet service
 import { konsMeshWalletService } from "./services/konsMeshWalletService.js";
 
-// WebSocket setup for real-time features
+// Enhanced WebSocket setup for real-time features with KonsMesh integration
 let wss: any = null;
+let konsMeshWss: any = null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const server = createServer(app);
@@ -14257,9 +14258,16 @@ Ask me about specific market conditions, upload files for analysis, or request K
   app.use('/api/admin', unifiedAdminRoutes.default);
   console.log('🔐 Unified admin routes registered');
 
-  // Initialize WebSocket for WaidChat
+  // Initialize Enhanced WebSocket Systems
+  // 1. KonsMesh WebSocket for real-time system synchronization
+  const { konsMeshManager } = await import('./websocket/konsMeshWebSocket.js');
+  konsMeshManager.initialize(server);
+  
+  // 2. WaidChat WebSocket for community features
   const { chatWebSocketManager } = await import('./websocket/chatWebSocket.js');
   chatWebSocketManager.initialize(server);
+  
+  console.log('🌐 Enhanced WebSocket infrastructure operational');
 
   // Initialize default chat rooms and moderators
   const { comprehensiveChatService } = await import('./services/comprehensiveChatService.js');
