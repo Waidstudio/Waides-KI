@@ -1,0 +1,646 @@
+{
+  "generatedAt": "2025-10-03T22:47:29.559Z",
+  "projectName": "Waides KI",
+  "components": [
+    {
+      "id": "maibot",
+      "name": "Maibot",
+      "category": "bot",
+      "priority": "critical",
+      "status": "exists",
+      "existingFiles": [
+        "client/src/components/Maibot.tsx",
+        "client/src/pages/maibot.tsx",
+        "server/services/realTimeMaibot.js"
+      ],
+      "requiredFeatures": [
+        "binary_options",
+        "free_tier",
+        "demo_mode",
+        "basic_strategies"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "waidbot",
+      "name": "WaidBot α",
+      "category": "bot",
+      "priority": "important",
+      "status": "exists",
+      "existingFiles": [
+        "client/src/components/EnhancedWaidBotController.tsx",
+        "client/src/components/WaidBot.tsx",
+        "client/src/components/WaidBotAutoSetup.tsx",
+        "client/src/components/WaidBotPro.tsx",
+        "client/src/components/WaidBotSummonPanel.tsx",
+        "client/src/components/WaidbotEngineComplete.tsx",
+        "client/src/pages/WaidbotEnginePage.tsx",
+        "client/src/pages/WaidbotEnginePageEnhanced.tsx",
+        "client/src/pages/WaidbotEnginePageNew.tsx",
+        "client/src/pages/enhanced-waidbot.tsx",
+        "client/src/pages/waidbot-pro.tsx",
+        "client/src/pages/waidbot.tsx",
+        "server/runners/waidBotEngineRunner.ts",
+        "server/services/basicWaidBot.ts",
+        "server/services/enhancedWaidBotController.ts",
+        "server/services/kons/kons_WaidBotController.js",
+        "server/services/realTimeWaidBot.ts",
+        "server/services/realTimeWaidBotPro.ts",
+        "server/services/waidBotEngine.ts",
+        "server/services/waidBotPro.ts"
+      ],
+      "requiredFeatures": [
+        "binary_options",
+        "standard_tier",
+        "advanced_strategies",
+        "risk_management"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "waidbot-pro",
+      "name": "WaidBot Pro β",
+      "category": "bot",
+      "priority": "important",
+      "status": "exists",
+      "existingFiles": [
+        "client/src/pages/waidbot-pro.tsx"
+      ],
+      "requiredFeatures": [
+        "binary_options",
+        "pro_tier",
+        "ml_strategies",
+        "position_cap_5k"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "autonomous-trader",
+      "name": "Autonomous Trader γ",
+      "category": "bot",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "forex",
+        "mt4_mt5",
+        "autonomous_execution",
+        "24_7_scanner"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "full-engine",
+      "name": "Full Engine Ω",
+      "category": "bot",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "spot_trading",
+        "multi_exchange",
+        "ml_engine",
+        "risk_engine"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "nwaora-chigozie",
+      "name": "Nwaora Chigozie ε",
+      "category": "bot",
+      "priority": "critical",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "admin_account",
+        "autonomous",
+        "binary_spot_switch",
+        "treasury_integration"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "smai-chinnikstah",
+      "name": "SmaiChinnikstah δ",
+      "category": "bot",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "divine_trading",
+        "energy_distribution",
+        "sacred_patterns"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "exchange_connectors",
+        "risk_manager",
+        "smaisika_ledger"
+      ]
+    },
+    {
+      "id": "exchange_deriv",
+      "name": "Deriv",
+      "category": "exchange",
+      "priority": "critical",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_quotex",
+      "name": "Quotex",
+      "category": "exchange",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_pocketoption",
+      "name": "Pocket Option",
+      "category": "exchange",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_iqoption",
+      "name": "IQ Option",
+      "category": "exchange",
+      "priority": "optional",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_mt5",
+      "name": "MT5 Bridge",
+      "category": "exchange",
+      "priority": "critical",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_binance",
+      "name": "Binance",
+      "category": "exchange",
+      "priority": "critical",
+      "status": "exists",
+      "existingFiles": [
+        "client/src/components/BinanceOrderManager.tsx",
+        "server/services/binanceWebSocket.ts",
+        "server/services/exchanges/binanceConnector.ts",
+        "server/services/waidesKISecureBinanceClient.ts"
+      ],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_bybit",
+      "name": "Bybit",
+      "category": "exchange",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_kucoin",
+      "name": "KuCoin",
+      "category": "exchange",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "exchange_okx",
+      "name": "OKX",
+      "category": "exchange",
+      "priority": "optional",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "testConnection",
+        "encrypted_api_keys",
+        "health_check",
+        "rate_limiting"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "credential_manager",
+        "api_client"
+      ]
+    },
+    {
+      "id": "smaisika_ledger",
+      "name": "Smaisika Ledger System",
+      "category": "service",
+      "priority": "critical",
+      "status": "exists",
+      "existingFiles": [
+        ".backups/full-backup-2025-08-09T06-06-09-812Z/server/services/smaisikaMiningEngine.ts",
+        ".backups/full-backup-2025-08-09T06-24-27-809Z/server/services/smaisikaMiningEngine.ts",
+        ".component-locks/protected-backups/2025-08-09T06-24-26-720Z/server/services/smaisikaMiningEngine.ts",
+        "server/services/smaisikaMiningEngine.js",
+        "server/services/smaisikaMiningEngine.ts"
+      ],
+      "requiredFeatures": [
+        "creditSmaisika",
+        "debitSmaisika",
+        "convertToSmaisika",
+        "convertFromSmaisika",
+        "balance_tracking",
+        "audit_trail"
+      ],
+      "implementedFeatures": [],
+      "dependencies": []
+    },
+    {
+      "id": "profit_sharing",
+      "name": "Profit Sharing Engine",
+      "category": "service",
+      "priority": "critical",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "50_50_split",
+        "configurable_rate",
+        "automatic_deduction",
+        "treasury_crediting",
+        "audit_logging"
+      ],
+      "implementedFeatures": [],
+      "dependencies": []
+    },
+    {
+      "id": "risk_manager",
+      "name": "Risk Management System",
+      "category": "service",
+      "priority": "critical",
+      "status": "exists",
+      "existingFiles": [
+        "server/services/kons/kons_RiskSensePulse.js",
+        "server/services/portfolioManager.ts",
+        "server/services/risk/ethicalDecisionEngine.ts",
+        "server/services/risk/kellySizerValidator.ts",
+        "server/services/risk/positionWatchdog.ts",
+        "server/services/scenarioManager.ts",
+        "server/services/waidesKIAdaptiveThresholdManager.ts",
+        "server/services/waidesKIProductionRiskManager.ts",
+        "server/services/waidesKIRiskAlertEngine.ts",
+        "server/services/waidesKIRiskManager.ts",
+        "server/services/waidesKIRiskThermodynamicsController.ts",
+        "server/services/waidesKIRoleManager.ts",
+        "server/services/waidesKISelfOptimizingRiskManager.ts",
+        "server/services/waidesKIStopLossManager.ts"
+      ],
+      "requiredFeatures": [
+        "2_percent_rule",
+        "per_user_overrides",
+        "position_caps",
+        "loss_limits"
+      ],
+      "implementedFeatures": [],
+      "dependencies": []
+    },
+    {
+      "id": "gamification",
+      "name": "Gamification Engine",
+      "category": "service",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "achievements",
+        "badges",
+        "leaderboards",
+        "tournaments",
+        "daily_streaks"
+      ],
+      "implementedFeatures": [],
+      "dependencies": []
+    },
+    {
+      "id": "membership",
+      "name": "Membership Tier System",
+      "category": "service",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "bronze_silver_gold_pro",
+        "tier_benefits",
+        "expiry_renewal",
+        "smaisika_pricing"
+      ],
+      "implementedFeatures": [],
+      "dependencies": []
+    },
+    {
+      "id": "referral",
+      "name": "Referral System",
+      "category": "service",
+      "priority": "important",
+      "status": "missing",
+      "existingFiles": [],
+      "requiredFeatures": [
+        "referral_codes",
+        "referral_tree",
+        "automatic_rewards",
+        "configurable_payouts"
+      ],
+      "implementedFeatures": [],
+      "dependencies": []
+    },
+    {
+      "id": "user_routes",
+      "name": "User Management Routes",
+      "category": "route",
+      "priority": "critical",
+      "status": "partial",
+      "existingFiles": [
+        "server/routes/chat.ts",
+        "server/routes/systemAdminRoutes.ts",
+        "server/routes/unifiedAdmin.ts",
+        "server/routes/viewerAdminRoutes.ts",
+        "server/routes/waidchat.ts"
+      ],
+      "requiredFeatures": [
+        "/user/register",
+        "/user/login",
+        "/user/link-exchange",
+        "/user/dashboard/:userId"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "authentication",
+        "authorization"
+      ]
+    },
+    {
+      "id": "trade_routes",
+      "name": "Trade Execution Routes",
+      "category": "route",
+      "priority": "critical",
+      "status": "partial",
+      "existingFiles": [
+        "server/routes/chat.ts",
+        "server/routes/systemAdminRoutes.ts",
+        "server/routes/unifiedAdmin.ts",
+        "server/routes/viewerAdminRoutes.ts",
+        "server/routes/waidchat.ts"
+      ],
+      "requiredFeatures": [
+        "/trade/binary",
+        "/trade/forex",
+        "/trade/spot"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "authentication",
+        "authorization"
+      ]
+    },
+    {
+      "id": "admin_routes",
+      "name": "Admin Control Routes",
+      "category": "route",
+      "priority": "critical",
+      "status": "partial",
+      "existingFiles": [
+        "server/routes/chat.ts",
+        "server/routes/systemAdminRoutes.ts",
+        "server/routes/unifiedAdmin.ts",
+        "server/routes/viewerAdminRoutes.ts",
+        "server/routes/waidchat.ts"
+      ],
+      "requiredFeatures": [
+        "/admin/risk-settings",
+        "/admin/profit-sharing",
+        "/admin/nwaora-controls"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "authentication",
+        "authorization"
+      ]
+    },
+    {
+      "id": "scanner_dashboard",
+      "name": "Scanner/Builder Dashboard",
+      "category": "ui",
+      "priority": "important",
+      "status": "exists",
+      "existingFiles": [
+        "client/src/components/KonsPowaAutoHealerDashboard.tsx",
+        "client/src/components/KonsPowaTaskDashboard.tsx",
+        "client/src/pages/MarketScannerPage.tsx",
+        "client/src/pages/SystemAdminDashboard.tsx",
+        "client/src/pages/SystemValidationDashboard.tsx",
+        "client/src/pages/ViewerAdminDashboard.tsx",
+        "client/src/pages/dashboard.tsx",
+        "client/src/pages/unified-bot-dashboard.tsx"
+      ],
+      "requiredFeatures": [
+        "view_scan_results",
+        "component_status",
+        "trigger_rescans",
+        "review_proposed_changes"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "admin_authentication"
+      ]
+    },
+    {
+      "id": "admin_connector_health",
+      "name": "Connector Health Dashboard",
+      "category": "ui",
+      "priority": "important",
+      "status": "exists",
+      "existingFiles": [
+        "client/src/components/AdminConfigPanel.tsx",
+        "client/src/components/AdminConsole.tsx",
+        "client/src/components/AdminPanel.tsx",
+        "client/src/components/EnhancedAdminPanel.tsx",
+        "client/src/components/ExpandedAdminConfig.tsx",
+        "client/src/pages/AdminLoginPage.tsx",
+        "client/src/pages/AdminMining.tsx",
+        "client/src/pages/AdminPanelNew.tsx",
+        "client/src/pages/ExpandedAdminConfigPage.tsx",
+        "client/src/pages/PaymentGatewayAdminPage.tsx",
+        "client/src/pages/SuperAdminLogin.tsx",
+        "client/src/pages/SystemAdminDashboard.tsx",
+        "client/src/pages/UnifiedAdminLogin.tsx",
+        "client/src/pages/ViewerAdminDashboard.tsx"
+      ],
+      "requiredFeatures": [
+        "connection_status",
+        "automatic_alerts",
+        "health_checks"
+      ],
+      "implementedFeatures": [],
+      "dependencies": [
+        "admin_authentication"
+      ]
+    }
+  ],
+  "summary": {
+    "total": 27,
+    "exists": 8,
+    "partial": 3,
+    "missing": 16,
+    "criticalMissing": 4
+  },
+  "proposedStructure": {
+    "newModules": [
+      "proposed/new/server/services/autonomous-traderBot.ts",
+      "proposed/new/server/services/full-engineBot.ts",
+      "proposed/new/server/services/nwaora-chigozieBot.ts",
+      "proposed/new/server/services/smai-chinnikstahBot.ts",
+      "proposed/new/server/connectors/deriv.ts",
+      "proposed/new/server/connectors/quotex.ts",
+      "proposed/new/server/connectors/pocketoption.ts",
+      "proposed/new/server/connectors/iqoption.ts",
+      "proposed/new/server/connectors/mt5.ts",
+      "proposed/new/server/connectors/bybit.ts",
+      "proposed/new/server/connectors/kucoin.ts",
+      "proposed/new/server/connectors/okx.ts",
+      "proposed/new/server/lib/profit_sharing.ts",
+      "proposed/new/server/lib/gamification.ts",
+      "proposed/new/server/lib/membership.ts",
+      "proposed/new/server/lib/referral.ts"
+    ],
+    "modifications": [
+      "server/routes/chat.ts",
+      "server/routes/systemAdminRoutes.ts",
+      "server/routes/unifiedAdmin.ts",
+      "server/routes/viewerAdminRoutes.ts",
+      "server/routes/waidchat.ts",
+      "server/routes/chat.ts",
+      "server/routes/systemAdminRoutes.ts",
+      "server/routes/unifiedAdmin.ts",
+      "server/routes/viewerAdminRoutes.ts",
+      "server/routes/waidchat.ts",
+      "server/routes/chat.ts",
+      "server/routes/systemAdminRoutes.ts",
+      "server/routes/unifiedAdmin.ts",
+      "server/routes/viewerAdminRoutes.ts",
+      "server/routes/waidchat.ts"
+    ],
+    "deletions": []
+  }
+}
