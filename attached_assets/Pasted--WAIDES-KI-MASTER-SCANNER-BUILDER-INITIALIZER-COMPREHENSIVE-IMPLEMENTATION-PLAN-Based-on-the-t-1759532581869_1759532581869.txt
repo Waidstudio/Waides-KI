@@ -1,0 +1,220 @@
+📋 WAIDES KI MASTER SCANNER/BUILDER & INITIALIZER - COMPREHENSIVE IMPLEMENTATION PLAN
+Based on the two documents provided, here's a detailed 10-phase implementation plan for building a professional, non-destructive codebase scanner and initialization system:
+
+PHASE 1: Scanner Infrastructure Setup 🔍
+Goal: Create the core scanning engine and infrastructure
+
+Tasks:
+
+Create scanner utility module (tools/scanner/index.ts)
+Recursive directory traversal
+File metadata extraction (size, mtime, imports/exports)
+Environment variable detection
+Smaisika symbol variant detection
+Create file classification system
+Detect bot modules (maibot, waidbot, waidbot-pro, autonomous-trader, full-engine, nwaora)
+Detect exchange connectors (binary, forex, spot)
+Detect storage systems (file-based, sqlite, postgres)
+Detect routes and UI components
+Build safe backup system
+Create backups/<timestamp>/ directory structure
+Implement file copy/backup utilities
+Ensure no overwrites of live files
+PHASE 2: Codebase Scanning & Inventory 📊
+Goal: Perform comprehensive scan and generate reports
+
+Tasks:
+
+Execute full codebase scan
+Scan all TypeScript/JavaScript files
+Identify existing trading engines and connectors
+Map current database/storage implementations
+Find all Smaisika symbol variants (case-insensitive)
+Generate scan-report.json
+File inventory with metadata
+Detected components by category
+Smaisika usage mapping
+Missing components identification
+Create visual dashboard for scan results
+Admin page to view scan results
+Component coverage visualization
+Missing modules list
+PHASE 3: Manifest Generation & Gap Analysis 📝
+Goal: Create manifest of required vs existing components
+
+Tasks:
+
+Build manifest generator
+Map required roles to existing files
+Identify missing critical modules
+Categorize by priority (critical, important, optional)
+Generate manifest.json
+Complete component mapping
+Dependency tree
+Implementation status
+Create proposed file structure
+proposed/new/ for new modules
+proposed/modifications/ for changes to existing files
+proposed/README.changes.md documentation
+PHASE 4: Smaisika Canonicalization System 💰
+Goal: Implement unified Smaisika currency system
+
+Tasks:
+
+Create Smaisika ledger system (server/lib/ledger.ts)
+creditSmaisika, debitSmaisika functions
+convertToSmaisika, convertFromSmaisika
+Balance tracking and transaction history
+Audit trail integration
+Standardize Smaisika symbol across codebase
+Detect all variants in scan results
+Create proposed changes (non-destructive)
+Update database schema if needed
+Build Smaisika wallet integration
+User balance management
+Treasury account for admin
+Multi-currency conversion support
+PHASE 5: Trading Engine Core Modules 🤖
+Goal: Create/verify all 6 trading engines
+
+Tasks:
+
+Create missing bot modules in proposed/new/modules/
+maibot.ts - Binary options (free tier)
+waidbot.ts - Binary options (standard)
+waidbot-pro.ts - Binary options (pro, $5k cap)
+autonomous-trader.ts - Forex/MT4/MT5
+full-engine.ts - Spot trading (multi-exchange)
+nwaora-chigozie.ts - Admin autonomous account
+Implement DEV_MODE simulation
+All bots simulate trades when credentials missing
+testConnection() for each bot
+Clear TODO markers for real implementation
+Add risk management integration
+2% default risk rule
+Per-user overrides
+WaidBot Pro single trade cap ($5k)
+PHASE 6: Exchange Connector System 🔌
+Goal: Create unified exchange connector infrastructure
+
+Tasks:
+
+Build connector modules in proposed/new/connectors/
+Binary: deriv, quotex, pocketoption, iqoption, olymptrade, expertoption, binomo, nadex
+Forex: mt5 (MT4/MT5 bridge adapter)
+Spot: binance, bybit, kucoin, okx
+Implement connector interface
+testConnection() standardized method
+Encrypted API key storage
+Health check system
+API status tracking (Working/NotWorking/RequiresAction)
+Create connector health dashboard
+Admin UI for monitoring connector status
+Automatic alerts on failures
+Connection testing endpoints
+PHASE 7: Profit-Sharing & Treasury System 💎
+Goal: Implement automatic profit distribution
+
+Tasks:
+
+Create profit-sharing engine (server/lib/profitSharing.ts)
+Default 50/50 split configurable by admin
+Automatic deduction on successful trades
+Treasury account crediting
+Audit logging for all transfers
+Build admin controls
+Configure profit-sharing rate (0-1)
+View treasury balance and history
+Manual profit distribution tools
+Integrate with trade execution flow
+Intercept successful trade closures
+Calculate and apply profit split
+Update user and admin balances
+Record in ledger
+PHASE 8: Membership & Gamification System 🎮
+Goal: Implement tiers, achievements, and referrals
+
+Tasks:
+
+Create membership tier system
+Define tiers (Bronze, Silver, Gold, Pro)
+Pricing in Smaisika
+Tier benefits (limits, lower fees, faster withdrawals)
+Expiry and renewal tracking
+Build gamification engine (server/lib/gamification.ts)
+Achievements and badges
+Daily login streaks
+Leaderboards (profit %, weekly ROI, total Smaisika)
+Tournaments with entry fees and prize pools
+Implement referral system
+Referral code generation
+Referral tree tracking
+Automatic referrer rewards
+Configurable payout percentages
+PHASE 9: API Routes & Admin Controls 🎛️
+Goal: Create comprehensive API endpoints
+
+Tasks:
+
+Build user endpoints (server/routes/userRoutes.ts)
+POST /user/register, /user/login
+POST /user/link-exchange
+GET /user/exchanges/:userId/status
+GET /user/dashboard/:userId
+Create trade execution endpoints (server/routes/tradeRoutes.ts)
+POST /trade/binary
+POST /trade/forex
+POST /trade/spot
+Integrate with risk manager
+Build admin control endpoints (server/routes/adminControlRoutes.ts)
+Risk settings configuration
+Membership management
+Profit-sharing configuration
+Nwaora account controls (switch binary/spot)
+Pending sweeps and approvals
+PHASE 10: Testing, Documentation & Dashboard ✅
+Goal: Complete system validation and UI
+
+Tasks:
+
+Create scanner/builder dashboard UI
+View scan results and manifest
+Component status visualization
+Trigger rescans
+Review proposed changes before applying
+Generate comprehensive documentation
+security-steps.md - Pre-live checklist
+API endpoint documentation
+Component architecture diagram
+Migration guide
+Build testing suite
+Test all connectors in DEV_MODE
+Validate profit-sharing calculations
+Test membership tier upgrades
+Verify Smaisika ledger accuracy
+Final architect review
+Review all proposed changes
+Validate against business rules
+Ensure non-destructive approach maintained
+SAFETY PROTOCOLS 🛡️
+Throughout all phases:
+
+✅ NEVER overwrite live files
+✅ All changes go to proposed/ directory
+✅ Backups created for any file modifications
+✅ DEV_MODE simulation by default
+✅ Real operations require explicit admin confirmation + forceReal=true
+✅ Comprehensive audit logging
+DELIVERABLES 📦
+After completion:
+
+scan-report.json - Full codebase inventory
+manifest.json - Component mapping
+proposed/ directory - All new/modified files
+backups/<timestamp>/ - Original file backups
+changes.log - Detailed change log
+security-steps.md - Pre-deployment checklist
+Scanner/Builder Admin Dashboard - UI for managing the system
+Ready to proceed? I'll execute this plan step by step, starting with Phase 1 (Scanner Infrastructure Setup). Each phase will be completed and verified before moving to the next.
+
+Would you like me to begin implementation now?
