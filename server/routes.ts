@@ -2647,6 +2647,149 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Treasury Analytics API Routes =====
+  
+  // Get treasury summary - current balance and basic stats
+  app.get("/api/treasury/summary", requireAuth, async (req, res) => {
+    try {
+      const TREASURY_USER_ID = 1; // Admin/treasury account
+      
+      // Get treasury wallet balance
+      const treasuryWallet = await db.select()
+        .from(wallets)
+        .where(eq(wallets.userId, TREASURY_USER_ID))
+        .limit(1);
+      
+      const smaiBalance = parseFloat(treasuryWallet[0]?.smaiBalance || '0');
+      const usdBalance = parseFloat(treasuryWallet[0]?.usdBalance || '0');
+      const localBalance = parseFloat(treasuryWallet[0]?.localBalance || '0');
+      
+      // Get total revenue from mining/trading activity
+      const miningRevenue = await db.select()
+        .from(smaisikaMining)
+        .where(eq(smaisikaMining.userId, TREASURY_USER_ID));
+      
+      const totalMiningRevenue = miningRevenue.reduce((sum, record) => {
+        return sum + parseFloat(record.smaiSikaEarned || '0');
+      }, 0);
+      
+      res.json({
+        success: true,
+        treasury: {
+          currentBalance: {
+            smaiBalance,
+            usdBalance,
+            localBalance,
+            totalValue: smaiBalance + usdBalance + localBalance
+          },
+          revenue: {
+            totalRevenue: totalMiningRevenue,
+            tradingRevenue: smaiBalance - totalMiningRevenue, // Approximation
+            miningRevenue: totalMiningRevenue
+          },
+          stats: {
+            totalTransactions: miningRevenue.length,
+            lastUpdated: new Date().toISOString()
+          }
+        }
+      });
+    } catch (error) {
+      console.error('❌ Treasury summary error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to get treasury summary' 
+      });
+    }
+  });
+
+  // Get treasury revenue breakdown by bot and time period
+  app.get("/api/treasury/revenue", requireAuth, async (req, res) => {
+    try {
+      const { period = '7d', botFilter } = req.query;
+      const TREASURY_USER_ID = 1;
+      
+      // Calculate date range
+      const now = new Date();
+      let startDate = new Date();
+      
+      if (period === '24h') {
+        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      } else if (period === '7d') {
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      } else if (period === '30d') {
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      } else if (period === '90d') {
+        startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+      }
+      
+      // Get all treasury mining/trading activity
+      const revenueRecords = await db.select()
+        .from(smaisikaMining)
+        .where(eq(smaisikaMining.userId, TREASURY_USER_ID));
+      
+      // Filter by date range
+      const filteredRecords = revenueRecords.filter(record => {
+        const recordDate = new Date(record.createdAt || 0);
+        return recordDate >= startDate && recordDate <= now;
+      });
+      
+      // Group by mining type (which includes bot names in metadata)
+      const byBot = filteredRecords.reduce((acc: any, record) => {
+        const botName = record.miningType || 'Unknown';
+        if (!acc[botName]) {
+          acc[botName] = {
+            botName,
+            totalRevenue: 0,
+            transactions: 0,
+            avgRevenuePerTrade: 0
+          };
+        }
+        
+        const revenue = parseFloat(record.smaiSikaEarned || '0');
+        acc[botName].totalRevenue += revenue;
+        acc[botName].transactions += 1;
+        
+        return acc;
+      }, {});
+      
+      // Calculate averages and format
+      const revenueByBot = Object.values(byBot).map((bot: any) => ({
+        ...bot,
+        avgRevenuePerTrade: bot.transactions > 0 ? bot.totalRevenue / bot.transactions : 0
+      }));
+      
+      // Sort by total revenue descending
+      revenueByBot.sort((a: any, b: any) => b.totalRevenue - a.totalRevenue);
+      
+      // Calculate totals
+      const totalRevenue = revenueByBot.reduce((sum: number, bot: any) => sum + bot.totalRevenue, 0);
+      const totalTransactions = revenueByBot.reduce((sum: number, bot: any) => sum + bot.transactions, 0);
+      
+      res.json({
+        success: true,
+        period,
+        data: {
+          revenueByBot,
+          totals: {
+            totalRevenue,
+            totalTransactions,
+            avgRevenuePerTransaction: totalTransactions > 0 ? totalRevenue / totalTransactions : 0
+          },
+          dateRange: {
+            start: startDate.toISOString(),
+            end: now.toISOString()
+          }
+        }
+      });
+    } catch (error) {
+      console.error('❌ Treasury revenue error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to get treasury revenue' 
+      });
+    }
+  });
+
   // Get payment providers for a country
   app.get("/api/wallet/providers/:countryCode", async (req, res) => {
     try {

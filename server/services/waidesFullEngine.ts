@@ -2,6 +2,7 @@
  * Waides Full Engine - Smart Risk Management & ML-Powered Trading Coordination
  * Integrates with Autonomous Trader for unified divine trading system
  */
+import { smaisikaMiningEngine } from './smaisikaMiningEngine';
 
 interface EngineContext {
   indicators: any;
@@ -408,9 +409,70 @@ export class WaidesFullEngine {
   private processTradingOutcome(outcome: TradeOutcome): void {
     if (outcome.status === 'executed' && outcome.trade) {
       console.log(`✅ Full Engine executed trade: ${outcome.trade.action} ${outcome.trade.quantity} ${outcome.trade.symbol} at ${outcome.trade.price}`);
+      
+      // Track BUY trades in active trades
+      if (outcome.trade.action === 'BUY') {
+        const activeTrade: ActiveTrade = {
+          id: outcome.trade.id,
+          symbol: outcome.trade.symbol,
+          action: outcome.trade.action,
+          quantity: outcome.trade.quantity,
+          entry_price: outcome.trade.price,
+          entry_time: outcome.trade.timestamp,
+          duration_minutes: 0,
+          confidence: 0.85,
+          strategy_source: 'full_engine_guardian'
+        };
+        this.activeTrades.set(outcome.trade.id, activeTrade);
+      }
+      // Process SELL trades with P/L calculation
+      else if (outcome.trade.action === 'SELL') {
+        this.closeTrade(outcome.trade);
+      }
     } else {
       console.log(`⏸️ Full Engine trade blocked: ${outcome.reason}`);
     }
+  }
+
+  private async closeTrade(sellTrade: any): Promise<void> {
+    // Find matching buy trade
+    const buyTrade = Array.from(this.activeTrades.values())[0]; // Get first active trade
+    
+    if (!buyTrade) {
+      console.log('⚠️ No active trade found to close');
+      return;
+    }
+
+    // Calculate profit/loss
+    const entryValue = buyTrade.quantity * buyTrade.entry_price;
+    const exitValue = sellTrade.quantity * sellTrade.price;
+    const profitLoss = exitValue - entryValue;
+    
+    console.log(`📊 Full Engine trade closed: Entry $${entryValue.toFixed(2)} → Exit $${exitValue.toFixed(2)} = ${profitLoss > 0 ? '+' : ''}$${profitLoss.toFixed(2)}`);
+    
+    // Record to SmaiSika ledger (real mode only)
+    const tradingMode = 'demo'; // TODO: Get from engine state
+    if (tradingMode === 'real') {
+      const userId = 1; // TODO: Get actual userId from session/context
+      if (profitLoss > 0) {
+        await smaisikaMiningEngine.recordTradeProfit(
+          userId,
+          profitLoss,
+          sellTrade.id,
+          'Full Engine Ω'
+        );
+      } else if (profitLoss < 0) {
+        await smaisikaMiningEngine.recordTradeLoss(
+          userId,
+          Math.abs(profitLoss),
+          sellTrade.id,
+          'Full Engine Ω'
+        );
+      }
+    }
+    
+    // Remove from active trades
+    this.activeTrades.delete(buyTrade.id);
   }
 
   private collectMetrics(): void {
