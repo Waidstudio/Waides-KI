@@ -1,0 +1,189 @@
+/**
+ * WAIDES KI - FULL INITIALIZER
+ * ----------------------------
+ * 
+ * - Scan codebase for existing files
+ * - Auto-create missing folders and files
+ * -  Registered bots, exchanges, wallets, Smaisika and also in waidbot engine
+ * - Implement profit sharing + gamification basics
+ * - Setup Admin panel placeholders
+ * - Ensure smooth base structure for Waides Ki
+ */
+
+import fs from "fs";
+import path from "path";
+
+const ROOT = process.cwd();
+const BACKUP_DIR = path.join(ROOT, "_waides_backup");
+const REPORT_FILE = path.join(ROOT, "scan-report.json");
+const MANIFEST_FILE = path.join(ROOT, "manifest.json");
+
+// ---------------- CONFIG ----------------
+const TRADERS = {
+  binary: ["maibot", "waidbot", "waidbotPro"],
+  forex: ["autonomousTrader"],
+  spot: ["fullEngine"]
+};
+
+const BINARY_EXCHANGES = [
+  "Deriv",
+  "IQOption",
+  "Quotex",
+  "PocketOption",
+  "Spectre.ai",
+  "Binary.com"
+];
+
+const FOREX_EXCHANGES = ["Oanda", "FXCM", "ICMarkets", "MetaTrader4", "MetaTrader5"];
+const SPOT_EXCHANGES = ["Binance", "KuCoin", "OKX", "Bybit", "Coinbase", "Kraken"];
+
+const REQUIRED_DIRS = [
+  "src",
+  "src/bots",
+  "src/exchanges/binary",
+  "src/exchanges/forex",
+  "src/exchanges/spot",
+  "src/wallets",
+  "src/smaisika",
+  "src/admin",
+  "src/users",
+  "src/gamification",
+  "logs"
+];
+
+const REQUIRED_FILES = {
+  "src/config.js": `
+export default {
+  appName: "Waides KI",
+  baseCurrency: "Smaisika", // pegged 1:1 to USD
+  profitShare: 0.5, // 50/50 admin/user
+  riskManagement: { defaultPercent: 2, adjustable: true },
+  membership: { adjustable: true, pricedIn: "Smaisika" },
+  gamification: { leaderboard: true, xpSystem: true, badges: true }
+};`,
+  "src/smaisika/symbol.js": `
+export const SMAISIKA_SYMBOL = "Smaisika";
+export const RATE = 1; // 1 Smaisika = 1 USD
+`,
+  "src/admin/admin.js": `
+export class AdminPanel {
+  constructor() {
+    this.riskPercent = 2;
+    this.membershipPrice = 100;
+  }
+  setRisk(percent) { this.riskPercent = percent; }
+  setMembershipPrice(price) { this.membershipPrice = price; }
+  toggleExchange(api, status) { return { api, status }; }
+}
+export const nwaoraChigozie = {
+  active: true,
+  mode: "binary",
+  switchMode(newMode) { this.mode = newMode; }
+};
+`,
+  "src/wallets/wallet.js": `
+export class Wallet {
+  constructor(owner) {
+    this.owner = owner;
+    this.balance = 0;
+  }
+  deposit(amount, currency="USDT") {
+    this.balance += amount;
+    return this.balance;
+  }
+  withdraw(amount) {
+    if (this.balance >= amount) { this.balance -= amount; return true; }
+    return false;
+  }
+}
+`,
+  "src/gamification/engine.js": `
+export class Gamification {
+  constructor() { this.leaderboard = []; }
+  addXP(user, xp) { user.xp = (user.xp || 0) + xp; }
+  updateLeaderboard(user) {
+    this.leaderboard.push({ id: user.id, xp: user.xp });
+    this.leaderboard.sort((a,b) => b.xp - a.xp);
+  }
+}
+`,
+  "src/bots/maibot.js": `
+export function maibot(signal) {
+  return signal === "UP" ? "CALL" : "PUT";
+}
+`,
+  "src/bots/waidbot.js": `
+export function waidbot(marketData) {
+  return marketData.trend > 0 ? "CALL" : "PUT";
+}
+`,
+  "src/bots/waidbotPro.js": `
+export function waidbotPro(marketData, volume=1000) {
+  return { action: marketData.volatility > 0.5 ? "CALL" : "PUT", volume };
+}
+`,
+  "src/bots/autonomousTrader.js": `
+export function autonomousTrader(marketData, riskPercent=2) {
+  let balance = marketData.balance;
+  let tradeSize = (balance * riskPercent) / 100;
+  return { action: marketData.trend > 0 ? "BUY" : "SELL", size: tradeSize };
+}
+`,
+  "src/bots/fullEngine.js": `
+export function fullEngine(orderBook, riskPercent=2) {
+  let balance = orderBook.balance;
+  let tradeSize = (balance * riskPercent) / 100;
+  return { action: orderBook.ask < orderBook.bid ? "BUY" : "SELL", size: tradeSize };
+}
+`
+};
+
+// ---------------- UTILS ----------------
+function ensureDir(dir) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+function ensureFile(file, content) {
+  if (!fs.existsSync(file)) fs.writeFileSync(file, content.trimStart());
+}
+function scanDir(dir, results = []) {
+  fs.readdirSync(dir).forEach(file => {
+    const filepath = path.join(dir, file);
+    const stat = fs.statSync(filepath);
+    if (stat.isDirectory()) scanDir(filepath, results);
+    else results.push(filepath);
+  });
+  return results;
+}
+
+// ---------------- MAIN ----------------
+(async () => {
+  console.log("🔍 Scanning Waides KI...");
+
+  ensureDir(BACKUP_DIR);
+  REQUIRED_DIRS.forEach(ensureDir);
+  Object.entries(REQUIRED_FILES).forEach(([file, content]) => {
+    ensureFile(path.join(ROOT, file), content);
+  });
+
+  // Scan existing files
+  const allFiles = scanDir(ROOT, []);
+  const smaisikaRefs = allFiles.filter(f => fs.readFileSync(f, "utf8").includes("Smaisika"));
+
+  // Write manifest
+  const manifest = {
+    timestamp: new Date().toISOString(),
+    traders: TRADERS,
+    exchanges: { binary: BINARY_EXCHANGES, forex: FOREX_EXCHANGES, spot: SPOT_EXCHANGES },
+    smaisikaRefs,
+    filesCount: allFiles.length
+  };
+
+  fs.writeFileSync(REPORT_FILE, JSON.stringify(manifest, null, 2));
+  fs.writeFileSync(MANIFEST_FILE, JSON.stringify(manifest, null, 2));
+
+  console.log("✅ Waides KI setup complete.");
+  console.log("🤖 Traders:", Object.values(TRADERS).flat().join(", "));
+  console.log("📈 Binary Exchanges:", BINARY_EXCHANGES.join(", "));
+  console.log("💱 Forex Exchanges:", FOREX_EXCHANGES.join(", "));
+  console.log("🪙 Spot Exchanges:", SPOT_EXCHANGES.join(", "));
+})();

@@ -1,0 +1,200 @@
+WAIDES KI — MASTER SCANNER & BUILDER (PROFESSIONAL / NON-DESTRUCTIVE)
+
+CONTEXT (READ FIRST)
+- Waides KI is a Konsmik trading ecosystem with:
+  • Binary bots: Maibot, WaidBot, WaidBot Pro
+  • Forex: Autonomous Trader (MT4/MT5)
+  • Spot: Full Engine (Binance, Bybit, KuCoin, OKX, etc.)
+  • Special autonomous account: Nwaora Chigozie (admin-controlled, always trading)
+  • Internal currency: Smaisika (1 Smaisika = 1 USD)
+  • Custodial wallet (Waides KI owned) and optional user-linked external exchanges
+  • Gamification & referrals, membership tiers (priced in Smaisika)
+  • Profit-sharing: configurable; default = 50% of *profit* per successful trade automatically moved to admin wallet/treasury.
+
+GOAL
+- Scan repository, map existing pieces (engines, connectors, wallets, routes, UI), avoid duplicates, and create ONLY missing modules and safe scaffolding for the full Waides KI core including gamification, referrals, membership, profit-sharing, Smaisika canonicalization, and all admin controls.
+
+SAFETY / NON-DESTRUCTIVE RULES
+1. NEVER overwrite live files. If you would change an existing file, copy it to backups/<timestamp>/<path>.bak and write modified content to proposed/<path>.
+2. New files go to proposed/new/ unless owner directs otherwise.
+3. All operations affecting real money are simulated by default when DEV_MODE=true.
+4. Any real withdraws/trades require explicit admin confirmation and forceReal=true.
+5. Produce these outputs: scan-report.json, manifest.json, proposed/, backups/<timestamp>/, changes.log, security-steps.md.
+
+PHASE 1 — SCAN (MANDATORY)
+- Recursively scan repo and produce scan-report.json listing: file path, size, mtime, guessedRole, imports/exports, any process.env references, and occurrences of "Smaisika" or its symbol.
+- Detect storage: file-based (json), sqlite, mongo, postgres. If DB lib present, note DB_URL or env key.
+- Detect connectors for exchanges and binary brokers: binance, bybit, kucoin, okx, deriv, quotex, pocketoption, iqoption, olymptrade, expertoption, binomo, nadex, mt4/mt5.
+- Detect engine modules: maibot, waidbot, waidbot-pro, autotrader, fullengine, nwaora.
+- Detect routes and UIs: /trade, /admin, /user, /simulate, /poll, /webhook, admin UI components, public/help.
+- Detect Smaisika usage: list all files/references where Smaisika appears; identify canonical symbol (e.g., "SMAISIKA", "SMAI", "SMK", etc.). If multiple variants found, propose canonical name "Smaisika" and produce proposed changes (not in-place).
+
+PHASE 2 — MANIFEST & PROPOSED FILES
+- Produce manifest.json mapping required roles to chosen existing files or missing files to create.
+- If missing, create safe, well-documented placeholder modules under proposed/new/ for:
+  • modules/maibot.js
+  • modules/waidbot.js
+  • modules/waidbot-pro.js (enforce maxSingleTradeLimit default 5000 USD)
+  • modules/autotrader.js
+  • modules/fullengine.js
+  • connectors/binance.js, connectors/bybit.js, connectors/kucoin.js, connectors/okx.js
+  • connectors/deriv.js, connectors/quotex.js, connectors/pocketoption.js, connectors/iqoption.js, connectors/olymptrade.js, connectors/expertoption.js, connectors/binomo.js, connectors/nadex.js
+  • connectors/mt5.js (MT4/MT5 bridge adapter)
+  • lib/storage.js (adapter pattern: file or DB based)
+  • lib/ledger.js (Smaisika ledger with mint/burn/transfer)
+  • lib/riskManager.js (default 2% rule, per-user overrides, growthCurve, WaidBotPro caps)
+  • lib/poller.js (balance poller, API health, manual-withdraw detection)
+  • lib/queue.js (simple job queue, adapter for Bull/Redis if available)
+  • lib/audit.js (append-only audit logger, daily rotation)
+  • routes/trade.js (unify POST /trade/binary, /trade/forex, /trade/spot)
+  • routes/user.js (register/login, link-exchange, dashboard)
+  • routes/admin.js (risk settings, membership, profit/share config, approvals, Nwaora controls)
+  • routes/gamify.js (leaderboard, achievements, tournaments, claim rewards)
+  • routes/referral.js (referral tree, referral payouts)
+  • public/admin/index.html (admin UI skeleton)
+  • public/help/* (novice-friendly copy and audio/text)
+  • proposed/README.changes.md
+  • security-steps.md (pre-live checklist for sweeps/real-trading)
+- Each placeholder must:
+  • Use DEV_MODE simulation if no credentials
+  • Expose testConnection() for connectors that returns { ok: bool, reason: string }
+  • Include clear TODO markers where secret keys or real implementations belong
+
+BUSINESS RULES & BEHAVIOR (IMPLEMENT OR VERIFY)
+1. Smaisika canonicalization:
+   - Smaisika is the canonical internal unit (1 Smaisika = 1 USD).
+   - Scan codebase for any symbol variants (case-insensitive) and list files where found.
+   - Replace usage only in proposed/ with canonical "Smaisika" usage; do not change originals.
+   - Provide lib/ledger.js that handles: creditSmaisika(userId, amount, reason), debitSmaisika(userId, amount, reason), convertToSmaisika(amountUSD), convertFromSmaisika(amountSmaisika).
+
+2. Deposits & Withdrawals:
+   - Users can deposit USDT or supported crypto into Waides KI custodial wallet. On-chain or exchange-based deposit detection must credit Smaisika.
+   - Users can choose NOT to link exchange and instead have their trades executed using Waides KI custodial accounts (pooling option). This must be explicit in UI and terms.
+   - Withdrawals are Smaisika → converted to USDT/crypto at admin rate, fees applied, and then send via custodial wallet service. Withdrawals require admin approval unless auto-withdraw enabled and whitelist validated.
+
+3. Linked exchanges:
+   - Users can link external exchanges and choose whether trades should execute on their linked exchange (user-controlled keys) or use Waides KI custodial liquidity.
+   - For each linked exchange, store encrypted apiKey/apiSecret, withdrawWhitelist[], autoSweepEnabled flag, and apiStatus.
+   - Poller must run health checks and set apiStatus: Working | NotWorking | RequiresAction.
+
+4. Trade Execution & Risk:
+   - Before any trade the system must:
+     a) fetch availableBalance (Smaisika) for that user (custodial or linked)
+     b) ask lib/riskManager to compute positionSize based on default 2% or per-user override and botType multipliers
+     c) ensure WaidBotPro single trade cap (default 5000 USD)
+     d) place trade via chosen connector (or simulate if DEV_MODE)
+     e) write trade record to trades.json (traceId, userId, engine, symbol, size, price, result, profitLossSmaisika)
+   - If a trade closes with profit, compute profitShare = profit * profitSharingRate (default 0.5). Deduct profitShare from user profit and deposit to admin treasury Smaisika account. Record both transfers in ledger and audit.
+
+5. Profit-Sharing (50/50 default):
+   - Configurable admin parameter profitSharingRate (0..1). Default = 0.5 (50%).
+   - On each successful trade (realized profit > 0), automatically:
+     • debit user profit by profitShare
+     • credit adminTreasury by profitShare
+     • credit userNetProfit by profit - profitShare
+   - Log every step with audit traceId. If using linked exchange & profits happen on exchange, use ledger to represent internal settlement: mark pending admin cut to be swept to admin wallet on approval or auto-sweep.
+
+6. Membership & Pricing (Smaisika)
+   - Membership tiers exist (e.g., Bronze, Silver, Gold, Pro). Each tier has a price in Smaisika.
+   - Admin can set or change prices via /admin/membership (POST: { tier, priceSmaisika }).
+   - Membership perks (higher bot limits, lower profit-sharing fee, faster withdrawals) must be configurable and linked to user profile.
+   - When user pays membership: debit Smaisika -> credit treasury -> set user.tier with expiry.
+
+7. Gamification & Referral System
+   - Features to implement or verify:
+     • Achievements & badges (onboarding, first deposit, 10 trades won, streaks)
+     • Daily login streaks & daily tasks (complete tasks for Smaisika rewards)
+     • Leaderboards: by profit %, by weekly ROI, by total Smaisika earned
+     • Tournaments: sign-up with entry fee in Smaisika, prize pool in Smaisika
+     • Social share & copy-trading marketplace (follow top bots or users)
+     • Referral tree: track referees and referrer rewards in Smaisika
+     • Referral payouts: when referred user earns fees or profits, optionally pay referrer a configurable percentage
+     • Gamified UX pages in public/help and user dashboard
+   - Provide endpoints for gamification: GET /gamify/leaderboard, POST /gamify/claim, GET /gamify/achievements/:userId
+
+8. Nwaora Chigozie autonomous account
+   - Admin-controlled account with its own API keys and treasury.
+   - Trades autonomously (binary & spot). Admin can switch engine mode: binary ↔ spot via /admin/nwaora/switch
+   - Profits automatically flow to Waides KI treasury and can be reinvested or used as reserves for Smaisika redemptions.
+
+9. API Status & Connector Testing
+   - Each connector must expose testConnection() returning { ok:true/false, details }.
+   - Build route GET /user/exchanges/:userId/status to show API health per linked exchange.
+   - Admin UI should show global connector health dashboard.
+
+10. Manual-Withdraw detection & alerts
+   - Poller compares expectedBalance vs observedBalance; if observed < expected - tolerance → create withdrawal-suspect event.
+   - Flag user account, pause auto-traders for that user, notify admin, write audit.
+
+11. Scalability & Resilience
+   - Use job queues for trade placement, sweep jobs, membership processing, gamify payouts.
+   - Background workers (separate processes/tasks) handle heavy operations (polling, reconciliation).
+   - Circuit-breaker: if many failures, automatically disable auto-trading globally with admin alert.
+   - Use connection pooling for DB; for file store use batched writes and optimistic locking; recommend moving to Postgres/Mongo in production.
+
+12. Security
+   - Encrypt api keys at rest using a secure key from env (e.g., ENCRYPTION_KEY). Do not store secrets in plain text.
+   - Use admin tokens and MFA for critical admin endpoints (withdraw approvals, profit-sharing changes).
+   - Rate-limit sensitive endpoints.
+   - Log and rotate audit logs; keep backups of daily ledger and trades.
+
+ENDPOINTS & ADMIN CONTROLS (SUMMARY)
+- Public / User:
+  • POST /user/register
+  • POST /user/login
+  • GET /user/dashboard/:userId
+  • POST /user/link-exchange { userId, exchange, apiKey, apiSecret, withdrawWhitelist, autoSweepEnabled }
+  • GET /user/exchanges/:userId (include API status)
+  • POST /trade/binary { userId, bot: maibot|waidbot|waidbot-pro, pair, amountOptional }  // backend computes amount via riskManager
+  • POST /trade/forex { userId, pair, lotSizeOptional, ... }
+  • POST /trade/spot { userId, symbol, amountOptional }
+  • POST /wallet/deposit/notify (for on-chain webhooks)
+  • POST /wallet/withdraw-request { userId, address, amountSmaisika }
+  • GET /gamify/leaderboard
+  • GET /gamify/achievements/:userId
+
+- Admin:
+  • POST /admin/login (x-admin-token)
+  • GET /admin/dashboard
+  • GET/POST /admin/risk-settings { defaultRiskFraction, profitSharingRate, maxSingleTradeLimit, growthCurve }
+  • GET /admin/users
+  • GET /admin/trades
+  • GET /admin/logs
+  • GET /admin/pending-sweeps
+  • POST /admin/approve-sweep { sweepId }  // requires admin auth
+  • POST /admin/execute-sweep { sweepId, forceReal } // requires MFA and forceReal=true for real withdraws
+  • GET/POST /admin/membership { tier, priceSmaisika, perks }
+  • GET /admin/referrals (tree, payouts)
+  • POST /admin/nwaora/switch { mode: "binary"|"spot" } // control Nwaora account
+
+STORAGE SCHEMA (recommended)
+- users: { id, email, hashedPassword, tier, tierExpiry, linkedExchanges: { [exchange]: { apiKeyEnc, apiSecretEnc, withdrawWhitelist, autoSweep } }, smaisikaBalance, custodial: boolean, referralCode, referrerId, createdAt }
+- trades: { id, userId, engine, connector, symbol, sizeSmaisika, price, side, sl, tp, status, profitLossSmaisika, profitShareSmaisika, timestamp, traceId }
+- ledger (smaisika): { id, type: "credit"|"debit", userId|null, amount, balanceAfter, reason, reference, timestamp }
+- pendingSweeps: { id, userId, exchange, amountSmaisika, preBalance, postEstimated, whitelistAddress, status, adminApproved }
+- adminTreasury: { smaisikaBalance, history[] }
+- gamify: achievements, leaderboards, tournament entries
+- referrals: referralRecords, referralPayouts
+
+OUTPUTS REQUIRED AFTER RUN
+- scan-report.json (full repo inventory + Smaisika occurrences)
+- manifest.json (role → chosen files / missing files)
+- proposed/ (new modules + modifications; DO NOT overwrite originals)
+- backups/<timestamp>/ (copied originals for any file you planned to modify)
+- changes.log (human summary of proposals)
+- security-steps.md (checklist to enable real trading & sweeps)
+
+SMOKE TESTS (DEV_MODE=true) — run automatically after proposed files are created
+- Start server and check GET / returns status
+- POST /connectors/test for each connector → returns ok/simulated
+- POST /simulate/binary → returns simulated trade + position size calculation
+- POST /simulate/profit-sharing → feed example profit and verify ledger and admin treasury updates in simulation
+
+FINAL HUMAN REVIEW — STOP & WAIT
+- After creating proposed files and reports, present them to the owner. Do NOT merge or run real operations until owner approves.
+- Owner must review:
+  • env keys to set (ADMIN_PASSWORD, ENCRYPTION_KEY, DEV_MODE, SmaisikaRate, DB_URL, AUTO_SWEEP_ENABLED, POLL_INTERVAL_SECONDS)
+  • proposed connectors replacements and real keys
+  • membership prices and profitSharingRate
+
+END OF MASTER BUILDER INSTRUCTION
