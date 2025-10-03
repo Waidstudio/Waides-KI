@@ -1,5 +1,7 @@
 // Nwaora Chigozie ε (Epsilon) - The Secondary Support & Backup Trading System
 // Always-On Guardian Architecture - Continuous protection and monitoring
+import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+
 class NwaoraChigozieBot {
   private isActive: boolean = true; // Always-on guardian
   private isGuardianMode: boolean = true; // Guardian mode always active

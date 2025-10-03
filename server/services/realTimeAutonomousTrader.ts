@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { smaisikaMiningEngine } from './smaisikaMiningEngine';
 
 interface DemoBalance {
   usdt: number;
@@ -432,6 +433,26 @@ export class RealTimeAutonomousTrader extends EventEmitter {
       this.state.performance.totalTrades++;
       this.state.performance.todayTrades++;
       this.state.performance.profit += profitLoss;
+      
+      // Record to Smaisika ledger with 50/50 profit sharing
+      if (this.state.tradingMode === 'real') {
+        const userId = 1; // TODO: Get actual userId from session/context
+        if (profitLoss > 0) {
+          await smaisikaMiningEngine.recordTradeProfit(
+            userId,
+            profitLoss,
+            trade.id,
+            'Autonomous Trader γ'
+          );
+        } else if (profitLoss < 0) {
+          await smaisikaMiningEngine.recordTradeLoss(
+            userId,
+            Math.abs(profitLoss),
+            trade.id,
+            'Autonomous Trader γ'
+          );
+        }
+      }
       
       // Update win rate
       if (profitLoss > 0) {

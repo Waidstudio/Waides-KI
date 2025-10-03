@@ -559,7 +559,8 @@ class SmaisikaMiningEngine {
     return this.miningPools.get(cryptocurrency) || null;
   }
 
-  private async addSmaiSikaToWallet(userId: number, amount: number): Promise<void> {
+  // Public method for adding SmaiSika (used by other services)
+  async addSmaiSikaToWallet(userId: number, amount: number): Promise<void> {
     const userWallet = await db.select().from(wallets).where(eq(wallets.userId, userId)).limit(1);
     
     if (userWallet[0]) {
@@ -568,6 +569,63 @@ class SmaisikaMiningEngine {
         .set({ smaiBalance: (currentBalance + amount).toString() })
         .where(eq(wallets.userId, userId));
     }
+  }
+
+  // Public method for deducting SmaiSika (used by other services)
+  async deductSmaiSikaFromWallet(userId: number, amount: number): Promise<{ success: boolean; message?: string }> {
+    const userWallet = await db.select().from(wallets).where(eq(wallets.userId, userId)).limit(1);
+    
+    if (!userWallet[0]) {
+      return { success: false, message: 'Wallet not found' };
+    }
+
+    const currentBalance = parseFloat(userWallet[0].smaiBalance || '0');
+    
+    if (currentBalance < amount) {
+      return { success: false, message: 'Insufficient SmaiSika balance' };
+    }
+
+    await db.update(wallets)
+      .set({ smaiBalance: (currentBalance - amount).toString() })
+      .where(eq(wallets.userId, userId));
+
+    return { success: true };
+  }
+
+  // Trading profit with automatic 50/50 profit sharing
+  async recordTradeProfit(userId: number, grossProfit: number, tradeId: string, botName: string): Promise<{ success: boolean; userProfit: number; treasuryShare: number }> {
+    const TREASURY_USER_ID = 1; // Admin/treasury account
+    const PROFIT_SHARE_RATE = 0.5; // 50%
+
+    const treasuryShare = grossProfit * PROFIT_SHARE_RATE;
+    const userProfit = grossProfit - treasuryShare;
+
+    // Credit user's share
+    await this.addSmaiSikaToWallet(userId, userProfit);
+
+    // Credit treasury share
+    await this.addSmaiSikaToWallet(TREASURY_USER_ID, treasuryShare);
+
+    console.log(`💰 Trade profit recorded: User ${userId} gets ${userProfit.toFixed(8)}, Treasury gets ${treasuryShare.toFixed(8)} SmaiSika`);
+    console.log(`📊 Bot: ${botName}, Trade: ${tradeId}`);
+
+    return {
+      success: true,
+      userProfit,
+      treasuryShare
+    };
+  }
+
+  // Trading loss
+  async recordTradeLoss(userId: number, lossAmount: number, tradeId: string, botName: string): Promise<{ success: boolean; message?: string }> {
+    const result = await this.deductSmaiSikaFromWallet(userId, lossAmount);
+
+    if (result.success) {
+      console.log(`📉 Trade loss recorded: User ${userId} lost ${lossAmount.toFixed(8)} SmaiSika`);
+      console.log(`📊 Bot: ${botName}, Trade: ${tradeId}`);
+    }
+
+    return result;
   }
 
   private async getUserReputation(userId: number): Promise<{ smaiOnyixScore: number; miningEfficiency: number }> {
