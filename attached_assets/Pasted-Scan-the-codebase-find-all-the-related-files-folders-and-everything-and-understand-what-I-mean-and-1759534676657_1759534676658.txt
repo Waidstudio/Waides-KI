@@ -1,0 +1,331 @@
+Scan the codebase, find all the related files, folders and everything and understand what I mean and let’s build it this way for each bots 
+And also strategy for each of them as they do different jobs,,, it’s suppose to be different strategy 
+ * - Scans codebase for bots, connectors, wallets, Smaisika usage
+ * - Ensures bot -> market mappings:
+ *     waidbot, waidbot-pro -> binary options connectors
+ *     autonomousTrader -> forex / Deriv / MT5
+ *     fullEngine -> spot exchanges (Binance, KuCoin, OKX, Bybit, etc.)
+ * - Creates missing placeholders under 'proposed/' and backups originals under '_waides_backup/'
+ * - Writes scan-report.json and manifest.json
+ * - Generates a single-page "Exchanges" UX skeleton and funding flows (deposit/withdraw)
+ * - Creates a 10-question deployment-readiness checklist and writes it to 'deployment-checklist.json'
+ *
+ * IMPORTANT: This script will not overwrite existing files. It writes new files only into 'proposed/'.
+ */
+
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+
+const ROOT = process.cwd();
+const BACKUP_DIR = path.join(ROOT, "_waides_backup");
+const PROPOSED_DIR = path.join(ROOT, "proposed");
+const REPORT_FILE = path.join(ROOT, "scan-report.json");
+const MANIFEST_FILE = path.join(ROOT, "manifest.json");
+const CHECKLIST_FILE = path.join(ROOT, "deployment-checklist.json");
+
+// Market mappings required
+const REQUIRED_BOTS = {
+  binary: ["waidbot", "waidbot-pro", "maibot"],
+  forex: ["autonomousTrader"],
+  spot: ["fullEngine"]
+};
+
+const BINARY_BROKERS = [
+  "Deriv", "Quotex", "PocketOption", "IQOption", "OlympTrade", "ExpertOption", "Binomo", "Spectre", "Nadex"
+];
+
+const FOREX_PLATFORMS = [
+  "Deriv", "MetaTrader4", "MetaTrader5", "Oanda", "FXCM", "ICMarkets"
+];
+
+const SPOT_EXCHANGES = [
+  "Binance", "KuCoin", "OKX", "Bybit", "Coinbase", "Kraken"
+];
+
+const REQUIRED_DIRS = [
+  "src",
+  "src/bots",
+  "src/connectors",
+  "src/connectors/binary",
+  "src/connectors/forex",
+  "src/connectors/spot",
+  "src/wallets",
+  "src/smaisika",
+  "src/admin",
+  "public",
+  "public/exchanges"
+];
+
+// Utility helpers
+function ensureDir(dir) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+}
+
+function writeProposed(relPath, content) {
+  const full = path.join(PROPOSED_DIR, relPath);
+  ensureDir(path.dirname(full));
+  fs.writeFileSync(full, content, { encoding: "utf8", flag: "w" });
+  console.log("[proposed] wrote:", relPath);
+}
+
+function backupIfExists(relPath) {
+  const full = path.join(ROOT, relPath);
+  if (fs.existsSync(full)) {
+    ensureDir(BACKUP_DIR);
+    const sha = crypto.createHash("sha1").update(String(Date.now())).digest("hex").slice(0, 8);
+    const dest = path.join(BACKUP_DIR, `${relPath.replace(/\//g, "__")}.${sha}.bak`);
+    ensureDir(path.dirname(dest));
+    fs.copyFileSync(full, dest);
+    return dest;
+  }
+  return null;
+}
+
+function listFilesRec(dir) {
+  let results = [];
+  if (!fs.existsSync(dir)) return results;
+  const entries = fs.readdirSync(dir);
+  entries.forEach(e => {
+    const full = path.join(dir, e);
+    const stat = fs.statSync(full);
+    if (stat.isDirectory()) {
+      results = results.concat(listFilesRec(full));
+    } else {
+      results.push(full);
+    }
+  });
+  return results;
+}
+
+// 1) Ensure required directories exist (but we will not touch existing files)
+REQUIRED_DIRS.forEach(ensureDir);
+ensureDir(BACKUP_DIR);
+ensureDir(PROPOSED_DIR);
+
+// 2) Full scan of repository
+console.log("Scanning workspace...");
+const allFiles = listFilesRec(ROOT).filter(p => !p.includes(`${path.sep}node_modules${path.sep}`) && !p.includes(`${path.sep}.git${path.sep}`) && !p.includes(`${path.sep}_waides_backup${path.sep}`) && !p.includes(`${path.sep}proposed${path.sep}`));
+
+const fileIndex = allFiles.map(f => {
+  let text = "";
+  try { text = fs.readFileSync(f, "utf8"); } catch(e) {}
+  return {
+    path: path.relative(ROOT, f),
+    size: fs.statSync(f).size,
+    mtime: fs.statSync(f).mtime,
+    contains: {
+      smaisika: /smaisika/i.test(text),
+      waidbot: /waidbot/i.test(text),
+      "waidbot-pro": /waidbot\s*pro|waidbot-pro/i.test(text),
+      maibot: /maibot/i.test(text),
+      autonomousTrader: /autonomoustrader|autonomousTrader/i.test(text),
+      fullEngine: /fullengine/i.test(text),
+      deriv: /deriv/i.test(text),
+      binance: /binance/i.test(text),
+      mt5: /mt5|metatrader5/i.test(text),
+      mt4: /mt4|metatrader4/i.test(text),
+      connectors: /connector|connectors|connect/i.test(text),
+      routes: /route|routes|express|app\.use/i.test(text)
+    }
+  };
+});
+
+// 3) Detect existing bots/connectors
+const detected = {
+  bots: { binary: [], forex: [], spot: [] },
+  connectors: { binary: [], forex: [], spot: [] },
+  smaisikaOccurrences: [],
+  envKeys: new Set()
+};
+
+fileIndex.forEach(fi => {
+  if (fi.contains.smaisika) detected.smaisikaOccurrences.push(fi.path);
+  if (fi.contains.waidbot) detected.bots.binary.push(fi.path);
+  if (fi.contains["waidbot-pro"]) detected.bots.binary.push(fi.path);
+  if (fi.contains.maibot) detected.bots.binary.push(fi.path);
+  if (fi.contains.autonomousTrader) detected.bots.forex.push(fi.path);
+  if (fi.contains.fullEngine) detected.bots.spot.push(fi.path);
+  if (fi.contains.binance) detected.connectors.spot.push(fi.path);
+  if (fi.contains.deriv) detected.connectors.forex.push(fi.path);
+  if (fi.contains.mt5 || fi.contains.mt4) detected.connectors.forex.push(fi.path);
+  // quick env key discovery
+  const raw = fs.readFileSync(path.join(ROOT, fi.path), "utf8");
+  (raw.match(/process\.env\.[A-Z0-9_]+/g) || []).forEach(m => detected.envKeys.add(m.replace("process.env.", "")));
+});
+
+// 4) Build manifest
+const manifest = {
+  timestamp: new Date().toISOString(),
+  detected,
+  summary: {
+    totalFilesScanned: fileIndex.length,
+    botsRequired: REQUIRED_BOTS,
+    binaryBrokers: BINARY_BROKERS,
+    forexPlatforms: FOREX_PLATFORMS,
+    spotExchanges: SPOT_EXCHANGES
+  }
+};
+
+// 5) Propose missing connector placeholders & a unified Exchanges page
+function proposeConnectorsAndPages() {
+  // connectors: binary
+  BINARY_BROKERS.forEach(name => {
+    const safeName = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const rel = `src/connectors/binary/${safeName}.js`;
+    const proposedRel = rel;
+    // create proposed only if no existing file mentioning the broker
+    const already = fileIndex.some(f => /connectors/.test(f.path) && new RegExp(name, "i").test(fs.readFileSync(path.join(ROOT, f.path), "utf8")));
+    if (!already) {
+      const content = `// Connector placeholder for ${name}\nexport async function testConnection(conf){\n  if(!conf || !conf.apiKey) return { ok:false, reason:"missing apiKey" };\n  // TODO: implement ${name} API calls\n  return { ok: true, reason: "simulated" };\n}\nexport default { testConnection };\n`;
+      writeProposed(`src/connectors/binary/${safeName}.js`, content);
+      manifest[`proposed_connector_binary_${safeName}`] = proposedRel;
+    }
+  });
+
+  // connectors: forex
+  FOREX_PLATFORMS.forEach(name => {
+    const safeName = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const rel = `src/connectors/forex/${safeName}.js`;
+    const already = fileIndex.some(f => /connectors/.test(f.path) && new RegExp(name, "i").test(fs.readFileSync(path.join(ROOT, f.path), "utf8")));
+    if (!already) {
+      const content = `// Connector placeholder for ${name}\nexport async function testConnection(conf){\n  if(!conf || !conf.apiKey) return { ok:false, reason:"missing apiKey" };\n  // TODO: implement ${name} API calls (MT4/MT5 bridges where appropriate)\n  return { ok:true, reason:"simulated" };\n}\nexport default { testConnection };\n`;
+      writeProposed(`src/connectors/forex/${safeName}.js`, content);
+      manifest[`proposed_connector_forex_${safeName}`] = rel;
+    }
+  });
+
+  // connectors: spot
+  SPOT_EXCHANGES.forEach(name => {
+    const safeName = name.toLowerCase().replace(/[^a-z0-9]/g, "_");
+    const rel = `src/connectors/spot/${safeName}.js`;
+    const already = fileIndex.some(f => /connectors/.test(f.path) && new RegExp(name, "i").test(fs.readFileSync(path.join(ROOT, f.path), "utf8")));
+    if (!already) {
+      const content = `// Connector placeholder for ${name}\nexport async function testConnection(conf){\n  if(!conf || !conf.apiKey) return { ok:false, reason:"missing apiKey" };\n  // TODO: implement ${name} REST / signed calls\n  return { ok:true, reason:"simulated" };\n}\nexport default { testConnection };\n`;
+      writeProposed(`src/connectors/spot/${safeName}.js`, content);
+      manifest[`proposed_connector_spot_${safeName}`] = rel;
+    }
+  });
+
+  // Unified Exchanges page (public/exchanges/index.html)
+  const exchangesHtmlRel = "public/exchanges/index.html";
+  const exchangesHtml = `<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Waides KI — Exchanges</title></head>
+<body>
+  <h1>Exchanges & Connections</h1>
+  <p>This page lists all exchanges and their connection status (Working / Not Working).</p>
+  <div id="exchanges"></div>
+  <script>
+    async function load() {
+      const res = await fetch('/_internal/exchanges-status');
+      const data = await res.json();
+      const el = document.getElementById('exchanges');
+      el.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    }
+    load();
+  </script>
+</body>
+</html>`;
+  writeProposed(exchangesHtmlRel, exchangesHtml);
+  manifest.proposed_exchanges_page = exchangesHtmlRel;
+
+  // Unified Admin page for funding & UX skeleton
+  const adminHtmlRel = "public/admin/exchanges_and_funding.html";
+  const adminHtml = `<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Waides KI — Admin Exchanges & Funding</title></head>
+<body>
+  <h1>Admin — Exchanges & Funding</h1>
+  <section id="connections"></section>
+  <section id="funding">
+    <h2>Funding & Deposits</h2>
+    <p>Deposit addresses and on-chain/webhook handlers should appear here.</p>
+  </section>
+  <script>
+    async function load(){ const r = await fetch('/_internal/admin/exchanges'); const j = await r.json(); document.getElementById('connections').innerHTML = '<pre>'+JSON.stringify(j,null,2)+'</pre>'; }
+    load();
+  </script>
+</body>
+</html>`;
+  writeProposed(adminHtmlRel, adminHtml);
+  manifest.proposed_admin_exchanges_page = adminHtmlRel;
+}
+
+// 6) Ensure bots are connected to correct market types - propose mapping stubs if missing
+function proposeBotMappings() {
+  // For each required bot, if no file references it, propose a mapping stub
+  Object.entries(REQUIRED_BOTS).forEach(([market, bots]) => {
+    bots.forEach(bot => {
+      const found = fileIndex.some(f => new RegExp(bot, "i").test(fs.readFileSync(path.join(ROOT, f.path), "utf8")));
+      if (!found) {
+        const safe = bot.toLowerCase().replace(/[^a-z0-9]/g, "_");
+        const rel = `src/bots/${safe}_mapping.js`;
+        const content = `// Mapping stub for bot: ${bot}\n// Market: ${market}\nexport const botName = "${bot}";\nexport const market = "${market}";\nexport async function execute(params){\n  // TODO: wire this function to the correct connectors for ${market}\n  // If market === 'binary' use binary connectors; if 'forex' use Deriv/MT5 adapter; if 'spot' use spot connectors.\n  return { status: 'simulated', bot:'${bot}', params };\n}\n`;
+        writeProposed(rel, content);
+        manifest[`proposed_bot_mapping_${safe}`] = rel;
+      } else {
+        // If found, try to discover whether it references connector types
+        const matches = fileIndex.filter(f => new RegExp(bot, "i").test(fs.readFileSync(path.join(ROOT, f.path), "utf8")));
+        manifest[`bot_${bot}_found_in`] = matches.map(m => m.path);
+      }
+    });
+  });
+}
+
+// 7) Funding skeletons (deposit + withdraw endpoints stubs)
+function proposeFundingSkeletons() {
+  const relApi = "src/admin/funding_api.js";
+  const content = `// Funding & webhook skeleton\nimport fs from 'fs';\nexport async function depositNotify(body){\n  // body: { userId, txId, currency, amount }\n  // TODO: validate chain confirmations, credit user ledger in Smaisika\n  return { ok:true };\n}\nexport async function withdrawRequest(body){\n  // body: { userId, address, currency, amountSmaisika }\n  // TODO: create pending withdrawal, require admin approval\n  return { ok:true, pending:true };\n}\nexport default { depositNotify, withdrawRequest };\n`;
+  writeProposed(relApi, content);
+  manifest.proposed_funding_api = relApi;
+}
+
+// 8) Create /_internal endpoints skeletons for status (proposed code)
+function proposeInternalStatusRoutes() {
+  const rel = "src/admin/internal_status_routes.js";
+  const content = `// Internal status routes (to be mounted in your server)\nimport express from 'express';\nconst router = express.Router();\nrouter.get('/exchanges-status', async (req, res) => {\n  // TODO: collect connector.testConnection() results and return JSON\n  res.json({ ok:true, connectors: { /* name: { ok: true/false } */ } });\n});\nrouter.get('/admin/exchanges', async (req, res) => {\n  // TODO: return admin view of exchanges and funding status\n  res.json({ ok:true, message:'admin exchanges skeleton' });\n});\nexport default router;\n`;
+  writeProposed(rel, content);
+  manifest.proposed_internal_status_routes = rel;
+}
+
+// 9) Create a deployment readiness checklist (10 questions)
+function writeDeploymentChecklist() {
+  const checklist = [
+    { id: 1, question: "Do environment variables exist for ADMIN_PASSWORD, ENCRYPTION_KEY, DEV_MODE, SMAISIKA_RATE_USD?", ok: false },
+    { id: 2, question: "Are connectors for key exchanges implemented and tested (binary brokers, Deriv/MT5, Binance/KuCoin)?", ok: false },
+    { id: 3, question: "Is the Smaisika ledger implemented and backed (ledger file or DB) and reserve ratios documented?", ok: false },
+    { id: 4, question: "Is profit-sharing audited and simulated trades show correct admin/user split?", ok: false },
+    { id: 5, question: "Are deposit webhook listeners connected and verified (on-chain/fiat gateways)?", ok: false },
+    { id: 6, question: "Are withdrawals gated with admin approval and whitelist checks enabled?", ok: false },
+    { id: 7, question: "Are risk manager settings in place (default 2%) and per-user override tested?", ok: false },
+    { id: 8, question: "Does the Exchanges page show API status (Working / NotWorking) for all linked accounts?", ok: false },
+    { id: 9, question: "Is Nwaora Chigozie admin account configured and test-traded in sandbox mode?", ok: false },
+    { id: 10, question: "Have security controls been audited (encryption of keys, rate limits, backups)?", ok: false }
+  ];
+  fs.writeFileSync(CHECKLIST_FILE, JSON.stringify(checklist, null, 2), "utf8");
+  manifest.deployment_checklist = CHECKLIST_FILE;
+}
+
+// Run proposals
+console.log("Proposing missing connectors, pages, and API skeletons...");
+proposeConnectorsAndPages();
+proposeBotMappings();
+proposeFundingSkeletons();
+proposeInternalStatusRoutes();
+writeDeploymentChecklist();
+
+// Write manifest & scan report
+fs.writeFileSync(REPORT_FILE, JSON.stringify({ timestamp: new Date().toISOString(), filesScanned: fileIndex.length, summary: manifest }, null, 2), "utf8");
+fs.writeFileSync(MANIFEST_FILE, JSON.stringify(manifest, null, 2), "utf8");
+
+console.log("Scan complete. Outputs:");
+console.log(" -", REPORT_FILE);
+console.log(" -", MANIFEST_FILE);
+console.log(" - proposed files in:", PROPOSED_DIR);
+console.log(" - deployment checklist:", CHECKLIST_FILE);
+console.log("");
+console.log("Next steps:");
+console.log(" 1) Review files in 'proposed/' and merge into your codebase when ready.");
+console.log(" 2) Implement real connector code in the proposed connector placeholders.");
+console.log(" 3) Run tests in sandbox (DEV_MODE) before enabling any real trades / withdrawals.");
