@@ -125,61 +125,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // USER Authentication token verification
-  app.get("/api/user-auth/me", async (req, res) => {
-    try {
-      const authHeader = req.headers.authorization;
-      
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid token'
-        });
-      }
-      
-      const token = authHeader.substring(7);
-      let user;
-      
-      // Try database authentication first
-      try {
-        const sessionInfo = await userAuthService.verifyToken(token);
-        if (sessionInfo && sessionInfo.user) {
-          user = sessionInfo.user;
-        }
-      } catch (dbError) {
-        console.log('Database authentication failed, trying fallback:', (dbError as Error).message);
-      }
-      
-      // If database auth failed or returned no user, try fallback
-      if (!user) {
-        try {
-          const { fallbackAuthService } = await import('./services/fallbackAuthService');
-          user = await fallbackAuthService.verifyToken(token);
-        } catch (fallbackError) {
-          console.log('Fallback authentication error:', fallbackError);
-        }
-      }
-      
-      if (!user) {
-        return res.status(401).json({
-          success: false,
-          message: 'Invalid token'
-        });
-      }
-      
-      res.json({
-        success: true,
-        user
-      });
-    } catch (error) {
-      console.error('Token verification error:', error);
-      res.status(401).json({
-        success: false,
-        message: 'Invalid token'
-      });
-    }
-  });
-
   // USER Authentication routes (public)
   app.post("/api/user-auth/login", rateLimitLogin, async (req, res) => {
     // Parse and validate input
@@ -326,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({
         success: true,
-        user: sessionInfo
+        user: sessionInfo.user || sessionInfo
       });
     } catch (error) {
       console.error('User auth verification error:', error);
