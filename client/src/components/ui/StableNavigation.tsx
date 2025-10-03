@@ -225,55 +225,6 @@ const StableNavigation = () => {
     return items.some(item => location === item.path);
   };
 
-  // If user is not authenticated, show a simplified header with login/register
-  if (!isAuthenticated) {
-    return (
-      <nav className="bg-slate-800/95 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 md:h-16">
-            {/* Logo */}
-            <Link href="/">
-              <div className="flex items-center space-x-3 cursor-pointer">
-                <div className="relative">
-                  <Brain className="h-6 w-6 text-blue-400" />
-                  <TrendingUp className="h-3 w-3 text-emerald-400 absolute -top-1 -right-1" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                    Waides KI
-                  </h1>
-                  <p className="text-xs text-gray-400 hidden sm:block -mt-1">AI Trading Platform</p>
-                </div>
-              </div>
-            </Link>
-
-            {/* Auth Buttons */}
-            <div className="flex items-center space-x-3">
-              <Link href="/login">
-                <Button 
-                  variant="ghost" 
-                  className="text-gray-300 hover:text-white hover:bg-slate-700/50"
-                  data-testid="button-login"
-                >
-                  Login
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button 
-                  className="bg-gradient-to-r from-blue-500 to-emerald-500 hover:from-blue-600 hover:to-emerald-600 text-white"
-                  data-testid="button-register"
-                >
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-  }
-
-  // Authenticated user - show full navigation
   return (
     <nav className="bg-slate-800/95 backdrop-blur-md border-b border-purple-500/20 sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 transition-all duration-300">
