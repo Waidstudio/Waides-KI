@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { smaisikaMiningEngine } from './smaisikaMiningEngine';
 
 interface DemoBalance {
   usdt: number;
@@ -329,6 +330,26 @@ export class RealTimeWaidBot extends EventEmitter {
       this.state.performance.totalTrades++;
       this.state.performance.todayTrades++;
       this.state.performance.profit += profitLoss;
+      
+      // Record to SmaiSika ledger with 50/50 profit sharing
+      if (this.state.tradingMode === 'real') {
+        const userId = 1; // TODO: Get actual userId from session/context
+        if (profitLoss > 0) {
+          await smaisikaMiningEngine.recordTradeProfit(
+            userId,
+            profitLoss,
+            trade.id,
+            'WaidBot α'
+          );
+        } else if (profitLoss < 0) {
+          await smaisikaMiningEngine.recordTradeLoss(
+            userId,
+            Math.abs(profitLoss),
+            trade.id,
+            'WaidBot α'
+          );
+        }
+      }
       
       // Update win rate
       const wins = this.state.trades.filter(t => t.action === 'SELL').length;
