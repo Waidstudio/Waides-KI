@@ -443,6 +443,42 @@ export const EXCHANGE_CONFIGS: Record<string, ExchangeConfig> = {
       'BTC': 100,
       'ETH': 1000
     }
+  },
+
+  GEM: {
+    code: 'GEM',
+    name: 'Gemini',
+    baseUrl: 'https://api.gemini.com',
+    websocketUrl: 'wss://api.gemini.com/v1/marketdata',
+    rateLimit: {
+      requests: 600,
+      window: 60000
+    },
+    features: {
+      spot: true,
+      futures: false,
+      options: false,
+      lending: true,
+      staking: true
+    },
+    apiVersion: 'v1',
+    fees: {
+      maker: 0.001, // 0.1%
+      taker: 0.0035 // 0.35%
+    },
+    tradingPairs: ['BTCUSD', 'ETHUSD', 'LTCUSD', 'BCHUSD', 'ZECUSD'],
+    supportedOrderTypes: ['market', 'limit', 'immediate-or-cancel', 'maker-or-cancel'],
+    minOrderSizes: {
+      'BTCUSD': 0.00001,
+      'ETHUSD': 0.0001,
+      'LTCUSD': 0.001,
+      'BCHUSD': 0.001
+    },
+    withdrawalLimits: {
+      'BTC': 100,
+      'ETH': 1000,
+      'USD': 500000
+    }
   }
 };
 
