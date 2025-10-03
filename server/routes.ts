@@ -43,7 +43,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { APIKeyManager } = await import("./services/exchanges/apiKeyManager.js");
   const { ExchangeVerificationService } = await import("./services/exchanges/exchangeVerificationService.js");
   const { ExchangeManager, getExchangeManager } = await import("./services/exchanges/exchangeManager.js");
-  const { getAllExchangeConfigs, getExchangeConfig, validateExchangeCode, getAllExchangeCodes } = await import("./services/exchanges/exchangeConfig.js");
+  const { getAllExchangeConfigs, getExchangeConfig, validateExchangeCode, getAllExchangeCodes } = await import("./services/connectors/spot/exchangeConfig.js");
+  
+  // Import connector status service
+  const { ConnectorStatusService } = await import("./services/connectorStatusService.js");
 
   // Apply security headers to all requests
   app.use(securityHeaders);
@@ -13836,6 +13839,69 @@ Ask me about specific market conditions, upload files for analysis, or request K
     } catch (error) {
       console.error('Exchange test error:', error);
       res.status(500).json({ success: false, error: 'Failed to test exchange connection' });
+    }
+  });
+
+  // === Market-Type Connector Status API Routes ===
+  
+  // Get all connector statuses across all market types
+  app.get("/api/connectors/status", requireAuth, async (req, res) => {
+    try {
+      const statuses = await ConnectorStatusService.getAllConnectorStatuses();
+      res.json({
+        success: true,
+        ...statuses
+      });
+    } catch (error) {
+      console.error('Connector status error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get connector statuses' });
+    }
+  });
+
+  // Get market type summary with strategies
+  app.get("/api/connectors/market-summary", requireAuth, async (req, res) => {
+    try {
+      const summary = ConnectorStatusService.getMarketTypeSummary();
+      res.json({
+        success: true,
+        summary
+      });
+    } catch (error) {
+      console.error('Market summary error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get market summary' });
+    }
+  });
+
+  // Test a specific connector
+  app.post("/api/connectors/test/:code", requireAuth, async (req, res) => {
+    try {
+      const { code } = req.params;
+      const { marketType } = req.body;
+      
+      const status = await ConnectorStatusService.testConnector(code, marketType);
+      res.json({
+        success: true,
+        status
+      });
+    } catch (error) {
+      console.error('Connector test error:', error);
+      res.status(500).json({ success: false, error: 'Failed to test connector' });
+    }
+  });
+
+  // Validate bot-connector pairing
+  app.post("/api/connectors/validate", requireAuth, async (req, res) => {
+    try {
+      const { botType, connectorCode } = req.body;
+      
+      const validation = ConnectorStatusService.validateBotConnector(botType, connectorCode);
+      res.json({
+        success: true,
+        validation
+      });
+    } catch (error) {
+      console.error('Bot-connector validation error:', error);
+      res.status(500).json({ success: false, error: 'Failed to validate bot-connector pairing' });
     }
   });
 

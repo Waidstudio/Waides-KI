@@ -1,5 +1,5 @@
 import { APIKeyManager, type DecryptedCredentials } from './apiKeyManager';
-import { getExchangeConfig } from './exchangeConfig';
+import { getExchangeConfig } from '../connectors/spot/exchangeConfig';
 
 export interface ExchangeVerificationQuestion {
   id: string;

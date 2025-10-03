@@ -1,6 +1,6 @@
-import { UniversalExchangeInterface, type ExchangeCredentials, type Balance, type Order, type MarketData } from './universalExchangeInterface';
+import { UniversalExchangeInterface, type ExchangeCredentials, type Balance, type Order, type MarketData } from '../connectors/spot/universalExchangeInterface';
 import { APIKeyManager, type DecryptedCredentials, type APIKeyPermissions } from './apiKeyManager';
-import { getExchangeConfig, validateExchangeCode, getAllExchangeCodes } from './exchangeConfig';
+import { getExchangeConfig, validateExchangeCode, getAllExchangeCodes } from '../connectors/spot/exchangeConfig';
 
 export interface ExchangeManagerConfig {
   userId: string;
