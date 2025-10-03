@@ -21,10 +21,12 @@ import {
   Network
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function FullEnginePage() {
-  const [isActive, setIsActive] = useState(false);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch Full Engine status from centralized engine
   const { data: fullEngineStatus } = useQuery({
@@ -50,8 +52,48 @@ export default function FullEnginePage() {
     refetchInterval: 4000
   });
 
+  // Start mutation
+  const startMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/full-engine/start', "POST"),
+    onSuccess: (data) => {
+      toast({
+        title: "Full Engine Started",
+        description: data?.message || "Full engine is now active",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/full-engine/status'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Start Failed",
+        description: error.message || "Failed to start full engine",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Stop mutation
+  const stopMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/full-engine/stop', "POST"),
+    onSuccess: (data) => {
+      toast({
+        title: "Full Engine Stopped",
+        description: data?.message || "Full engine has been deactivated",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/full-engine/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/full-engine/status'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Stop Failed",
+        description: error.message || "Failed to stop full engine",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Safe data access with fallbacks
-  const engineActive = fullEngineStatus?.engine_status?.is_active || false;
+  const engineActive = fullEngineStatus?.engine_status?.is_active || engineData?.isActive || false;
   const riskScore = fullEngineStatus?.engine_status?.risk_score || 7.2;
   const cpuUsage = fullEngineStatus?.engine_status?.cpu_usage || 45;
   const memoryUsage = fullEngineStatus?.engine_status?.memory_usage || 68;
@@ -100,8 +142,10 @@ export default function FullEnginePage() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Engine Controls</h3>
                 <Button
-                  onClick={() => setIsActive(!isActive)}
+                  onClick={() => engineActive ? stopMutation.mutate() : startMutation.mutate()}
+                  disabled={startMutation.isPending || stopMutation.isPending}
                   className={`w-full ${engineActive ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                  data-testid={engineActive ? "button-stop-full-engine" : "button-start-full-engine"}
                 >
                   {engineActive ? (
                     <>

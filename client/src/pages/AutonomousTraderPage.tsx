@@ -17,7 +17,9 @@ import {
   Settings,
   BarChart3
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 // TypeScript interfaces for API responses
 interface TraderStatus {
@@ -39,16 +41,55 @@ interface MLEngineData {
 }
 
 export default function AutonomousTraderPage() {
-  const [isActive, setIsActive] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [tradingMode, setTradingMode] = useState<'demo' | 'real'>('demo');
   const [fundAmount, setFundAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch autonomous trader status from centralized engine
   const { data: traderStatus } = useQuery<TraderStatus>({
     queryKey: ['/api/waidbot-engine/autonomous/status'],
     refetchInterval: 3000
+  });
+
+  // Start mutation
+  const startMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/autonomous/start', "POST"),
+    onSuccess: (data) => {
+      toast({
+        title: "Autonomous Trader Started",
+        description: data?.message || "Autonomous trader is now active",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Start Failed",
+        description: error.message || "Failed to start autonomous trader",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Stop mutation
+  const stopMutation = useMutation({
+    mutationFn: () => apiRequest('/api/waidbot-engine/autonomous/stop', "POST"),
+    onSuccess: (data) => {
+      toast({
+        title: "Autonomous Trader Stopped",
+        description: data?.message || "Autonomous trader has been deactivated",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Stop Failed",
+        description: error.message || "Failed to stop autonomous trader",
+        variant: "destructive",
+      });
+    }
   });
 
   // Fetch performance metrics
@@ -114,10 +155,12 @@ export default function AutonomousTraderPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Button
-                onClick={() => setIsActive(!isActive)}
-                className={`w-full ${isActive ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                onClick={() => traderStatus?.isActive ? stopMutation.mutate() : startMutation.mutate()}
+                disabled={startMutation.isPending || stopMutation.isPending}
+                className={`w-full ${traderStatus?.isActive ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
+                data-testid={traderStatus?.isActive ? "button-stop-autonomous" : "button-start-autonomous"}
               >
-                {isActive ? (
+                {traderStatus?.isActive ? (
                   <>
                     <Pause className="h-4 w-4 mr-2" />
                     Stop Trading
