@@ -98,6 +98,8 @@ import QuantumAnalyticsPage from "@/pages/QuantumAnalyticsPage";
 import BiometricAuthPage from "@/pages/BiometricAuthPage";
 import MarketScannerPage from "@/pages/MarketScannerPage";
 import KYCVerificationPage from "@/pages/KYCVerificationPage";
+import NwaoraChigoziePage from "@/pages/NwaoraChigoziePage";
+import SmaiChinnikstahPage from "@/pages/SmaiChinnikstahPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -314,6 +316,20 @@ function Router() {
             {() => (
               <ProtectedRoute requiredPermission="control_trading">
                 <FullEnginePage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/nwaora-chigozie">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <NwaoraChigoziePage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/smai-chinnikstah">
+            {() => (
+              <ProtectedRoute requiredPermission="control_trading">
+                <SmaiChinnikstahPage />
               </ProtectedRoute>
             )}
           </Route>
