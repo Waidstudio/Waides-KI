@@ -48,7 +48,7 @@ export default function SmaiChinnikstahPage() {
 
   // Start mutation
   const startMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/smai-chinnikstah/start', "POST"),
+    mutationFn: () => apiRequest("POST", '/api/waidbot-engine/smai-chinnikstah/start').then(res => res.json()),
     onSuccess: (data) => {
       toast({
         title: "SmaiChinnikstah Started",
@@ -68,7 +68,7 @@ export default function SmaiChinnikstahPage() {
 
   // Stop mutation
   const stopMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/smai-chinnikstah/stop', "POST"),
+    mutationFn: () => apiRequest("POST", '/api/waidbot-engine/smai-chinnikstah/stop').then(res => res.json()),
     onSuccess: (data) => {
       toast({
         title: "SmaiChinnikstah Stopped",

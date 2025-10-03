@@ -50,19 +50,19 @@ export default function AutonomousTraderPage() {
 
   // Fetch autonomous trader status from centralized engine
   const { data: traderStatus } = useQuery<TraderStatus>({
-    queryKey: ['/api/waidbot-engine/autonomous/status'],
+    queryKey: ['/api/waidbot-engine/autonomous-trader/status'],
     refetchInterval: 3000
   });
 
   // Start mutation
   const startMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/autonomous/start', "POST"),
+    mutationFn: () => apiRequest("POST", '/api/waidbot-engine/autonomous-trader/start').then(res => res.json()),
     onSuccess: (data) => {
       toast({
         title: "Autonomous Trader Started",
         description: data?.message || "Autonomous trader is now active",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous-trader/status'] });
     },
     onError: (error: any) => {
       toast({
@@ -75,13 +75,13 @@ export default function AutonomousTraderPage() {
 
   // Stop mutation
   const stopMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/autonomous/stop', "POST"),
+    mutationFn: () => apiRequest("POST", '/api/waidbot-engine/autonomous-trader/stop').then(res => res.json()),
     onSuccess: (data) => {
       toast({
         title: "Autonomous Trader Stopped",
         description: data?.message || "Autonomous trader has been deactivated",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-engine/autonomous-trader/status'] });
     },
     onError: (error: any) => {
       toast({
@@ -94,7 +94,7 @@ export default function AutonomousTraderPage() {
 
   // Fetch performance metrics
   const { data: performanceData } = useQuery({
-    queryKey: ['/api/waidbot-engine/autonomous/performance'],
+    queryKey: ['/api/waidbot-engine/autonomous-trader/performance'],
     refetchInterval: 5000
   });
 

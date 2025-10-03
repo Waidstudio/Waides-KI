@@ -54,7 +54,7 @@ export default function FullEnginePage() {
 
   // Start mutation
   const startMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/full-engine/start', "POST"),
+    mutationFn: () => apiRequest("POST", '/api/waidbot-engine/full-engine/start').then(res => res.json()),
     onSuccess: (data) => {
       toast({
         title: "Full Engine Started",
@@ -74,7 +74,7 @@ export default function FullEnginePage() {
 
   // Stop mutation
   const stopMutation = useMutation({
-    mutationFn: () => apiRequest('/api/waidbot-engine/full-engine/stop', "POST"),
+    mutationFn: () => apiRequest("POST", '/api/waidbot-engine/full-engine/stop').then(res => res.json()),
     onSuccess: (data) => {
       toast({
         title: "Full Engine Stopped",
