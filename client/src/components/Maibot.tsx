@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Play, Square, TrendingUp, AlertCircle, Star, Lock, DollarSign, ArrowUpCircle, ArrowDownCircle, TestTube, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TradeActivityPanel } from "@/components/TradeActivityPanel";
 
 /**
  * Maibot - Free Entry Level Trading Bot Component
@@ -299,77 +300,21 @@ export default function Maibot() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Performance Metrics */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Total Trades</span>
-                    <span className="font-semibold">{performance.totalTrades || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Win Rate</span>
-                    <span className="font-semibold">{(performance.winRate || 0).toFixed(1)}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Daily Profit</span>
-                    <span className={`font-semibold ${(performance.dailyProfit || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      ${(performance.dailyProfit || 0).toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* AI Confidence */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">AI Confidence</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Progress value={confidence} className="h-2" />
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Beginner Level</span>
-                    <span className="font-semibold">{confidence}%</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    Conservative Analysis
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Limitations */}
-            <Card className="border-yellow-200 bg-yellow-50">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium flex items-center">
-                  <Lock className="h-4 w-4 mr-2 text-yellow-600" />
-                  Free Tier Limits
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Max Position</span>
-                    <span className="font-semibold">0.01 ETH</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Platform Fee</span>
-                    <span className="font-semibold text-yellow-700">35%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Automation</span>
-                    <span className="font-semibold text-red-600">Manual Only</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Live Binary Options Trading Activity */}
+          <TradeActivityPanel
+            botName="Maibot"
+            trades={status?.recentTrades || []}
+            performance={{
+              totalTrades: performance?.totalTrades || 0,
+              winRate: performance?.winRate || 0,
+              profit: performance?.profit || 0,
+              currentWinningStreak: performance?.currentWinningStreak || 0,
+              longestWinningStreak: performance?.longestWinningStreak || 0
+            }}
+            activeConnector={status?.activeConnector}
+            profitSharing={{ userShare: 65, platformShare: 35 }}
+            marketType="binary"
+          />
         </TabsContent>
 
         {/* Bot Wallet Tab */}
