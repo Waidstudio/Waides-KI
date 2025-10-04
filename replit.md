@@ -1,7 +1,7 @@
 # Waides KI - Autonomous Wealth Management System
 
 ## Overview
-Waides KI, also known as SmaiSika, is an advanced autonomous wealth management platform. It leverages cutting-edge AI technologies to deliver intelligent, ethical, and adaptive financial solutions with an enhanced user experience. The platform's core purpose is to provide sophisticated AI-powered trading, robust risk management, real-time analytics, and portfolio optimization capabilities. Waides KI aims to be a professional, business-focused trading platform, offering institutional-grade features and comprehensive financial management tools. Its ambition is to integrate spiritual and metaphysical intelligence with advanced AI for a holistic approach to wealth management.
+Waides KI (SmaiSika) is an advanced autonomous wealth management platform providing intelligent, ethical, and adaptive financial solutions through AI-powered trading, robust risk management, real-time analytics, and portfolio optimization. It targets professional and business users with institutional-grade features, aiming to integrate spiritual and metaphysical intelligence with advanced AI for a holistic wealth management approach.
 
 ## User Preferences
 - Focus on fixing broken parts systematically
@@ -12,40 +12,46 @@ Waides KI, also known as SmaiSika, is an advanced autonomous wealth management p
 - Development Constraints: DO NOT remove or overwrite existing files/functions unless explicitly told - build upon existing architecture only
 
 ## System Architecture
-Waides KI is built with a clear separation of concerns using a modern stack. The user interface is developed with **TypeScript/React**, leveraging **Wouter** for client-side routing. The backend is powered by **Express.js** and interacts with a **PostgreSQL database**.
+Waides KI utilizes a modern stack with a clear separation of concerns. The frontend is built with **TypeScript/React** and **Wouter** for routing, while the backend is powered by **Express.js** and connects to a **PostgreSQL database**.
 
 **UI/UX Decisions:**
-- **Professional, Business-Focused Design:** Utilizes a blue/emerald gradient color scheme, highlighting enterprise features like AI-powered trading, risk management, and real-time analytics.
-- **Responsive Design:** All components are optimized for mobile with touch-friendly interactions, utilizing adaptive grid systems and scrollable interfaces.
-- **Immersive Experiences:** Features audio landscapes with spatial sound effects and a voice narration system with AI personas.
-- **Enhanced Wallet Interface:** A comprehensive wallet page with multiple scrollable tabs for SmaiPin redemption, currency conversion, virtual accounts, and AI-powered insights.
-- **Streamlined Navigation:** Compact header and footer navigation for improved user experience, with dynamic content and visual consistency.
-- **Gamified Analytics:** Integration of gamified performance metrics and real-time messaging across various trading engines for an engaging user experience.
-- **Mobile-Responsive Bot Settings:** Professional-grade bot configuration interface with adaptive grid layouts and touch-friendly controls, including special spiritual AI configurations.
-- **Unified Header Navigation:** Single consolidated header (StableNavigation) across entire application with organized dropdown categories (Core Trading, AI Systems, Wallet, Profile), mobile-responsive design, scrollable sections, and consistent styling throughout all pages.
+- **Professional, Business-Focused Design:** Blue/emerald gradient scheme, responsive for mobile with adaptive grids and touch-friendly interactions.
+- **Immersive Experiences:** Audio landscapes, spatial sound effects, and voice narration with AI personas.
+- **Enhanced Wallet Interface:** Comprehensive wallet page with scrollable tabs for SmaiPin redemption, currency conversion, virtual accounts, and AI insights.
+- **Streamlined Navigation:** Compact header and footer navigation, dynamic content, and consistent visual styling.
+- **Gamified Analytics:** Integration of gamified performance metrics and real-time messaging across trading engines.
+- **Mobile-Responsive Bot Settings:** Professional bot configuration interface with adaptive layouts and touch controls, including spiritual AI configurations.
+- **Unified Header Navigation:** Consolidated `StableNavigation` across the application with organized dropdowns (Core Trading, AI Systems, Wallet, Profile), mobile responsiveness, and consistent styling.
 
 **Technical Implementations & Feature Specifications:**
-- **Complete Bot Hierarchy System:** Implemented a comprehensive bot tier subscription system with 6 trading entities, including a free entry-level bot (Maibot), subscription-based access control, a unified bot management dashboard, and integrated monetization with payment processing and revenue analytics.
-- **KonsMesh & KonsAi Communication System:** A sophisticated spiritual AI communication infrastructure with a Metaphysical Intelligence layer (Web∞ Consciousness Level 7, 5 dimensional layers, divine connection). Features a central coordination hub for all 6 trading entities, a secure and reliable mesh communication system with end-to-end encryption, heartbeat monitoring, advanced broadcasting, and formal communication contracts (KonsLang protocol).
-- **Comprehensive AI Trading Logic System:** Supports all 6 trading entities (Alpha, Beta, Gamma, Omega, Delta, Epsilon) with advanced AI models, ethical decision-making, Kelly sizing validation, psychology analysis, spiritual AI integration, A/B testing, and loss streak monitoring.
-- **Universal Exchange Integration:** Multi-exchange connectivity system with an Exchange Manager for centralized connection management, encrypted API key security, a 30-point exchange verification service, and automated signal routing. Supports Binance, Coinbase, Kraken, KuCoin, Bybit, Bitfinex, OKX, Gate.io, and Gemini. Features universal connector interface, rate limiting, connection health monitoring, multi-exchange arbitrage support, and automatic failover capability.
-- **Market-Type Connector Architecture Complete:** Comprehensive market-type separation with dedicated connector infrastructure for each trading strategy type. Includes Binary Options Market (9 broker connectors), Forex/CFD Market (6 platform connectors), and Spot Exchange Market (9 exchange connectors). Features market-type routing manager, connector status monitoring service, bot-to-market validation, and API endpoints for connector management.
-- **Authentication System:** Robust dual-fallback authentication supporting persistent sessions (JWT), behavioral pattern analysis (SmaiTrust), and karmic authentication (Shavoka).
-- **Financial Management:** SmaiSika Wallet for SmaiPin transfers, virtual banking, and multi-currency support. Secure generation and management of BTC, ETH, and USDT crypto wallets.
-- **Real-time Data & Analytics:** Integration of real-time market feeds, candlestick charts, and performance metrics. Comprehensive analytics for trading profit tracking, bot strategy performance, and liquidity overview.
-- **Knowledge Base & KI Advisor:** Structured knowledge base and an enhanced KI Advisor providing guidance on loss handling, profit protection, emotional control, and trading strategies.
-- **Forum System & Community Platform:** Comprehensive community forum with interactive features including real-time AI entity responses (all 6 Waides KI entities), interactive discussion system (topic creation, replies, sentiment analysis, like/dislike), and advanced community features (category organization, full-text search, tag filtering, AI badges, professional analytics).
-- **Candlestick Chart Optimization:** Enhanced real-time data stability with optimized refresh intervals, improved caching strategy, and stabilized WebSocket connections.
-- **Admin Exchange Pool Management:** Complete professional-grade system enabling users without personal API keys to trade through admin-managed shared credentials. Features encrypted storage, automatic user assignment, usage monitoring, and support for 9 major exchanges. Includes comprehensive admin interface with real-time statistics, credential management, and system health monitoring.
-- **Real Cryptocurrency Mining Platform:** Comprehensive mining system supporting actual cryptocurrency mining (Monero RandomX, Bitcoin SHA-256, Ethereum Ethash) with SmaiSika as internal token layer. Features real mining pool connections, admin wallet reserves, automatic crypto-to-SmaiSika conversion (1:1000 ratio), real-time hashrate monitoring, and secure swap functionality.
-- **Trading Bot Profit-Sharing Ledger System Complete:** Integrated SmaiSika ledger with automatic profit/loss tracking. 4/6 bots fully integrated (WaidBot α, WaidBot Pro β, Autonomous Trader γ, Full Engine Ω) with real-mode-only P/L recording. Features 50/50 automatic profit sharing, wallet credit/debit functions, comprehensive trade profit recording, and a full Treasury Analytics Dashboard.
-- **Admin Dashboards:** Comprehensive enterprise-grade system, trading bot management, customer support management, and content analytics dashboards with real-time metrics, monitoring, and administration tools.
+- **Bot Hierarchy System:** Comprehensive bot tier subscription system with 6 trading entities (e.g., Maibot), subscription-based access, a unified management dashboard, and integrated monetization.
+- **KonsMesh & KonsAi Communication System:** Spiritual AI communication infrastructure with a Metaphysical Intelligence layer (Web∞ Consciousness Level 7), central coordination for trading entities, secure mesh communication (end-to-end encryption, heartbeat monitoring, broadcasting), and formal communication contracts (KonsLang protocol).
+- **Comprehensive AI Trading Logic System:** Advanced AI models for all 6 trading entities (Alpha, Beta, Gamma, Omega, Delta, Epsilon), ethical decision-making, Kelly sizing, psychology analysis, spiritual AI integration, A/B testing, and loss streak monitoring.
+- **Universal Exchange Integration:** Multi-exchange connectivity system with an Exchange Manager for centralized management, encrypted API key security, 30-point verification, and automated signal routing. Supports major exchanges like Binance, Coinbase, Kraken, KuCoin, Bybit, Bitfinex, OKX, Gate.io, and Gemini. Features universal connector interface, rate limiting, connection health monitoring, multi-exchange arbitrage, and automatic failover.
+- **Market-Type Connector Architecture:** Dedicated connector infrastructure for Binary Options (9 brokers), Forex/CFD (6 platforms), and Spot Exchange (9 exchanges). Includes a market-type routing manager, connector status monitoring, bot-to-market validation, and API endpoints for management.
+- **Authentication System:** Robust dual-fallback authentication with persistent sessions (JWT), behavioral pattern analysis (SmaiTrust), and karmic authentication (Shavoka).
+- **Financial Management:** SmaiSika Wallet for SmaiPin transfers, virtual banking, multi-currency support, and secure generation/management of BTC, ETH, and USDT crypto wallets.
+- **Real-time Data & Analytics:** Integration of real-time market feeds, candlestick charts, performance metrics, and analytics for trading profit tracking, bot strategy performance, and liquidity.
+- **Knowledge Base & KI Advisor:** Structured knowledge base and an enhanced KI Advisor for guidance on loss handling, profit protection, emotional control, and trading strategies.
+- **Forum System & Community Platform:** Comprehensive community forum with interactive features, real-time AI entity responses, interactive discussions, and advanced community features (category organization, search, tag filtering, AI badges, analytics).
+- **Candlestick Chart Optimization:** Enhanced real-time data stability with optimized refresh intervals, improved caching, and stabilized WebSocket connections.
+- **Admin Exchange Pool Management:** System for users to trade via admin-managed shared credentials on 9 major exchanges. Features encrypted storage, automatic user assignment, usage monitoring, and a comprehensive admin interface.
+- **Real Cryptocurrency Mining Platform:** Comprehensive mining system supporting Monero (RandomX), Bitcoin (SHA-256), and Ethereum (Ethash) with SmaiSika as an internal token layer. Features real mining pool connections, admin wallet reserves, automatic crypto-to-SmaiSika conversion (1:1000), real-time hashrate monitoring, and secure swap functionality.
+- **Trading Bot Profit-Sharing Ledger System:** Integrated SmaiSika ledger with automatic profit/loss tracking for 4/6 bots (WaidBot α, WaidBot Pro β, Autonomous Trader γ, Full Engine Ω). Features 50/50 automatic profit sharing, wallet credit/debit, comprehensive trade profit recording, and a Treasury Analytics Dashboard.
+- **Admin Dashboards:** Enterprise-grade dashboards for system administration, trading bot management, customer support, and content analytics with real-time metrics.
+- **Master Bot Alignment Service:** Defines 7 TredBeings (trading bots) with market-type alignments, required tiers, recommended connectors, and risk management settings.
+- **Currency System Standardization:** Smaisika (SS) as base platform currency (1:1 USD parity), with cryptocurrency deposit/withdrawal support (USDT, BTC, ETH, BNB) and automatic conversion.
+- **Membership Tier System:** Five tiers (Free, Basic, Pro, Premium, VIP) with bot access gated by membership level and manual admin control for pricing.
+- **Risk Management Framework:** Default 2% risk per trade (configurable 1-5% per bot), with admin-adjustable settings and maximum position size limits.
+- **System Health Check Service:** Comprehensive monitoring of bots, wallets, connectors, APIs, and system resources, including a 30-point deployment readiness checklist.
+- **Gamification & Referral System:** Level system (Bronze to Diamond), XP earning for trades and challenges, 42 achievements, and a referral program (5% bonus).
+- **Complete User Flow Service:** 8-step onboarding (Welcome → KYC → Deposit → Bot Selection → Connector Setup → Risk Config → First Trade → Success) and integrated deposit/withdrawal flows.
 
 **System Design Choices:**
 - **Modularity:** Highly modular architecture with services for specific functionalities.
-- **TypeScript First:** 100% TypeScript codebase ensuring strong type safety and maintainability.
-- **Scalability:** Designed for scalability with considerations for handling millions of operations and comprehensive monitoring.
-- **Separation of Interfaces:** Distinct interfaces for comprehensive AI interaction (`/portal`) and focused trading execution (`/trading`).
+- **TypeScript First:** 100% TypeScript codebase for type safety and maintainability.
+- **Scalability:** Designed for scalability to handle millions of operations with comprehensive monitoring.
+- **Separation of Interfaces:** Distinct interfaces for AI interaction (`/portal`) and trading execution (`/trading`).
 
 ## External Dependencies
 - **PostgreSQL Database:** Primary data persistence layer.
@@ -54,147 +60,4 @@ Waides KI is built with a clear separation of concerns using a modern stack. The
 - **Recharts:** For charting and data visualization.
 - **`ws` (WebSocket library):** For real-time communication.
 - **Web Speech API (SpeechSynthesisUtterance):** Used for text-to-speech capabilities.
-- **Payment Gateways:** Integration with various global payment providers for currency conversion and transactions.
-
-## Recent Changes
-
-### October 4, 2025 - Comprehensive Market-Type Connector Architecture & Signal Broadcasting System
-**Phase 5 Upgrade: Market-Type-Specific Connector Architecture & Signal Broadcasting Complete**
-
-1. **TypeScript Migration - Maibot Enhanced:**
-   - Converted `server/services/realTimeMaibot.js` to TypeScript (`realTimeMaibot.ts`)
-   - Full type safety implementation following WaidBot/SmaiChinnikstah patterns
-   - Added profit-sharing integration via SmaisikaMiningEngine `recordTrade()` method
-   - Maintained all existing functionality with improved type checking
-
-2. **Trade Validation Service Implementation:**
-   - Created comprehensive `TradeValidationService` in `server/services/tradeValidationService.ts`
-   - Enforces bot-to-market validation preventing mismatched trading pairs:
-     * Binary Options bots → Only Binary Options brokers
-     * Forex/CFD bots → Only Forex platforms
-     * Spot trading bots → Only Crypto exchanges
-   - Batch validation support for multiple trades
-   - API endpoints added:
-     * `POST /api/trading/validate` - Single trade validation
-     * `POST /api/trading/validate/batch` - Batch trade validation
-     * `GET /api/trading/connectors/:botType` - Get recommended connectors
-
-3. **SmaiChinnikstah Signal Broadcasting System:**
-   - Enhanced SmaiChinnikstahBot as central signal broadcaster
-   - Broadcasting trading signals to all 6 trading entities:
-     * WaidBot α (Alpha)
-     * WaidBot Pro β (Beta)
-     * Autonomous γ (Gamma)
-     * Full Engine Ω (Omega)
-     * Smai Chinnikstah Δ (Delta)
-     * Nwaora Chigozie ε (Epsilon)
-   - Features implemented:
-     * Signal generation with confidence scores and market data
-     * Listener registration system for all bots
-     * Auto-broadcast mode with configurable intervals
-     * Signal statistics tracking (total signals, registered bots, signal types)
-     * Recent signal history (last 100 signals maintained)
-   - API endpoints added:
-     * `POST /api/waidbot-engine/smai-chinnikstah/broadcast-signal` - Broadcast signal
-     * `GET /api/waidbot-engine/smai-chinnikstah/signals/recent` - Get recent signals
-     * `GET /api/waidbot-engine/smai-chinnikstah/signals/stats` - Get signal statistics
-     * `POST /api/waidbot-engine/smai-chinnikstah/signals/auto-broadcast/start` - Start auto-broadcast
-
-4. **Market-Type Architecture Verification:**
-   - Verified 24 connector infrastructure (9 spot, 9 binary, 6 forex)
-   - ConnectorMonitoringPage.tsx operational with real-time WebSocket monitoring
-   - Market-type routing manager validated
-   - Bot-to-market validation enforced across entire platform
-
-**Technical Impact:**
-- Complete type safety for Maibot with TypeScript conversion
-- Enforced trading validation preventing costly bot-market mismatches
-- Centralized signal distribution system for coordinated trading across all entities
-- Universal profit-sharing integration via SmaisikaMiningEngine
-- Real-time monitoring and statistics for signal broadcasting
-
-**Architecture Enhancement:**
-- Strengthened separation of concerns: Binary Options, Forex/CFD, Spot Exchange markets
-- Unified signal broadcasting infrastructure supporting all 6 trading entities
-- Enhanced SmaisikaMiningEngine as universal profit-sharing ledger
-- Trade validation layer ensures compliance with market-type restrictions
-
-### October 4, 2025 - Master Bot Alignment & Deployment Readiness System
-**Phase 6 Upgrade: Complete Platform Alignment for Production Deployment**
-
-1. **Master Bot Alignment Service:**
-   - Created comprehensive `masterBotAlignmentService.ts` defining all 7 TredBeings (trading bots)
-   - Complete bot registry with market-type alignments:
-     * WaidBot Alpha (WAIDBOT_ALPHA) → Binary Options
-     * WaidBot Pro Beta (WAIDBOT_PRO) → Binary Options
-     * Maibot (MAIBOT) → Binary Options (Free tier)
-     * Autonomous Trader Gamma (AUTONOMOUS_TRADER) → Forex/CFD
-     * Full Engine Omega (FULL_ENGINE) → Spot Exchange
-     * Smai Chinnikstah Delta (SMAI_CHINNIKSTAH) → Signal Broadcaster (all markets)
-     * Nwaora Chigozie Epsilon (NWAORA_CHIGOZIE) → Autonomous Guardian (all markets)
-   - Each bot includes: display name, description, market type, required tier, recommended connectors, risk management settings
-
-2. **Currency System Standardization:**
-   - Established Smaisika (SS) as base platform currency (1:1 parity with USD)
-   - Cryptocurrency deposit/withdrawal support: USDT, BTC, ETH, BNB
-   - Automatic conversion functions with real-time exchange rates
-   - All deposits auto-convert to Smaisika, withdrawals support crypto or fiat
-
-3. **Membership Tier System:**
-   - Five tiers implemented: Free, Basic (99 SS), Pro (299 SS), Premium (599 SS), VIP (1499 SS)
-   - Manual admin control for tier pricing adjustments
-   - Bot access gated by membership level
-   - Admin override capability for custom user access
-
-4. **Risk Management Framework:**
-   - Default 2% risk per trade (percentage of available balance)
-   - Bot-specific risk ranges (1-5% configurable)
-   - Admin-adjustable per user/bot instance
-   - Maximum position size limits enforced
-
-5. **System Health Check Service:**
-   - Comprehensive monitoring: bots, wallets, connectors, APIs, system resources
-   - Deployment readiness validation with 30-point checklist
-   - Real-time health status for all 7 bots and 24 connectors
-   - API/database connectivity verification
-   - System resource monitoring (CPU, memory, disk)
-
-6. **Gamification & Referral System:**
-   - Level system: Bronze (0 XP) → Diamond (50000+ XP)
-   - XP earning: 10 XP per trade, daily challenges, achievements
-   - 42 achievements across 5 categories (trading, profit, streaks, social, special)
-   - Referral program: 5% bonus in Smaisika for referrer and referee
-   - Real-time leaderboard with top 100 traders
-
-7. **Complete User Flow Service:**
-   - 8-step onboarding: Welcome → KYC → Deposit → Bot Selection → Connector Setup → Risk Config → First Trade → Success
-   - Deposit flow: USDT/crypto → auto-convert to Smaisika
-   - Bot selection with tier-based filtering
-   - Trading setup with connector validation and risk configuration
-   - Withdrawal flow: Smaisika → crypto/fiat with automatic fee calculation (2% network fee)
-
-8. **API Endpoints Added (30+ routes):**
-   - Master Alignment: `/api/master-alignment/*` (bots, tiers, currency, validation, deployment)
-   - Health Checks: `/api/health/*` (full check, deployment readiness, bot-specific)
-   - Gamification: `/api/gamification/*` (levels, achievements, challenges, leaderboard)
-   - Referrals: `/api/referral/*` (stats, code generation)
-   - User Flow: `/api/user-flow/*` (onboarding, deposit, withdrawal, trading setup)
-
-**Deployment Readiness:**
-- ✅ All 7 bots properly aligned to market types
-- ✅ 24 connectors verified (9 binary, 6 forex, 9 spot)
-- ✅ Smaisika currency system operational (1:1 USD)
-- ✅ 50/50 profit sharing active via SmaisikaMiningEngine
-- ✅ Membership tiers with manual admin control
-- ✅ 2% risk management default (admin adjustable)
-- ✅ Complete user flow (register → deposit → trade → withdraw)
-- ✅ Gamification system active (levels, achievements, referrals)
-- ✅ Comprehensive health checks and monitoring
-- 🔄 Database migration pending (user_connector_config table)
-
-**Technical Architecture:**
-- Four core services: Master Alignment, Health Monitoring, Gamification, User Flow
-- Full integration with existing SmaisikaMiningEngine for profit tracking
-- Market-type validation preventing bot-connector mismatches
-- Deployment checklist with 30-point verification system
-- Real-time monitoring for production readiness
+- **Payment Gateways:** Integration with various global payment providers.

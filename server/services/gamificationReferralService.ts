@@ -4,7 +4,7 @@
  */
 
 import { db } from '../db';
-import { wallets } from '../../shared/schema';
+import { wallets, userProfiles, users } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
 
@@ -82,6 +82,15 @@ const LEVELS = [
 ];
 
 class GamificationReferralService {
+  // Achievement definitions
+  private readonly ACHIEVEMENT_DEFINITIONS = [
+    { id: 'first_trade', name: 'First Trade', description: 'Complete your first trade', icon: '🎯', xpReward: 10, smaiSikaReward: 5 },
+    { id: 'ten_wins', name: '10 Winning Trades', description: 'Win 10 trades in a row', icon: '🔥', xpReward: 50, smaiSikaReward: 25 },
+    { id: 'profitable_week', name: 'Profitable Week', description: 'End the week with profit', icon: '💰', xpReward: 100, smaiSikaReward: 50 },
+    { id: 'master_binary', name: 'Binary Master', description: 'Complete 100 binary options trades', icon: '🎓', xpReward: 200, smaiSikaReward: 100 },
+    { id: 'referral_king', name: 'Referral King', description: 'Refer 10 active traders', icon: '👑', xpReward: 300, smaiSikaReward: 150 }
+  ];
+
   // Calculate user level from XP
   calculateLevel(totalXP: number): UserLevel {
     let currentLevel = LEVELS[0];
@@ -147,149 +156,171 @@ class GamificationReferralService {
     };
   }
 
-  // Get user total XP (stored in memory or database)
+  // Get user total XP (from database)
   private async getUserTotalXP(userId: number): Promise<number> {
-    // In production, this would fetch from database
-    // For now, return a simulated value
-    return 450; // Example XP
+    try {
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId)
+      });
+      
+      const stats = (profile?.stats as any) || {};
+      return stats.totalXP || 0;
+    } catch (error) {
+      console.error(`Error getting XP for user ${userId}:`, error);
+      return 0;
+    }
   }
 
-  // Update user XP
+  // Update user XP (in database)
   private async updateUserXP(userId: number, newXP: number): Promise<void> {
-    // In production, this would update database
-    console.log(`User ${userId} XP updated to ${newXP}`);
+    try {
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId)
+      });
+      
+      const stats = (profile?.stats as any) || {};
+      stats.totalXP = newXP;
+      stats.lastXPUpdate = new Date().toISOString();
+      
+      await db.update(userProfiles)
+        .set({ 
+          stats: stats,
+          updatedAt: new Date()
+        })
+        .where(eq(userProfiles.userId, userId));
+        
+      console.log(`✅ User ${userId} XP updated to ${newXP} in database`);
+    } catch (error) {
+      console.error(`❌ Error updating XP for user ${userId}:`, error);
+    }
   }
 
-  // Get user achievements
+  // Get user achievements (from database)
   async getUserAchievements(userId: number): Promise<Achievement[]> {
-    // Simulated achievements
-    return [
-      {
-        id: 'first_trade',
-        name: 'First Trade',
-        description: 'Complete your first trade',
-        icon: '🎯',
-        xpReward: 10,
-        smaiSikaReward: 5,
-        unlocked: true,
-        unlockedAt: new Date('2024-10-01')
-      },
-      {
-        id: 'ten_wins',
-        name: '10 Winning Trades',
-        description: 'Win 10 trades in a row',
-        icon: '🔥',
-        xpReward: 50,
-        smaiSikaReward: 25,
-        unlocked: true,
-        unlockedAt: new Date('2024-10-03')
-      },
-      {
-        id: 'profitable_week',
-        name: 'Profitable Week',
-        description: 'End the week with profit',
-        icon: '💰',
-        xpReward: 100,
-        smaiSikaReward: 50,
-        unlocked: false
-      },
-      {
-        id: 'master_binary',
-        name: 'Binary Master',
-        description: 'Complete 100 binary options trades',
-        icon: '🎓',
-        xpReward: 200,
-        smaiSikaReward: 100,
-        unlocked: false
-      },
-      {
-        id: 'referral_king',
-        name: 'Referral King',
-        description: 'Refer 10 active traders',
-        icon: '👑',
-        xpReward: 300,
-        smaiSikaReward: 150,
-        unlocked: false
-      }
-    ];
+    try {
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId)
+      });
+      
+      const achievementsData = (profile?.achievements as any) || [];
+      
+      // Define all available achievements
+      const allAchievements = this.ACHIEVEMENT_DEFINITIONS;
+      
+      // Map stored data to achievement objects
+      return allAchievements.map(def => {
+        const userAchievement = achievementsData.find((a: any) => a.id === def.id);
+        return {
+          ...def,
+          unlocked: userAchievement?.unlocked || false,
+          unlockedAt: userAchievement?.unlockedAt ? new Date(userAchievement.unlockedAt) : undefined
+        };
+      });
+    } catch (error) {
+      console.error(`Error getting achievements for user ${userId}:`, error);
+      return this.ACHIEVEMENT_DEFINITIONS.map(def => ({ ...def, unlocked: false }));
+    }
   }
 
-  // Get daily challenges
+  // Get daily challenges (from database)
   async getDailyChallenges(userId: number): Promise<DailyChallenge[]> {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+    try {
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId)
+      });
+      
+      const stats = (profile?.stats as any) || {};
+      const today = new Date().toISOString().split('T')[0];
+      const dailyProgress = stats.dailyChallenges?.[today] || { trades: 0, profit: 0, winStreak: 0 };
+      
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
 
-    return [
-      {
-        id: 'daily_trades',
-        title: 'Complete 5 Trades',
-        description: 'Execute 5 trades today',
-        target: 5,
-        progress: 3,
-        reward: { xp: 25, smaiSika: 10 },
-        expiresAt: tomorrow,
-        completed: false
-      },
-      {
-        id: 'daily_profit',
-        title: 'Earn $50 Profit',
-        description: 'Make at least $50 profit today',
-        target: 50,
-        progress: 32,
-        reward: { xp: 40, smaiSika: 20 },
-        expiresAt: tomorrow,
-        completed: false
-      },
-      {
-        id: 'daily_streak',
-        title: '3 Winning Trades',
-        description: 'Win 3 trades in a row',
-        target: 3,
-        progress: 2,
-        reward: { xp: 30, smaiSika: 15 },
-        expiresAt: tomorrow,
-        completed: false
-      }
-    ];
+      return [
+        {
+          id: 'daily_trades',
+          title: 'Complete 5 Trades',
+          description: 'Execute 5 trades today',
+          target: 5,
+          progress: dailyProgress.trades || 0,
+          reward: { xp: 25, smaiSika: 10 },
+          expiresAt: tomorrow,
+          completed: (dailyProgress.trades || 0) >= 5
+        },
+        {
+          id: 'daily_profit',
+          title: 'Earn $50 Profit',
+          description: 'Make at least $50 profit today',
+          target: 50,
+          progress: dailyProgress.profit || 0,
+          reward: { xp: 40, smaiSika: 20 },
+          expiresAt: tomorrow,
+          completed: (dailyProgress.profit || 0) >= 50
+        },
+        {
+          id: 'daily_streak',
+          title: '3 Winning Trades',
+          description: 'Win 3 trades in a row',
+          target: 3,
+          progress: dailyProgress.winStreak || 0,
+          reward: { xp: 30, smaiSika: 15 },
+          expiresAt: tomorrow,
+          completed: (dailyProgress.winStreak || 0) >= 3
+        }
+      ];
+    } catch (error) {
+      console.error(`Error getting daily challenges for user ${userId}:`, error);
+      return [];
+    }
   }
 
-  // Get leaderboard
+  // Get leaderboard (from database)
   async getLeaderboard(limit: number = 100): Promise<LeaderboardEntry[]> {
-    // Simulated leaderboard data
-    // In production, this would query from database
-    return [
-      {
-        rank: 1,
-        userId: 5,
-        username: 'CosmicTrader',
-        totalXP: 8500,
-        totalProfit: 45678.90,
-        winRate: 92.5,
-        level: 9,
-        badge: '👑'
-      },
-      {
-        rank: 2,
-        userId: 12,
-        username: 'DiamondHands',
-        totalXP: 6800,
-        totalProfit: 38234.50,
-        winRate: 88.3,
-        level: 8,
-        badge: '💎⭐'
-      },
-      {
-        rank: 3,
-        userId: 2,
-        username: 'Nwaora Chigozie',
-        totalXP: 5200,
-        totalProfit: 32145.75,
-        winRate: 94.2,
-        level: 7,
-        badge: '💎'
-      }
-    ];
+    try {
+      // Query users with their profiles and stats
+      const profiles = await db.query.userProfiles.findMany({
+        limit: limit
+      });
+      
+      // Get user data
+      const userIds = profiles.map(p => p.userId);
+      const users = await db.query.users.findMany({
+        where: (users, { inArray }) => inArray(users.id, userIds)
+      });
+      
+      // Build leaderboard entries
+      const entries: LeaderboardEntry[] = profiles.map(profile => {
+        const user = users.find(u => u.id === profile.userId);
+        const stats = (profile.stats as any) || {};
+        const totalXP = stats.totalXP || 0;
+        const totalProfit = stats.totalProfit || 0;
+        const winRate = stats.winRate || 0;
+        const level = this.calculateLevel(totalXP);
+        
+        return {
+          rank: 0, // Will be set after sorting
+          userId: profile.userId,
+          username: user?.username || 'Unknown',
+          totalXP,
+          totalProfit,
+          winRate,
+          level: level.level,
+          badge: level.badge
+        };
+      });
+      
+      // Sort by XP descending and assign ranks
+      entries.sort((a, b) => b.totalXP - a.totalXP);
+      entries.forEach((entry, index) => {
+        entry.rank = index + 1;
+      });
+      
+      return entries.slice(0, limit);
+    } catch (error) {
+      console.error(`Error getting leaderboard:`, error);
+      return [];
+    }
   }
 
   // Generate referral code

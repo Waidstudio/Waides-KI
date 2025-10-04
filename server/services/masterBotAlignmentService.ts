@@ -149,8 +149,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 65, // 65% to user (35% platform fee)
-      treasuryShare: 35
+      userShare: 50, // 50/50 automatic profit sharing (aligned with all bots)
+      treasuryShare: 50
     },
     connectors: ['DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM'],
     isActive: true,
@@ -302,8 +302,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 0, // 100% to treasury (admin account)
-      treasuryShare: 100
+      userShare: 50, // 50/50 automatic profit sharing (aligned with all bots)
+      treasuryShare: 50
     },
     connectors: [
       'DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM',

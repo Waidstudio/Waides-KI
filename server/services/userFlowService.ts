@@ -6,6 +6,9 @@
 import { masterBotAlignment, BotConfiguration, CURRENCY_CONFIG } from './masterBotAlignmentService';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
 import { gamificationReferral } from './gamificationReferralService';
+import { db } from '../db';
+import { userProfiles } from '../../shared/schema';
+import { eq } from 'drizzle-orm';
 
 export interface UserFlowStep {
   step: number;
@@ -176,16 +179,31 @@ class UserFlowService {
   async getUserOnboardingProgress(userId: number): Promise<OnboardingProgress> {
     const baseSteps = this.defineUserFlowSteps();
     
-    // In production, fetch actual progress from database
-    // For now, simulate progress
-    const completedSteps = 3; // User completed first 3 steps
+    // Fetch actual progress from database
+    let completedSteps = 0;
+    let stepStatuses: { [key: number]: { status: string; completedAt?: Date } } = {};
     
-    const steps: UserFlowStep[] = baseSteps.map((step, index) => ({
-      ...step,
-      status: index < completedSteps ? 'completed' : 
-              index === completedSteps ? 'in_progress' : 'pending',
-      completedAt: index < completedSteps ? new Date() : undefined
-    }));
+    try {
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId)
+      });
+      
+      const stats = (profile?.stats as any) || {};
+      completedSteps = stats.onboardingCompletedSteps || 0;
+      stepStatuses = stats.onboardingStepStatuses || {};
+    } catch (error) {
+      console.error(`Error fetching onboarding progress for user ${userId}:`, error);
+    }
+    
+    const steps: UserFlowStep[] = baseSteps.map((step, index) => {
+      const stepStatus = stepStatuses[step.step] || {};
+      return {
+        ...step,
+        status: stepStatus.status || (index < completedSteps ? 'completed' : 
+                index === completedSteps ? 'in_progress' : 'pending'),
+        completedAt: stepStatus.completedAt ? new Date(stepStatus.completedAt) : undefined
+      };
+    });
 
     const completionPercentage = Math.round((completedSteps / baseSteps.length) * 100);
     const estimatedTimeRemaining = this.calculateEstimatedTime(baseSteps.length - completedSteps);
@@ -443,16 +461,45 @@ class UserFlowService {
 
   // Complete flow - mark step as completed
   async completeFlowStep(userId: number, stepNumber: number): Promise<{ success: boolean; nextStep?: UserFlowStep }> {
-    // In production, update database
-    console.log(`✅ User ${userId} completed step ${stepNumber}`);
-    
-    const progress = await this.getUserOnboardingProgress(userId);
-    const nextStep = progress.steps.find(s => s.step === stepNumber + 1);
-    
-    return {
-      success: true,
-      nextStep
-    };
+    try {
+      // Update database with completed step
+      const profile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId)
+      });
+      
+      const stats = (profile?.stats as any) || {};
+      const stepStatuses = stats.onboardingStepStatuses || {};
+      
+      stepStatuses[stepNumber] = {
+        status: 'completed',
+        completedAt: new Date().toISOString()
+      };
+      
+      stats.onboardingStepStatuses = stepStatuses;
+      stats.onboardingCompletedSteps = Math.max(stats.onboardingCompletedSteps || 0, stepNumber);
+      
+      await db.update(userProfiles)
+        .set({ 
+          stats: stats,
+          updatedAt: new Date()
+        })
+        .where(eq(userProfiles.userId, userId));
+      
+      console.log(`✅ User ${userId} completed step ${stepNumber} (saved to database)`);
+      
+      const progress = await this.getUserOnboardingProgress(userId);
+      const nextStep = progress.steps.find(s => s.step === stepNumber + 1);
+      
+      return {
+        success: true,
+        nextStep
+      };
+    } catch (error) {
+      console.error(`❌ Error completing step ${stepNumber} for user ${userId}:`, error);
+      return {
+        success: false
+      };
+    }
   }
 }
 
