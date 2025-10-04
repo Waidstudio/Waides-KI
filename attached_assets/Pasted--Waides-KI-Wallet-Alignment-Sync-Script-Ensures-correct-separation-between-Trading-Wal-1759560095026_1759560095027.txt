@@ -1,0 +1,95 @@
+/**
+ * 🔹 Waides KI Wallet Alignment & Sync Script
+ * Ensures correct separation between Trading Wallet, Mining Wallet, and System Wallets.
+ * Fixes misconfigurations where SmaisikaMining was incorrectly used as the main wallet.
+ * Scans the codebase, applies corrections, and syncs balances for safe deployment.
+ */
+
+async function initWalletCorrection() {
+  console.log("🔍 Starting Wallet Alignment Process...");
+
+  // --- Step 1: Scan Codebase ---
+  console.log("📂 Scanning codebase for wallet configs, transactions, and bot integrations...");
+  const walletConfig = await scanCodebaseForWallets(); // custom scanner
+  if (!walletConfig) throw new Error("❌ No wallet configs found, check system");
+
+  console.log("🔎 Wallet Config Found:", walletConfig);
+
+  // --- Step 2: Define Wallet Roles ---
+  const wallets = {
+    tradingWallet: "user_main_wallet",       // Where deposits/withdrawals/trades happen
+    miningWallet: "smaisika_mining_wallet",  // Only for mining crypto, NOT trading
+    systemWallet: "waides_system_wallet",    // For fees, profit sharing, referrals
+    adminReserve: "admin_control_wallet"     // For treasury + overrides
+  };
+
+  // --- Step 3: Detect Misuse ---
+  if (walletConfig.defaultWallet === wallets.miningWallet) {
+    console.warn("⚠️ Mining wallet detected as default trading wallet!");
+    walletConfig.defaultWallet = wallets.tradingWallet;
+    console.log("✅ Corrected default wallet → Trading Wallet only");
+  }
+
+  // --- Step 4: Sync Wallet Connections ---
+  console.log("🔗 Syncing wallets with bots and user trading system...");
+  alignWalletWithBots({
+    binary: wallets.tradingWallet,
+    forex: wallets.tradingWallet,
+    spot: wallets.tradingWallet,
+    mining: wallets.miningWallet
+  });
+  console.log("✅ Wallet alignment complete: Mining wallet isolated");
+
+  // --- Step 5: Rebuild Transaction Routing ---
+  console.log("🔄 Rebuilding transaction flow...");
+  setupTransactionFlow({
+    deposits: wallets.tradingWallet,
+    withdrawals: wallets.tradingWallet,
+    miningRewards: wallets.miningWallet,
+    profitSharing: wallets.systemWallet,
+    referralBonuses: wallets.systemWallet,
+    adminOverrides: wallets.adminReserve
+  });
+  console.log("✅ Transaction routing rebuilt successfully");
+
+  // --- Step 6: Sync Balances ---
+  console.log("📊 Syncing balances across all wallets...");
+  const balances = await syncWalletBalances(wallets);
+  console.log("✅ Balances synced:", balances);
+
+  // --- Step 7: Security Check ---
+  console.log("🛡️ Checking wallet isolation & permissions...");
+  enforceWalletIsolation({
+    tradingWallet: ["deposit", "withdraw", "trade"],
+    miningWallet: ["mine"],
+    systemWallet: ["fees", "referrals", "splits"],
+    adminReserve: ["override", "audit"]
+  });
+  console.log("✅ Security policies applied: Mining wallet cannot be used for trading");
+
+  // --- Step 8: Health Check ---
+  const health = await runWalletHealthCheck(wallets);
+  if (health.ok) {
+    console.log("🚀 Wallet system aligned, safe, and ready for deployment");
+  } else {
+    console.error("⚠️ Wallet issues detected:", health.issues);
+  }
+
+  // --- Step 9: Deployment Checklist ---
+  const checklist = [
+    "Is Mining Wallet isolated from trading?",
+    "Does Trading Wallet handle deposits, withdrawals, trades?",
+    "Are profits routed correctly to System Wallet?",
+    "Are referrals credited from System Wallet?",
+    "Is Admin Reserve wallet active with override power?",
+    "Did balance sync complete with no mismatch?",
+    "Is wallet isolation enforced (mining not used for trading)?",
+    "Are all bots connected only to Trading Wallet?",
+    "Does Mining Wallet only process mining rewards?",
+    "Are logs & audits stored in Admin Reserve?"
+  ];
+  console.log("🔎 Deployment Checklist:", checklist);
+}
+
+// --- Run Correction ---
+initWalletCorrection();
