@@ -156,7 +156,18 @@ export class WaidesFullEngine {
       activeTrades: this.activeTrades.size,
       engineMetrics: this.engineMetrics,
       emergencyStopActive: this.emergencyStopActive,
-      lastUpdate: new Date().toISOString()
+      lastUpdate: new Date().toISOString(),
+      // Dynamic display fields
+      displayName: 'Master Spot Exchange Trading',
+      subtitle: 'Spot Exchange Master',
+      description: 'Elite spot exchange trading (ETH/USDT) with advanced risk management',
+      marketType: 'Spot Exchange',
+      connectors: ['Binance', 'Coinbase', 'Kraken'],
+      tradingAssets: ['ETH/USDT', 'BTC/USDT', 'SOL/USDT', 'Multi-Asset'],
+      strategy: 'Smart Risk Management + ML Kelly Sizing',
+      timeframe: 'Real-Time Optimization',
+      aiModel: 'Unified Trading Orchestrator with ML Engine',
+      riskLevel: 'Intelligent Adaptive'
     };
   }
 
