@@ -139,23 +139,53 @@ export class MarketTypeManager {
    * Get configuration summary for all market types
    */
   static getMarketSummary() {
+    // Convert binary broker configs to connector list
+    const binaryConnectors = Object.entries(BINARY_BROKER_CONFIGS).map(([code, config]) => ({
+      code,
+      name: config.name,
+      status: config.status || 'operational',
+      description: config.description || `Binary options trading on ${config.name}`
+    }));
+
+    // Convert forex platform configs to connector list
+    const forexConnectors = Object.entries(FOREX_PLATFORM_CONFIGS).map(([code, config]) => ({
+      code,
+      name: config.name,
+      status: config.status || 'operational',
+      description: config.description || `Forex/CFD trading on ${config.name}`
+    }));
+
+    // Convert spot exchange configs to connector list
+    const spotConnectors = Object.entries(EXCHANGE_CONFIGS).map(([code, config]) => ({
+      code,
+      name: config.name,
+      status: config.status || 'operational',
+      description: config.description || `Cryptocurrency trading on ${config.name}`
+    }));
+
     return {
       binary: {
+        total: binaryConnectors.length,
+        operational: binaryConnectors.filter(c => c.status === 'operational').length,
+        connectors: binaryConnectors,
         marketType: MarketType.BINARY,
         bots: [BotType.WAIDBOT, BotType.WAIDBOT_PRO, BotType.MAIBOT],
-        brokerCount: Object.keys(BINARY_BROKER_CONFIGS).length,
         strategy: MARKET_STRATEGIES[MarketType.BINARY]
       },
       forex: {
+        total: forexConnectors.length,
+        operational: forexConnectors.filter(c => c.status === 'operational').length,
+        connectors: forexConnectors,
         marketType: MarketType.FOREX,
         bots: [BotType.AUTONOMOUS],
-        platformCount: Object.keys(FOREX_PLATFORM_CONFIGS).length,
         strategy: MARKET_STRATEGIES[MarketType.FOREX]
       },
       spot: {
+        total: spotConnectors.length,
+        operational: spotConnectors.filter(c => c.status === 'operational').length,
+        connectors: spotConnectors,
         marketType: MarketType.SPOT,
         bots: [BotType.FULL_ENGINE],
-        exchangeCount: Object.keys(EXCHANGE_CONFIGS).length,
         strategy: MARKET_STRATEGIES[MarketType.SPOT]
       }
     };

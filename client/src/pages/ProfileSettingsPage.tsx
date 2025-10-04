@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useUserAuth } from '@/context/UserAuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -111,6 +112,7 @@ const BOT_OPTIONS = [
 const ProfileSettingsPage = () => {
   const { toast } = useToast();
   const [location, navigate] = useLocation();
+  const { isAuthenticated, isLoading: authLoading } = useUserAuth();
   
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Nwaora Chigozie',
@@ -164,13 +166,15 @@ const ProfileSettingsPage = () => {
   const [apiSecret, setApiSecret] = useState('');
 
   // Fetch user's connector configurations
-  const { data: connectors } = useQuery<{ connectors: ConnectorConfig[] }>({
+  const { data: connectors, isLoading: connectorsLoading } = useQuery<{ connectors: ConnectorConfig[] }>({
     queryKey: ['/api/user-connectors'],
+    enabled: isAuthenticated && !authLoading,
   });
 
   // Fetch available connectors by market type
-  const { data: marketSummary } = useQuery<{ summary: MarketSummary }>({
+  const { data: marketSummary, isLoading: marketSummaryLoading } = useQuery<{ summary: MarketSummary }>({
     queryKey: ['/api/connectors/market-summary'],
+    enabled: isAuthenticated && !authLoading,
   });
 
   // Create/Update connector mutation
@@ -746,7 +750,12 @@ const ProfileSettingsPage = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                {connectors?.connectors && connectors.connectors.length > 0 ? (
+                {connectorsLoading || marketSummaryLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                    <span className="ml-3 text-slate-400">Loading connections...</span>
+                  </div>
+                ) : connectors?.connectors && connectors.connectors.length > 0 ? (
                   <div className="space-y-4">
                     {connectors.connectors.map((connector) => (
                       <div
