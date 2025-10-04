@@ -101,6 +101,7 @@ import MarketScannerPage from "@/pages/MarketScannerPage";
 import KYCVerificationPage from "@/pages/KYCVerificationPage";
 import NwaoraChigoziePage from "@/pages/NwaoraChigoziePage";
 import SmaiChinnikstahPage from "@/pages/SmaiChinnikstahPage";
+import ConnectorMonitoringPage from "@/pages/ConnectorMonitoringPage";
 
 import NotFound from "@/pages/not-found";
 
@@ -189,6 +190,13 @@ function Router() {
             {() => (
               <ProtectedRoute>
                 <AISystemsPage />
+              </ProtectedRoute>
+            )}
+          </Route>
+          <Route path="/connector-monitoring">
+            {() => (
+              <ProtectedRoute>
+                <ConnectorMonitoringPage />
               </ProtectedRoute>
             )}
           </Route>

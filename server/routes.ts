@@ -13907,6 +13907,58 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // === Trade Validation API Routes ===
+  const { TradeValidationService } = await import("./services/tradeValidationService.js");
+
+  // Validate single trade request
+  app.post("/api/trading/validate", requireAuth, async (req, res) => {
+    try {
+      const tradeRequest = req.body;
+      const validation = TradeValidationService.validateTradeRequest(tradeRequest);
+      
+      res.json({
+        success: validation.valid,
+        validation,
+        report: TradeValidationService.createValidationReport(tradeRequest)
+      });
+    } catch (error) {
+      console.error('Trade validation error:', error);
+      res.status(500).json({ success: false, error: 'Failed to validate trade request' });
+    }
+  });
+
+  // Validate batch of trade requests
+  app.post("/api/trading/validate/batch", requireAuth, async (req, res) => {
+    try {
+      const { trades } = req.body;
+      const validation = TradeValidationService.validateBatch(trades);
+      
+      res.json({
+        success: validation.valid,
+        validation
+      });
+    } catch (error) {
+      console.error('Batch trade validation error:', error);
+      res.status(500).json({ success: false, error: 'Failed to validate batch trades' });
+    }
+  });
+
+  // Get recommended connectors for a bot
+  app.get("/api/trading/connectors/:botType", requireAuth, async (req, res) => {
+    try {
+      const { botType } = req.params;
+      const recommendations = TradeValidationService.getRecommendedConnectors(botType);
+      
+      res.json({
+        success: true,
+        recommendations
+      });
+    } catch (error) {
+      console.error('Connector recommendations error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get connector recommendations' });
+    }
+  });
+
   // === User Connector Configuration API Routes ===
   
   // Get all user connector configurations
