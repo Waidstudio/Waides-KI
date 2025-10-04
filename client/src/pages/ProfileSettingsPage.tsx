@@ -327,8 +327,8 @@ const ProfileSettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 pt-20 pb-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 pt-20 pb-24 sm:pb-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
         {/* Profile Header */}
         <div className="mb-8">
           <Card className="bg-slate-800/50 border-slate-700">
@@ -377,28 +377,30 @@ const ProfileSettingsPage = () => {
 
         {/* Settings Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-slate-800/50 border border-slate-700 overflow-x-auto">
-            <TabsTrigger value="profile" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300">
-              <User className="w-4 h-4 mr-2" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="trading" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300">
-              <Bot className="w-4 h-4 mr-2" />
-              Trading
-            </TabsTrigger>
-            <TabsTrigger value="api-connections" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300">
-              <LinkIcon className="w-4 h-4 mr-2" />
-              API Connections
-            </TabsTrigger>
-            <TabsTrigger value="security" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300">
-              <Shield className="w-4 h-4 mr-2" />
-              Security
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex w-full min-w-max lg:grid lg:grid-cols-5 bg-slate-800/50 border border-slate-700 gap-1 p-1">
+              <TabsTrigger value="profile" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300 whitespace-nowrap px-3 sm:px-4">
+                <User className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Profile</span>
+              </TabsTrigger>
+              <TabsTrigger value="notifications" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300 whitespace-nowrap px-3 sm:px-4">
+                <Bell className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Notifications</span>
+              </TabsTrigger>
+              <TabsTrigger value="trading" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300 whitespace-nowrap px-3 sm:px-4">
+                <Bot className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Trading</span>
+              </TabsTrigger>
+              <TabsTrigger value="api-connections" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300 whitespace-nowrap px-3 sm:px-4">
+                <LinkIcon className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">API Connections</span>
+              </TabsTrigger>
+              <TabsTrigger value="security" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300 whitespace-nowrap px-3 sm:px-4">
+                <Shield className="w-4 h-4 mr-1 sm:mr-2" />
+                <span className="text-xs sm:text-sm">Security</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Profile Settings */}
           <TabsContent value="profile">
@@ -631,13 +633,13 @@ const ProfileSettingsPage = () => {
                         Add Connection
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-slate-900 border-slate-700">
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700 w-[95vw] sm:w-full">
                       <DialogHeader>
-                        <DialogTitle className="text-white">Add API Connection</DialogTitle>
-                        <DialogDescription>Connect your broker/exchange account and select which trading bot to use</DialogDescription>
+                        <DialogTitle className="text-white text-lg sm:text-xl">Add API Connection</DialogTitle>
+                        <DialogDescription className="text-sm">Connect your broker/exchange account and select which trading bot to use</DialogDescription>
                       </DialogHeader>
 
-                      <div className="space-y-4 py-4">
+                      <div className="space-y-4 py-4 px-1">
                         <div className="space-y-2">
                           <Label className="text-white">Market Type</Label>
                           <Select value={selectedMarketType} onValueChange={(value: any) => {
@@ -720,14 +722,19 @@ const ProfileSettingsPage = () => {
                         </Alert>
                       </div>
 
-                      <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-slate-700 text-white hover:bg-slate-800">
+                      <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setIsDialogOpen(false)} 
+                          className="border-slate-700 text-white hover:bg-slate-800 w-full sm:w-auto"
+                          data-testid="button-cancel"
+                        >
                           Cancel
                         </Button>
                         <Button
                           onClick={handleSubmitConnector}
                           disabled={createConnectorMutation.isPending}
-                          className="bg-gradient-to-r from-blue-600 to-emerald-600"
+                          className="bg-gradient-to-r from-blue-600 to-emerald-600 w-full sm:w-auto"
                           data-testid="button-submit-connector"
                         >
                           {createConnectorMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
@@ -744,49 +751,49 @@ const ProfileSettingsPage = () => {
                     {connectors.connectors.map((connector) => (
                       <div
                         key={connector.id}
-                        className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600"
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600 gap-4"
                         data-testid={`connector-${connector.id}`}
                       >
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center">
-                            <LinkIcon className="w-6 h-6 text-white" />
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center flex-shrink-0">
+                            <LinkIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-white">{connector.connectorName}</h3>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-white text-sm sm:text-base truncate">{connector.connectorName}</h3>
                               {getStatusBadge(connector.verificationStatus)}
                               {connector.isActive ? (
-                                <Badge className="bg-green-600">Active</Badge>
+                                <Badge className="bg-green-600 text-xs">Active</Badge>
                               ) : (
-                                <Badge variant="secondary">Inactive</Badge>
+                                <Badge variant="secondary" className="text-xs">Inactive</Badge>
                               )}
                             </div>
-                            <p className="text-sm text-slate-400">
+                            <p className="text-xs sm:text-sm text-slate-400 break-words">
                               Trading Bot: {getBotLabel(connector.selectedBot)} • Type: {connector.connectorType.toUpperCase()}
                             </p>
                             {connector.errorMessage && (
-                              <p className="text-xs text-red-400 mt-1">{connector.errorMessage}</p>
+                              <p className="text-xs text-red-400 mt-1 break-words">{connector.errorMessage}</p>
                             )}
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-end">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => testConnectorMutation.mutate(connector.id)}
                             disabled={testConnectorMutation.isPending}
-                            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            className="border-slate-600 text-slate-300 hover:bg-slate-700 text-xs sm:text-sm h-8 sm:h-9"
                             data-testid={`button-test-${connector.id}`}
                           >
-                            <TestTube className="w-4 h-4 mr-1" />
-                            Test
+                            <TestTube className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-1" />
+                            <span className="hidden sm:inline">Test</span>
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => toggleConnectorMutation.mutate(connector.id)}
-                            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            className="border-slate-600 text-slate-300 hover:bg-slate-700 text-xs sm:text-sm h-8 sm:h-9"
                             data-testid={`button-toggle-${connector.id}`}
                           >
                             {connector.isActive ? 'Deactivate' : 'Activate'}
@@ -796,9 +803,10 @@ const ProfileSettingsPage = () => {
                             variant="destructive"
                             onClick={() => deleteConnectorMutation.mutate(connector.id)}
                             disabled={deleteConnectorMutation.isPending}
+                            className="h-8 sm:h-9"
                             data-testid={`button-delete-${connector.id}`}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
                         </div>
                       </div>
