@@ -19,7 +19,9 @@ import {
   requireAnyAuth
 } from "./middleware/authMiddleware.js";
 import { AdminPermissions, loginSchema, insertAdminUserSchema } from "@shared/authSchema.js";
-import { userLoginSchema, userRegisterSchema } from "@shared/schema.js";
+import { userLoginSchema, userRegisterSchema, userConnectorConfig } from "@shared/schema.js";
+import { db } from "./db.js";
+import { eq } from "drizzle-orm";
 import jwt from 'jsonwebtoken';
 import { smaiTrustAuthService } from "./services/smaiTrustAuthService.js";
 import { shavokaAuthService } from "./services/shavokaAuthService.js";
