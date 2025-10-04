@@ -1697,3 +1697,31 @@ export const exchangeConnections = pgTable("exchange_connections", {
 
 export type ExchangeConnection = typeof exchangeConnections.$inferSelect;
 export type InsertExchangeConnection = typeof exchangeConnections.$inferInsert;
+
+// User Connector Configuration - Links users to brokers/exchanges with bot selection
+export const userConnectorConfig = pgTable("user_connector_config", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  connectorCode: text("connector_code").notNull(), // DERIV, QUOTEX, BINANCE, etc.
+  connectorName: text("connector_name").notNull(),
+  connectorType: text("connector_type").notNull(), // binary, forex, spot
+  selectedBot: text("selected_bot").notNull(), // waidbot-alpha, waidbot-pro-beta, etc.
+  apiKeyEncrypted: text("api_key_encrypted"),
+  apiSecretEncrypted: text("api_secret_encrypted"),
+  additionalCredentials: jsonb("additional_credentials").default("{}"), // Broker-specific fields
+  isActive: boolean("is_active").default(true),
+  lastVerified: timestamp("last_verified"),
+  verificationStatus: text("verification_status").default("pending"), // pending, verified, failed
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertUserConnectorConfigSchema = createInsertSchema(userConnectorConfig).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type UserConnectorConfig = typeof userConnectorConfig.$inferSelect;
+export type InsertUserConnectorConfig = z.infer<typeof insertUserConnectorConfigSchema>;
