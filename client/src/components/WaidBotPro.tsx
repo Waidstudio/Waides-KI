@@ -8,47 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause, Target, Shield, Zap, Wallet, DollarSign, Signal, Crown, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { Activity, BarChart3, Play, Pause, Zap, Wallet, DollarSign, Signal, Crown } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { TradeActivityPanel } from "@/components/TradeActivityPanel";
 
-interface WaidBotProDecision {
-  action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
-  reasoning: string;
-  confidence: number;
-  ethPosition: 'LONG' | 'SHORT' | 'NEUTRAL';
-  tradingPair: 'ETH/USDT' | 'NONE';
-  quantity: number;
-  trendDirection: 'UPWARD' | 'DOWNWARD' | 'SIDEWAYS';
-  strategy: 'TREND_FOLLOWING' | 'MEAN_REVERSION' | 'BREAKOUT' | 'SIDEWAYS_RANGE';
-  autoTradingEnabled: boolean;
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
-  timestamp: number;
-}
-
-interface WaidBotProStatus {
-  isActive: boolean;
-  autoTradingEnabled: boolean;
-  currentPosition: 'LONG' | 'SHORT' | 'NEUTRAL';
-  totalTrades: number;
-  winRate: number;
-  currentBalance: number;
-  lastDecision: WaidBotProDecision | null;
-  currentRisk: number;
-}
-
-interface TechnicalAnalysis {
-  currentPrice: number;
-  trendDirection: 'UPWARD' | 'DOWNWARD' | 'SIDEWAYS';
-  strategy: string;
-  confidence: number;
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
-  volume: number;
-  priceChange24h: number;
-}
 
 export function WaidBotPro() {
-  const [isGeneratingDecision, setIsGeneratingDecision] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [tradingMode, setTradingMode] = useState<'demo' | 'real'>('demo');
   const [fundAmount, setFundAmount] = useState('');
@@ -65,18 +30,6 @@ export function WaidBotPro() {
   const { data: balanceData, isLoading: balanceLoading } = useQuery({
     queryKey: ['/api/waidbot-engine/waidbot-pro/balance'],
     refetchInterval: 3000,
-  });
-
-  // Fetch decision history
-  const { data: historyData, isLoading: historyLoading } = useQuery({
-    queryKey: ['/api/waidbot-pro/history'],
-    refetchInterval: 10000,
-  });
-
-  // Fetch technical analysis
-  const { data: analysisData, isLoading: analysisLoading } = useQuery({
-    queryKey: ['/api/waidbot-pro/analysis'],
-    refetchInterval: 15000,
   });
 
   // Toggle trading mode mutation
@@ -181,18 +134,6 @@ export function WaidBotPro() {
     }
   });
 
-  // Generate decision mutation
-  const decisionMutation = useMutation({
-    mutationFn: () => 
-      apiRequest('/api/waidbot-pro/decision', 'POST'),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/status'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/history'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/waidbot-pro/analysis'] });
-      setIsGeneratingDecision(false);
-    }
-  });
-
   const status = statusData || {
     id: 'waidbot-pro',
     name: 'WaidBot Pro β',
@@ -208,25 +149,6 @@ export function WaidBotPro() {
     dailyProfit: 0,
     currency: 'SmaiSika',
     mode: 'demo'
-  };
-
-  const history: WaidBotProDecision[] = Array.isArray(historyData) ? historyData : [];
-  const analysis: TechnicalAnalysis = (analysisData && typeof analysisData === 'object') ? {
-    currentPrice: analysisData.currentPrice || 0,
-    trendDirection: analysisData.trendDirection || 'SIDEWAYS',
-    strategy: analysisData.strategy || 'SIDEWAYS_RANGE',
-    confidence: analysisData.confidence || 0,
-    riskLevel: analysisData.riskLevel || 'LOW',
-    volume: analysisData.volume || 0,
-    priceChange24h: analysisData.priceChange24h || 0
-  } : {
-    currentPrice: 0,
-    trendDirection: 'SIDEWAYS',
-    strategy: 'SIDEWAYS_RANGE',
-    confidence: 0,
-    riskLevel: 'LOW',
-    volume: 0,
-    priceChange24h: 0
   };
 
   const handleModeToggle = () => {
@@ -245,49 +167,6 @@ export function WaidBotPro() {
     const amount = parseFloat(withdrawAmount);
     if (amount && amount > 0) {
       withdrawMutation.mutate(amount);
-    }
-  };
-
-  const handleGenerateDecision = () => {
-    setIsGeneratingDecision(true);
-    decisionMutation.mutate();
-  };
-
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case 'BUY_ETH': return 'text-green-600 dark:text-green-400';
-      case 'SELL_ETH': return 'text-red-600 dark:text-red-400';
-      case 'HOLD': return 'text-yellow-600 dark:text-yellow-400';
-      case 'OBSERVE': return 'text-blue-600 dark:text-blue-400';
-      default: return 'text-gray-600 dark:text-gray-400';
-    }
-  };
-
-  const getPositionColor = (position: string) => {
-    switch (position) {
-      case 'LONG': return 'text-green-600 dark:text-green-400';
-      case 'SHORT': return 'text-red-600 dark:text-red-400';
-      case 'NEUTRAL': return 'text-gray-600 dark:text-gray-400';
-      default: return 'text-gray-600 dark:text-gray-400';
-    }
-  };
-
-  const getStrategyIcon = (strategy: string) => {
-    switch (strategy) {
-      case 'TREND_FOLLOWING': return <TrendingUp className="h-4 w-4" />;
-      case 'MEAN_REVERSION': return <Target className="h-4 w-4" />;
-      case 'BREAKOUT': return <Zap className="h-4 w-4" />;
-      case 'SIDEWAYS_RANGE': return <Activity className="h-4 w-4" />;
-      default: return <BarChart3 className="h-4 w-4" />;
-    }
-  };
-
-  const getRiskLevelColor = (risk: string) => {
-    switch (risk) {
-      case 'LOW': return 'text-green-600 dark:text-green-400';
-      case 'MEDIUM': return 'text-yellow-600 dark:text-yellow-400';
-      case 'HIGH': return 'text-red-600 dark:text-red-400';
-      default: return 'text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -429,155 +308,141 @@ export function WaidBotPro() {
           />
         </TabsContent>
 
-        <TabsContent value="analysis" className="space-y-6">
+        <TabsContent value="wallet" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Advanced Technical Analysis</CardTitle>
+              <CardTitle>Bot Wallet Management</CardTitle>
               <CardDescription>
-                Real-time market analysis with professional indicators
+                Fund or withdraw from your WaidBot Pro trading wallet
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              {analysisLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="font-medium">Fund Bot Wallet</h4>
+                  <div className="space-y-2">
+                    <Label htmlFor="fund-amount">Amount ({balance.currency})</Label>
+                    <Input
+                      id="fund-amount"
+                      type="number"
+                      placeholder="Enter amount"
+                      value={fundAmount}
+                      onChange={(e) => setFundAmount(e.target.value)}
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleFund}
+                    disabled={fundMutation.isPending || !fundAmount}
+                    className="w-full"
+                  >
+                    {fundMutation.isPending ? 'Processing...' : 'Fund Bot'}
+                  </Button>
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Current Price</h4>
-                      <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        ${analysis.currentPrice.toLocaleString()}
-                      </p>
-                      <p className={`text-sm ${analysis.priceChange24h >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {analysis.priceChange24h >= 0 ? '+' : ''}{analysis.priceChange24h.toFixed(2)}% (24h)
-                      </p>
-                    </div>
-                    
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Trend Direction</h4>
-                      <div className="flex items-center gap-2">
-                        {analysis.trendDirection === 'UPWARD' ? (
-                          <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
-                        ) : analysis.trendDirection === 'DOWNWARD' ? (
-                          <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
-                        ) : (
-                          <Activity className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-                        )}
-                        <span className="font-bold text-gray-900 dark:text-white">
-                          {analysis.trendDirection}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Strategy</h4>
-                      <div className="flex items-center gap-2">
-                        {getStrategyIcon(analysis.strategy)}
-                        <span className="font-bold text-gray-900 dark:text-white">
-                          {analysis.strategy.replace('_', ' ')}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Confidence Score</h4>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${analysis.confidence}%` }}
-                          ></div>
-                        </div>
-                        <span className="font-bold text-gray-900 dark:text-white">
-                          {analysis.confidence}%
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Risk Level</h4>
-                      <Badge className={getRiskLevelColor(analysis.riskLevel)}>
-                        {analysis.riskLevel} RISK
-                      </Badge>
-                    </div>
+                <div className="space-y-4">
+                  <h4 className="font-medium">Withdraw from Bot</h4>
+                  <div className="space-y-2">
+                    <Label htmlFor="withdraw-amount">Amount ({balance.currency})</Label>
+                    <Input
+                      id="withdraw-amount"
+                      type="number"
+                      placeholder="Enter amount"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                    />
                   </div>
+                  <Button 
+                    onClick={handleWithdraw}
+                    disabled={withdrawMutation.isPending || !withdrawAmount}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    {withdrawMutation.isPending ? 'Processing...' : 'Withdraw'}
+                  </Button>
+                </div>
+              </div>
 
+              <div className="border-t pt-6">
+                <h4 className="font-medium mb-4">Current Balance</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">Volume Analysis</h4>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                      {analysis.volume ? analysis.volume.toLocaleString() : 'N/A'} ETH
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Available</p>
+                    <p className="text-xl font-bold">{balance.available.toFixed(2)}</p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Invested</p>
+                    <p className="text-xl font-bold">{balance.invested.toFixed(2)}</p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Profit</p>
+                    <p className="text-xl font-bold text-green-600">{balance.totalProfit.toFixed(2)}</p>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Daily Profit</p>
+                    <p className="text-xl font-bold text-green-600">{balance.dailyProfit.toFixed(2)}</p>
                   </div>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-6">
+        <TabsContent value="signals" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Pro Decision History</CardTitle>
+              <CardTitle>Binary Options Signals</CardTitle>
               <CardDescription>
-                Advanced trading decisions with strategy details
+                Real-time trading signals for binary options
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {historyLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
-              ) : history.length === 0 ? (
-                <div className="text-center py-8">
-                  <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No pro trading decisions yet</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                    Enable pro trading or generate a manual decision to see history
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {history.slice(0, 10).map((decision, index) => (
-                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <Badge className={getActionColor(decision.action)}>
-                            {decision.action}
-                          </Badge>
-                          <div className="flex items-center gap-2">
-                            {getStrategyIcon(decision.strategy)}
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {decision.strategy.replace('_', ' ')}
-                            </span>
-                          </div>
-                          <Badge className={getPositionColor(decision.ethPosition)}>
-                            {decision.ethPosition}
-                          </Badge>
-                          <Badge className={getRiskLevelColor(decision.riskLevel)}>
-                            {decision.riskLevel}
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(decision.timestamp).toLocaleString()}
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        {decision.reasoning}
-                      </p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
-                        <span>Confidence: {decision.confidence}%</span>
-                        <span>Size: {(decision.quantity * 100).toFixed(1)}%</span>
-                        <span>Pair: {decision.tradingPair}</span>
-                        <span>Trend: {decision.trendDirection}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="text-center py-8">
+                <Signal className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">Binary options signals coming soon</p>
+                <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                  WaidBot Pro will provide real-time signals for optimal entry points
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="trades" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Trade History</CardTitle>
+              <CardDescription>
+                Complete history of all binary options trades
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">No trade history yet</p>
+                <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                  Start trading to see your complete trade history here
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="upgrade" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Advanced Features</CardTitle>
+              <CardDescription>
+                Unlock premium binary options trading features
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Crown className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400">Premium Features</p>
+                <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                  Advanced automation, custom strategies, and more coming soon
+                </p>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
