@@ -250,7 +250,7 @@ export default function WaidbotEnginePageEnhanced() {
     {
       id: 'maibot',
       name: 'Maibot',
-      displayName: 'Free Trading Assistant',
+      displayName: 'Free Binary Options Assistant',
       tier: 'FREE',
       price: 0,
       icon: Sparkles,
@@ -258,7 +258,7 @@ export default function WaidbotEnginePageEnhanced() {
       route: '/maibot',
       autonomous: false,
       decisionEngine: 'Manual Override Required',
-      description: 'Entry-level bot with manual approval for all trades'
+      description: 'Entry-level binary options trading with manual approval for all trades'
     },
     {
       id: 'waidbot',
