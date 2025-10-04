@@ -5,10 +5,10 @@
  */
 
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+import { BotTier } from '@shared/subscriptions';
 
 // Bot Market Type Definitions
 export type MarketType = 'binary' | 'forex' | 'spot';
-export type BotTier = 'free' | 'basic' | 'pro' | 'premium' | 'autonomous';
 
 export interface BotConfiguration {
   id: string;
@@ -50,7 +50,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'WaidBot α (Alpha)',
     symbol: 'α',
     marketType: 'binary',
-    tier: 'basic',
+    tier: BotTier.BASIC,
     description: 'Entry-level binary options trading bot',
     role: 'Binary Options Master - ETH uptrend specialist',
     features: [
@@ -73,8 +73,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50,
-      treasuryShare: 50
+      userShare: 80, // 20% platform fee for basic tier (paying members get better share)
+      treasuryShare: 20
     },
     connectors: ['DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM'],
     isActive: true,
@@ -87,7 +87,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'WaidBot Pro β (Beta)',
     symbol: 'β',
     marketType: 'binary',
-    tier: 'pro',
+    tier: BotTier.PRO,
     description: 'Advanced bidirectional binary options trading',
     role: 'Advanced Binary Trader - ETH3L/ETH3S specialist',
     features: [
@@ -111,8 +111,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50,
-      treasuryShare: 50
+      userShare: 90, // 10% platform fee for pro tier (paying members get better share)
+      treasuryShare: 10
     },
     connectors: ['DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM'],
     isActive: true,
@@ -125,7 +125,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'Maibot',
     symbol: 'M',
     marketType: 'binary',
-    tier: 'free',
+    tier: BotTier.FREE,
     description: 'Free entry-level bot for beginners',
     role: 'Entry-Level Learning Bot - Small growth binary trading',
     features: [
@@ -133,7 +133,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
       'Learning mode',
       'Manual approval trades',
       'Educational insights',
-      'Platform fee: 30-40%'
+      'Platform fee: 35%'
     ],
     pricing: {
       currency: 'Smaisika',
@@ -149,8 +149,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50, // 50/50 automatic profit sharing (aligned with all bots)
-      treasuryShare: 50
+      userShare: 65, // 35% platform fee for free tier users
+      treasuryShare: 35
     },
     connectors: ['DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM'],
     isActive: true,
@@ -163,7 +163,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'Autonomous Trader γ (Gamma)',
     symbol: 'γ',
     marketType: 'forex',
-    tier: 'premium',
+    tier: BotTier.ELITE,
     description: '24/7 autonomous forex/CFD trading',
     role: 'Forex Pro - Multi-strategy trading with Deriv/MT5/Oanda',
     features: [
@@ -187,8 +187,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50,
-      treasuryShare: 50
+      userShare: 95, // 5% platform fee for premium tier (elite members get minimal fees)
+      treasuryShare: 5
     },
     connectors: ['DERIV_FOREX', 'MT4', 'MT5', 'CTRADER', 'OANDA', 'FXCM'],
     isActive: true,
@@ -201,7 +201,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'Full Engine Ω (Omega)',
     symbol: 'Ω',
     marketType: 'spot',
-    tier: 'premium',
+    tier: BotTier.MASTER,
     description: 'Advanced spot exchange trading engine',
     role: 'Spot Engine - Binance/Kucoin/Bybit master',
     features: [
@@ -225,8 +225,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50,
-      treasuryShare: 50
+      userShare: 97, // 3% platform fee for VIP tier (master traders get best rates)
+      treasuryShare: 3
     },
     connectors: ['BINANCE', 'COINBASE', 'KRAKEN', 'KUCOIN', 'BYBIT', 'BITFINEX', 'OKX', 'GATEIO', 'GEMINI'],
     isActive: true,
@@ -239,7 +239,7 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'Smai Chinnikstah Δ (Delta)',
     symbol: 'Δ',
     marketType: 'binary', // Primary market, can broadcast to all
-    tier: 'autonomous',
+    tier: BotTier.DIVINE_DELTA,
     description: 'Central signal broadcaster and energy hub',
     role: 'Energy Distribution Hub - Signal broadcaster to all bots',
     features: [
@@ -263,8 +263,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50,
-      treasuryShare: 50
+      userShare: 98, // 2% platform fee for divine tier (premium signal service)
+      treasuryShare: 2
     },
     connectors: ['DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM'],
     isActive: true,
@@ -277,9 +277,9 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     displayName: 'Nwaora Chigozie ε (Epsilon)',
     symbol: 'ε',
     marketType: 'binary', // Can switch between binary and spot
-    tier: 'autonomous',
-    description: 'Always-on guardian and backup trading system',
-    role: 'Guardian System - 24/7 protection and autonomous trading',
+    tier: BotTier.COSMIC_EPSILON,
+    description: 'Platform admin bot - guardian and backup trading system',
+    role: 'Platform Admin Bot - 24/7 protection and autonomous trading (NOT for users)',
     features: [
       'Always-on guardian mode',
       'Binary & spot trading',
@@ -302,8 +302,8 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     },
     profitSharing: {
       enabled: true,
-      userShare: 50, // 50/50 automatic profit sharing (aligned with all bots)
-      treasuryShare: 50
+      userShare: 0, // 100% to treasury (platform admin bot, not for users)
+      treasuryShare: 100
     },
     connectors: [
       'DERIV', 'IQOPTION', 'POCKETOPTION', 'QUOTEX', 'OLYMPTRADE', 'BINOMO', 'EXPERTOPTION', 'RACEOPTION', 'BINARYCOM',
@@ -364,7 +364,7 @@ export const MEMBERSHIP_TIERS: Record<string, MembershipTier> = {
       'Access to WaidBot Alpha',
       'Binary options trading',
       'Real-time signals',
-      '50/50 profit sharing'
+      '80/20 profit sharing (20% platform fee)'
     ],
     botAccess: ['maibot', 'waidbot-alpha'],
     isManuallyAdjustable: true
@@ -378,38 +378,52 @@ export const MEMBERSHIP_TIERS: Record<string, MembershipTier> = {
       'Access to WaidBot Pro Beta',
       'Advanced binary trading',
       'AI-powered analysis',
-      '50/50 profit sharing'
+      '90/10 profit sharing (10% platform fee)'
     ],
     botAccess: ['maibot', 'waidbot-alpha', 'waidbot-pro-beta'],
     isManuallyAdjustable: true
   },
-  premium: {
-    id: 'premium',
-    name: 'Premium Trader',
+  elite: {
+    id: 'elite',
+    name: 'Elite Trader',
+    price: 300,
+    billingCycle: 'monthly',
+    features: [
+      'Access to Autonomous Trader Gamma',
+      'Forex, Binary trading',
+      '24/7 autonomous trading',
+      'Priority support',
+      '95/5 profit sharing (5% platform fee)'
+    ],
+    botAccess: ['maibot', 'waidbot-alpha', 'waidbot-pro-beta', 'autonomous-trader-gamma'],
+    isManuallyAdjustable: true
+  },
+  master: {
+    id: 'master',
+    name: 'Master Trader',
     price: 500,
     billingCycle: 'monthly',
     features: [
-      'Access to all trading bots',
+      'Access to Full Engine Omega',
       'Forex, Binary, and Spot trading',
-      '24/7 autonomous trading',
-      'Priority support',
-      '50/50 profit sharing'
+      'Advanced AI integration',
+      'VIP support',
+      '97/3 profit sharing (3% platform fee)'
     ],
     botAccess: ['maibot', 'waidbot-alpha', 'waidbot-pro-beta', 'autonomous-trader-gamma', 'full-engine-omega'],
     isManuallyAdjustable: true
   },
-  vip: {
-    id: 'vip',
-    name: 'VIP Autonomous',
+  divine_delta: {
+    id: 'divine_delta',
+    name: 'Divine Trader',
     price: 1000,
     billingCycle: 'monthly',
     features: [
-      'Access to ALL bots including autonomous',
-      'Signal broadcasting from Smai Chinnikstah',
-      'Guardian protection',
-      'Custom risk management',
-      'Dedicated support',
-      '50/50 profit sharing'
+      'Access to Smai Chinnikstah Delta',
+      'Signal broadcasting',
+      'Spiritual market intelligence',
+      'White-glove support',
+      '98/2 profit sharing (2% platform fee)'
     ],
     botAccess: ['maibot', 'waidbot-alpha', 'waidbot-pro-beta', 'autonomous-trader-gamma', 'full-engine-omega', 'smai-chinnikstah-delta'],
     isManuallyAdjustable: true

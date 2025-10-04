@@ -12,10 +12,10 @@ export enum BotTier {
   FREE = 'free',           // Maibot - 35% platform fee, manual approval
   BASIC = 'basic',         // WaidBot α - $9.99/month, 20% platform fee  
   PRO = 'pro',             // WaidBot Pro β - $29.99/month, 10% platform fee
-  ELITE = 'elite',         // Autonomous Trader γ - $59.99/month, fixed fee
-  MASTER = 'master',       // Full Engine Ω - $149.99/month, advanced features
-  DIVINE_DELTA = 'divine_delta',  // SmaiChinnikstah δ - $299.99/month, divine trading
-  COSMIC_EPSILON = 'cosmic_epsilon'  // Nwaora Chigozie ε - $999.99/month, cosmic intelligence
+  ELITE = 'elite',         // Autonomous Trader γ - $59.99/month, 5% platform fee
+  MASTER = 'master',       // Full Engine Ω - $149.99/month, 3% platform fee
+  DIVINE_DELTA = 'divine_delta',  // SmaiChinnikstah δ - $299.99/month, 2% platform fee
+  COSMIC_EPSILON = 'cosmic_epsilon'  // Nwaora Chigozie ε - ADMIN RESERVED (platform bot only)
 }
 
 // Subscription Status Enum
@@ -214,23 +214,25 @@ export const botTierDefinitions = {
   },
   [BotTier.COSMIC_EPSILON]: {
     name: 'Nwaora Chigozie ε',
-    displayName: 'Cosmic Intelligence Omega',
-    monthlyPrice: 999.99,
-    platformFeeRate: 0.01, // 1%
+    displayName: 'Cosmic Intelligence Omega (Admin Reserved)',
+    monthlyPrice: 0, // Admin-only, not available to users
+    platformFeeRate: 1.00, // 100% to treasury (platform admin bot)
     maxPositionSize: 50.0,
     automationLevel: 'full_auto',
     features: [
-      'Cosmic consciousness trading',
-      'Universal market intelligence',
-      'Omniscient pattern recognition',
-      'Divine support channel',
-      'All cosmic strategies',
-      'Quantum entanglement analysis',
-      'Interdimensional signals',
-      'Universal harmony trading',
-      'Unlimited everything'
+      'Platform admin bot only',
+      'Guardian system protection',
+      '24/7 autonomous trading',
+      'Emergency intervention',
+      'Backup trading system',
+      'Universal market monitoring',
+      'Not available for user subscription'
     ],
-    limitations: []
+    limitations: [
+      'Admin reserved - not available to users',
+      'Platform operations only',
+      '100% profits to treasury'
+    ]
   }
 };
 

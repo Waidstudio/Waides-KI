@@ -11,6 +11,13 @@ Waides KI (SmaiSika) is an advanced autonomous wealth management platform provid
 - Complete comprehensive AI trading logic implementation for all 6 entities
 - Development Constraints: DO NOT remove or overwrite existing files/functions unless explicitly told - build upon existing architecture only
 
+## Recent Changes (Oct 4, 2025)
+- **✅ Profit Sharing Model Aligned:** Implemented membership-tier-based profit sharing (free users pay 35% fee, paid tiers get progressively better shares: 20% → 2% fees)
+- **✅ Bot Tier Schema Alignment:** All bot configurations now use BotTier enum from shared/subscriptions.ts for type safety
+- **✅ Admin Bot Clarification:** Nwaora Chigozie ε (COSMIC_EPSILON) confirmed as platform admin bot only (0/100 split, NOT available to users)
+- **✅ Single Source of Truth:** masterBotAlignmentService.ts now imports BotTier enum instead of defining duplicate types
+- **✅ Production Ready:** Architect approved - all profit sharing percentages align with platformFeeRate across bot registry and subscription schema
+
 ## System Architecture
 Waides KI utilizes a modern stack with a clear separation of concerns. The frontend is built with **TypeScript/React** and **Wouter** for routing, while the backend is powered by **Express.js** and connects to a **PostgreSQL database**.
 
@@ -37,11 +44,20 @@ Waides KI utilizes a modern stack with a clear separation of concerns. The front
 - **Candlestick Chart Optimization:** Enhanced real-time data stability with optimized refresh intervals, improved caching, and stabilized WebSocket connections.
 - **Admin Exchange Pool Management:** System for users to trade via admin-managed shared credentials on 9 major exchanges. Features encrypted storage, automatic user assignment, usage monitoring, and a comprehensive admin interface.
 - **Real Cryptocurrency Mining Platform:** Comprehensive mining system supporting Monero (RandomX), Bitcoin (SHA-256), and Ethereum (Ethash) with SmaiSika as an internal token layer. Features real mining pool connections, admin wallet reserves, automatic crypto-to-SmaiSika conversion (1:1000), real-time hashrate monitoring, and secure swap functionality.
-- **Trading Bot Profit-Sharing Ledger System:** Integrated SmaiSika ledger with automatic profit/loss tracking for 4/6 bots (WaidBot α, WaidBot Pro β, Autonomous Trader γ, Full Engine Ω). Features 50/50 automatic profit sharing, wallet credit/debit, comprehensive trade profit recording, and a Treasury Analytics Dashboard.
+- **Trading Bot Profit-Sharing Ledger System:** Integrated SmaiSika ledger with automatic profit/loss tracking for 6 user-accessible bots. Features **membership-tier-based profit sharing** (Free: 65/35, Basic: 80/20, Pro: 90/10, Elite: 95/5, Master: 97/3, Divine: 98/2), wallet credit/debit, comprehensive trade profit recording, and a Treasury Analytics Dashboard. **Note:** Nwaora Chigozie ε (COSMIC_EPSILON) is a platform admin bot only (0/100 split - all profits to treasury), NOT available to users.
 - **Admin Dashboards:** Enterprise-grade dashboards for system administration, trading bot management, customer support, and content analytics with real-time metrics.
 - **Master Bot Alignment Service:** Defines 7 TredBeings (trading bots) with market-type alignments, required tiers, recommended connectors, and risk management settings.
 - **Currency System Standardization:** Smaisika (SS) as base platform currency (1:1 USD parity), with cryptocurrency deposit/withdrawal support (USDT, BTC, ETH, BNB) and automatic conversion.
-- **Membership Tier System:** Five tiers (Free, Basic, Pro, Premium, VIP) with bot access gated by membership level and manual admin control for pricing.
+- **Membership Tier System:** Seven tiers aligned with BotTier enum from shared/subscriptions.ts:
+  - **FREE (Maibot):** 0 SS/month, 35% platform fee (65% user profit)
+  - **BASIC (WaidBot α):** 50 SS/month, 20% platform fee (80% user profit)
+  - **PRO (WaidBot Pro β):** 150 SS/month, 10% platform fee (90% user profit)
+  - **ELITE (Autonomous Trader γ):** 300 SS/month, 5% platform fee (95% user profit)
+  - **MASTER (Full Engine Ω):** 500 SS/month, 3% platform fee (97% user profit)
+  - **DIVINE_DELTA (Smai Chinnikstah δ):** 1000 SS/month, 2% platform fee (98% user profit)
+  - **COSMIC_EPSILON (Nwaora Chigozie ε):** Admin reserved only, 100% to treasury
+  
+  **Business Logic:** Free users pay with profit percentage (35% fee). Paid members get progressively better profit shares as tiers increase, since they already pay monthly subscriptions. Higher tier = lower platform fee.
 - **Risk Management Framework:** Default 2% risk per trade (configurable 1-5% per bot), with admin-adjustable settings and maximum position size limits.
 - **System Health Check Service:** Comprehensive monitoring of bots, wallets, connectors, APIs, and system resources, including a 30-point deployment readiness checklist.
 - **Gamification & Referral System:** Level system (Bronze to Diamond), XP earning for trades and challenges, 42 achievements, and a referral program (5% bonus).
