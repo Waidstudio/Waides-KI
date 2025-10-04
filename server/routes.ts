@@ -13905,6 +13905,220 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // === User Connector Configuration API Routes ===
+  
+  // Get all user connector configurations
+  app.get("/api/user-connectors", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+
+      const configs = await db.query.userConnectorConfig.findMany({
+        where: (config, { eq }) => eq(config.userId, userId),
+        orderBy: (config, { desc }) => [desc(config.createdAt)]
+      });
+
+      res.json({
+        success: true,
+        connectors: configs
+      });
+    } catch (error) {
+      console.error('Get user connectors error:', error);
+      res.status(500).json({ success: false, error: 'Failed to get user connectors' });
+    }
+  });
+
+  // Create or update user connector configuration
+  app.post("/api/user-connectors", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+
+      const { connectorCode, connectorName, connectorType, selectedBot, apiKey, apiSecret, additionalCredentials } = req.body;
+
+      // Validate bot-connector compatibility
+      const validation = ConnectorStatusService.validateBotConnector(selectedBot, connectorCode);
+      if (!validation.valid) {
+        return res.status(400).json({
+          success: false,
+          error: `Invalid bot-connector pairing: ${validation.reason}`
+        });
+      }
+
+      // Check if configuration already exists
+      const existing = await db.query.userConnectorConfig.findFirst({
+        where: (config, { and, eq }) => and(
+          eq(config.userId, userId),
+          eq(config.connectorCode, connectorCode)
+        )
+      });
+
+      let result;
+      if (existing) {
+        // Update existing configuration
+        result = await db.update(userConnectorConfig)
+          .set({
+            connectorName,
+            connectorType,
+            selectedBot,
+            apiKeyEncrypted: apiKey ? Buffer.from(apiKey).toString('base64') : existing.apiKeyEncrypted,
+            apiSecretEncrypted: apiSecret ? Buffer.from(apiSecret).toString('base64') : existing.apiSecretEncrypted,
+            additionalCredentials: additionalCredentials || {},
+            verificationStatus: 'pending',
+            updatedAt: new Date()
+          })
+          .where(eq(userConnectorConfig.id, existing.id))
+          .returning();
+      } else {
+        // Create new configuration
+        result = await db.insert(userConnectorConfig)
+          .values({
+            userId,
+            connectorCode,
+            connectorName,
+            connectorType,
+            selectedBot,
+            apiKeyEncrypted: apiKey ? Buffer.from(apiKey).toString('base64') : null,
+            apiSecretEncrypted: apiSecret ? Buffer.from(apiSecret).toString('base64') : null,
+            additionalCredentials: additionalCredentials || {},
+            verificationStatus: 'pending'
+          })
+          .returning();
+      }
+
+      res.json({
+        success: true,
+        message: existing ? 'Connector updated successfully' : 'Connector added successfully',
+        connector: result[0]
+      });
+    } catch (error) {
+      console.error('Create/update user connector error:', error);
+      res.status(500).json({ success: false, error: 'Failed to save connector configuration' });
+    }
+  });
+
+  // Delete user connector configuration
+  app.delete("/api/user-connectors/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+
+      const configId = parseInt(req.params.id);
+
+      // Verify ownership
+      const config = await db.query.userConnectorConfig.findFirst({
+        where: (cfg, { and, eq }) => and(
+          eq(cfg.id, configId),
+          eq(cfg.userId, userId)
+        )
+      });
+
+      if (!config) {
+        return res.status(404).json({ success: false, error: 'Connector configuration not found' });
+      }
+
+      await db.delete(userConnectorConfig)
+        .where(eq(userConnectorConfig.id, configId));
+
+      res.json({
+        success: true,
+        message: 'Connector deleted successfully'
+      });
+    } catch (error) {
+      console.error('Delete user connector error:', error);
+      res.status(500).json({ success: false, error: 'Failed to delete connector' });
+    }
+  });
+
+  // Test user connector configuration
+  app.post("/api/user-connectors/:id/test", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+
+      const configId = parseInt(req.params.id);
+
+      // Get connector configuration
+      const config = await db.query.userConnectorConfig.findFirst({
+        where: (cfg, { and, eq }) => and(
+          eq(cfg.id, configId),
+          eq(cfg.userId, userId)
+        )
+      });
+
+      if (!config) {
+        return res.status(404).json({ success: false, error: 'Connector configuration not found' });
+      }
+
+      // Test the connector
+      const status = await ConnectorStatusService.testConnector(config.connectorCode, config.connectorType);
+
+      // Update verification status
+      await db.update(userConnectorConfig)
+        .set({
+          verificationStatus: status.status === 'operational' ? 'verified' : 'failed',
+          lastVerified: new Date(),
+          errorMessage: status.status !== 'operational' ? status.message : null
+        })
+        .where(eq(userConnectorConfig.id, configId));
+
+      res.json({
+        success: true,
+        status,
+        verified: status.status === 'operational'
+      });
+    } catch (error) {
+      console.error('Test connector error:', error);
+      res.status(500).json({ success: false, error: 'Failed to test connector' });
+    }
+  });
+
+  // Toggle connector active status
+  app.patch("/api/user-connectors/:id/toggle", requireAuth, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+      }
+
+      const configId = parseInt(req.params.id);
+
+      // Get current configuration
+      const config = await db.query.userConnectorConfig.findFirst({
+        where: (cfg, { and, eq }) => and(
+          eq(cfg.id, configId),
+          eq(cfg.userId, userId)
+        )
+      });
+
+      if (!config) {
+        return res.status(404).json({ success: false, error: 'Connector configuration not found' });
+      }
+
+      // Toggle active status
+      const result = await db.update(userConnectorConfig)
+        .set({ isActive: !config.isActive })
+        .where(eq(userConnectorConfig.id, configId))
+        .returning();
+
+      res.json({
+        success: true,
+        connector: result[0]
+      });
+    } catch (error) {
+      console.error('Toggle connector error:', error);
+      res.status(500).json({ success: false, error: 'Failed to toggle connector status' });
+    }
+  });
+
   // AI Model System API Routes
   app.get('/api/ai/test-data/stats', async (req, res) => {
     try {
