@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/authService';
+import { userAuthService } from '../services/userAuthService';
 import { AdminPermission, AdminRoles, type AdminUser, type AuthenticatedUser } from '@shared/authSchema';
 
 // Extend Express Request to include user
@@ -120,7 +121,15 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
     }
     
     // Verify token and get session info
-    const sessionInfo = await authService.verifyToken(token);
+    // Try user auth service first, then admin auth service
+    let sessionInfo: any = await userAuthService.verifyToken(token);
+    let isUserAuth = true;
+    
+    if (!sessionInfo) {
+      // Try admin auth service
+      sessionInfo = await authService.verifyToken(token);
+      isUserAuth = false;
+    }
     
     if (!sessionInfo) {
       return res.status(401).json({
@@ -142,13 +151,9 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       id: sessionInfo.user.id,
       username: sessionInfo.user.username,
       email: sessionInfo.user.email,
-      role: sessionInfo.user.role as AdminRole | "user",
-      permissions: sessionInfo.user.permissions || [],
-      firstName: sessionInfo.user.firstName,
-      lastName: sessionInfo.user.lastName,
-      profileImage: sessionInfo.user.profileImage,
-      lastLogin: sessionInfo.user.lastLogin
-    };
+      role: sessionInfo.user.role,
+      permissions: sessionInfo.user.permissions || []
+    } as AuthenticatedUser;
     req.sessionId = sessionInfo.sessionId;
     
     // Log activity for sensitive operations
@@ -191,7 +196,7 @@ export const requirePermission = (permission: AdminPermission) => {
     
     // Check if user has the required permission
     // Convert AuthenticatedUser back to AdminUser for permission checking
-    const adminUser: AdminUser = {
+    const adminUser: any = {
       ...req.user,
       passwordHash: '',
       isActive: true,
@@ -202,7 +207,7 @@ export const requirePermission = (permission: AdminPermission) => {
       twoFactorSecret: null
     };
     
-    if (!authService.hasPermission(adminUser, permission)) {
+    if (!authService.hasPermission(adminUser as AdminUser, permission)) {
       return res.status(403).json({
         error: 'Insufficient permissions',
         message: `This action requires the '${permission}' permission`,
