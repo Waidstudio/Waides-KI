@@ -1,7 +1,23 @@
 /**
- * Smai Chinnikstah Bot - Central Energy Distribution Hub
+ * Smai Chinnikstah Bot - Central Energy Distribution Hub & Signal Broadcaster
  * Primary trading bot with 20% energy boost ahead of all other bots
+ * Now broadcasts trading signals to all 6 trading entities
  */
+
+export interface TradingSignal {
+  id: string;
+  timestamp: number;
+  action: 'BUY' | 'SELL' | 'HOLD';
+  confidence: number;
+  symbol: string;
+  reasoning: string;
+  targetBots: string[];
+  marketData: {
+    price: number;
+    rsi?: number;
+    trend?: string;
+  };
+}
 
 export interface SmaiChinnikstahStatus {
   isActive: boolean;
@@ -28,7 +44,14 @@ export class SmaiChinnikstahBot {
   private isRunning: boolean = false;
   private energyLevel: number = 120; // 20% boost over standard 100%
   private distributionMode: string = 'NEW_ACCOUNT_STANDBY';
-  private connectedBots: string[] = ['WaidBot', 'WaidBot Pro', 'Nwaora Chigozie'];
+  private connectedBots: string[] = [
+    'WaidBot α (Alpha)',
+    'WaidBot Pro β (Beta)',
+    'Autonomous γ (Gamma)',
+    'Full Engine Ω (Omega)',
+    'Smai Chinnikstah Δ (Delta)',
+    'Nwaora Chigozie ε (Epsilon)'
+  ];
   
   private currentBalance = {
     totalValue: 34567.89, // Realistic balance for energy distribution hub
@@ -44,6 +67,8 @@ export class SmaiChinnikstahBot {
   };
   
   private recentTrades: any[] = [];
+  private broadcastSignals: TradingSignal[] = [];
+  private signalListeners: Map<string, (signal: TradingSignal) => void> = new Map();
 
   private async initializeRecentTrades() {
     // New account - no trades yet, only real trades will be added
@@ -171,6 +196,147 @@ export class SmaiChinnikstahBot {
     ];
     
     return decisions[Math.floor(Math.random() * decisions.length)];
+  }
+
+  /**
+   * Generate and broadcast trading signal to all connected bots
+   */
+  async generateAndBroadcastSignal(marketData: any): Promise<TradingSignal> {
+    const decision = this.generateDecision();
+    
+    const signal: TradingSignal = {
+      id: `signal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: Date.now(),
+      action: decision.action,
+      confidence: decision.confidence,
+      symbol: marketData.symbol || 'ETH/USDT',
+      reasoning: decision.reasoning,
+      targetBots: this.connectedBots,
+      marketData: {
+        price: marketData.price,
+        rsi: marketData.rsi,
+        trend: marketData.trend
+      }
+    };
+
+    // Store signal
+    this.broadcastSignals.push(signal);
+    if (this.broadcastSignals.length > 100) {
+      this.broadcastSignals = this.broadcastSignals.slice(-100); // Keep last 100 signals
+    }
+
+    // Broadcast to all listeners
+    this.signalListeners.forEach((listener, botName) => {
+      try {
+        listener(signal);
+        console.log(`📡 Signal broadcast to ${botName}: ${signal.action} ${signal.symbol} (${signal.confidence}% confidence)`);
+      } catch (error) {
+        console.error(`❌ Failed to broadcast signal to ${botName}:`, error);
+      }
+    });
+
+    console.log(`🔥 Smai Chinnikstah broadcast signal: ${signal.action} ${signal.symbol} to ${this.connectedBots.length} bots`);
+    
+    return signal;
+  }
+
+  /**
+   * Register a bot to receive signals
+   */
+  registerSignalListener(botName: string, callback: (signal: TradingSignal) => void): void {
+    this.signalListeners.set(botName, callback);
+    console.log(`✅ ${botName} registered for Smai Chinnikstah signals`);
+  }
+
+  /**
+   * Unregister a bot from receiving signals
+   */
+  unregisterSignalListener(botName: string): void {
+    this.signalListeners.delete(botName);
+    console.log(`⏹️ ${botName} unregistered from Smai Chinnikstah signals`);
+  }
+
+  /**
+   * Get recent broadcast signals
+   */
+  getRecentSignals(limit: number = 10): TradingSignal[] {
+    return this.broadcastSignals.slice(-limit).reverse();
+  }
+
+  /**
+   * Get signal broadcast statistics
+   */
+  getSignalStats(): {
+    totalSignals: number;
+    registeredBots: number;
+    recentSignalTypes: Record<string, number>;
+    avgConfidence: number;
+  } {
+    const recentSignals = this.broadcastSignals.slice(-50);
+    const signalTypes: Record<string, number> = {};
+    let totalConfidence = 0;
+
+    recentSignals.forEach(signal => {
+      signalTypes[signal.action] = (signalTypes[signal.action] || 0) + 1;
+      totalConfidence += signal.confidence;
+    });
+
+    return {
+      totalSignals: this.broadcastSignals.length,
+      registeredBots: this.signalListeners.size,
+      recentSignalTypes: signalTypes,
+      avgConfidence: recentSignals.length > 0 ? totalConfidence / recentSignals.length : 0
+    };
+  }
+
+  /**
+   * Auto-broadcast signals based on market conditions
+   */
+  async startAutoBroadcast(intervalMs: number = 60000): Promise<void> {
+    if (this.isRunning) {
+      setInterval(async () => {
+        try {
+          const marketData = await this.fetchMarketData();
+          await this.generateAndBroadcastSignal(marketData);
+        } catch (error) {
+          console.error('❌ Auto-broadcast error:', error);
+        }
+      }, intervalMs);
+
+      console.log(`🔥 Smai Chinnikstah auto-broadcast started (every ${intervalMs / 1000}s)`);
+    }
+  }
+
+  /**
+   * Fetch current market data for signal generation
+   */
+  private async fetchMarketData(): Promise<any> {
+    try {
+      const priceResponse = await fetch('http://localhost:5000/api/eth/current-price');
+      const priceData = await priceResponse.json();
+      
+      const analysisResponse = await fetch('http://localhost:5000/api/eth/market-analysis');
+      const analysisData = await analysisResponse.json();
+
+      return {
+        symbol: 'ETH/USDT',
+        price: priceData.price || 3500,
+        rsi: analysisData.rsi || 50,
+        trend: analysisData.trend || 'NEUTRAL',
+        volume: priceData.volume || 25000000,
+        change24h: priceData.change24h || 0
+      };
+    } catch (error) {
+      console.error('❌ Failed to fetch market data:', error);
+      return {
+        symbol: 'ETH/USDT',
+        price: 3500,
+        rsi: 50,
+        trend: 'NEUTRAL',
+        volume: 25000000,
+        change24h: 0
+      };
+    }
   }
 }
 

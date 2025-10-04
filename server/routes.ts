@@ -7315,6 +7315,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Smai Chinnikstah Signal Broadcasting Endpoints
+  app.post("/api/waidbot-engine/smai-chinnikstah/broadcast-signal", async (req, res) => {
+    try {
+      const { marketData } = req.body;
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      const signal = await smaiChinnikstahBot.generateAndBroadcastSignal(marketData);
+      res.json({ success: true, signal, message: 'Signal broadcast to all trading entities' });
+    } catch (error) {
+      console.error('❌ Error broadcasting signal:', error);
+      res.status(500).json({ success: false, message: 'Failed to broadcast signal' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/smai-chinnikstah/signals/recent", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      const signals = smaiChinnikstahBot.getRecentSignals(limit);
+      res.json({ success: true, signals, count: signals.length });
+    } catch (error) {
+      console.error('❌ Error getting recent signals:', error);
+      res.status(500).json({ success: false, message: 'Failed to get recent signals' });
+    }
+  });
+
+  app.get("/api/waidbot-engine/smai-chinnikstah/signals/stats", async (req, res) => {
+    try {
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      const stats = smaiChinnikstahBot.getSignalStats();
+      res.json({ success: true, stats });
+    } catch (error) {
+      console.error('❌ Error getting signal stats:', error);
+      res.status(500).json({ success: false, message: 'Failed to get signal statistics' });
+    }
+  });
+
+  app.post("/api/waidbot-engine/smai-chinnikstah/signals/auto-broadcast/start", async (req, res) => {
+    try {
+      const intervalMs = parseInt(req.body.intervalMs) || 60000;
+      const smaiChinnikstahBot = await serviceRegistry.get('smaiChinnikstahBot');
+      await smaiChinnikstahBot.startAutoBroadcast(intervalMs);
+      res.json({ success: true, message: `Auto-broadcast started (every ${intervalMs / 1000}s)`, intervalMs });
+    } catch (error) {
+      console.error('❌ Error starting auto-broadcast:', error);
+      res.status(500).json({ success: false, message: 'Failed to start auto-broadcast' });
+    }
+  });
+
   // Full Engine Omega Control Endpoints
   app.post("/api/waidbot-engine/full-engine/start", async (req, res) => {
     try {
