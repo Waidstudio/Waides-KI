@@ -263,15 +263,15 @@ export default function WaidbotEnginePageEnhanced() {
     {
       id: 'waidbot',
       name: 'WaidBot α',
-      displayName: 'Basic ETH Uptrend Trading',
+      displayName: 'Basic Binary Options Trading',
       tier: 'BASIC',
       price: 9.99,
       icon: TrendingUp,
       color: "from-green-500 to-green-600",
       route: '/waidbot',
       autonomous: true,
-      decisionEngine: 'Uptrend-Only Algorithm',
-      description: 'ETH uptrend-only trading with semi-autonomous decision making'
+      decisionEngine: 'Binary Options Pattern Recognition',
+      description: 'Entry-level binary options trading with semi-autonomous decision making'
     },
     {
       id: 'waidbot-pro',
