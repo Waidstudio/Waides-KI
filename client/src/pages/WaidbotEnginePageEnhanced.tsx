@@ -658,14 +658,14 @@ export default function WaidbotEnginePageEnhanced() {
       currentPosition: "Active Binary Signals"
     },
     autonomous: {
-      strategy: "24/7 Multi-Strategy",
-      tradingPairs: ["ETH/USDT", "BTC/USDT", "SOL/USDT"],
+      strategy: "24/7 Forex/CFD Multi-Strategy",
+      tradingPairs: ["EUR/USD", "GBP/USD", "XAU/USD"],
       riskLevel: "Balanced",
       timeframe: "Real-time",
       lastUpdate: "Live",
       aiModel: "Autonomous Wealth Engine",
       successRate: 89.7,
-      currentPosition: "Scanning Markets"
+      currentPosition: "Scanning Forex Markets"
     },
     full_engine: {
       strategy: "Smart Risk Management + ML Kelly Sizing",
