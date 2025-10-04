@@ -12,6 +12,15 @@ Waides KI (SmaiSika) is an advanced autonomous wealth management platform provid
 - Development Constraints: DO NOT remove or overwrite existing files/functions unless explicitly told - build upon existing architecture only
 
 ## Recent Changes (Oct 4, 2025)
+### Morning Session - Market Type Alignment & Bug Fixes
+- **✅ WaidBot Pro β Complete Realignment:** Backend completely rewritten to trade Binary Options ONLY (Deriv/IQ Option/Pocket Option/Quotex connectors). Removed ALL ETH3L/ETH3S spot trading code from backend and frontend
+- **✅ Autonomous Trader γ Market Realignment:** Confirmed trading Forex/CFD pairs ONLY (EUR/USD, GBP/USD, XAU/USD) via Deriv Forex/MT5/Oanda connectors - no longer trades crypto spot pairs
+- **✅ Full Engine Ω Verification:** Both Full Engine implementations (waidesFullEngine.ts & waidesKIFullEngine.ts) correctly trade Spot Exchange assets (ETH/USDT) as designed
+- **✅ TradeActivityPanel Shared Component:** Created unified trade display component with proper field mapping and profit sharing percentages, integrated across Maibot (65/35), WaidBot α (80/20), and WaidBot Pro β (90/10)
+- **✅ TypeScript Cleanup:** Fixed all 5 LSP errors in Full Engine files (tradingMode comparison, ethMonitor undefined×2, Map iteration×2) - zero TypeScript diagnostics remaining
+- **⚠️ KonsMesh WebSocket Issue Documented:** Code 1006 abnormal closure persists despite multiple fixes (disabled duplicate broadcaster, removed initial messages). Requires deeper protocol-level debugging. Does NOT block core trading functionality
+
+### Earlier Session - Profit Sharing & Schema Alignment
 - **✅ Profit Sharing Model Aligned:** Implemented membership-tier-based profit sharing (free users pay 35% fee, paid tiers get progressively better shares: 20% → 2% fees)
 - **✅ Bot Tier Schema Alignment:** All bot configurations now use BotTier enum from shared/subscriptions.ts for type safety
 - **✅ Admin Bot Clarification:** Nwaora Chigozie ε (COSMIC_EPSILON) confirmed as platform admin bot only (0/100 split, NOT available to users)
