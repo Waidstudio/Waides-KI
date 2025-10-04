@@ -305,13 +305,13 @@ export default function Maibot() {
             botName="Maibot"
             trades={status?.recentTrades || []}
             performance={{
-              totalTrades: performance?.totalTrades || 0,
+              totalTrades: performance?.totalTrades || performance?.trades || 0,
               winRate: performance?.winRate || 0,
-              profit: performance?.profit || 0,
+              profit: performance?.profit || performance?.dailyProfit || 0,
               currentWinningStreak: performance?.currentWinningStreak || 0,
               longestWinningStreak: performance?.longestWinningStreak || 0
             }}
-            activeConnector={status?.activeConnector}
+            activeConnector={status?.activeConnector || 'Binary Options Platform'}
             profitSharing={{ userShare: 65, platformShare: 35 }}
             marketType="binary"
           />

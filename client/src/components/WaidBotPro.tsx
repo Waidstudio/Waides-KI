@@ -417,13 +417,13 @@ export function WaidBotPro() {
             botName="WaidBot Pro β"
             trades={status.recentTrades || []}
             performance={{
-              totalTrades: status.performance?.totalTrades || 0,
+              totalTrades: status.performance?.totalTrades || status.performance?.trades || 0,
               winRate: status.performance?.winRate || 0,
-              profit: status.performance?.profit || 0,
+              profit: status.performance?.profit || status.performance?.dailyProfit || 0,
               currentWinningStreak: status.performance?.currentWinningStreak || 0,
               longestWinningStreak: status.performance?.longestWinningStreak || 0
             }}
-            activeConnector={status.activeConnector}
+            activeConnector={status.activeConnector || 'Binary Options Platform'}
             profitSharing={{ userShare: 90, platformShare: 10 }}
             marketType="binary"
           />

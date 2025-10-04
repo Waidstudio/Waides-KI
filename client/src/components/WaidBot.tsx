@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause, Wallet, DollarSign, Signal, BarChart, Crown, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { TradeActivityPanel } from "@/components/TradeActivityPanel";
 
 interface WaidBotDecision {
   action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
@@ -292,64 +293,21 @@ export function WaidBot() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 mt-6">
-          {/* Status Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border-green-400/30">
-          <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-400">Bot Status</p>
-<p className="text-2xl font-bold text-white">
-                      {status.isActive ? "Active" : "Inactive"}
-                    </p>
-                  </div>
-                  <Activity className="h-8 w-8 text-green-400" />
-                </div>
-              </CardContent>
-        </Card>
-
-            <Card className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border-blue-400/30">
-          <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-400">Confidence</p>
-<p className="text-2xl font-bold text-white">
-                      {status.confidence || 0}%
-                    </p>
-                  </div>
-                  <BarChart3 className="h-8 w-8 text-blue-400" />
-                </div>
-              </CardContent>
-        </Card>
-
-            <Card className="bg-gradient-to-br from-purple-500/10 to-pink-600/10 border-purple-400/30">
-          <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-400">Total Profit</p>
-<p className="text-2xl font-bold text-white">
-                      {status.performance?.profit || 0} {balance.currency}
-                    </p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-purple-400" />
-                </div>
-              </CardContent>
-        </Card>
-
-            <Card className="bg-gradient-to-br from-yellow-500/10 to-orange-600/10 border-yellow-400/30">
-          <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-400">Total Trades</p>
-<p className="text-2xl font-bold text-white">
-                      {status.performance?.trades || 0}
-                    </p>
-                  </div>
-                  <BarChart3 className="h-8 w-8 text-yellow-400" />
-                </div>
-              </CardContent>
-        </Card>
-          </div>
+          {/* Live Binary Options Trading Activity */}
+          <TradeActivityPanel
+            botName="WaidBot α"
+            trades={status?.recentTrades || []}
+            performance={{
+              totalTrades: status?.performance?.totalTrades || status?.performance?.trades || 0,
+              winRate: status?.performance?.winRate || 0,
+              profit: status?.performance?.profit || status?.performance?.dailyProfit || 0,
+              currentWinningStreak: status?.performance?.currentWinningStreak || 0,
+              longestWinningStreak: status?.performance?.longestWinningStreak || 0
+            }}
+            activeConnector={status?.activeConnector || 'Binary Options Platform'}
+            profitSharing={{ userShare: 80, platformShare: 20 }}
+            marketType="binary"
+          />
 
           {/* Trading Controls */}
           <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-green-400/40">
