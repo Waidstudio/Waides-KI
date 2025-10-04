@@ -14855,6 +14855,302 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // === MASTER BOT ALIGNMENT & DEPLOYMENT ROUTES ===
+  
+  // Get all bot configurations
+  app.get('/api/master-alignment/bots', async (req, res) => {
+    try {
+      const { masterBotAlignment } = await import('./services/masterBotAlignmentService.js');
+      const bots = masterBotAlignment.getActiveBots();
+      res.json({ success: true, bots });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get bots' });
+    }
+  });
+
+  // Get bot by ID
+  app.get('/api/master-alignment/bots/:botId', async (req, res) => {
+    try {
+      const { masterBotAlignment } = await import('./services/masterBotAlignmentService.js');
+      const bot = masterBotAlignment.getBotConfig(req.params.botId);
+      if (!bot) {
+        return res.status(404).json({ success: false, error: 'Bot not found' });
+      }
+      res.json({ success: true, bot });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get bot' });
+    }
+  });
+
+  // Get bots by market type
+  app.get('/api/master-alignment/bots/market/:marketType', async (req, res) => {
+    try {
+      const { masterBotAlignment } = await import('./services/masterBotAlignmentService.js');
+      const bots = masterBotAlignment.getBotsByMarketType(req.params.marketType as any);
+      res.json({ success: true, bots });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get bots by market' });
+    }
+  });
+
+  // Get membership tiers
+  app.get('/api/master-alignment/membership-tiers', async (req, res) => {
+    try {
+      const { MEMBERSHIP_TIERS } = await import('./services/masterBotAlignmentService.js');
+      res.json({ success: true, tiers: MEMBERSHIP_TIERS });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get tiers' });
+    }
+  });
+
+  // Get currency configuration
+  app.get('/api/master-alignment/currency-config', async (req, res) => {
+    try {
+      const { CURRENCY_CONFIG } = await import('./services/masterBotAlignmentService.js');
+      res.json({ success: true, config: CURRENCY_CONFIG });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get currency config' });
+    }
+  });
+
+  // Validate bot-connector compatibility
+  app.post('/api/master-alignment/validate-connector', async (req, res) => {
+    try {
+      const { masterBotAlignment } = await import('./services/masterBotAlignmentService.js');
+      const { botId, connectorCode } = req.body;
+      const validation = masterBotAlignment.validateBotConnector(botId, connectorCode);
+      res.json({ success: true, validation });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Validation failed' });
+    }
+  });
+
+  // Convert currency to Smaisika
+  app.post('/api/master-alignment/convert-to-smaisika', async (req, res) => {
+    try {
+      const { masterBotAlignment } = await import('./services/masterBotAlignmentService.js');
+      const { amount, currency } = req.body;
+      const smaiSikaAmount = masterBotAlignment.convertToSmaisika(amount, currency);
+      res.json({ success: true, smaiSikaAmount });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Conversion failed' });
+    }
+  });
+
+  // Get deployment checklist
+  app.get('/api/master-alignment/deployment-checklist', async (req, res) => {
+    try {
+      const { masterBotAlignment } = await import('./services/masterBotAlignmentService.js');
+      const checklist = masterBotAlignment.generateDeploymentChecklist();
+      res.json({ success: true, checklist });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get checklist' });
+    }
+  });
+
+  // === SYSTEM HEALTH CHECK ROUTES ===
+  
+  // Run full health check
+  app.get('/api/health/full', async (req, res) => {
+    try {
+      const { systemHealthCheck } = await import('./services/systemHealthCheckService.js');
+      const userId = parseInt(req.query.userId as string) || 1;
+      const report = await systemHealthCheck.runFullHealthCheck(userId);
+      res.json({ success: true, report });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Health check failed' });
+    }
+  });
+
+  // Check deployment readiness
+  app.get('/api/health/deployment-readiness', async (req, res) => {
+    try {
+      const { systemHealthCheck } = await import('./services/systemHealthCheckService.js');
+      const readiness = await systemHealthCheck.checkDeploymentReadiness();
+      res.json({ success: true, readiness });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Readiness check failed' });
+    }
+  });
+
+  // Check specific bot health
+  app.get('/api/health/bot/:botId', async (req, res) => {
+    try {
+      const { systemHealthCheck } = await import('./services/systemHealthCheckService.js');
+      const health = await systemHealthCheck.checkBotHealth(req.params.botId);
+      res.json({ success: true, health });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Bot health check failed' });
+    }
+  });
+
+  // === GAMIFICATION & REFERRAL ROUTES ===
+  
+  // Get user level
+  app.get('/api/gamification/level/:userId', async (req, res) => {
+    try {
+      const { gamificationReferral } = await import('./services/gamificationReferralService.js');
+      const totalXP = parseInt(req.query.xp as string) || 0;
+      const level = gamificationReferral.calculateLevel(totalXP);
+      res.json({ success: true, level });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get level' });
+    }
+  });
+
+  // Get user achievements
+  app.get('/api/gamification/achievements/:userId', async (req, res) => {
+    try {
+      const { gamificationReferral } = await import('./services/gamificationReferralService.js');
+      const achievements = await gamificationReferral.getUserAchievements(parseInt(req.params.userId));
+      res.json({ success: true, achievements });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get achievements' });
+    }
+  });
+
+  // Get daily challenges
+  app.get('/api/gamification/challenges/:userId', async (req, res) => {
+    try {
+      const { gamificationReferral } = await import('./services/gamificationReferralService.js');
+      const challenges = await gamificationReferral.getDailyChallenges(parseInt(req.params.userId));
+      res.json({ success: true, challenges });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get challenges' });
+    }
+  });
+
+  // Get leaderboard
+  app.get('/api/gamification/leaderboard', async (req, res) => {
+    try {
+      const { gamificationReferral } = await import('./services/gamificationReferralService.js');
+      const limit = parseInt(req.query.limit as string) || 100;
+      const leaderboard = await gamificationReferral.getLeaderboard(limit);
+      res.json({ success: true, leaderboard });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get leaderboard' });
+    }
+  });
+
+  // Get referral stats
+  app.get('/api/referral/stats/:userId', async (req, res) => {
+    try {
+      const { gamificationReferral } = await import('./services/gamificationReferralService.js');
+      const stats = await gamificationReferral.getReferralStats(parseInt(req.params.userId));
+      res.json({ success: true, stats });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get referral stats' });
+    }
+  });
+
+  // Generate referral code
+  app.post('/api/referral/generate', async (req, res) => {
+    try {
+      const { gamificationReferral } = await import('./services/gamificationReferralService.js');
+      const { userId } = req.body;
+      const code = gamificationReferral.generateReferralCode(userId);
+      res.json({ success: true, code });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to generate code' });
+    }
+  });
+
+  // === USER FLOW ROUTES ===
+  
+  // Get onboarding progress
+  app.get('/api/user-flow/onboarding/:userId', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const progress = await userFlow.getUserOnboardingProgress(parseInt(req.params.userId));
+      res.json({ success: true, progress });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get progress' });
+    }
+  });
+
+  // Get deposit info
+  app.get('/api/user-flow/deposit/:userId', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const info = await userFlow.getDepositInfo(parseInt(req.params.userId));
+      res.json({ success: true, info });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get deposit info' });
+    }
+  });
+
+  // Get bot selection info
+  app.get('/api/user-flow/bot-selection/:userId', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const tier = req.query.tier as string || 'free';
+      const info = await userFlow.getBotSelectionInfo(parseInt(req.params.userId), tier);
+      res.json({ success: true, info });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get bot selection info' });
+    }
+  });
+
+  // Get trading setup info
+  app.get('/api/user-flow/trading-setup/:userId/:botId', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const info = await userFlow.getTradingSetupInfo(parseInt(req.params.userId), req.params.botId);
+      res.json({ success: true, info });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get trading setup' });
+    }
+  });
+
+  // Get withdrawal info
+  app.get('/api/user-flow/withdrawal/:userId', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const info = await userFlow.getWithdrawalInfo(parseInt(req.params.userId));
+      res.json({ success: true, info });
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Failed to get withdrawal info' });
+    }
+  });
+
+  // Process deposit
+  app.post('/api/user-flow/deposit', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const { userId, amount, currency } = req.body;
+      const result = await userFlow.processDeposit(userId, amount, currency);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Deposit processing failed' });
+    }
+  });
+
+  // Process withdrawal
+  app.post('/api/user-flow/withdrawal', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const { userId, amount, currency, address } = req.body;
+      const result = await userFlow.processWithdrawal(userId, amount, currency, address);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Withdrawal processing failed' });
+    }
+  });
+
+  // Complete flow step
+  app.post('/api/user-flow/complete-step', async (req, res) => {
+    try {
+      const { userFlow } = await import('./services/userFlowService.js');
+      const { userId, stepNumber } = req.body;
+      const result = await userFlow.completeFlowStep(userId, stepNumber);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ success: false, error: 'Step completion failed' });
+    }
+  });
+
+  console.log('🔹 Master Bot Alignment & Deployment routes registered');
+
   // === CHAT SYSTEM ROUTES ===
   app.use('/api/chat', chatRoutes.default);
   app.use('/api/waidchat', waidchatRoutes.default);
