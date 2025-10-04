@@ -900,10 +900,10 @@ export default function WaidbotEnginePageEnhanced() {
 
               {/* Trading Pairs */}
               <div className="bg-slate-800/50 rounded-lg p-3">
-                <p className="text-xs text-slate-400 mb-2">Supported Assets</p>
+                <p className="text-xs text-slate-400 mb-2">Trading Type</p>
                 <div className="flex flex-wrap gap-1">
-                  <Badge variant="outline" className="text-xs border-blue-400/40 text-blue-400">ETH</Badge>
-                  <Badge variant="outline" className="text-xs border-blue-400/40 text-blue-400">BTC</Badge>
+                  <Badge variant="outline" className="text-xs border-blue-400/40 text-blue-400">Binary Options</Badge>
+                  <Badge variant="outline" className="text-xs border-blue-400/40 text-blue-400">Manual Trading</Badge>
                 </div>
               </div>
 
@@ -986,7 +986,7 @@ export default function WaidbotEnginePageEnhanced() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold text-white">WaidBot α</CardTitle>
-                    <p className="text-sm text-slate-400">ETH Uptrend Specialist</p>
+                    <p className="text-sm text-slate-400">Binary Options Trading</p>
                   </div>
                 </div>
                 <Badge variant={waidbotStatus?.isActive ? "default" : "secondary"} className="bg-green-500/20 text-green-400 border-green-500/40">
@@ -1071,7 +1071,7 @@ export default function WaidbotEnginePageEnhanced() {
                     <span className="text-xs text-slate-400">{new Date().toLocaleTimeString()}</span>
                   </div>
                   <p className="text-sm text-white">
-                    {botMessages.messages.find((msg: any) => msg.botId === 'waidbot')?.message || "🔍 ETH Uptrend Scanner: Monitoring market conditions..."}
+                    {botMessages.messages.find((msg: any) => msg.botId === 'waidbot')?.message || "🔍 Binary Options Scanner: Monitoring market conditions..."}
                   </p>
                 </div>
               )}
@@ -1151,7 +1151,7 @@ export default function WaidbotEnginePageEnhanced() {
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold text-white">WaidBot Pro β</CardTitle>
-                    <p className="text-sm text-slate-400">Bidirectional Konsai</p>
+                    <p className="text-sm text-slate-400">Binary Options Pro</p>
                   </div>
                 </div>
                 <Badge variant={waidbotProStatus?.isActive ? "default" : "secondary"} className="bg-blue-500/20 text-blue-400 border-blue-500/40">
@@ -1248,7 +1248,7 @@ export default function WaidbotEnginePageEnhanced() {
                     <span className="text-xs text-slate-400">{new Date().toLocaleTimeString()}</span>
                   </div>
                   <p className="text-sm text-white">
-                    {botMessages.messages.find((msg: any) => msg.botId === 'waidbot-pro')?.message || "🚀 Bidirectional Engine: Analyzing market opportunities..."}
+                    {botMessages.messages.find((msg: any) => msg.botId === 'waidbot-pro')?.message || "🚀 Binary Options Engine: Analyzing market opportunities..."}
                   </p>
                 </div>
               )}
