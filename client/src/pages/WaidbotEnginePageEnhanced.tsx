@@ -638,14 +638,14 @@ export default function WaidbotEnginePageEnhanced() {
   // Enhanced bot information
   const botDetails: Record<string, DetailedBotInfo> = {
     waidbot: {
-      strategy: "ETH Uptrend Momentum",
-      tradingPairs: ["ETH/USDT"],
+      strategy: "Binary Options Pattern Recognition",
+      tradingPairs: ["Deriv", "IQ Option"],
       riskLevel: "Conservative",
-      timeframe: "1 Hour",
+      timeframe: "1-5 Minutes",
       lastUpdate: "2 minutes ago",
       aiModel: "Divine Quantum Flux",
       successRate: 87.5,
-      currentPosition: "Long ETH"
+      currentPosition: "Binary Options Active"
     },
     waidbot_pro: {
       strategy: "Binary Options AI Strategy",
