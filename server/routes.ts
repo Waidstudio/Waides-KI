@@ -806,6 +806,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =======================================
+  // USER EXCHANGE POOL API
+  // =======================================
+
+  // Get available exchanges in admin pool (user-facing)
+  app.get("/api/exchange-pool/available", requireAuth, async (req, res) => {
+    try {
+      const stats = await adminExchangePoolService.getUsageStats();
+      
+      // Return list of exchanges with available slots
+      const availableExchanges = Object.entries(stats)
+        .filter(([_, stat]: [string, any]) => stat.availableSlots > 0)
+        .map(([exchangeName, stat]: [string, any]) => ({
+          exchangeName,
+          availableSlots: stat.availableSlots,
+          totalSlots: stat.totalSlots,
+          usedSlots: stat.usedSlots
+        }));
+
+      res.json({
+        success: true,
+        exchanges: availableExchanges
+      });
+    } catch (error) {
+      console.error('Error fetching available exchanges:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to fetch available exchanges' 
+      });
+    }
+  });
+
+  // Request assignment to Waides KI managed exchange credentials
+  app.post("/api/exchange-pool/request-assignment", requireAuth, async (req, res) => {
+    try {
+      const { exchangeName } = req.body;
+      const userId = req.user?.id?.toString();
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not authenticated'
+        });
+      }
+
+      if (!exchangeName) {
+        return res.status(400).json({
+          success: false,
+          message: 'Exchange name is required'
+        });
+      }
+
+      const assignment = await adminExchangePoolService.assignCredentialsToUser(
+        userId,
+        exchangeName
+      );
+
+      if (!assignment) {
+        return res.status(400).json({
+          success: false,
+          message: `No available slots for ${exchangeName}. Please try another exchange or contact support.`
+        });
+      }
+
+      res.json({
+        success: true,
+        message: `Successfully assigned Waides KI ${exchangeName} account`,
+        assignment: {
+          exchangeName: assignment.exchangeName,
+          assignedAt: assignment.assignedAt
+        }
+      });
+    } catch (error) {
+      console.error('Error requesting exchange assignment:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to request exchange assignment' 
+      });
+    }
+  });
+
   // Unassign credentials from user (internal API)
   app.post("/api/internal/exchange-pool/unassign", async (req, res) => {
     try {

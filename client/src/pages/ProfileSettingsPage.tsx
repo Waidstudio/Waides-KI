@@ -164,6 +164,7 @@ const ProfileSettingsPage = () => {
   const [selectedConnector, setSelectedConnector] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
+  const [useWaidesAccount, setUseWaidesAccount] = useState(false);
 
   // Fetch user's connector configurations
   const { data: connectors, isLoading: connectorsLoading } = useQuery<{ connectors: ConnectorConfig[] }>({
@@ -175,6 +176,20 @@ const ProfileSettingsPage = () => {
   const { data: marketSummary, isLoading: marketSummaryLoading } = useQuery<{ summary: MarketSummary }>({
     queryKey: ['/api/connectors/market-summary'],
     enabled: isAuthenticated && !authLoading,
+  });
+
+  // Fetch available Waides KI managed exchanges
+  const { data: waidesExchanges, isLoading: waidesExchangesLoading } = useQuery<{ 
+    success: boolean;
+    exchanges: Array<{
+      exchangeName: string;
+      availableSlots: number;
+      totalSlots: number;
+      usedSlots: number;
+    }>;
+  }>({
+    queryKey: ['/api/exchange-pool/available'],
+    enabled: isAuthenticated && !authLoading && useWaidesAccount,
   });
 
   // Create/Update connector mutation
@@ -254,6 +269,7 @@ const ProfileSettingsPage = () => {
     setSelectedConnector('');
     setApiKey('');
     setApiSecret('');
+    setUseWaidesAccount(false);
   };
 
   const handleSubmitConnector = () => {
@@ -269,15 +285,49 @@ const ProfileSettingsPage = () => {
     const connector = getAvailableConnectors().find(c => c.code === selectedConnector);
     if (!connector) return;
 
-    createConnectorMutation.mutate({
-      connectorCode: selectedConnector,
-      connectorName: connector.name,
-      connectorType: selectedMarketType,
-      selectedBot,
-      apiKey,
-      apiSecret,
-      additionalCredentials: {},
-    });
+    if (useWaidesAccount) {
+      // Request assignment to Waides KI managed account
+      apiRequest('/api/exchange-pool/request-assignment', {
+        method: 'POST',
+        body: JSON.stringify({
+          exchangeName: selectedConnector
+        }),
+      }).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/user-connectors'] });
+        toast({
+          title: 'Success',
+          description: `Successfully connected to Waides KI ${connector.name} account`,
+        });
+        setIsDialogOpen(false);
+        resetConnectorForm();
+      }).catch((error: any) => {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error.message || 'Failed to connect to Waides KI account',
+        });
+      });
+    } else {
+      // Use personal API keys
+      if (!apiKey || !apiSecret) {
+        toast({
+          variant: 'destructive',
+          title: 'Missing Credentials',
+          description: 'Please provide API credentials',
+        });
+        return;
+      }
+
+      createConnectorMutation.mutate({
+        connectorCode: selectedConnector,
+        connectorName: connector.name,
+        connectorType: selectedMarketType,
+        selectedBot,
+        apiKey,
+        apiSecret,
+        additionalCredentials: {},
+      });
+    }
   };
 
   const getAvailableConnectors = (): MarketTypeConnector[] => {
@@ -663,6 +713,33 @@ const ProfileSettingsPage = () => {
                         </div>
 
                         <div className="space-y-2">
+                          <Label className="text-white">Account Type</Label>
+                          <Select value={useWaidesAccount ? 'waides' : 'personal'} onValueChange={(value) => {
+                            setUseWaidesAccount(value === 'waides');
+                            setSelectedConnector('');
+                            setApiKey('');
+                            setApiSecret('');
+                          }}>
+                            <SelectTrigger className="bg-slate-800 border-slate-700 text-white" data-testid="select-account-type">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-800 border-slate-700">
+                              <SelectItem value="personal">My Own API Keys</SelectItem>
+                              <SelectItem value="waides">Use Waides KI Account</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {useWaidesAccount && (
+                          <Alert className="bg-blue-900/20 border-blue-700">
+                            <AlertCircle className="h-4 w-4 text-blue-400" />
+                            <AlertDescription className="text-blue-200 text-xs">
+                              You'll trade using Waides KI's managed API credentials. No personal API keys needed.
+                            </AlertDescription>
+                          </Alert>
+                        )}
+
+                        <div className="space-y-2">
                           <Label className="text-white">Trading Bot</Label>
                           <Select value={selectedBot} onValueChange={setSelectedBot}>
                             <SelectTrigger className="bg-slate-800 border-slate-700 text-white" data-testid="select-trading-bot">
@@ -694,36 +771,40 @@ const ProfileSettingsPage = () => {
                           </Select>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label className="text-white">API Key</Label>
-                          <Input
-                            type="text"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                            placeholder="Enter your API key"
-                            className="bg-slate-800 border-slate-700 text-white"
-                            data-testid="input-api-key"
-                          />
-                        </div>
+                        {!useWaidesAccount && (
+                          <>
+                            <div className="space-y-2">
+                              <Label className="text-white">API Key</Label>
+                              <Input
+                                type="text"
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                                placeholder="Enter your API key"
+                                className="bg-slate-800 border-slate-700 text-white"
+                                data-testid="input-api-key"
+                              />
+                            </div>
 
-                        <div className="space-y-2">
-                          <Label className="text-white">API Secret</Label>
-                          <Input
-                            type="password"
-                            value={apiSecret}
-                            onChange={(e) => setApiSecret(e.target.value)}
-                            placeholder="Enter your API secret"
-                            className="bg-slate-800 border-slate-700 text-white"
-                            data-testid="input-api-secret"
-                          />
-                        </div>
+                            <div className="space-y-2">
+                              <Label className="text-white">API Secret</Label>
+                              <Input
+                                type="password"
+                                value={apiSecret}
+                                onChange={(e) => setApiSecret(e.target.value)}
+                                placeholder="Enter your API secret"
+                                className="bg-slate-800 border-slate-700 text-white"
+                                data-testid="input-api-secret"
+                              />
+                            </div>
 
-                        <Alert className="bg-blue-900/20 border-blue-700">
-                          <AlertCircle className="h-4 w-4 text-blue-400" />
-                          <AlertDescription className="text-blue-200 text-xs">
-                            Your API credentials are encrypted and stored securely. We never access your funds directly.
-                          </AlertDescription>
-                        </Alert>
+                            <Alert className="bg-blue-900/20 border-blue-700">
+                              <AlertCircle className="h-4 w-4 text-blue-400" />
+                              <AlertDescription className="text-blue-200 text-xs">
+                                Your API credentials are encrypted and stored securely. We never access your funds directly.
+                              </AlertDescription>
+                            </Alert>
+                          </>
+                        )}
                       </div>
 
                       <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
