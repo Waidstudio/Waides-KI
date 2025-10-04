@@ -1,0 +1,136 @@
+/**
+ * 🔹 Waides KI Master Alignment & Deployment Script
+ * Ensures all TredBeings are connected correctly, funding + wallets work,
+ * and system is ready for live deployment.
+ */
+
+async function initWaidesKI() {
+  console.log("🔍 Starting Waides KI Master Initialization...");
+
+  // --- Step 1: Scan Codebase ---
+  console.log("📂 Scanning codebase for TredBeings, wallets, APIs, and configs...");
+  const codebase = await scanCodebase(); // Custom function to load all files, avoid duplicates
+  if (!codebase) throw new Error("❌ Codebase scan failed");
+
+  // --- Step 2: Define TredBeings ---
+  const tredBeings = {
+    waidbot: { market: "binary", margin: "low", role: "entry-level bot" },
+    waidbotPro: { market: "binary", margin: "0-5000", role: "aggressive bot" },
+    maibot: { market: "binary", margin: "small growth", role: "starter bot" },
+    autonomousTrader: { market: "forex", provider: "Deriv / MT5 / Oanda", role: "forex pro" },
+    fullEngine: { market: "spot", provider: "Binance / Kucoin / Bybit", role: "spot engine" }
+  };
+
+  // --- Step 3: Align Bots to Markets ---
+  for (const [bot, config] of Object.entries(tredBeings)) {
+    console.log(`⚙️ Aligning ${bot} → ${config.market.toUpperCase()}`);
+    const pairs = await fetchAvailablePairs(config.provider || config.market);
+    if (!pairs || pairs.length === 0) {
+      console.warn(`❌ No pairs found for ${bot}. Check ${config.market} API.`);
+      continue;
+    }
+    updateBotPairs(bot, pairs);
+    console.log(`✅ ${bot} aligned with ${pairs.length} pairs`);
+  }
+
+  // --- Step 4: Wallet & Funding System ---
+  console.log("💰 Setting up funding system with Smaisika (1:1 USD)...");
+  setupWallets({
+    baseCurrency: "Smaisika",
+    depositCurrencies: ["USDT", "BTC", "ETH", "BNB"],
+    withdrawalCurrencies: ["USDT", "BTC", "ETH", "BNB"],
+    conversionRate: 1.0 // Smaisika ↔ USD
+  });
+  console.log("✅ Wallets ready: Deposits & withdrawals active");
+
+  // --- Step 5: Risk Management ---
+  const defaultRisk = 0.02; // 2% of available balance
+  enforceRiskManagement(defaultRisk);
+  console.log("✅ Risk management: Default 2% per trade (admin adjustable)");
+
+  // --- Step 6: Membership & Profit Sharing ---
+  enforceMembershipPricing("Smaisika", "manual"); 
+  enforceProfitSharing(50); // 50/50 admin split
+  console.log("✅ Membership & Profit Sharing set (manual pricing in Smaisika)");
+
+  // --- Step 7: Referral & Gamification ---
+  setupReferralSystem({ rewardType: "Smaisika", bonusPercent: 5 });
+  setupGamification({
+    levels: ["Bronze", "Silver", "Gold", "Diamond"],
+    xpPerTrade: 10,
+    dailyChallenges: true,
+    leaderboards: true
+  });
+  console.log("✅ Gamification & Referral system activated");
+
+  // --- Step 8: Admin Control ---
+  setupAdminPanel({
+    riskControl: true,
+    membershipPricing: true,
+    botSwitching: true,
+    profitWithdrawal: true,
+    auditLogs: true
+  });
+  console.log("✅ Admin Panel ready with full controls");
+
+  // --- Step 9: User Flow ---
+  setupUserFlow([
+    "Register / Login (with SmaiPrint or Email)",
+    "Deposit USDT/crypto → auto converted to Smaisika",
+    "Choose bot (WaidBot, WaidBot Pro, Maibot, Autonomous Trader, Full Engine)",
+    "Select risk preference (2% default, user adjustable within limits)",
+    "Start Trading (binary, forex, spot depending on bot)",
+    "Monitor live dashboard (PnL, confidence, performance)",
+    "Withdraw profits (auto 50/50 split applied)"
+  ]);
+  console.log("✅ User Flow implemented");
+
+  // --- Step 10: Nwaora Chigozie Account (Autonomous) ---
+  setupForeverTrader({
+    accountName: "Nwaora Chigozie",
+    bots: ["binary", "spot"],
+    mode: "autonomous",
+    switchable: true,
+    profitShare: 100
+  });
+  console.log("✅ Nwaora Chigozie account trading autonomously");
+
+  // --- Step 11: Security ---
+  setupSecurity({
+    encryption: true,
+    2FA: true,
+    deviceManagement: true,
+    suspiciousLoginAlerts: true,
+    withdrawalWhitelisting: true,
+    auditTrail: true
+  });
+  console.log("✅ Security protocols in place");
+
+  // --- Step 12: Health Checks ---
+  const health = await runSystemHealthCheck();
+  if (health.ok) {
+    console.log("🚀 Waides KI core bots aligned, secure, and ready for deployment");
+  } else {
+    console.error("⚠️ Issues detected:", health.issues);
+  }
+
+  // --- Step 13: Deployment Checklist ---
+  const checklist = [
+    "Are WaidBot / WaidBot Pro mapped to binary only?",
+    "Is Maibot connected for binary small growth?",
+    "Is Autonomous Trader pulling forex pairs correctly?",
+    "Is Full Engine live with spot exchanges?",
+    "Are wallets & Smaisika working 1:1 with USD?",
+    "Is risk management locked at 2% default?",
+    "Can admin adjust risk % and membership pricing?",
+    "Is 50/50 profit sharing applied automatically?",
+    "Are gamification + referral features active?",
+    "Is Nwaora Chigozie account trading autonomously?",
+    "Are security + 2FA + audit logs working?",
+    "Is dashboard showing live results from APIs?"
+  ];
+  console.log("🔎 Deployment Checklist:", checklist);
+}
+
+// --- Run Initialization ---
+initWaidesKI();
