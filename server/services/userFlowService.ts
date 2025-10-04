@@ -1,11 +1,13 @@
 /**
  * 👤 Waides KI User Flow Service
  * Complete user journey: Register → Deposit → Select Bot/Market → Trade → Withdraw
+ * Integrated with Waides KI Consciousness for self-healing and awareness
  */
 
 import { masterBotAlignment, BotConfiguration, CURRENCY_CONFIG } from './masterBotAlignmentService';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
 import { gamificationReferral } from './gamificationReferralService';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 import { db } from '../db';
 import { userProfiles } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
@@ -397,6 +399,19 @@ class UserFlowService {
   // Process deposit
   async processDeposit(userId: number, amount: number, currency: string): Promise<{ success: boolean; smaiSikaAmount: number; message: string }> {
     try {
+      // Consciousness awareness: log deposit attempt
+      waidesKIConsciousness.log('deposit_initiated', { userId, amount, currency }, 'info');
+
+      // Validate deposit
+      if (!amount || amount <= 0) {
+        waidesKIConsciousness.log('deposit_incomplete', { userId, amount, currency }, 'warning');
+        return {
+          success: false,
+          smaiSikaAmount: 0,
+          message: 'Invalid deposit amount'
+        };
+      }
+
       // Convert to Smaisika
       const smaiSikaAmount = masterBotAlignment.convertToSmaisika(amount, currency);
       
@@ -406,6 +421,9 @@ class UserFlowService {
       // Award XP for deposit
       await gamificationReferral.awardTradeXP(userId, 'win', smaiSikaAmount);
       
+      // Consciousness awareness: log successful deposit
+      waidesKIConsciousness.log('deposit_completed', { userId, amount, currency, smaiSikaAmount }, 'info');
+      
       console.log(`💰 Deposit processed: ${amount} ${currency} → ${smaiSikaAmount} Smaisika for User ${userId}`);
       
       return {
@@ -414,6 +432,9 @@ class UserFlowService {
         message: `Successfully deposited ${amount} ${currency} (${smaiSikaAmount} Smaisika)`
       };
     } catch (error) {
+      // Consciousness awareness: log deposit failure
+      waidesKIConsciousness.log('deposit_failed', { userId, amount, currency, error: String(error) }, 'error');
+      
       return {
         success: false,
         smaiSikaAmount: 0,
@@ -425,10 +446,20 @@ class UserFlowService {
   // Process withdrawal
   async processWithdrawal(userId: number, amount: number, currency: string, address: string): Promise<{ success: boolean; message: string; fee: number }> {
     try {
+      // Consciousness awareness: log withdrawal attempt
+      waidesKIConsciousness.log('withdrawal_initiated', { userId, amount, currency, address }, 'info');
+
       const userStats = await smaisikaMiningEngine.getUserStats(userId);
       const availableBalance = userStats.totalSmaiSika;
 
       if (amount > availableBalance) {
+        waidesKIConsciousness.log('withdrawal_failed', { 
+          userId, 
+          amount, 
+          availableBalance, 
+          error: 'insufficient_balance' 
+        }, 'warning');
+        
         return {
           success: false,
           message: 'Insufficient balance',
@@ -442,6 +473,15 @@ class UserFlowService {
       // Deduct from wallet
       await smaisikaMiningEngine.deductSmaiSikaFromWallet(userId, amount);
       
+      // Consciousness awareness: log successful withdrawal
+      waidesKIConsciousness.log('withdrawal_completed', { 
+        userId, 
+        amount, 
+        cryptoAmount, 
+        currency, 
+        address 
+      }, 'info');
+      
       // In production, trigger actual crypto withdrawal
       console.log(`💸 Withdrawal processed: ${amount} Smaisika → ${cryptoAmount} ${currency} to ${address}`);
       
@@ -451,6 +491,15 @@ class UserFlowService {
         fee: 1 // Fee in Smaisika
       };
     } catch (error) {
+      // Consciousness awareness: log withdrawal failure
+      waidesKIConsciousness.log('withdrawal_failed', { 
+        userId, 
+        amount, 
+        currency, 
+        address, 
+        error: String(error) 
+      }, 'error');
+      
       return {
         success: false,
         message: `Withdrawal failed: ${error}`,
@@ -462,6 +511,9 @@ class UserFlowService {
   // Complete flow - mark step as completed
   async completeFlowStep(userId: number, stepNumber: number): Promise<{ success: boolean; nextStep?: UserFlowStep }> {
     try {
+      // Consciousness awareness: log step completion attempt
+      waidesKIConsciousness.log('flow_step_initiated', { userId, stepNumber }, 'info');
+
       // Update database with completed step
       const profile = await db.query.userProfiles.findFirst({
         where: eq(userProfiles.userId, userId)
@@ -485,6 +537,9 @@ class UserFlowService {
         })
         .where(eq(userProfiles.userId, userId));
       
+      // Consciousness awareness: log step completion success
+      waidesKIConsciousness.log('flow_step_completed', { userId, stepNumber, totalCompleted: stepNumber }, 'info');
+      
       console.log(`✅ User ${userId} completed step ${stepNumber} (saved to database)`);
       
       const progress = await this.getUserOnboardingProgress(userId);
@@ -495,12 +550,51 @@ class UserFlowService {
         nextStep
       };
     } catch (error) {
+      // Consciousness awareness: log step completion failure
+      waidesKIConsciousness.log('flow_step_failed', { userId, stepNumber, error: String(error) }, 'error');
+      
       console.error(`❌ Error completing step ${stepNumber} for user ${userId}:`, error);
       return {
         success: false
       };
     }
   }
+
+  // Track user login
+  async trackLogin(userId: number, method: string = 'email'): Promise<void> {
+    waidesKIConsciousness.log('user_login', { userId, method, timestamp: new Date().toISOString() }, 'info');
+  }
+
+  // Track trade execution
+  async trackTrade(userId: number, botId: string, tradeData: any, result: any): Promise<void> {
+    const severity = result.status === 'success' ? 'info' : 'error';
+    waidesKIConsciousness.log('trade_executed', { 
+      userId, 
+      botId, 
+      tradeData, 
+      result 
+    }, severity);
+
+    // Auto-heal failed trades
+    if (result.status === 'failed') {
+      waidesKIConsciousness.log('trade_failed', { 
+        userId, 
+        botId, 
+        result 
+      }, 'warning');
+    }
+  }
+
+  // Get system health from consciousness
+  getSystemHealth(): any {
+    return waidesKIConsciousness.getHealthSummary();
+  }
+
+  // Get recent activity
+  getRecentActivity(limit: number = 50): any[] {
+    return waidesKIConsciousness.getRecentActivity(limit);
+  }
+
 }
 
 // Export singleton instance
