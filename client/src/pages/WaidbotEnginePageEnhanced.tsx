@@ -289,20 +289,20 @@ export default function WaidbotEnginePageEnhanced() {
     {
       id: 'autonomous',
       name: 'Autonomous Trader γ',
-      displayName: '24/7 Market Scanner Elite',
+      displayName: '24/7 Forex & CFD Trading Elite',
       tier: 'ELITE',
       price: 59.99,
       icon: Radar,
       color: "from-orange-500 to-orange-600",
       route: '/autonomous-trader',
       autonomous: true,
-      decisionEngine: 'Multi-Strategy ML Engine',
-      description: 'Multi-market autonomous scanner with 24/7 operation'
+      decisionEngine: 'Forex/CFD ML Engine',
+      description: 'Elite Forex & CFD trading via Deriv, MT5, and Oanda with 24/7 operation'
     },
     {
       id: 'full-engine',
       name: 'Full Engine Ω',
-      displayName: 'Master Trading Engine',
+      displayName: 'Master Spot Exchange Trading',
       tier: 'MASTER',
       price: 149.99,
       icon: Hexagon,
@@ -310,7 +310,7 @@ export default function WaidbotEnginePageEnhanced() {
       route: '/full-engine',
       autonomous: true,
       decisionEngine: 'Guardian Decision System',
-      description: 'Complete trading suite with smart risk management'
+      description: 'Elite spot exchange trading (ETH/USDT) with advanced risk management'
     },
     {
       id: 'smai-chinnikstah',
