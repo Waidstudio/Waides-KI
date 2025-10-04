@@ -648,14 +648,14 @@ export default function WaidbotEnginePageEnhanced() {
       currentPosition: "Long ETH"
     },
     waidbot_pro: {
-      strategy: "Bidirectional Konsai",
-      tradingPairs: ["ETH/USDT", "ETH3L/USDT", "ETH3S/USDT"],
+      strategy: "Binary Options AI Strategy",
+      tradingPairs: ["Deriv", "IQ Option", "Pocket Option", "Quotex"],
       riskLevel: "Aggressive",
-      timeframe: "4 Hours",
+      timeframe: "1-5 Minutes",
       lastUpdate: "1 minute ago",
       aiModel: "Konsai Quantum Singularity",
       successRate: 92.3,
-      currentPosition: "Short ETH3S"
+      currentPosition: "Active Binary Signals"
     },
     autonomous: {
       strategy: "24/7 Multi-Strategy",
