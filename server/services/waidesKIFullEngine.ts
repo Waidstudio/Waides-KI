@@ -44,6 +44,17 @@ export interface EngineStatus {
   next_evaluation: number;
   risk_level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   emergency_stop_active: boolean;
+  // Dynamic display fields
+  displayName?: string;
+  subtitle?: string;
+  description?: string;
+  marketType?: string;
+  connectors?: string[];
+  tradingAssets?: string[];
+  strategy?: string;
+  timeframe?: string;
+  aiModel?: string;
+  riskLevel?: string;
 }
 
 export interface TradingSignal {

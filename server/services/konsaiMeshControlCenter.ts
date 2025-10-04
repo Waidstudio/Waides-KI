@@ -153,7 +153,7 @@ export class KonsAiMeshControlCenter extends EventEmitter {
         payload: request.payload,
         timestamp: Date.now(),
         retryCount: 0,
-        priority: request.priority,
+        priority: request.priority === 'divine' ? 'critical' : request.priority, // Map 'divine' to 'critical'
         requiresAck: true
       };
 
