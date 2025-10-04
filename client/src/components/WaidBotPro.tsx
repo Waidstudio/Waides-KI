@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { TrendingUp, TrendingDown, Activity, BarChart3, AlertCircle, Play, Pause, Target, Shield, Zap, Wallet, DollarSign, Signal, Crown, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { TradeActivityPanel } from "@/components/TradeActivityPanel";
 
 interface WaidBotProDecision {
   action: 'BUY_ETH' | 'SELL_ETH' | 'HOLD' | 'OBSERVE';
@@ -299,7 +300,7 @@ export function WaidBotPro() {
             WaidBot Pro β (Beta)
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Advanced Bi-Directional ETH Specialist - Waides Konsmik Intelligence
+            Advanced Binary Options Trader - Multi-Asset Specialist
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -411,149 +412,21 @@ export function WaidBotPro() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Status Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Position</p>
-                    <p className={`text-2xl font-bold ${getPositionColor(status.currentPosition)}`}>
-                      {status.currentPosition}
-                    </p>
-                  </div>
-                  <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                    {status.currentPosition === 'LONG' ? (
-                      <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                    ) : status.currentPosition === 'SHORT' ? (
-                      <TrendingDown className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                    ) : (
-                      <Activity className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Trades</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {status.totalTrades}
-                    </p>
-                  </div>
-                  <div className="h-12 w-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                    <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Win Rate</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {(status.winRate * 100).toFixed(1)}%
-                    </p>
-                  </div>
-                  <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
-                    <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Balance</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      ${status?.currentBalance ? status.currentBalance.toLocaleString() : '10,000'}
-                    </p>
-                  </div>
-                  <div className="h-12 w-12 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
-                    <Activity className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Latest Decision */}
-          {status.lastDecision && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Latest Pro Decision</CardTitle>
-                <CardDescription>
-                  Most recent advanced trading decision from WaidBot Pro
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <Badge className={getActionColor(status.lastDecision.action)}>
-                    {status.lastDecision.action}
-                  </Badge>
-                  <div className="flex items-center gap-2">
-                    {getStrategyIcon(status.lastDecision.strategy)}
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {status.lastDecision.strategy.replace('_', ' ')}
-                    </span>
-                  </div>
-                  <Badge variant="outline">
-                    {status.lastDecision.confidence}% Confidence
-                  </Badge>
-                  <Badge className={getRiskLevelColor(status.lastDecision.riskLevel)}>
-                    {status.lastDecision.riskLevel} Risk
-                  </Badge>
-                </div>
-                
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Reasoning:</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {status.lastDecision.reasoning}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600 dark:text-gray-400">Trading Pair:</span>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {status.lastDecision.tradingPair}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 dark:text-gray-400">Position Size:</span>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {(status.lastDecision.quantity * 100).toFixed(1)}%
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 dark:text-gray-400">ETH Position:</span>
-                    <p className={`font-medium ${getPositionColor(status.lastDecision.ethPosition)}`}>
-                      {status.lastDecision.ethPosition}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 dark:text-gray-400">Trend:</span>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {status.lastDecision.trendDirection}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-gray-600 dark:text-gray-400">Timestamp:</span>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {new Date(status.lastDecision.timestamp).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Live Binary Options Trading Activity */}
+          <TradeActivityPanel
+            botName="WaidBot Pro β"
+            trades={status.recentTrades || []}
+            performance={{
+              totalTrades: status.performance?.totalTrades || 0,
+              winRate: status.performance?.winRate || 0,
+              profit: status.performance?.profit || 0,
+              currentWinningStreak: status.performance?.currentWinningStreak || 0,
+              longestWinningStreak: status.performance?.longestWinningStreak || 0
+            }}
+            activeConnector={status.activeConnector}
+            profitSharing={{ userShare: 90, platformShare: 10 }}
+            marketType="binary"
+          />
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">
