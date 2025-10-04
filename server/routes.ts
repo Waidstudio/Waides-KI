@@ -15296,6 +15296,21 @@ Ask me about specific market conditions, upload files for analysis, or request K
     }
   });
 
+  // Internal wallet realignment - Scans and corrects wallet usage in existing codebase
+  app.post("/api/wallet-alignment/realign", requireAdmin, async (req, res) => {
+    try {
+      console.log('🧭 Admin initiated internal wallet realignment...');
+      const result = await walletAlignmentService.performInternalRealignment();
+      res.json(result);
+    } catch (error) {
+      console.error('Internal realignment error:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
+  });
+
   // Get wallet health status
   app.get("/api/wallet-alignment/health", requireAdmin, async (req, res) => {
     try {
