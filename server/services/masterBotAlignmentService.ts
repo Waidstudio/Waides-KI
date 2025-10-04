@@ -88,14 +88,14 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     symbol: 'β',
     marketType: 'binary',
     tier: BotTier.PRO,
-    description: 'Advanced bidirectional binary options trading',
-    role: 'Advanced Binary Trader - ETH3L/ETH3S specialist',
+    description: 'Advanced multi-asset binary options trading',
+    role: 'Advanced Binary Options Trader - Multi-asset specialist',
     features: [
-      'Bidirectional binary trading',
-      'ETH3L/ETH3S leverage',
-      'Advanced analysis',
-      'Higher trade frequency',
-      'AI-powered signals'
+      'Multi-asset binary options (Forex, Crypto, Commodities)',
+      'Advanced technical analysis',
+      'Higher trade frequency (35s intervals)',
+      'AI-powered signal detection',
+      '90/10 profit sharing (10% platform fee)'
     ],
     pricing: {
       currency: 'Smaisika',
