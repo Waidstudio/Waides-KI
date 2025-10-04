@@ -165,13 +165,13 @@ export const BOT_REGISTRY: Record<string, BotConfiguration> = {
     marketType: 'forex',
     tier: BotTier.ELITE,
     description: '24/7 autonomous forex/CFD trading',
-    role: 'Forex Pro - Multi-strategy trading with Deriv/MT5/Oanda',
+    role: 'Forex/CFD Pro - Multi-strategy trading with Deriv/MT5/Oanda',
     features: [
-      'Forex/CFD trading',
+      'Forex/CFD trading (EUR/USD, GBP/USD, XAU/USD, OIL)',
       '24/7 autonomous operation',
-      'Multi-strategy analysis',
-      'ETH/BTC/SOL pairs',
-      'Advanced AI models'
+      'Multi-strategy analysis (Trend/Mean Reversion/Breakout)',
+      'Advanced risk management',
+      '95/5 profit sharing (5% platform fee)'
     ],
     pricing: {
       currency: 'Smaisika',
