@@ -372,7 +372,18 @@ export class RealTimeAutonomousTrader extends EventEmitter {
       scanningPairs: this.state.scanningPairs,
       recentTrades: this.state.trades.slice(0, 10),
       uptime: this.state.startTime ? Date.now() - this.state.startTime : 0,
-      tradingMode: this.state.tradingMode
+      tradingMode: this.state.tradingMode,
+      // Dynamic display fields
+      displayName: '24/7 Forex & CFD Trading Elite',
+      subtitle: 'Autonomous Forex/CFD',
+      description: 'Elite Forex & CFD trading via Deriv, MT5, and Oanda with 24/7 operation',
+      marketType: 'Forex/CFD',
+      connectors: ['Deriv Forex', 'MT5', 'Oanda'],
+      tradingAssets: ['EUR/USD', 'GBP/USD', 'XAU/USD'],
+      strategy: '24/7 Forex/CFD Multi-Strategy',
+      timeframe: 'Real-time',
+      aiModel: 'Autonomous Wealth Engine',
+      riskLevel: 'Balanced'
     };
   }
 

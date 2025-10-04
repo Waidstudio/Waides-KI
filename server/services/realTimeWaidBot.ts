@@ -418,7 +418,18 @@ export class RealTimeWaidBot extends EventEmitter {
       confidence: this.state.confidence,
       recentTrades: this.state.trades.slice(0, 5),
       uptime: this.state.startTime ? Date.now() - this.state.startTime : 0,
-      tradingMode: this.state.tradingMode
+      tradingMode: this.state.tradingMode,
+      // Dynamic display fields
+      displayName: 'Basic Binary Options Trading',
+      subtitle: 'Binary Options Trading',
+      description: 'Entry-level binary options trading with semi-autonomous decision making',
+      marketType: 'Binary Options',
+      connectors: ['Deriv', 'IQ Option'],
+      tradingAssets: ['Deriv', 'IQ Option'],
+      strategy: 'Binary Options Pattern Recognition',
+      timeframe: '1-5 Minutes',
+      aiModel: 'Divine Quantum Flux',
+      riskLevel: 'Conservative'
     };
   }
 

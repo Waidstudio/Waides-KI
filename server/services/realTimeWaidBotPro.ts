@@ -353,7 +353,18 @@ export class RealTimeWaidBotPro extends EventEmitter {
       activeConnector: this.state.activeConnector,
       recentTrades: this.state.trades.slice(0, 8),
       uptime: this.state.startTime ? Date.now() - this.state.startTime : 0,
-      tradingMode: this.state.tradingMode
+      tradingMode: this.state.tradingMode,
+      // Dynamic display fields
+      displayName: 'Professional Binary Options Trading',
+      subtitle: 'Binary Options Pro',
+      description: 'Advanced binary options trading via Deriv, IQ Option, Pocket Option, and Quotex',
+      marketType: 'Binary Options',
+      connectors: ['Deriv', 'IQ Option', 'Pocket Option', 'Quotex'],
+      tradingAssets: ['Deriv', 'IQ Option', 'Pocket Option', 'Quotex'],
+      strategy: 'Binary Options AI Strategy',
+      timeframe: '1-5 Minutes',
+      aiModel: 'Konsai Quantum Singularity',
+      riskLevel: 'Aggressive'
     };
   }
 

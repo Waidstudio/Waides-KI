@@ -88,6 +88,16 @@ export interface MaibotStatus {
     strategiesAvailable: number;
     automationLevel: string;
   };
+  // Dynamic display fields
+  displayName?: string;
+  subtitle?: string;
+  description?: string;
+  marketType?: string;
+  connectors?: string[];
+  tradingAssets?: string[];
+  strategy?: string;
+  timeframe?: string;
+  aiModel?: string;
 }
 
 export class RealTimeMaibot extends EventEmitter {
@@ -223,7 +233,17 @@ export class RealTimeMaibot extends EventEmitter {
         maxPositionSize: this.maxPositionSize,
         strategiesAvailable: this.strategies.length,
         automationLevel: 'manual_approval_only'
-      }
+      },
+      // Dynamic display fields
+      displayName: 'Free Binary Options Assistant',
+      subtitle: 'Manual Binary Options Trading',
+      description: 'Entry-level binary options trading with manual approval for all trades',
+      marketType: 'Binary Options',
+      connectors: ['Deriv', 'IQ Option'],
+      tradingAssets: ['Binary Options', 'Manual Trading'],
+      strategy: 'Manual Trading',
+      timeframe: 'User Controlled',
+      aiModel: 'Basic Assistant'
     };
     
     console.log('📊 Maibot getStatus() returning:', JSON.stringify(status, null, 2));
