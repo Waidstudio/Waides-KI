@@ -276,15 +276,15 @@ export default function WaidbotEnginePageEnhanced() {
     {
       id: 'waidbot-pro',
       name: 'WaidBot Pro β',
-      displayName: 'Professional Bidirectional Trading',
+      displayName: 'Professional Binary Options Trading',
       tier: 'PRO',
       price: 29.99,
       icon: Lightning,
       color: "from-purple-500 to-purple-600",
       route: '/waidbot-pro',
       autonomous: true,
-      decisionEngine: 'Bidirectional Analysis Engine',
-      description: 'Full bidirectional ETH3L/ETH3S trading with advanced AI'
+      decisionEngine: 'Binary Options AI Engine',
+      description: 'Advanced binary options trading via Deriv, IQ Option, Pocket Option, and Quotex'
     },
     {
       id: 'autonomous',
