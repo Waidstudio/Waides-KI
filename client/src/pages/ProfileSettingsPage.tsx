@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -109,6 +110,7 @@ const BOT_OPTIONS = [
 
 const ProfileSettingsPage = () => {
   const { toast } = useToast();
+  const [location, navigate] = useLocation();
   
   const [profile, setProfile] = useState<UserProfile>({
     name: 'Nwaora Chigozie',
@@ -143,6 +145,15 @@ const ProfileSettingsPage = () => {
   });
 
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [activeTab, setActiveTab] = useState('profile');
+
+  // Check URL hash to set active tab on mount
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ['profile', 'notifications', 'trading', 'api-connections', 'security'].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, []);
 
   // API Connections state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -365,8 +376,8 @@ const ProfileSettingsPage = () => {
         </div>
 
         {/* Settings Tabs */}
-        <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-slate-800/50 border border-slate-700">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-slate-800/50 border border-slate-700 overflow-x-auto">
             <TabsTrigger value="profile" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-300">
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -840,7 +851,12 @@ const ProfileSettingsPage = () => {
                   <div className="p-4 bg-slate-700/50 rounded-lg">
                     <h3 className="text-white font-medium mb-2">API Keys</h3>
                     <p className="text-sm text-slate-400 mb-3">Manage your trading API keys and permissions</p>
-                    <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700">
+                    <Button 
+                      variant="outline" 
+                      className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                      onClick={() => setActiveTab('api-connections')}
+                      data-testid="button-manage-api"
+                    >
                       Manage API Keys
                     </Button>
                   </div>

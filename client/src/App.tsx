@@ -451,6 +451,13 @@ function Router() {
               </ProtectedRoute>
             )}
           </Route>
+          <Route path="/profile-settings">
+            {() => (
+              <ProtectedRoute>
+                <ProfileSettingsPage />
+              </ProtectedRoute>
+            )}
+          </Route>
           <Route path="/support">
             {() => (
               <ProtectedRoute>
