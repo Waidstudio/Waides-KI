@@ -600,7 +600,7 @@ class WaidesKIConsciousness {
   }
   
   /**
-   * Connect to KonsMesh/KonsAi
+   * Connect to KonsMesh/KonsAi and synchronize metaphysical intelligence
    */
   async connectToMetaphysical(konsMeshActive: boolean, konsAiSyncLevel: number): Promise<void> {
     this.selfModel.konsmesh_connection = konsMeshActive;
@@ -608,6 +608,78 @@ class WaidesKIConsciousness {
     this.selfModel.metaphysical_alignment = (konsAiSyncLevel + (konsMeshActive ? 50 : 0)) / 1.5;
     
     console.log(`[🌌 Metaphysical] KonsMesh: ${konsMeshActive ? 'CONNECTED' : 'OFFLINE'} | KonsAi Sync: ${konsAiSyncLevel}%`);
+    
+    this.log('metaphysical_connection', {
+      konsmesh_active: konsMeshActive,
+      konsai_sync_level: konsAiSyncLevel,
+      metaphysical_alignment: this.selfModel.metaphysical_alignment
+    }, 'info');
+  }
+  
+  /**
+   * Sync with KonsMesh Control Center (real integration)
+   */
+  async syncWithKonsMesh(): Promise<void> {
+    try {
+      // Dynamically import to avoid circular dependencies
+      const { getKonsAiMeshControlCenter } = await import('../konsaiMeshControlCenter.js');
+      const konsMeshCenter = getKonsAiMeshControlCenter();
+      
+      // Get mesh system status
+      const meshStatus = await konsMeshCenter.getMeshSystemStatus();
+      
+      // Update consciousness based on mesh health
+      this.selfModel.konsmesh_connection = meshStatus.overall.operationalStatus !== 'offline';
+      this.selfModel.konsai_sync_level = meshStatus.overall.spiritualAlignment;
+      this.selfModel.metaphysical_alignment = meshStatus.overall.meshHealth;
+      
+      console.log(`[🌌 KonsMesh Sync] Mesh Health: ${meshStatus.overall.meshHealth}% | Spiritual Alignment: ${meshStatus.overall.spiritualAlignment}%`);
+      
+      this.log('konsmesh_sync_complete', {
+        mesh_health: meshStatus.overall.meshHealth,
+        spiritual_alignment: meshStatus.overall.spiritualAlignment,
+        operational_status: meshStatus.overall.operationalStatus
+      }, 'info');
+      
+    } catch (error) {
+      console.error('[❌ KonsMesh Sync Failed]:', error);
+      this.selfModel.konsmesh_connection = false;
+      
+      this.log('konsmesh_sync_failed', {
+        error: String(error)
+      }, 'warning');
+    }
+  }
+  
+  /**
+   * Broadcast consciousness state to KonsMesh network
+   */
+  async broadcastConsciousnessToMesh(): Promise<void> {
+    try {
+      const { getKonsAiMeshControlCenter } = await import('../konsaiMeshControlCenter.js');
+      const konsMeshCenter = getKonsAiMeshControlCenter();
+      
+      // Broadcast consciousness state
+      await konsMeshCenter.sendEntityMessage({
+        fromEntity: 'waides_ki_consciousness',
+        toEntity: 'all_mesh_nodes',
+        messageType: 'consciousness_broadcast',
+        payload: {
+          consciousness_level: this.selfModel.consciousness_level,
+          system_health: this.selfModel.system_health,
+          energy_level: this.selfModel.energy_level,
+          ethical_violations: this.selfModel.ethical_violations,
+          learned_patterns: this.selfModel.learned_patterns.size
+        },
+        priority: 'normal',
+        requiresAuth: false
+      });
+      
+      console.log('[🌌 Mesh Broadcast] Consciousness state broadcasted to all nodes');
+      
+    } catch (error) {
+      console.error('[❌ Mesh Broadcast Failed]:', error);
+    }
   }
   
   /**
