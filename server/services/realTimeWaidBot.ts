@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 
 interface DemoBalance {
   usdt: number;
@@ -264,6 +265,33 @@ export class RealTimeWaidBot extends EventEmitter {
 
       if (tradeAmount < this.MIN_TRADE_AMOUNT) return;
 
+      // ═══════════════════════════════════════════════════════════════════
+      // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+      // ═══════════════════════════════════════════════════════════════════
+      const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('waidbot_trade', {
+        botId: 'waidbot',
+        tradeType: 'BUY',
+        amount: tradeAmount,
+        riskPercent: (tradeAmount / this.state.currentBalance.totalValue) * 100,
+        userBalance: this.state.currentBalance.totalValue,
+        recentLosses: this.state.trades.filter(t => (t.profitLoss || 0) < 0).length,
+        consecutiveLosses: this.getConsecutiveLosses(),
+        marketCondition: marketData.volatility || 'normal',
+        volatility: 50
+      });
+
+      if (!consciousnessDecision.allowed) {
+        waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+          botId: 'waidbot',
+          reason: consciousnessDecision.reasoning,
+          recommendations: consciousnessDecision.recommendations
+        }, 'warning');
+
+        console.log(`⛔ WaidBot BUY BLOCKED by consciousness: ${consciousnessDecision.reasoning}`);
+        this.state.currentAction = `Trade blocked: ${consciousnessDecision.reasoning}`;
+        return;
+      }
+
       const quantity = tradeAmount / marketData.price;
       
       // Execute trade
@@ -289,6 +317,23 @@ export class RealTimeWaidBot extends EventEmitter {
       
       this.updateTotalValue(marketData.price);
       
+      // Log to consciousness
+      waidesKIConsciousness.log('waidbot_trade_executed', {
+        botId: 'waidbot',
+        tradeId: trade.id,
+        action: 'BUY',
+        amount: trade.amount,
+        price: trade.price
+      }, 'info');
+
+      // Learn from outcome (will update after settlement)
+      const outcome = (trade.profitLoss || 0) > 0 ? 'success' : 'failure';
+      waidesKIConsciousness.learn('waidbot_trade', outcome, {
+        marketCondition: marketData.volatility,
+        amount: trade.amount,
+        action: 'BUY'
+      });
+      
       this.state.currentAction = `Bought ${quantity.toFixed(4)} ETH at $${marketData.price.toFixed(2)}`;
       this.state.nextAction = 'Monitoring position for profit taking opportunity';
 
@@ -297,6 +342,11 @@ export class RealTimeWaidBot extends EventEmitter {
       this.emit('trade', trade);
     } catch (error) {
       console.error('❌ Error executing buy order:', error);
+      
+      waidesKIConsciousness.log('waidbot_trade_failed', {
+        botId: 'waidbot',
+        error: (error as Error).message
+      }, 'error');
     }
   }
 
@@ -308,6 +358,33 @@ export class RealTimeWaidBot extends EventEmitter {
       // Calculate profit/loss
       const lastBuyTrade = this.state.trades.find(t => t.action === 'BUY');
       const profitLoss = lastBuyTrade ? tradeAmount - lastBuyTrade.amount : 0;
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+      // ═══════════════════════════════════════════════════════════════════
+      const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('waidbot_trade', {
+        botId: 'waidbot',
+        tradeType: 'SELL',
+        amount: tradeAmount,
+        riskPercent: (tradeAmount / this.state.currentBalance.totalValue) * 100,
+        userBalance: this.state.currentBalance.totalValue,
+        recentLosses: this.state.trades.filter(t => (t.profitLoss || 0) < 0).length,
+        consecutiveLosses: this.getConsecutiveLosses(),
+        marketCondition: marketData.volatility || 'normal',
+        volatility: 50
+      });
+
+      if (!consciousnessDecision.allowed) {
+        waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+          botId: 'waidbot',
+          reason: consciousnessDecision.reasoning,
+          recommendations: consciousnessDecision.recommendations
+        }, 'warning');
+
+        console.log(`⛔ WaidBot SELL BLOCKED by consciousness: ${consciousnessDecision.reasoning}`);
+        this.state.currentAction = `Trade blocked: ${consciousnessDecision.reasoning}`;
+        return;
+      }
       
       // Execute trade
       this.state.currentBalance.usdt += tradeAmount;
@@ -358,6 +435,25 @@ export class RealTimeWaidBot extends EventEmitter {
       
       this.updateTotalValue(marketData.price);
       
+      // Log to consciousness
+      waidesKIConsciousness.log('waidbot_trade_executed', {
+        botId: 'waidbot',
+        tradeId: trade.id,
+        action: 'SELL',
+        amount: trade.amount,
+        price: trade.price,
+        profitLoss
+      }, 'info');
+
+      // Learn from outcome
+      const outcome = profitLoss > 0 ? 'success' : 'failure';
+      waidesKIConsciousness.learn('waidbot_trade', outcome, {
+        marketCondition: marketData.volatility,
+        amount: trade.amount,
+        action: 'SELL',
+        profitLoss
+      });
+      
       this.state.currentAction = `Sold ${quantity.toFixed(4)} ETH at $${marketData.price.toFixed(2)} (${profitLoss > 0 ? '+' : ''}$${profitLoss.toFixed(2)})`;
       this.state.nextAction = 'Scanning for next uptrend entry opportunity';
 
@@ -366,6 +462,11 @@ export class RealTimeWaidBot extends EventEmitter {
       this.emit('trade', trade);
     } catch (error) {
       console.error('❌ Error executing sell order:', error);
+      
+      waidesKIConsciousness.log('waidbot_trade_failed', {
+        botId: 'waidbot',
+        error: (error as Error).message
+      }, 'error');
     }
   }
 
@@ -446,6 +547,22 @@ export class RealTimeWaidBot extends EventEmitter {
 
   public getTradeHistory(): Trade[] {
     return this.state.trades;
+  }
+
+  /**
+   * Get consecutive losses count for risk management
+   */
+  private getConsecutiveLosses(): number {
+    let count = 0;
+    for (let i = 0; i < this.state.trades.length; i++) {
+      const trade = this.state.trades[i];
+      if ((trade.profitLoss || 0) < 0) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
   }
 
   public reset(): void {

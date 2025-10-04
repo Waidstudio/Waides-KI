@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 
 /**
  * Maibot - Free Entry Level Trading Bot
@@ -369,7 +370,7 @@ export class RealTimeMaibot extends EventEmitter {
   }
 
   /**
-   * Execute a trade (with manual approval requirement)
+   * Execute a trade (with manual approval requirement + consciousness check)
    */
   async executeTrade(tradeParams: TradeParams, userApproval: boolean = false): Promise<any> {
     if (!userApproval) {
@@ -377,6 +378,38 @@ export class RealTimeMaibot extends EventEmitter {
         success: false,
         message: 'Maibot requires manual approval for all trades',
         requiresApproval: true
+      };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+    // ═══════════════════════════════════════════════════════════════════
+    const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('maibot_trade', {
+      botId: 'maibot',
+      tradeType: tradeParams.type,
+      amount: tradeParams.amount,
+      riskPercent: (tradeParams.amount / 1000) * 100, // Simplified risk calc
+      userBalance: 1000, // TODO: Get real balance
+      recentLosses: this.trades.filter(t => (t.profit || 0) < 0).length,
+      consecutiveLosses: this.getConsecutiveLosses(),
+      marketCondition: tradeParams.marketCondition || 'normal',
+      volatility: 30 // TODO: Get real volatility
+    });
+
+    if (!consciousnessDecision.allowed) {
+      // Consciousness blocked the trade
+      waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+        botId: 'maibot',
+        reason: consciousnessDecision.reasoning,
+        recommendations: consciousnessDecision.recommendations
+      }, 'warning');
+
+      return {
+        success: false,
+        message: consciousnessDecision.reasoning,
+        recommendations: consciousnessDecision.recommendations,
+        ethical_score: consciousnessDecision.ethical_score,
+        blockedByConsciousness: true
       };
     }
 
@@ -395,6 +428,21 @@ export class RealTimeMaibot extends EventEmitter {
       this.trades.push(trade);
       this.updatePerformance(trade);
 
+      // Log to consciousness
+      waidesKIConsciousness.log('maibot_trade_executed', {
+        botId: 'maibot',
+        tradeId: trade.id,
+        amount: trade.amount,
+        type: trade.type
+      }, 'info');
+
+      // Learn from outcome
+      const outcome = (trade.profit || 0) > 0 ? 'success' : 'failure';
+      waidesKIConsciousness.learn('maibot_trade', outcome, {
+        marketCondition: trade.marketCondition,
+        amount: trade.amount
+      });
+
       // Record in SmaiSika mining engine if in real mode
       if (this.tradingMode === 'real' && trade.profit) {
         await smaisikaMiningEngine.recordTrade(
@@ -409,16 +457,39 @@ export class RealTimeMaibot extends EventEmitter {
       return {
         success: true,
         trade,
-        message: 'Trade executed successfully with manual approval'
+        message: 'Trade executed successfully with manual approval',
+        ethical_score: consciousnessDecision.ethical_score
       };
     } catch (error: any) {
       console.error('❌ Maibot trade execution error:', error);
+      
+      // Log failure to consciousness
+      waidesKIConsciousness.log('maibot_trade_failed', {
+        botId: 'maibot',
+        error: error.message
+      }, 'error');
+
       return {
         success: false,
         message: 'Trade execution failed',
         error: error.message
       };
     }
+  }
+
+  /**
+   * Get consecutive losses count for risk management
+   */
+  private getConsecutiveLosses(): number {
+    let count = 0;
+    for (let i = this.trades.length - 1; i >= 0; i--) {
+      if ((this.trades[i].profit || 0) < 0) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
   }
 
   /**

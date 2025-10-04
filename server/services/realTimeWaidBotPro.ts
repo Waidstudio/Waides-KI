@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 
 interface DemoBalance {
   totalValue: number;
@@ -223,6 +224,33 @@ export class RealTimeWaidBotPro extends EventEmitter {
 
       if (stake < this.MIN_STAKE) return;
 
+      // ═══════════════════════════════════════════════════════════════════
+      // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+      // ═══════════════════════════════════════════════════════════════════
+      const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('waidbot_pro_trade', {
+        botId: 'waidbot_pro',
+        tradeType: decision.direction,
+        amount: stake,
+        riskPercent: (stake / this.state.currentBalance.totalValue) * 100,
+        userBalance: this.state.currentBalance.totalValue,
+        recentLosses: this.state.trades.filter(t => t.result === 'LOSS').length,
+        consecutiveLosses: this.getConsecutiveLosses(),
+        marketCondition: 'binary_options',
+        volatility: 40
+      });
+
+      if (!consciousnessDecision.allowed) {
+        waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+          botId: 'waidbot_pro',
+          reason: consciousnessDecision.reasoning,
+          recommendations: consciousnessDecision.recommendations
+        }, 'warning');
+
+        console.log(`⛔ WaidBot Pro β ${decision.direction} BLOCKED by consciousness: ${consciousnessDecision.reasoning}`);
+        this.state.currentAction = `Trade blocked: ${consciousnessDecision.reasoning}`;
+        return;
+      }
+
       const entryPrice = 1.0 + (Math.random() - 0.5) * 0.1;
       const payout = stake * (0.75 + Math.random() * 0.15);
       const expiryTime = 60 + Math.floor(Math.random() * 180);
@@ -250,6 +278,16 @@ export class RealTimeWaidBotPro extends EventEmitter {
       this.state.trades.unshift(trade);
       this.state.performance.totalTrades++;
       this.state.performance.todayTrades++;
+      
+      // Log to consciousness
+      waidesKIConsciousness.log('waidbot_pro_trade_executed', {
+        botId: 'waidbot_pro',
+        tradeId: trade.id,
+        action: decision.direction,
+        asset,
+        stake: trade.stake,
+        connector: this.state.activeConnector
+      }, 'info');
 
       this.state.currentAction = `Placed ${decision.direction} on ${asset} - $${stake.toFixed(2)} stake @ ${this.state.activeConnector}`;
       this.state.nextAction = `Monitoring ${asset} ${decision.direction} option (expires in ${expiryTime}s)`;
@@ -259,6 +297,11 @@ export class RealTimeWaidBotPro extends EventEmitter {
       this.emit('trade', trade);
     } catch (error) {
       console.error('❌ Error executing binary option:', error);
+      
+      waidesKIConsciousness.log('waidbot_pro_trade_failed', {
+        botId: 'waidbot_pro',
+        error: (error as Error).message
+      }, 'error');
     }
   }
 
@@ -288,6 +331,15 @@ export class RealTimeWaidBotPro extends EventEmitter {
     const wins = this.state.trades.filter(t => t.result === 'WIN').length;
     const settled = this.state.trades.filter(t => t.result !== 'PENDING').length;
     this.state.performance.winRate = settled > 0 ? (wins / settled) * 100 : 0;
+
+    // Learn from outcome
+    const outcome = isWin ? 'success' : 'failure';
+    waidesKIConsciousness.learn('waidbot_pro_trade', outcome, {
+      marketCondition: 'binary_options',
+      asset: trade.asset,
+      direction: trade.action,
+      profitLoss: trade.profitLoss
+    });
 
     if (this.state.tradingMode === 'real' && trade.profitLoss !== 0) {
       const userId = 1;
@@ -381,6 +433,22 @@ export class RealTimeWaidBotPro extends EventEmitter {
 
   public getTradeHistory(): BinaryOptionTrade[] {
     return this.state.trades;
+  }
+
+  /**
+   * Get consecutive losses count for risk management
+   */
+  private getConsecutiveLosses(): number {
+    let count = 0;
+    for (let i = 0; i < this.state.trades.length; i++) {
+      const trade = this.state.trades[i];
+      if (trade.result === 'LOSS') {
+        count++;
+      } else if (trade.result === 'WIN') {
+        break;
+      }
+    }
+    return count;
   }
 
   public reset(): void {

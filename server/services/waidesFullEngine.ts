@@ -3,6 +3,7 @@
  * Integrates with Autonomous Trader for unified divine trading system
  */
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 
 interface EngineContext {
   indicators: any;
@@ -386,6 +387,36 @@ export class WaidesFullEngine {
   }
 
   private async executeTrade(decision: GuardianDecision): Promise<TradeOutcome> {
+    // ═══════════════════════════════════════════════════════════════════
+    // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+    // ═══════════════════════════════════════════════════════════════════
+    const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('waides_full_engine_trade', {
+      botId: 'waides_full_engine',
+      tradeType: decision.execution_plan.action,
+      amount: this.quoteAmount,
+      riskPercent: 2.0,
+      userBalance: 10000,
+      recentLosses: 0,
+      consecutiveLosses: this.getConsecutiveLosses(),
+      marketCondition: 'spot_exchange',
+      volatility: 30
+    });
+
+    if (!consciousnessDecision.allowed) {
+      waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+        botId: 'waides_full_engine',
+        reason: consciousnessDecision.reasoning,
+        recommendations: consciousnessDecision.recommendations
+      }, 'warning');
+
+      console.log(`⛔ Waides Full Engine ${decision.execution_plan.action} BLOCKED by consciousness: ${consciousnessDecision.reasoning}`);
+      return {
+        status: 'blocked',
+        reason: consciousnessDecision.reasoning,
+        next_evaluation: Date.now() + 60000
+      };
+    }
+
     // Simulate trade execution with 85% success rate
     const success = Math.random() > 0.15;
     
@@ -402,6 +433,15 @@ export class WaidesFullEngine {
 
       this.engineMetrics.total_trades++;
       this.engineMetrics.active_trades = this.activeTrades.size;
+      
+      // Log to consciousness
+      waidesKIConsciousness.log('waides_full_engine_trade_executed', {
+        botId: 'waides_full_engine',
+        tradeId: trade.id,
+        action: trade.action,
+        symbol: trade.symbol,
+        amount: this.quoteAmount
+      }, 'info');
 
       return {
         status: 'executed',
@@ -409,6 +449,11 @@ export class WaidesFullEngine {
         next_evaluation: Date.now() + 300000 // 5 minutes
       };
     } else {
+      waidesKIConsciousness.log('waides_full_engine_trade_failed', {
+        botId: 'waides_full_engine',
+        reason: 'Market conditions shifted during execution'
+      }, 'warning');
+      
       return {
         status: 'blocked',
         reason: 'Market conditions shifted during execution',
@@ -499,6 +544,15 @@ export class WaidesFullEngine {
 
   public getEngineMetrics(): EngineMetrics {
     return { ...this.engineMetrics };
+  }
+
+  /**
+   * Get consecutive losses count for risk management
+   */
+  private getConsecutiveLosses(): number {
+    // For WaidesFullEngine, we track active trades differently
+    // Return 0 for now as we don't have a simple trade history array
+    return 0;
   }
 }
 

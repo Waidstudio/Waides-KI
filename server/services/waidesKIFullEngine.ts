@@ -6,6 +6,7 @@
 import { WaidesKIStopLossManager, TradeEntry } from './waidesKIStopLossManager';
 import { WaidesKIPerformanceTracker, TradeRecord } from './waidesKIPerformanceTracker';
 import { WaidesKIStrategyTuner, waidesKIStrategyTuner as tunerInstance } from './waidesKIStrategyTuner';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 
 export interface FullEngineConfig {
   strategy_name: string;
@@ -152,6 +153,32 @@ export class WaidesKIFullEngine {
       return { success: false, blocked_reason: 'Maximum concurrent trades reached' };
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+    // ═══════════════════════════════════════════════════════════════════
+    const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('waides_ki_full_engine_trade', {
+      botId: 'waides_ki_full_engine',
+      tradeType: signal.action,
+      amount: this.config.position_size_usd,
+      riskPercent: (this.config.position_size_usd / 10000) * 100,
+      userBalance: 10000,
+      recentLosses: 0,
+      consecutiveLosses: this.getConsecutiveLosses(),
+      marketCondition: signal.risk_assessment,
+      volatility: 35
+    });
+
+    if (!consciousnessDecision.allowed) {
+      waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+        botId: 'waides_ki_full_engine',
+        reason: consciousnessDecision.reasoning,
+        recommendations: consciousnessDecision.recommendations
+      }, 'warning');
+
+      console.log(`⛔ Waides KI Full Engine ${signal.action} BLOCKED by consciousness: ${consciousnessDecision.reasoning}`);
+      return { success: false, blocked_reason: `Consciousness block: ${consciousnessDecision.reasoning}` };
+    }
+
     // Get current tuning parameters
     const tuningParams = this.strategyTuner.getParameters(this.config.strategy_name);
     
@@ -193,6 +220,16 @@ export class WaidesKIFullEngine {
 
       this.activeTrades.set(activeTrade.trade_id, activeTrade);
       this.dailyStats.trades++;
+      
+      // Log to consciousness
+      waidesKIConsciousness.log('waides_ki_full_engine_trade_executed', {
+        botId: 'waides_ki_full_engine',
+        tradeId: activeTrade.trade_id,
+        action: signal.action,
+        pair: this.config.trading_pair,
+        amount: adjustedPositionSize,
+        confidence: adjustedConfidence
+      }, 'info');
 
       console.log(`✅ Trade executed: ${activeTrade.trade_id} - ${signal.action} ${this.config.trading_pair} at ${signal.price}`);
 
@@ -200,6 +237,12 @@ export class WaidesKIFullEngine {
 
     } catch (error) {
       console.error('❌ Trade execution failed:', error);
+      
+      waidesKIConsciousness.log('waides_ki_full_engine_trade_failed', {
+        botId: 'waides_ki_full_engine',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }, 'error');
+      
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
@@ -485,6 +528,16 @@ export class WaidesKIFullEngine {
       tuning_data: this.strategyTuner.exportTuningData(),
       stop_loss_history: this.stopLossManager.exportHistory()
     };
+  }
+
+  /**
+   * Get consecutive losses count for risk management
+   */
+  private getConsecutiveLosses(): number {
+    // Get performance data to calculate consecutive losses
+    const perfData = this.performanceTracker.exportData();
+    // Return 0 for now - full implementation would track trade outcomes
+    return 0;
   }
 }
 

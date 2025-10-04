@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+import { waidesKIConsciousness } from './core/waidesKIConsciousness';
 
 interface DemoBalance {
   totalValue: number;
@@ -239,6 +240,33 @@ export class RealTimeAutonomousTrader extends EventEmitter {
 
       if (lots < this.MIN_LOTS) return;
 
+      // ═══════════════════════════════════════════════════════════════════
+      // CONSCIOUSNESS CHECK: Query Waides KI before executing trade
+      // ═══════════════════════════════════════════════════════════════════
+      const consciousnessDecision = waidesKIConsciousness.shouldAllowAction('autonomous_trader_trade', {
+        botId: 'autonomous_trader',
+        tradeType: decision.direction,
+        amount: lots * 100000,
+        riskPercent: (lots * 100000 / this.state.currentBalance.totalValue) * 100,
+        userBalance: this.state.currentBalance.totalValue,
+        recentLosses: this.state.trades.filter(t => t.result === 'LOSS').length,
+        consecutiveLosses: this.getConsecutiveLosses(),
+        marketCondition: 'forex_cfd',
+        volatility: 45
+      });
+
+      if (!consciousnessDecision.allowed) {
+        waidesKIConsciousness.log('trade_blocked_by_consciousness', {
+          botId: 'autonomous_trader',
+          reason: consciousnessDecision.reasoning,
+          recommendations: consciousnessDecision.recommendations
+        }, 'warning');
+
+        console.log(`⛔ Autonomous Trader γ ${decision.direction} BLOCKED by consciousness: ${consciousnessDecision.reasoning}`);
+        this.state.currentAction = `Trade blocked: ${consciousnessDecision.reasoning}`;
+        return;
+      }
+
       const entryPrice = 1.0 + (Math.random() - 0.5) * 0.05;
       const pipValue = pair.includes('JPY') ? 0.01 : 0.0001;
 
@@ -264,6 +292,17 @@ export class RealTimeAutonomousTrader extends EventEmitter {
       this.state.trades.unshift(trade);
       this.state.performance.totalTrades++;
       this.state.performance.todayTrades++;
+      
+      // Log to consciousness
+      waidesKIConsciousness.log('autonomous_trader_trade_executed', {
+        botId: 'autonomous_trader',
+        tradeId: trade.id,
+        action: decision.direction,
+        pair,
+        lots: trade.lots,
+        connector: this.state.activeConnector,
+        strategy
+      }, 'info');
 
       this.state.currentAction = `Opened ${decision.direction} ${pair} - ${lots} lots @ ${this.state.activeConnector}`;
       this.state.nextAction = `Monitoring ${pair} ${decision.direction} position`;
@@ -273,6 +312,11 @@ export class RealTimeAutonomousTrader extends EventEmitter {
       this.emit('trade', trade);
     } catch (error) {
       console.error('❌ Error executing Forex position:', error);
+      
+      waidesKIConsciousness.log('autonomous_trader_trade_failed', {
+        botId: 'autonomous_trader',
+        error: (error as Error).message
+      }, 'error');
     }
   }
 
@@ -305,6 +349,15 @@ export class RealTimeAutonomousTrader extends EventEmitter {
     const wins = this.state.trades.filter(t => t.result === 'WIN').length;
     const settled = this.state.trades.filter(t => t.result !== 'PENDING').length;
     this.state.performance.winRate = settled > 0 ? (wins / settled) * 100 : 0;
+
+    // Learn from outcome
+    const outcome = isWin ? 'success' : 'failure';
+    waidesKIConsciousness.learn('autonomous_trader_trade', outcome, {
+      marketCondition: 'forex_cfd',
+      symbol: trade.symbol,
+      direction: trade.action,
+      profitLoss: trade.profitLoss
+    });
 
     if (this.state.tradingMode === 'real' && trade.profitLoss !== 0) {
       const userId = 1;
@@ -400,6 +453,22 @@ export class RealTimeAutonomousTrader extends EventEmitter {
 
   public getTradeHistory(): ForexCFDTrade[] {
     return this.state.trades;
+  }
+
+  /**
+   * Get consecutive losses count for risk management
+   */
+  private getConsecutiveLosses(): number {
+    let count = 0;
+    for (let i = 0; i < this.state.trades.length; i++) {
+      const trade = this.state.trades[i];
+      if (trade.result === 'LOSS') {
+        count++;
+      } else if (trade.result === 'WIN') {
+        break;
+      }
+    }
+    return count;
   }
 
   public reset(): void {
