@@ -1,0 +1,48 @@
+before making any change:
+
+1. First SCAN the entire codebase (backend + frontend) including:
+   - MaiBot files/folders
+   - WaidBot files/folders
+   - WaidBot Pro files/folders
+   Autonomous trader 
+Full engine
+   - Any related backend service, wallet manager, trading engine, and UI components
+
+2. STEP-BY-STEP ACTION:
+   a) For each Tredbeing (MaiBot, WaidBot, WaidBot Pro and others ):
+      - Read its backend logic, trading engine, and configuration files.
+      - Ensure the displayed cards on frontend fetch **real backend data** dynamically, not old placeholder values.
+      - Remove all static ETH3L / ETH3S or irrelevant assets from maibot, waidbot, WaidBot Pro and connect it ONLY to Binary Options trading as designed.
+      - Align MaiBot, waidbot, waidbot prowith binary trading
+      - autonomous trader with forex and deriv 
+And full engine with spot trading exchanges
+      - Ensure backend logic routes correctly and no mismatched calls remain.
+
+   b) Wallet Handling:
+      - Scan all wallet references and functions.
+      - Correct any case where "smaisikamining" wallet is mistakenly used as the main trading wallet.
+      - Mining wallet should remain dedicated ONLY for mining activities.
+      - User main wallet must be correctly synced with trading actions and exchange connections.
+
+   c) Cross-check:
+      - Verify each Tredbeing card (MaiBot, WaidBot, WaidBot Pro) reads backend trading status, balances, profits, activities and active pairs correctly and also add all the actions it takes for instance,, waidbot execute trade in expert option linked acc
+It should be able to write it out in the card on everything it does and even when it withdraws and even profits and everything and also work on the winning streaks
+And also win rate should be real and accurate 
+      - Ensure frontend dynamically reflects backend engine state (live updates, no static data).
+      - Ensure user funding and withdrawals are routed ONLY through the correct wallet.
+
+3. AFTER THIS SCAN:
+   - Ask 10 diagnostic questions to confirm if every correction was applied successfully (trading engine link, wallet alignment, card display, profit sync, membership tiers, referral sharing, etc.).
+   - If any mismatch is found, FIX it directly by rewriting inside the existing file, not by creating new pages.
+
+4. DEPLOYMENT READY:
+   - All Tredbeings must be aligned to their real tasks:
+     • MaiBot 
+     • WaidBot 
+     • WaidBot Pro 
+Autonomous trader
+Full engine
+Nwaora chigozie 
+   - All user wallets correctly linked (no mining wallet mixup).
+   - All membership, referral, and profit-sharing logic intact and functional.
+   - Cards updated to show real data from backend and not placeholders. 
