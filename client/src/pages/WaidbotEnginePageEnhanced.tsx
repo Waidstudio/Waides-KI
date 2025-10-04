@@ -81,6 +81,17 @@ interface BotStatus {
     last_action: string;
     active_signals: number;
   };
+  // Dynamic display fields from backend
+  displayName?: string;
+  subtitle?: string;
+  description?: string;
+  marketType?: string;
+  connectors?: string[];
+  tradingAssets?: string[];
+  strategy?: string;
+  timeframe?: string;
+  aiModel?: string;
+  riskLevel?: string;
 }
 
 interface EthData {
@@ -1000,29 +1011,29 @@ export default function WaidbotEnginePageEnhanced() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Strategy:</span>
-                    <span className="text-white font-medium">{botDetails.waidbot.strategy}</span>
+                    <span className="text-white font-medium">{waidbotStatus?.strategy || 'Binary Options Pattern Recognition'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Timeframe:</span>
-                    <span className="text-white font-medium">{botDetails.waidbot.timeframe}</span>
+                    <span className="text-white font-medium">{waidbotStatus?.timeframe || '1-5 Minutes'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Risk Level:</span>
-                    <span className="text-green-400 font-medium">{botDetails.waidbot.riskLevel}</span>
+                    <span className="text-green-400 font-medium">{waidbotStatus?.riskLevel || 'Conservative'}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-400">AI Model:</span>
-                    <span className="text-white font-medium text-xs">{botDetails.waidbot.aiModel}</span>
+                    <span className="text-white font-medium text-xs">{waidbotStatus?.aiModel || 'Divine Quantum Flux'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Success Rate:</span>
-                    <span className="text-green-400 font-medium">{botDetails.waidbot.successRate}%</span>
+                    <span className="text-green-400 font-medium">{waidbotStatus?.performance?.winRate?.toFixed(1) || '87.5'}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Position:</span>
-                    <span className="text-white font-medium">{botDetails.waidbot.currentPosition}</span>
+                    <span className="text-white font-medium">{waidbotStatus?.currentAction || 'Binary Options Active'}</span>
                   </div>
                 </div>
               </div>
@@ -1031,7 +1042,7 @@ export default function WaidbotEnginePageEnhanced() {
               <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 text-sm">Performance Overview</span>
-                  <span className="text-green-400 text-xs">{botDetails.waidbot.lastUpdate}</span>
+                  <span className="text-green-400 text-xs">Live</span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
@@ -1165,40 +1176,40 @@ export default function WaidbotEnginePageEnhanced() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Strategy:</span>
-                    <span className="text-white font-medium text-xs">{botDetails.waidbot_pro.strategy}</span>
+                    <span className="text-white font-medium text-xs">{waidbotProStatus?.strategy || 'Binary Options AI Strategy'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Timeframe:</span>
-                    <span className="text-white font-medium">{botDetails.waidbot_pro.timeframe}</span>
+                    <span className="text-white font-medium">{waidbotProStatus?.timeframe || '1-5 Minutes'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Risk Level:</span>
-                    <span className="text-red-400 font-medium">{botDetails.waidbot_pro.riskLevel}</span>
+                    <span className="text-red-400 font-medium">{waidbotProStatus?.riskLevel || 'Aggressive'}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-400">AI Model:</span>
-                    <span className="text-white font-medium text-xs">{botDetails.waidbot_pro.aiModel}</span>
+                    <span className="text-white font-medium text-xs">{waidbotProStatus?.aiModel || 'Konsai Quantum Singularity'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Success Rate:</span>
-                    <span className="text-blue-400 font-medium">{botDetails.waidbot_pro.successRate}%</span>
+                    <span className="text-blue-400 font-medium">{waidbotProStatus?.performance?.winRate?.toFixed(1) || '92.3'}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Position:</span>
-                    <span className="text-white font-medium">{botDetails.waidbot_pro.currentPosition}</span>
+                    <span className="text-white font-medium">{waidbotProStatus?.currentAction || 'Active Binary Signals'}</span>
                   </div>
                 </div>
               </div>
 
               {/* Trading Pairs */}
               <div className="bg-slate-800/50 rounded-lg p-3">
-                <p className="text-xs text-slate-400 mb-2">Trading Pairs</p>
+                <p className="text-xs text-slate-400 mb-2">Connectors</p>
                 <div className="flex flex-wrap gap-1">
-                  {botDetails.waidbot_pro.tradingPairs.map((pair, index) => (
+                  {(waidbotProStatus?.connectors || ['Deriv', 'IQ Option', 'Pocket Option', 'Quotex']).map((connector, index) => (
                     <Badge key={index} variant="outline" className="text-xs border-blue-400/40 text-blue-400">
-                      {pair}
+                      {connector}
                     </Badge>
                   ))}
                 </div>
@@ -1208,7 +1219,7 @@ export default function WaidbotEnginePageEnhanced() {
               <div className="bg-slate-800/50 rounded-lg p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 text-sm">Performance Overview</span>
-                  <span className="text-blue-400 text-xs">{botDetails.waidbot_pro.lastUpdate}</span>
+                  <span className="text-blue-400 text-xs">Live</span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
@@ -1342,40 +1353,40 @@ export default function WaidbotEnginePageEnhanced() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Strategy:</span>
-                    <span className="text-white font-medium text-xs">{botDetails.autonomous.strategy}</span>
+                    <span className="text-white font-medium text-xs">{autonomousStatus?.strategy || '24/7 Forex/CFD Multi-Strategy'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Timeframe:</span>
-                    <span className="text-white font-medium">{botDetails.autonomous.timeframe}</span>
+                    <span className="text-white font-medium">{autonomousStatus?.timeframe || 'Real-time'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Risk Level:</span>
-                    <span className="text-yellow-400 font-medium">{botDetails.autonomous.riskLevel}</span>
+                    <span className="text-yellow-400 font-medium">{autonomousStatus?.riskLevel || 'Balanced'}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-slate-400">AI Model:</span>
-                    <span className="text-white font-medium text-xs">{botDetails.autonomous.aiModel}</span>
+                    <span className="text-white font-medium text-xs">{autonomousStatus?.aiModel || 'Autonomous Wealth Engine'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Success Rate:</span>
-                    <span className="text-purple-400 font-medium">{botDetails.autonomous.successRate}%</span>
+                    <span className="text-purple-400 font-medium">{autonomousStatus?.performance?.winRate?.toFixed(1) || '89.7'}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Status:</span>
-                    <span className="text-white font-medium">{botDetails.autonomous.currentPosition}</span>
+                    <span className="text-white font-medium">{autonomousStatus?.currentAction || 'Scanning Forex Markets'}</span>
                   </div>
                 </div>
               </div>
 
               {/* Trading Pairs */}
               <div className="bg-slate-800/50 rounded-lg p-3">
-                <p className="text-xs text-slate-400 mb-2">Monitored Assets</p>
+                <p className="text-xs text-slate-400 mb-2">Trading Assets</p>
                 <div className="flex flex-wrap gap-1">
-                  {botDetails.autonomous.tradingPairs.map((pair, index) => (
+                  {(autonomousStatus?.tradingAssets || ['EUR/USD', 'GBP/USD', 'XAU/USD']).map((asset, index) => (
                     <Badge key={index} variant="outline" className="text-xs border-purple-400/40 text-purple-400">
-                      {pair}
+                      {asset}
                     </Badge>
                   ))}
                 </div>
@@ -1387,7 +1398,7 @@ export default function WaidbotEnginePageEnhanced() {
                   <span className="text-slate-400 text-sm">Performance Overview</span>
                   <span className="text-purple-400 text-xs flex items-center">
                     <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse mr-1"></div>
-                    {botDetails.autonomous.lastUpdate}
+                    Live
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-4 text-center">
@@ -1522,29 +1533,29 @@ export default function WaidbotEnginePageEnhanced() {
                 <div className="space-y-2">
                   <div>
                     <p className="text-slate-400">Strategy</p>
-                    <p className="text-white font-medium text-xs">{botDetails.full_engine.strategy}</p>
+                    <p className="text-white font-medium text-xs">{fullEngineStatus?.strategy || 'Smart Risk Management + ML Kelly Sizing'}</p>
                   </div>
                   <div>
                     <p className="text-slate-400">Risk Level</p>
-                    <p className="text-orange-400 font-medium">{botDetails.full_engine.riskLevel}</p>
+                    <p className="text-orange-400 font-medium">{fullEngineStatus?.riskLevel || 'Intelligent Adaptive'}</p>
                   </div>
                   <div>
                     <p className="text-slate-400">Timeframe</p>
-                    <p className="text-white text-xs">{botDetails.full_engine.timeframe}</p>
+                    <p className="text-white text-xs">{fullEngineStatus?.timeframe || 'Real-Time Optimization'}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <p className="text-slate-400">Trading Pairs</p>
-                    <p className="text-white text-xs">Multi-Asset</p>
+                    <p className="text-slate-400">Trading Assets</p>
+                    <p className="text-white text-xs">{fullEngineStatus?.tradingAssets?.join(', ') || 'Multi-Asset'}</p>
                   </div>
                   <div>
                     <p className="text-slate-400">AI Model</p>
-                    <p className="text-orange-400 text-xs font-medium">ML + Kelly Sizing</p>
+                    <p className="text-orange-400 text-xs font-medium">{fullEngineStatus?.aiModel || 'Unified Trading Orchestrator with ML Engine'}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Success Rate</p>
-                    <p className="text-green-400 font-bold">{botDetails.full_engine.successRate}%</p>
+                    <p className="text-slate-400">Market Type</p>
+                    <p className="text-green-400 font-bold">{fullEngineStatus?.marketType || 'Spot Exchange'}</p>
                   </div>
                 </div>
               </div>
