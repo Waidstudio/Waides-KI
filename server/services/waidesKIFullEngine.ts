@@ -211,13 +211,12 @@ export class WaidesKIFullEngine {
     if (this.activeTrades.size === 0) return;
 
     try {
-      // Get current price
-      const marketData = await ethMonitor.getCurrentPrice();
-      const currentPrice = marketData.price;
+      // Get current price (placeholder - TODO: implement actual price feed)
+      const currentPrice = 3500 + Math.random() * 100; // Simulated ETH price
 
       if (!currentPrice || currentPrice === 0) return;
 
-      for (const [tradeId, trade] of this.activeTrades) {
+      for (const [tradeId, trade] of Array.from(this.activeTrades.entries())) {
         // Update current price and P&L
         trade.current_price = currentPrice;
         trade.current_pnl_pct = this.stopLossManager.getPnLPercentage(currentPrice);
@@ -397,9 +396,10 @@ export class WaidesKIFullEngine {
    * Force close all active trades
    */
   async forceCloseAllTrades(reason: string = 'MANUAL_CLOSE'): Promise<void> {
-    const currentPrice = (await ethMonitor.getCurrentPrice()).price;
+    // Get current price (placeholder - TODO: implement actual price feed)
+    const currentPrice = 3500 + Math.random() * 100; // Simulated ETH price
     
-    for (const tradeId of this.activeTrades.keys()) {
+    for (const tradeId of Array.from(this.activeTrades.keys())) {
       await this.closeTrade(tradeId, currentPrice, reason);
     }
     

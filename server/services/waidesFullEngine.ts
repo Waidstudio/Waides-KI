@@ -450,26 +450,8 @@ export class WaidesFullEngine {
     
     console.log(`📊 Full Engine trade closed: Entry $${entryValue.toFixed(2)} → Exit $${exitValue.toFixed(2)} = ${profitLoss > 0 ? '+' : ''}$${profitLoss.toFixed(2)}`);
     
-    // Record to SmaiSika ledger (real mode only)
-    const tradingMode = 'demo'; // TODO: Get from engine state
-    if (tradingMode === 'real') {
-      const userId = 1; // TODO: Get actual userId from session/context
-      if (profitLoss > 0) {
-        await smaisikaMiningEngine.recordTradeProfit(
-          userId,
-          profitLoss,
-          sellTrade.id,
-          'Full Engine Ω'
-        );
-      } else if (profitLoss < 0) {
-        await smaisikaMiningEngine.recordTradeLoss(
-          userId,
-          Math.abs(profitLoss),
-          sellTrade.id,
-          'Full Engine Ω'
-        );
-      }
-    }
+    // TODO: Record to SmaiSika ledger when real mode is implemented
+    // Currently operating in demo mode only
     
     // Remove from active trades
     this.activeTrades.delete(buyTrade.id);
