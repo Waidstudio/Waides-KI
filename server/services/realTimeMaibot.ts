@@ -1,38 +1,130 @@
+import { EventEmitter } from 'events';
+import { smaisikaMiningEngine } from './smaisikaMiningEngine';
+
 /**
  * Maibot - Free Entry Level Trading Bot
  * Designed for beginners with simplified market analysis and manual approval trades
  * Platform fee: 30-40% of profits
  */
 
-class RealTimeMaibot {
+interface MaibotPerformance {
+  totalTrades: number;
+  profitableTrades: number;
+  totalProfit: number;
+  dailyProfit: number;
+  winRate: number;
+  lastTradeTime: number;
+  analysesCompleted: number;
+  accuracyTrend: string;
+}
+
+interface LearningProgress {
+  completedAnalysis: number;
+  patterns_learned: number;
+  signals_detected: number;
+  learning_score: number;
+  sessionStart?: number;
+}
+
+interface GamifiedMetrics {
+  confidenceLevel: number;
+  lastActive: number;
+  tradingStreak: number;
+  experiencePoints: number;
+}
+
+interface TradingSignal {
+  type: string;
+  reason: string;
+  confidence: string;
+  suggestion: string;
+}
+
+interface MarketData {
+  price: number;
+  change24h: number;
+  volume: number;
+  rsi: number;
+  trend: string;
+  timestamp: number;
+  momentum?: number;
+  volatility?: string;
+  dataSource?: string;
+}
+
+interface Trade {
+  id: string;
+  type: string;
+  amount: number;
+  price: number;
+  timestamp: number;
+  status: string;
+  platformFee: number;
+  marketCondition?: string;
+  profit?: number;
+  confidence?: number;
+}
+
+interface TradeParams {
+  type: string;
+  amount: number;
+  price: number;
+  marketCondition?: string;
+}
+
+export interface MaibotStatus {
+  isActive: boolean;
+  startTime: number | null;
+  currentStrategy: string;
+  riskLevel: string;
+  confidence: number;
+  performance: MaibotPerformance;
+  platformFeeRate: number;
+  tier: string;
+  botType: string;
+  tradingMode: 'demo' | 'real';
+  limitations: {
+    maxPositionSize: number;
+    strategiesAvailable: number;
+    automationLevel: string;
+  };
+}
+
+export class RealTimeMaibot extends EventEmitter {
+  private instanceId: string;
+  private isActive: boolean = false;
+  private startTime: number | null = null;
+  private trades: Trade[] = [];
+  private performance: MaibotPerformance;
+  private confidence: number = 72.4;
+  private strategies: string[] = ['basic_trend_following', 'simple_rsi', 'support_resistance'];
+  private currentStrategy: string = 'basic_trend_following';
+  private riskLevel: string = 'conservative';
+  private maxPositionSize: number = 0.01;
+  private platformFeeRate: number = 0.35;
+  private tradingMode: 'demo' | 'real' = 'demo';
+  private learningProgress: LearningProgress;
+  private pendingSignals: TradingSignal[] = [];
+  private gamifiedMetrics: GamifiedMetrics;
+  private monitoringInterval?: NodeJS.Timeout;
+  private wallet: any;
+  private liveActivity: string[] = [];
+
   constructor() {
+    super();
     this.instanceId = `maibot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     console.log(`🤖 RealTimeMaibot constructor called - Instance ID: ${this.instanceId}`);
     
-    this.isActive = false;
-    this.startTime = null;
-    this.trades = [];
-    
-    // Initialize with realistic starting performance based on historical data
     this.performance = this.loadHistoricalPerformance();
-    this.confidence = 72.4; // Realistic confidence based on historical performance
-    this.strategies = ['basic_trend_following', 'simple_rsi', 'support_resistance'];
-    this.currentStrategy = 'basic_trend_following';
-    this.riskLevel = 'conservative'; // Very conservative for beginners
-    this.maxPositionSize = 0.01; // Small position sizes
-    this.platformFeeRate = 0.35; // 35% platform fee for free tier
-    this.tradingMode = 'demo'; // Initialize with demo mode
     this.learningProgress = {
       completedAnalysis: 0,
       patterns_learned: 0,
       signals_detected: 0,
       learning_score: 0
     };
-    this.pendingSignals = [];
     
-    // Initialize gamified metrics - all start at 0 for new account
     this.gamifiedMetrics = {
-      confidenceLevel: 0, // Builds with real experience
+      confidenceLevel: 0,
       lastActive: Date.now(),
       tradingStreak: 0,
       experiencePoints: 0
@@ -44,7 +136,7 @@ class RealTimeMaibot {
   /**
    * Start Maibot trading operations
    */
-  async start() {
+  async start(): Promise<{ success: boolean; message: string; startTime?: number; learningMode?: boolean }> {
     try {
       if (this.isActive) {
         return { success: false, message: 'Maibot is already learning' };
@@ -55,15 +147,15 @@ class RealTimeMaibot {
       
       console.log('🤖 Maibot Learning Mode activated - Beginning real-time market analysis and learning');
       
-      // Start real-time learning cycle (every 30 seconds for active learning)
       this.monitoringInterval = setInterval(() => {
         this.performBasicAnalysis();
         this.updateLearningProgress();
         this.naturalPerformanceGrowth();
-      }, 30 * 1000); // 30 seconds for real-time learning
+      }, 30 * 1000);
 
-      // Initialize learning session
       this.initializeLearningSession();
+
+      this.emit('started', this.getStatus());
 
       return { 
         success: true, 
@@ -71,16 +163,16 @@ class RealTimeMaibot {
         startTime: this.startTime,
         learningMode: true
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error starting Maibot Learning Mode:', error);
-      return { success: false, message: 'Failed to start Maibot learning', error: error.message };
+      return { success: false, message: 'Failed to start Maibot learning' };
     }
   }
 
   /**
    * Stop Maibot trading operations
    */
-  async stop() {
+  async stop(): Promise<{ success: boolean; message: string; totalRunTime?: number; learningsCompleted?: number }> {
     try {
       if (!this.isActive) {
         return { success: false, message: 'Maibot is not active' };
@@ -89,33 +181,34 @@ class RealTimeMaibot {
       this.isActive = false;
       if (this.monitoringInterval) {
         clearInterval(this.monitoringInterval);
-        this.monitoringInterval = null;
+        this.monitoringInterval = undefined;
       }
 
       console.log('🤖 Maibot Learning Mode deactivated - Stopping real-time analysis');
 
-      // Save learning session data
       this.saveLearningSession();
+
+      this.emit('stopped', this.getStatus());
 
       return { 
         success: true, 
         message: 'Maibot Learning Mode stopped - Session data saved',
-        totalRunTime: Date.now() - this.startTime,
+        totalRunTime: this.startTime ? Date.now() - this.startTime : 0,
         learningsCompleted: this.learningProgress?.completedAnalysis || 0
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Error stopping Maibot:', error);
-      return { success: false, message: 'Failed to stop Maibot', error: error.message };
+      return { success: false, message: 'Failed to stop Maibot' };
     }
   }
 
   /**
    * Get current Maibot status
    */
-  getStatus() {
+  getStatus(): MaibotStatus {
     console.log('🔍 Maibot getStatus() called - Current state: isActive =', this.isActive, 'startTime =', this.startTime);
     
-    const status = {
+    const status: MaibotStatus = {
       isActive: this.isActive,
       startTime: this.startTime,
       currentStrategy: this.currentStrategy,
@@ -140,12 +233,20 @@ class RealTimeMaibot {
   /**
    * Set trading mode for Maibot
    */
-  setTradingMode(mode) {
+  setTradingMode(mode: 'demo' | 'real'): void {
     this.tradingMode = mode;
     console.log(`🔄 Maibot trading mode set to: ${mode.toUpperCase()}`);
     
     if (mode === 'real') {
       console.log('⚠️ Real trading mode enabled - Live market execution for Maibot');
+      
+      smaisikaMiningEngine.recordTrade(
+        'maibot',
+        mode,
+        0,
+        'realMode_activated',
+        { timestamp: Date.now(), tradingMode: mode }
+      );
     } else {
       console.log('🎮 Demo mode enabled - Simulated trading only for Maibot');
     }
@@ -154,25 +255,21 @@ class RealTimeMaibot {
   /**
    * Perform basic market analysis for beginners with learning
    */
-  async performBasicAnalysis() {
+  private async performBasicAnalysis(): Promise<void> {
     if (!this.isActive) return;
 
     try {
-      // Simple market analysis suitable for beginners
       const marketData = await this.getBasicMarketData();
       const signals = this.generateBeginnerSignals(marketData);
       
-      // Update learning progress
       this.learningProgress.patterns_learned += signals.length;
       this.learningProgress.signals_detected += signals.length;
       
       if (signals.length > 0) {
         console.log(`📊 Maibot Learning: Detected ${signals.length} opportunities, Total patterns learned: ${this.learningProgress.patterns_learned}`);
-        // Store signals for manual review (no automatic trading)
         this.pendingSignals = signals;
       }
 
-      // Log real-time learning activity
       console.log(`🤖 Maibot Learning Analysis #${this.learningProgress.completedAnalysis + 1} - Market: ${marketData.trend}, RSI: ${marketData.rsi.toFixed(2)}, Price: $${marketData.price.toFixed(2)}`);
       
     } catch (error) {
@@ -183,13 +280,11 @@ class RealTimeMaibot {
   /**
    * Get basic market data for analysis
    */
-  async getBasicMarketData() {
+  private async getBasicMarketData(): Promise<MarketData> {
     try {
-      // Fetch real ETH data from existing API
       const response = await fetch('http://localhost:5000/api/eth/current-price');
       const ethData = await response.json();
       
-      // Get market analysis data
       const analysisResponse = await fetch('http://localhost:5000/api/eth/market-analysis');
       const analysisData = await analysisResponse.json();
       
@@ -205,7 +300,6 @@ class RealTimeMaibot {
       };
     } catch (error) {
       console.error('❌ Maibot failed to fetch real ETH data:', error);
-      // Fallback with warning
       return {
         price: 3500,
         change24h: 0,
@@ -221,10 +315,9 @@ class RealTimeMaibot {
   /**
    * Generate beginner-friendly trading signals
    */
-  generateBeginnerSignals(marketData) {
-    const signals = [];
+  private generateBeginnerSignals(marketData: MarketData): TradingSignal[] {
+    const signals: TradingSignal[] = [];
     
-    // Simple RSI-based signals
     if (marketData.rsi < 35) {
       signals.push({
         type: 'buy_opportunity',
@@ -243,7 +336,6 @@ class RealTimeMaibot {
       });
     }
 
-    // Trend-based signals
     if (marketData.trend === 'up' && marketData.change24h > 2) {
       signals.push({
         type: 'trend_following',
@@ -259,7 +351,7 @@ class RealTimeMaibot {
   /**
    * Execute a trade (with manual approval requirement)
    */
-  async executeTrade(tradeParams, userApproval = false) {
+  async executeTrade(tradeParams: TradeParams, userApproval: boolean = false): Promise<any> {
     if (!userApproval) {
       return {
         success: false,
@@ -269,26 +361,37 @@ class RealTimeMaibot {
     }
 
     try {
-      // Simulate trade execution for free tier
-      const trade = {
+      const trade: Trade = {
         id: `maibot_${Date.now()}`,
         type: tradeParams.type,
         amount: Math.min(tradeParams.amount, this.maxPositionSize),
         price: tradeParams.price,
         timestamp: Date.now(),
         status: 'completed',
-        platformFee: tradeParams.amount * this.platformFeeRate
+        platformFee: tradeParams.amount * this.platformFeeRate,
+        marketCondition: tradeParams.marketCondition
       };
 
       this.trades.push(trade);
       this.updatePerformance(trade);
+
+      // Record in SmaiSika mining engine if in real mode
+      if (this.tradingMode === 'real' && trade.profit) {
+        await smaisikaMiningEngine.recordTrade(
+          'maibot',
+          this.tradingMode,
+          trade.profit,
+          trade.profit > 0 ? 'win' : 'loss',
+          trade
+        );
+      }
 
       return {
         success: true,
         trade,
         message: 'Trade executed successfully with manual approval'
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Maibot trade execution error:', error);
       return {
         success: false,
@@ -301,11 +404,10 @@ class RealTimeMaibot {
   /**
    * Load historical performance data for realistic starting metrics
    */
-  loadHistoricalPerformance() {
-    // Simulate realistic performance based on market learning over time
-    const historicalAnalyses = 234; // Simulates weeks of market analysis
+  private loadHistoricalPerformance(): MaibotPerformance {
+    const historicalAnalyses = 234;
     const signalsGenerated = 156;
-    const successfulSignals = Math.floor(signalsGenerated * 0.67); // 67% accuracy rate
+    const successfulSignals = Math.floor(signalsGenerated * 0.67);
     
     return {
       totalTrades: signalsGenerated,
@@ -313,7 +415,7 @@ class RealTimeMaibot {
       totalProfit: 1247.83,
       dailyProfit: 23.45,
       winRate: (successfulSignals / signalsGenerated) * 100,
-      lastTradeTime: Date.now() - (2 * 24 * 60 * 60 * 1000), // 2 days ago
+      lastTradeTime: Date.now() - (2 * 24 * 60 * 60 * 1000),
       analysesCompleted: historicalAnalyses,
       accuracyTrend: 'improving'
     };
@@ -322,33 +424,30 @@ class RealTimeMaibot {
   /**
    * Update performance metrics with natural growth
    */
-  updatePerformance(trade) {
+  private updatePerformance(trade: Trade): void {
     this.performance.totalTrades += 1;
     
-    // Determine trade success based on market conditions
     const isSuccessful = this.determineTradeSuccess(trade);
     
     if (isSuccessful) {
       this.performance.profitableTrades += 1;
-      const profit = trade.amount * (0.02 + Math.random() * 0.03); // 2-5% profit
+      const profit = trade.amount * (0.02 + Math.random() * 0.03);
       this.performance.totalProfit += profit;
       this.performance.dailyProfit += profit;
       trade.profit = profit;
     } else {
-      const loss = trade.amount * (0.01 + Math.random() * 0.02); // 1-3% loss
+      const loss = trade.amount * (0.01 + Math.random() * 0.02);
       this.performance.totalProfit -= loss;
       this.performance.dailyProfit -= loss;
       trade.profit = -loss;
     }
 
-    // Calculate winRate with natural variance
     this.performance.winRate = this.performance.totalTrades > 0 
       ? (this.performance.profitableTrades / this.performance.totalTrades) * 100 
-      : 67.3; // Starting realistic win rate
+      : 67.3;
     
     this.performance.lastTradeTime = trade.timestamp;
     
-    // Gradually improve confidence based on successful analyses
     if (isSuccessful) {
       this.confidence = Math.min(95, this.confidence + 0.5);
     }
@@ -357,29 +456,26 @@ class RealTimeMaibot {
   /**
    * Determine trade success based on real market conditions
    */
-  determineTradeSuccess(trade) {
+  private determineTradeSuccess(trade: Trade): boolean {
     try {
-      // Base success rate of 67% for conservative strategy
       let successProbability = 0.67;
       
-      // Adjust based on market conditions
       if (trade.marketCondition === 'bullish') successProbability += 0.1;
       if (trade.marketCondition === 'bearish') successProbability -= 0.1;
       
-      // Factor in bot's learning progress
       const learningBonus = Math.min(0.15, this.learningProgress.learning_score / 100 * 0.15);
       successProbability += learningBonus;
       
       return Math.random() < successProbability;
     } catch (error) {
-      return Math.random() < 0.67; // Fallback to base rate
+      return Math.random() < 0.67;
     }
   }
 
   /**
    * Get recent trades
    */
-  getRecentTrades(limit = 10) {
+  getRecentTrades(limit: number = 10): Trade[] {
     return this.trades
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, limit);
@@ -388,14 +484,14 @@ class RealTimeMaibot {
   /**
    * Get pending signals for manual review
    */
-  getPendingSignals() {
+  getPendingSignals(): TradingSignal[] {
     return this.pendingSignals || [];
   }
 
   /**
    * Clear pending signals after review
    */
-  clearPendingSignals() {
+  clearPendingSignals(): { success: boolean; message: string } {
     this.pendingSignals = [];
     return { success: true, message: 'Pending signals cleared' };
   }
@@ -403,7 +499,7 @@ class RealTimeMaibot {
   /**
    * Initialize learning session
    */
-  initializeLearningSession() {
+  private initializeLearningSession(): void {
     this.learningProgress = {
       completedAnalysis: 0,
       patterns_learned: 0,
@@ -417,27 +513,21 @@ class RealTimeMaibot {
   /**
    * Update gamified metrics and wallet state with real-time data
    */
-  async updateGamifiedMetrics() {
-    // Update activity timestamp
+  private async updateGamifiedMetrics(): Promise<void> {
     this.gamifiedMetrics.lastActive = Date.now();
     
     try {
-      // Get real market data for metrics calculation
       const marketData = await this.getBasicMarketData();
       
-      // Learning simulation (beginner bot) based on real market conditions
       if (this.isActive) {
-        // Confidence adjusts based on market volatility
         const volatilityImpact = marketData.volatility === 'HIGH' ? -2 : 1;
         this.gamifiedMetrics.confidenceLevel = Math.min(95, Math.max(40, this.gamifiedMetrics.confidenceLevel + volatilityImpact));
         
-        // Update wallet balance based on market performance
         const marketPerformance = marketData.change24h || 0;
-        if (marketPerformance > 2) {
+        if (marketPerformance > 2 && this.wallet) {
           this.wallet.dailyProfit = Math.max(0, this.wallet.dailyProfit + Math.random() * 10);
         }
         
-        // Update trading mode and live activity based on real ETH data
         this.liveActivity = [
           '🆓 Free tier active',
           `📊 Learning from ETH at $${marketData.price.toFixed(2)}`,
@@ -453,19 +543,16 @@ class RealTimeMaibot {
   /**
    * Update learning progress with real market awareness
    */
-  async updateLearningProgress() {
+  private async updateLearningProgress(): Promise<void> {
     this.learningProgress.completedAnalysis += 1;
     this.learningProgress.learning_score = Math.min(100, this.learningProgress.completedAnalysis * 2);
     
-    // Simulate successful signal analysis that improves performance
     if (this.learningProgress.completedAnalysis % 5 === 0) {
       await this.simulateMarketSignalAnalysis();
     }
     
-    // Update gamified metrics with real market data
     await this.updateGamifiedMetrics();
     
-    // Log progress every 10 analysis cycles
     if (this.learningProgress.completedAnalysis % 10 === 0) {
       console.log(`📈 Maibot Learning Progress: ${this.learningProgress.completedAnalysis} analyses completed, Score: ${this.learningProgress.learning_score}/100`);
     }
@@ -474,22 +561,22 @@ class RealTimeMaibot {
   /**
    * Simulate market signal analysis to naturally grow performance metrics
    */
-  async simulateMarketSignalAnalysis() {
+  private async simulateMarketSignalAnalysis(): Promise<void> {
     try {
       const marketData = await this.getBasicMarketData();
       
-      // Create a simulated signal analysis result
-      const analysis = {
+      const analysis: Trade = {
         id: `analysis_${Date.now()}`,
         type: 'market_analysis',
         marketCondition: marketData.trend === 'up' ? 'bullish' : marketData.trend === 'down' ? 'bearish' : 'neutral',
-        amount: 0.005, // Small analysis amount for learning
+        amount: 0.005,
         price: marketData.price,
         timestamp: Date.now(),
+        status: 'completed',
+        platformFee: 0,
         confidence: this.confidence
       };
       
-      // Update performance based on this analysis
       this.updatePerformance(analysis);
       
       console.log(`📊 Maibot Signal Analysis: ${analysis.marketCondition} market, Win Rate: ${this.performance.winRate.toFixed(1)}%`);
@@ -501,28 +588,23 @@ class RealTimeMaibot {
   /**
    * Natural performance growth - makes metrics evolve realistically
    */
-  naturalPerformanceGrowth() {
+  private naturalPerformanceGrowth(): void {
     if (!this.isActive) return;
     
-    // Gradually improve performance through experience (small increments)
-    const experienceGrowth = Math.random() * 0.1; // Up to 0.1% improvement per cycle
-    const totalTradesGrowth = Math.random() < 0.3 ? 1 : 0; // Sometimes add a trade analysis
+    const experienceGrowth = Math.random() * 0.1;
+    const totalTradesGrowth = Math.random() < 0.3 ? 1 : 0;
     
     if (totalTradesGrowth > 0) {
       this.performance.totalTrades += totalTradesGrowth;
       
-      // Small chance of profitable analysis
-      if (Math.random() < 0.68) { // 68% success rate
+      if (Math.random() < 0.68) {
         this.performance.profitableTrades += 1;
-        const smallProfit = 2.45 + (Math.random() * 5.8); // $2.45 to $8.23 profit
+        const smallProfit = 2.45 + (Math.random() * 5.8);
         this.performance.totalProfit += smallProfit;
         this.performance.dailyProfit += smallProfit;
       }
       
-      // Recalculate win rate
       this.performance.winRate = (this.performance.profitableTrades / this.performance.totalTrades) * 100;
-      
-      // Gradually increase confidence with experience
       this.confidence = Math.min(85, this.confidence + experienceGrowth);
     }
   }
@@ -530,11 +612,11 @@ class RealTimeMaibot {
   /**
    * Save learning session data
    */
-  saveLearningSession() {
+  private saveLearningSession(): any {
     const sessionData = {
       ...this.learningProgress,
       sessionEnd: Date.now(),
-      totalDuration: Date.now() - (this.learningProgress.sessionStart || this.startTime)
+      totalDuration: Date.now() - (this.learningProgress.sessionStart || this.startTime || Date.now())
     };
     console.log('💾 Maibot Learning Session saved:', sessionData);
     return sessionData;
@@ -543,13 +625,13 @@ class RealTimeMaibot {
   /**
    * Get learning status
    */
-  getLearningStatus() {
+  getLearningStatus(): any {
     return {
       isLearning: this.isActive,
       progress: this.learningProgress,
       currentStrategy: this.currentStrategy,
       pendingSignalsCount: this.pendingSignals?.length || 0,
-      nextAnalysis: this.isActive ? 30 - ((Date.now() - this.startTime) % 30000) / 1000 : null
+      nextAnalysis: this.isActive && this.startTime ? 30 - ((Date.now() - this.startTime) % 30000) / 1000 : null
     };
   }
 }
@@ -557,7 +639,6 @@ class RealTimeMaibot {
 // Export singleton instance
 const maibotInstance = new RealTimeMaibot();
 
-// Add logging to track instance state
 console.log('🤖 RealTimeMaibot singleton instance created');
 
 export const realTimeMaibot = maibotInstance;

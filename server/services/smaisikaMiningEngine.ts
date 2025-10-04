@@ -628,6 +628,37 @@ class SmaisikaMiningEngine {
     return result;
   }
 
+  // Generic record trade method for all bot types
+  async recordTrade(
+    botName: string,
+    tradingMode: 'demo' | 'real',
+    profitOrLoss: number,
+    outcome: 'win' | 'loss' | 'realMode_activated' | string,
+    tradeData: any
+  ): Promise<{ success: boolean; message?: string }> {
+    try {
+      const userId = tradeData.userId || 1; // Default to user 1 if not provided
+      const tradeId = tradeData.id || `trade_${Date.now()}`;
+      
+      // Only record real mode trades for profit sharing
+      if (tradingMode === 'real' && outcome === 'win' && profitOrLoss > 0) {
+        const result = await this.recordTradeProfit(userId, profitOrLoss, tradeId, botName);
+        console.log(`💰 ${botName} trade recorded: $${profitOrLoss.toFixed(2)} profit (50/50 split applied)`);
+        return { success: result.success, message: `Profit recorded with 50/50 split` };
+      } else if (tradingMode === 'real' && outcome === 'loss' && profitOrLoss < 0) {
+        await this.recordTradeLoss(userId, Math.abs(profitOrLoss), tradeId, botName);
+        return { success: true, message: 'Loss recorded' };
+      }
+      
+      // Demo mode or activation event - just log
+      console.log(`📊 ${botName} ${tradingMode} mode: ${outcome}`);
+      return { success: true, message: `${outcome} recorded for ${botName}` };
+    } catch (error) {
+      console.error(`❌ Failed to record trade for ${botName}:`, error);
+      return { success: false, message: 'Failed to record trade' };
+    }
+  }
+
   private async getUserReputation(userId: number): Promise<{ smaiOnyixScore: number; miningEfficiency: number }> {
     const reputation = await db.select().from(userReputation).where(eq(userReputation.userId, userId)).limit(1);
     
