@@ -42,16 +42,16 @@ class KonsMeshWebSocketManager {
       this.clients.set(clientId, ws);
       console.log(`🌐 KonsMesh client connected: ${clientId}`);
 
-      // Send connection acknowledgment
-      this.sendMessage(ws, {
-        type: 'DATA_UPDATE',
-        payload: {
-          connectionId: clientId,
-          status: 'connected',
-          serverTime: new Date().toISOString()
-        },
-        timestamp: Date.now()
-      });
+      // TODO: Send connection acknowledgment once frontend schema is aligned
+      // this.sendMessage(ws, {
+      //   type: 'DATA_UPDATE',
+      //   payload: {
+      //     connectionId: clientId,
+      //     status: 'connected',
+      //     serverTime: new Date().toISOString()
+      //   },
+      //   timestamp: Date.now()
+      // });
 
       // Handle incoming messages
       ws.on('message', async (data: Buffer) => {
