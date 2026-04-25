@@ -1,0 +1,617 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waides AI - ETH Trading Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#0d1117',
+                        'dark-card': '#161b22',
+                        'dark-border': '#21262d',
+                        'accent-green': '#00ff88',
+                        'accent-red': '#ff4757',
+                        'accent-yellow': '#ffa502',
+                        'text-primary': '#f0f6fc',
+                        'text-secondary': '#8b949e'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'glow-green': '0 0 20px rgba(0, 255, 136, 0.3)',
+                        'glow-red': '0 0 20px rgba(255, 71, 87, 0.3)',
+                        'glow-yellow': '0 0 20px rgba(255, 165, 2, 0.3)'
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-dark-bg text-text-primary font-sans min-h-screen">
+    <!-- @COMPONENT: MainLayout -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <!-- @COMPONENT: Sidebar -->
+        <div class="w-64 bg-dark-card border-r border-dark-border flex-shrink-0">
+            <div class="p-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-10 h-10 bg-gradient-to-br from-accent-green to-blue-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-brain text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-text-primary">Waides AI</h1>
+                        <p class="text-xs text-text-secondary">ETH Trading Assistant</p>
+                    </div>
+                </div>
+                
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg bg-dark-bg text-text-primary hover:bg-opacity-50 transition-colors">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-text-secondary hover:bg-dark-bg hover:text-text-primary transition-colors">
+                        <i class="fas fa-signal w-5"></i>
+                        <span>Signals</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-text-secondary hover:bg-dark-bg hover:text-text-primary transition-colors">
+                        <i class="fas fa-history w-5"></i>
+                        <span>History</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-text-secondary hover:bg-dark-bg hover:text-text-primary transition-colors">
+                        <i class="fas fa-cog w-5"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg text-text-secondary hover:bg-dark-bg hover:text-text-primary transition-colors" data-event="click:toggleAdminPanel">
+                        <i class="fas fa-shield-alt w-5"></i>
+                        <span>Admin</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- KonsLang Panel -->
+            <!-- @COMPONENT: KonsPanel -->
+            <div class="p-6 border-t border-dark-border mt-auto">
+                <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg p-4 border border-purple-500/30">
+                    <h3 class="text-sm font-semibold text-purple-300 mb-2">
+                        <i class="fas fa-magic mr-2"></i>Kons Powa
+                    </h3>
+                    <p class="text-xs text-text-secondary" data-bind="konsMessage" data-mock="true">
+                        "The market whispers secrets to those who listen with patience..."
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <!-- @COMPONENT: Header -->
+            <header class="bg-dark-card border-b border-dark-border p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-xl font-semibold">ETH Trading Dashboard</h2>
+                        <div class="flex items-center space-x-2 text-sm text-text-secondary">
+                            <div class="w-2 h-2 bg-accent-green rounded-full animate-pulse"></div>
+                            <span>Live Data</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- Alert Bell -->
+                        <button class="relative p-2 text-text-secondary hover:text-text-primary transition-colors" data-event="click:toggleNotifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 w-3 h-3 bg-accent-red rounded-full text-xs flex items-center justify-center" data-mock="true">2</span>
+                        </button>
+                        
+                        <!-- Connection Status -->
+                        <div class="flex items-center space-x-2 text-sm">
+                            <div class="w-2 h-2 bg-accent-green rounded-full"></div>
+                            <span class="text-text-secondary">Connected</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: Header -->
+
+            <!-- Main Dashboard -->
+            <main class="flex-1 overflow-auto p-6 space-y-6">
+                <!-- ETH Price Overview -->
+                <!-- @COMPONENT: PriceOverview -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-2 bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Ethereum (ETH)</h3>
+                            <div class="flex items-center space-x-2 text-sm text-text-secondary">
+                                <i class="fas fa-clock"></i>
+                                <span data-bind="lastUpdated" data-mock="true">12:34:56 UTC</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-end space-x-4">
+                            <div>
+                                <div class="text-3xl font-bold text-text-primary" data-bind="ethPrice" data-mock="true">$2,487.32</div>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span class="text-accent-green text-sm font-medium" data-bind="priceChange" data-mock="true">+2.45%</span>
+                                    <span class="text-text-secondary text-sm" data-bind="priceChange24h" data-mock="true">+$59.12</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Mini Chart Placeholder -->
+                            <div class="flex-1 h-16 relative">
+                                <!-- Mini candlestick visualization placeholder -->
+                                <div class="absolute inset-0 flex items-end justify-between space-x-1">
+                                    <!-- @FUNCTIONALITY: Replace with actual candlestick chart using Chart.js or similar -->
+                                    <div class="w-2 bg-accent-green/60 h-8 rounded-sm" data-mock="true"></div>
+                                    <div class="w-2 bg-accent-red/60 h-6 rounded-sm" data-mock="true"></div>
+                                    <div class="w-2 bg-accent-green/60 h-10 rounded-sm" data-mock="true"></div>
+                                    <div class="w-2 bg-accent-green/60 h-12 rounded-sm" data-mock="true"></div>
+                                    <div class="w-2 bg-accent-red/60 h-8 rounded-sm" data-mock="true"></div>
+                                    <div class="w-2 bg-accent-green/60 h-14 rounded-sm" data-mock="true"></div>
+                                    <div class="w-2 bg-accent-green/60 h-16 rounded-sm" data-mock="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Volume & Market Data -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <h4 class="text-sm font-medium text-text-secondary mb-4">24h Volume</h4>
+                        <div class="text-2xl font-bold text-text-primary" data-bind="volume24h" data-mock="true">$12.8B</div>
+                        <div class="text-sm text-accent-green mt-1" data-bind="volumeChange" data-mock="true">+8.2%</div>
+                        
+                        <div class="mt-4 pt-4 border-t border-dark-border">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-text-secondary">Market Cap</span>
+                                <span class="text-text-primary" data-bind="marketCap" data-mock="true">$298.7B</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fear & Greed Index -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <h4 class="text-sm font-medium text-text-secondary mb-4">Fear & Greed</h4>
+                        <div class="text-2xl font-bold text-accent-yellow" data-bind="fearGreedIndex" data-mock="true">64</div>
+                        <div class="text-sm text-text-secondary mt-1">Greed</div>
+                        
+                        <div class="mt-4">
+                            <div class="w-full bg-dark-bg rounded-full h-2">
+                                <div class="bg-gradient-to-r from-accent-red via-accent-yellow to-accent-green h-2 rounded-full relative">
+                                    <div class="absolute right-1/3 top-0 w-1 h-2 bg-white rounded-full" data-mock="true"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: PriceOverview -->
+
+                <!-- Signal Cards Row -->
+                <!-- @COMPONENT: SignalCards -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Current Signal -->
+                    <!-- @COMPONENT: SignalCard [current active signal] -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border shadow-glow-green">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Current Signal</h3>
+                            <div class="px-3 py-1 bg-accent-green/20 text-accent-green rounded-full text-sm font-medium">
+                                LONG
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-arrow-up text-accent-green text-xl"></i>
+                                <div>
+                                    <div class="font-semibold text-text-primary" data-bind="currentSignal" data-mock="true">🟢 Go Long — Strong Uptrend Detected</div>
+                                    <div class="text-sm text-text-secondary">Confidence: 87%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-dark-bg rounded-lg p-3">
+                                <div class="text-sm text-text-secondary mb-1">Entry Point</div>
+                                <div class="font-semibold text-accent-green" data-bind="entryPoint" data-mock="true">$2,485.00</div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <div class="flex-1 bg-dark-bg rounded-lg p-3">
+                                    <div class="text-xs text-text-secondary">Target</div>
+                                    <div class="font-semibold text-accent-green" data-bind="targetPrice" data-mock="true">$2,580</div>
+                                </div>
+                                <div class="flex-1 bg-dark-bg rounded-lg p-3">
+                                    <div class="text-xs text-text-secondary">Stop Loss</div>
+                                    <div class="font-semibold text-accent-red" data-bind="stopLoss" data-mock="true">$2,420</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: SignalCard -->
+                    
+                    <!-- Signal Strength -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <h3 class="text-lg font-semibold mb-4">Signal Strength</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-text-secondary">Technical Analysis</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-24 bg-dark-bg rounded-full h-2">
+                                        <div class="bg-accent-green h-2 rounded-full" style="width: 75%" data-mock="true"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-accent-green">75%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-text-secondary">Volume Analysis</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-24 bg-dark-bg rounded-full h-2">
+                                        <div class="bg-accent-yellow h-2 rounded-full" style="width: 60%" data-mock="true"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-accent-yellow">60%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-text-secondary">Market Sentiment</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-24 bg-dark-bg rounded-full h-2">
+                                        <div class="bg-accent-green h-2 rounded-full" style="width: 85%" data-mock="true"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-accent-green">85%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-dark-border">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-accent-green" data-bind="overallStrength" data-mock="true">78%</div>
+                                    <div class="text-sm text-text-secondary">Overall Strength</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Alerts -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <h3 class="text-lg font-semibold mb-4">Recent Alerts</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3 p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="w-2 h-2 bg-accent-green rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-text-primary">Strong Buy Signal</div>
+                                    <div class="text-xs text-text-secondary">2 minutes ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3 p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="w-2 h-2 bg-accent-yellow rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-text-primary">Volume Spike Detected</div>
+                                    <div class="text-xs text-text-secondary">8 minutes ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3 p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="w-2 h-2 bg-accent-red rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <div class="text-sm font-medium text-text-primary">Support Level Tested</div>
+                                    <div class="text-xs text-text-secondary">15 minutes ago</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-4 text-sm text-text-secondary hover:text-text-primary transition-colors">
+                            View All Alerts
+                        </button>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: SignalCards -->
+
+                <!-- Chart and History Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Price Chart -->
+                    <!-- @COMPONENT: PriceChart -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">ETH/USD Chart</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-accent-green/20 text-accent-green rounded">1H</button>
+                                <button class="px-3 py-1 text-xs text-text-secondary hover:text-text-primary">4H</button>
+                                <button class="px-3 py-1 text-xs text-text-secondary hover:text-text-primary">1D</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Placeholder -->
+                        <div class="h-64 bg-dark-bg rounded-lg flex items-center justify-center relative overflow-hidden">
+                            <!-- @FUNCTIONALITY: This should implement actual candlestick chart using Chart.js or similar -->
+                            <div class="absolute inset-4 flex items-end justify-between">
+                                <!-- Simulated candlestick chart -->
+                                <!-- @MAP: chartData.map(candle => ( -->
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-green h-8"></div>
+                                    <div class="w-3 bg-accent-green h-4"></div>
+                                    <div class="w-1 bg-accent-green h-6"></div>
+                                </div>
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-red h-6"></div>
+                                    <div class="w-3 bg-accent-red h-3"></div>
+                                    <div class="w-1 bg-accent-red h-8"></div>
+                                </div>
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-green h-10"></div>
+                                    <div class="w-3 bg-accent-green h-5"></div>
+                                    <div class="w-1 bg-accent-green h-7"></div>
+                                </div>
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-green h-12"></div>
+                                    <div class="w-3 bg-accent-green h-6"></div>
+                                    <div class="w-1 bg-accent-green h-8"></div>
+                                </div>
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-red h-8"></div>
+                                    <div class="w-3 bg-accent-red h-4"></div>
+                                    <div class="w-1 bg-accent-red h-10"></div>
+                                </div>
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-green h-14"></div>
+                                    <div class="w-3 bg-accent-green h-7"></div>
+                                    <div class="w-1 bg-accent-green h-9"></div>
+                                </div>
+                                <div class="flex flex-col items-center space-y-1" data-mock="true">
+                                    <div class="w-1 bg-accent-green h-16"></div>
+                                    <div class="w-3 bg-accent-green h-8"></div>
+                                    <div class="w-1 bg-accent-green h-10"></div>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                            
+                            <!-- Chart overlay with price levels -->
+                            <div class="absolute top-4 left-4 text-xs text-text-secondary">
+                                <div data-mock="true">High: $2,495.50</div>
+                                <div data-mock="true">Low: $2,465.20</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: PriceChart -->
+                    
+                    <!-- Signal History -->
+                    <!-- @COMPONENT: SignalHistory -->
+                    <div class="bg-dark-card rounded-xl p-6 border border-dark-border">
+                        <h3 class="text-lg font-semibold mb-4">Signal History</h3>
+                        
+                        <div class="space-y-3 max-h-64 overflow-y-auto">
+                            <!-- @MAP: signalHistory.map(signal => ( -->
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-accent-green/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-arrow-up text-accent-green text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-text-primary">LONG Signal</div>
+                                        <div class="text-xs text-text-secondary">Entry: $2,485</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-accent-green">+2.1%</div>
+                                    <div class="text-xs text-text-secondary">2h ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-accent-red/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-arrow-down text-accent-red text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-text-primary">SHORT Signal</div>
+                                        <div class="text-xs text-text-secondary">Entry: $2,520</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-accent-green">+1.8%</div>
+                                    <div class="text-xs text-text-secondary">6h ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-accent-yellow/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-minus text-accent-yellow text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-text-primary">HOLD Signal</div>
+                                        <div class="text-xs text-text-secondary">Wait for breakout</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-text-secondary">0.0%</div>
+                                    <div class="text-xs text-text-secondary">8h ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg" data-mock="true">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-accent-green/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-arrow-up text-accent-green text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-text-primary">LONG Signal</div>
+                                        <div class="text-xs text-text-secondary">Entry: $2,465</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-medium text-accent-red">-0.5%</div>
+                                    <div class="text-xs text-text-secondary">12h ago</div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-dark-border">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-text-secondary">Win Rate (24h)</span>
+                                <span class="text-accent-green font-medium" data-bind="winRate" data-mock="true">73%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: SignalHistory -->
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MainLayout -->
+
+    <!-- Admin Panel Modal -->
+    <!-- @COMPONENT: AdminPanel [hidden by default] -->
+    <div id="adminPanel" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-dark-card rounded-xl p-6 border border-dark-border max-w-md w-full">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold">Admin Panel</h3>
+                    <button class="text-text-secondary hover:text-text-primary" data-event="click:closeAdminPanel">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form class="space-y-4" data-event="submit:saveApiKeys">
+                    <!-- TODO: Implement secure API key storage -->
+                    <div>
+                        <label class="block text-sm font-medium text-text-secondary mb-2">CoinGecko API Key</label>
+                        <input type="password" class="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-text-primary placeholder-text-secondary focus:border-accent-green focus:outline-none" placeholder="Enter API key..." data-mock="true">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-text-secondary mb-2">CryptoPanic API Key</label>
+                        <input type="password" class="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-text-primary placeholder-text-secondary focus:border-accent-green focus:outline-none" placeholder="Enter API key..." data-mock="true">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-text-secondary mb-2">TradingView API Key</label>
+                        <input type="password" class="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-text-primary placeholder-text-secondary focus:border-accent-green focus:outline-none" placeholder="Enter API key..." data-mock="true">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-text-secondary mb-2">Twitter API Key</label>
+                        <input type="password" class="w-full px-3 py-2 bg-dark-bg border border-dark-border rounded-lg text-text-primary placeholder-text-secondary focus:border-accent-green focus:outline-none" placeholder="Enter API key..." data-mock="true">
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-accent-green text-dark-bg font-medium py-2 px-4 rounded-lg hover:bg-accent-green/90 transition-colors">
+                            Save Keys
+                        </button>
+                        <button type="button" class="flex-1 bg-dark-bg text-text-secondary font-medium py-2 px-4 rounded-lg hover:text-text-primary transition-colors" data-event="click:closeAdminPanel">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AdminPanel -->
+
+    <!-- Notification Toast -->
+    <!-- @COMPONENT: NotificationToast [hidden by default] -->
+    <div id="notificationToast" class="fixed top-4 right-4 bg-dark-card border border-dark-border rounded-lg p-4 shadow-lg z-40 hidden">
+        <div class="flex items-start space-x-3">
+            <div class="w-8 h-8 bg-accent-green/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-check text-accent-green text-sm"></i>
+            </div>
+            <div class="flex-1">
+                <div class="font-medium text-text-primary" data-bind="toastTitle" data-mock="true">API Keys Saved</div>
+                <div class="text-sm text-text-secondary" data-bind="toastMessage" data-mock="true">Your API keys have been securely stored.</div>
+            </div>
+            <button class="text-text-secondary hover:text-text-primary" data-event="click:closeToast">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: NotificationToast -->
+
+    <script>
+        // Basic UI interactions - no business logic
+        (function() {
+            // Admin panel toggle
+            const adminButton = document.querySelector('[data-event="click:toggleAdminPanel"]');
+            const adminPanel = document.getElementById('adminPanel');
+            const closeAdminButtons = document.querySelectorAll('[data-event="click:closeAdminPanel"]');
+            
+            if (adminButton) {
+                adminButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    adminPanel.classList.remove('hidden');
+                });
+            }
+            
+            closeAdminButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    adminPanel.classList.add('hidden');
+                });
+            });
+            
+            // Form submission
+            const adminForm = document.querySelector('[data-event="submit:saveApiKeys"]');
+            const notificationToast = document.getElementById('notificationToast');
+            
+            if (adminForm) {
+                adminForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // TODO: Implement actual API key saving logic
+                    console.log('Saving API keys...');
+                    
+                    // Show success notification
+                    adminPanel.classList.add('hidden');
+                    notificationToast.classList.remove('hidden');
+                    
+                    // Auto-hide notification after 3 seconds
+                    setTimeout(() => {
+                        notificationToast.classList.add('hidden');
+                    }, 3000);
+                });
+            }
+            
+            // Close toast
+            const closeToastButton = document.querySelector('[data-event="click:closeToast"]');
+            if (closeToastButton) {
+                closeToastButton.addEventListener('click', () => {
+                    notificationToast.classList.add('hidden');
+                });
+            }
+            
+            // Real-time data simulation
+            function simulateRealtimeData() {
+                // TODO: Replace with actual WebSocket connection to trading APIs
+                const priceElement = document.querySelector('[data-bind="ethPrice"]');
+                const lastUpdatedElement = document.querySelector('[data-bind="lastUpdated"]');
+                
+                if (priceElement && lastUpdatedElement) {
+                    // Simulate price updates
+                    setInterval(() => {
+                        const currentPrice = parseFloat(priceElement.textContent.replace('$', '').replace(',', ''));
+                        const change = (Math.random() - 0.5) * 10; // Random change between -5 and +5
+                        const newPrice = Math.max(2400, currentPrice + change);
+                        
+                        priceElement.textContent = `$${newPrice.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+                        lastUpdatedElement.textContent = new Date().toLocaleTimeString() + ' UTC';
+                    }, 5000); // Update every 5 seconds
+                }
+            }
+            
+            // Initialize real-time simulation
+            simulateRealtimeData();
+            
+            // @STATE: adminPanelOpen:boolean = false
+            // @STATE: notificationVisible:boolean = false
+            // @STATE: ethPrice:number = 2487.32
+            // @STATE: signalData:object = {}
+            // @STATE: chartData:array = []
+        })();
+    </script>
+</body>
+</html>

@@ -15180,6 +15180,11 @@ Ask me about specific market conditions, upload files for analysis, or request K
   app.use('/api/admin', viewerAdminRoutes);
   console.log('👁️ Viewer admin routes registered');
 
+  // === BROKER INTEGRATION ROUTES ===
+  const { default: registerBrokerRoutes } = await import('./routes/brokers.js');
+  registerBrokerRoutes(app);
+  console.log('🔌 Broker integration routes registered');
+
   // Initialize Enhanced WebSocket Systems
   // 1. KonsMesh WebSocket for real-time system synchronization
   const { konsMeshManager } = await import('./websocket/konsMeshWebSocket.js');

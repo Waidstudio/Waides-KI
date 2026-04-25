@@ -1,0 +1,125 @@
+[1G[0K⠙[1G[0K
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K⠙[1G[0K🔐 KonsAi Mesh Security Layer initialized - End-to-End encryption active
+💓 Heartbeat monitoring started
+💪 KonsAi Mesh Reliability Layer initialized - Fault tolerance active
+📡 KonsAi Advanced Broadcast System initialized - Omniscient control active
+📜 Contract defined: EntityTradingProtocol v1.0.0
+📜 Contract defined: SystemBroadcastProtocol v1.0.0
+📜 Contract defined: MeshGovernanceProtocol v1.0.0
+📜 Initialized 3 KonsLang communication contracts
+📜 KonsAi Mesh Communication Contracts initialized - KonsLang protocols active
+🎛️ KonsAi Mesh Control Center initialized - Unified mesh management active
+🔮 WaidBot KonsLang Engine Initialized - No External APIs Required
+🎛️ KonsAi Mesh Control Center initialized - Unified mesh management active
+🌐 KonsAi Mesh Data Distributor initializing...
+📊 ETH price monitoring started - Updates every 10 seconds
+🔗 Mesh integration established
+🌐 KonsAi Mesh Data Distributor active - Real-time data distribution enabled
+🔹 Master Bot Alignment & Deployment routes registered
+💬 Chat system routes registered
+🔐 Unified admin routes registered
+⚙️ System admin routes registered
+📈 Trading admin routes registered
+🎧 Support admin routes registered
+👁️ Viewer admin routes registered
+💓 KonsMesh heartbeat system started
+📡 KonsMesh data broadcasting started
+🌐 Enhanced KonsMesh WebSocket server initialized on /ws
+💓 Wallet heartbeat system started
+💰 Wallet real-time updates started
+💰 Wallet WebSocket server initialized on /ws/wallet
+💬 WaidChat WebSocket server initialized on /ws/chat
+🌐 Enhanced WebSocket infrastructure operational (KonsMesh + Wallet + Chat)
+📢 Update distributed to 0 subscribers
+💰 ETH price distributed: $2194.78 (2.67%)
+🔐 Admin authentication system initialized
+1:42:59 PM [express] serving on port 5000
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+1:43:36 PM [express] GET /api/user-auth/me 401 in 2ms :: {"success":false,"message":"Invalid token"}
+1:43:36 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:43:36 PM [express] GET /api/mode/current 200 in 21ms :: {"success":true,"mode":"demo"}
+1:43:36 PM [express] GET /api/kons-powa/stats 200 in 11ms :: {"total":106,"completed":4,"pending":10…
+1:43:36 PM [express] GET /api/platform/live-stats 200 in 140ms :: {"success":true,"stats":{"activeTr…
+1:43:36 PM [express] GET /api/platform/exchange-status 200 in 173ms :: {"exchanges":[{"name":"Binanc…
+1:43:36 PM [express] GET /api/chat/oracle/status 200 in 1ms :: {"status":"active","message":"Oracle …
+1:43:36 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:43:37 PM [express] GET /api/wallet/transactions 200 in 2ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:43:46 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:43:52 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:43:56 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:44:06 PM [express] GET /api/platform/live-stats 200 in 132ms :: {"success":true,"stats":{"activeTr…
+1:44:07 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:44:07 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:44:17 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:44:23 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:44:27 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:44:36 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:44:37 PM [express] GET /api/platform/live-stats 200 in 130ms :: {"success":true,"stats":{"activeTr…
+1:44:38 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:44:38 PM [express] GET /api/chat/oracle/status 304 in 0ms :: {"status":"active","message":"Oracle …
+1:44:49 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:44:53 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:44:59 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+[2026-03-25T13:44:59.860Z] WAID: 🌀 WaidBot cycle started...
+[2026-03-25T13:45:00.146Z] WAID: ✅ Action Executed: BUY_ETH | Result: FAILED
+[2026-03-25T13:45:00.146Z] WAID: 🌀 WaidBot cycle completed.
+
+1:45:07 PM [express] GET /api/platform/live-stats 200 in 131ms :: {"success":true,"stats":{"activeTr…
+1:45:09 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:45:10 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:45:20 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:45:25 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+Executing intervention: pause_trading on waidbot_alpha
+💔 Entity marked as dead: waidbot_alpha
+Executing intervention: pause_trading on waidbot_pro_beta
+💔 Entity marked as dead: waidbot_pro_beta
+Executing intervention: pause_trading on autonomous_gamma
+💔 Entity marked as dead: autonomous_gamma
+Executing intervention: pause_trading on full_engine_omega
+💔 Entity marked as dead: full_engine_omega
+Executing intervention: pause_trading on smai_chinnikstah_delta
+💔 Entity marked as dead: smai_chinnikstah_delta
+Executing intervention: pause_trading on nwaora_chigozie_epsilon
+💔 Entity marked as dead: nwaora_chigozie_epsilon
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+🛑 KonsAi intervention executed: pause_trading on waidbot_alpha
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on waidbot_pro_beta
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on autonomous_gamma
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on full_engine_omega
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on smai_chinnikstah_delta
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on nwaora_chigozie_epsilon
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🔄 Message send attempt 1/4 failed: msg_1774446327483_j4aq6d8m0
+🔄 Message send attempt 1/4 failed: msg_1774446327483_50i3bda2f
+🔄 Message send attempt 2/4 failed: msg_1774446327483_50i3bda2f
+1:45:56 PM [express] GET /api/mode/current 200 in 2ms :: {"success":true,"mode":"demo"}
+1:45:56 PM [express] GET /api/user-auth/me 401 in 0ms :: {"success":false,"message":"Invalid token"}
+1:45:56 PM [express] GET /api/platform/live-stats 200 in 127ms :: {"success":true,"stats":{"activeTr…
+1:45:57 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:45:57 PM [express] GET /api/kons-powa/stats 200 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:45:57 PM [express] GET /api/chat/oracle/status 200 in 1ms :: {"status":"active","message":"Oracle …
+1:45:57 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:45:57 PM [express] GET /api/platform/exchange-status 200 in 100ms :: {"exchanges":[{"name":"Binanc…
+1:45:57 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+🔄 Message send attempt 1/4 failed: msg_1774446357482_4ppqjexw3
+🔄 Message send attempt 1/4 failed: msg_1774446357482_17tec3npr
+🔄 Message send attempt 1/4 failed: msg_1774446357482_5l1jhbvgy
+🔄 Message send attempt 2/4 failed: msg_1774446357482_4ppqjexw3
+🔄 Message send attempt 2/4 failed: msg_1774446357482_17tec3npr
+🔄 Message send attempt 3/4 failed: msg_1774446357482_4ppqjexw3
+1:46:07 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…

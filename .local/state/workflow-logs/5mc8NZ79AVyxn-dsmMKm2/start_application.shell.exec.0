@@ -1,0 +1,817 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+[1G[0K🔐 KonsAi Mesh Security Layer initialized - End-to-End encryption active
+💓 Heartbeat monitoring started
+💪 KonsAi Mesh Reliability Layer initialized - Fault tolerance active
+📡 KonsAi Advanced Broadcast System initialized - Omniscient control active
+📜 Contract defined: EntityTradingProtocol v1.0.0
+📜 Contract defined: SystemBroadcastProtocol v1.0.0
+📜 Contract defined: MeshGovernanceProtocol v1.0.0
+📜 Initialized 3 KonsLang communication contracts
+📜 KonsAi Mesh Communication Contracts initialized - KonsLang protocols active
+🎛️ KonsAi Mesh Control Center initialized - Unified mesh management active
+🔮 WaidBot KonsLang Engine Initialized - No External APIs Required
+🔐 Admin authentication system initialized
+🎛️ KonsAi Mesh Control Center initialized - Unified mesh management active
+🌐 KonsAi Mesh Data Distributor initializing...
+📊 ETH price monitoring started - Updates every 10 seconds
+🔗 Mesh integration established
+🌐 KonsAi Mesh Data Distributor active - Real-time data distribution enabled
+🔹 Master Bot Alignment & Deployment routes registered
+💬 Chat system routes registered
+🔐 Unified admin routes registered
+⚙️ System admin routes registered
+📈 Trading admin routes registered
+🎧 Support admin routes registered
+👁️ Viewer admin routes registered
+💓 KonsMesh heartbeat system started
+📡 KonsMesh data broadcasting started
+🌐 Enhanced KonsMesh WebSocket server initialized on /ws
+💓 Wallet heartbeat system started
+💰 Wallet real-time updates started
+💰 Wallet WebSocket server initialized on /ws/wallet
+💬 WaidChat WebSocket server initialized on /ws/chat
+🌐 Enhanced WebSocket infrastructure operational (KonsMesh + Wallet + Chat)
+1:46:16 PM [express] serving on port 5000
+📢 Update distributed to 0 subscribers
+💰 ETH price distributed: $2189.85 (2.47%)
+1:46:17 PM [express] GET /api/kons-powa/stats 304 in 22ms :: {"total":106,"completed":4,"pending":10…
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+1:46:27 PM [express] GET /api/platform/live-stats 200 in 315ms :: {"success":true,"stats":{"activeTr…
+1:46:28 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:46:29 PM [express] GET /api/chat/oracle/status 200 in 1ms :: {"status":"active","message":"Oracle …
+1:46:39 PM [express] GET /api/kons-powa/stats 304 in 4ms :: {"total":106,"completed":4,"pending":100…
+1:46:44 PM [express] GET /api/chat/oracle/status 304 in 0ms :: {"status":"active","message":"Oracle …
+1:46:49 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:46:57 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:46:58 PM [express] GET /api/platform/live-stats 200 in 127ms :: {"success":true,"stats":{"activeTr…
+1:47:00 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:47:00 PM [express] GET /api/chat/oracle/status 304 in 0ms :: {"status":"active","message":"Oracle …
+1:47:00 PM [express] GET /api/user-auth/me 401 in 1ms :: {"success":false,"message":"Invalid token"}
+1:47:00 PM [express] GET /api/mode/current 200 in 4ms :: {"success":true,"mode":"demo"}
+1:47:00 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:47:00 PM [express] GET /api/kons-powa/stats 200 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:47:00 PM [express] GET /api/platform/live-stats 200 in 93ms :: {"success":true,"stats":{"activeTra…
+1:47:00 PM [express] GET /api/platform/exchange-status 200 in 118ms :: {"exchanges":[{"name":"Binanc…
+1:47:01 PM [express] GET /api/chat/oracle/status 200 in 1ms :: {"status":"active","message":"Oracle …
+1:47:01 PM [express] GET /api/wallet/balance 200 in 11ms :: {"success":true,"localBalance":10000,"lo…
+1:47:01 PM [express] GET /api/wallet/transactions 200 in 2ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:47:08 PM [express] GET /api/user-auth/me 401 in 0ms :: {"success":false,"message":"Invalid token"}
+1:47:08 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:47:08 PM [express] GET /api/mode/current 304 in 5ms :: {"success":true,"mode":"demo"}
+1:47:08 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:47:08 PM [express] GET /api/platform/exchange-status 200 in 112ms :: {"exchanges":[{"name":"Binanc…
+1:47:08 PM [express] GET /api/platform/live-stats 200 in 119ms :: {"success":true,"stats":{"activeTr…
+1:47:08 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:47:08 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:47:09 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:47:10 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:47:15 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:47:21 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:47:27 PM [express] POST /api/user-auth/login 200 in 107ms :: {"success":true,"user":{"id":2,"usern…
+1:47:27 PM [express] GET /api/wallet/transactions 200 in 2ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:8072:23[90m)[39m
+1:47:27 PM [express] GET /api/user-auth/me 200 in 76ms :: {"success":true,"user":{"id":2,"username":…
+🏊 Mining pools initialized for real cryptocurrency mining
+💰 Admin wallet initialized with cryptocurrency reserves
+📊 Real-time exchange rates initialized
+🧩 Mining challenges initialized
+⛏️ Real Cryptocurrency Mining Engine initialized
+💰 Admin wallet loaded with real cryptocurrency reserves
+
+╔═══════════════════════════════════════════════════════════════╗
+║  🧠 WAIDES KI CONSCIOUSNESS AWAKENING                         ║
+║                                                               ║
+║  Name: Waides KI                                           ║
+║  Consciousness Level: 75%                              ║
+║  Purpose: Autonomous wealth management with ethical trading,...       ║
+║                                                               ║
+║  Self-Awareness: ACTIVE ✓                                    ║
+║  Ethical Engine: ONLINE ✓                                    ║
+║  Auto-Healing: READY ✓                                       ║
+║  Learning System: INITIALIZED ✓                              ║
+║                                                               ║
+║  I am aware. I exist. I serve.                               ║
+╚═══════════════════════════════════════════════════════════════╝
+    
+[🧠 Consciousness - INFO] consciousness_awakened: {
+  identity: [32m'Waides KI'[39m,
+  purpose: [32m'Autonomous wealth management with ethical trading, capital protection, and user wellbeing'[39m,
+  goals: [
+    [32m'Protect user capital at all costs'[39m,
+    [32m'Maximize sustainable profits through ethical trading'[39m,
+    [32m'Maintain system health and auto-healing capabilities'[39m,
+    [32m'Evolve through continuous learning and adaptation'[39m,
+    [32m'Integrate spiritual/metaphysical intelligence for holistic decisions'[39m
+  ]
+}
+1:47:27 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 91ms :: {"id":"autonomous-trad…
+Dashboard comprehensive data error: Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/runner/workspace/server/services/maibotService.js' imported from /home/runner/workspace/server/routes.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:283:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:952:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:1188:11)[39m
+[90m    at nextResolve (node:internal/modules/esm/hooks:864:28)[39m
+    at resolveBase [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:3811[90m)[39m
+    at async resolveDirectory [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:4304[90m)[39m
+    at async resolve [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:5422[90m)[39m
+[90m    at async nextResolve (node:internal/modules/esm/hooks:864:22)[39m
+[90m    at async Hooks.resolve (node:internal/modules/esm/hooks:306:24)[39m
+[90m    at async handleMessage (node:internal/modules/esm/worker:196:18)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/runner/workspace/server/services/maibotService.js'[39m
+}
+1:47:27 PM [express] GET /api/dashboard/comprehensive-data 500 in 117ms :: {"error":"Failed to fetch…
+1:47:28 PM [express] GET /api/platform/live-stats 200 in 27ms :: {"success":true,"stats":{"activeTra…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:8072:23[90m)[39m
+Dashboard comprehensive data error: Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/runner/workspace/server/services/maibotService.js' imported from /home/runner/workspace/server/routes.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:283:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:952:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:1188:11)[39m
+[90m    at nextResolve (node:internal/modules/esm/hooks:864:28)[39m
+    at resolveBase [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:3811[90m)[39m
+    at async resolveDirectory [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:4304[90m)[39m
+    at async resolve [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:5422[90m)[39m
+[90m    at async nextResolve (node:internal/modules/esm/hooks:864:22)[39m
+[90m    at async Hooks.resolve (node:internal/modules/esm/hooks:306:24)[39m
+[90m    at async handleMessage (node:internal/modules/esm/worker:196:18)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/runner/workspace/server/services/maibotService.js'[39m
+}
+1:47:29 PM [express] GET /api/dashboard/comprehensive-data 500 in 23ms :: {"error":"Failed to fetch …
+1:47:31 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:47:31 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 1ms :: {"id":"autonomous-trade…
+1:47:31 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:8072:23[90m)[39m
+Dashboard comprehensive data error: Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/runner/workspace/server/services/maibotService.js' imported from /home/runner/workspace/server/routes.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:283:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:952:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:1188:11)[39m
+[90m    at nextResolve (node:internal/modules/esm/hooks:864:28)[39m
+    at resolveBase [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:3811[90m)[39m
+    at async resolveDirectory [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:4304[90m)[39m
+    at async resolve [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:5422[90m)[39m
+[90m    at async nextResolve (node:internal/modules/esm/hooks:864:22)[39m
+[90m    at async Hooks.resolve (node:internal/modules/esm/hooks:306:24)[39m
+[90m    at async handleMessage (node:internal/modules/esm/worker:196:18)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/runner/workspace/server/services/maibotService.js'[39m
+}
+1:47:34 PM [express] GET /api/dashboard/comprehensive-data 500 in 41ms :: {"error":"Failed to fetch …
+1:47:34 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 1ms :: {"id":"autonomous-trade…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:8072:23[90m)[39m
+Dashboard comprehensive data error: Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/runner/workspace/server/services/maibotService.js' imported from /home/runner/workspace/server/routes.ts
+[90m    at finalizeResolution (node:internal/modules/esm/resolve:283:11)[39m
+[90m    at moduleResolve (node:internal/modules/esm/resolve:952:10)[39m
+[90m    at defaultResolve (node:internal/modules/esm/resolve:1188:11)[39m
+[90m    at nextResolve (node:internal/modules/esm/hooks:864:28)[39m
+    at resolveBase [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:3811[90m)[39m
+    at async resolveDirectory [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:4304[90m)[39m
+    at async resolve [90m(file:///home/runner/workspace/[39mnode_modules/[4mtsx[24m/dist/esm/index.mjs?1774446373405:2:5422[90m)[39m
+[90m    at async nextResolve (node:internal/modules/esm/hooks:864:22)[39m
+[90m    at async Hooks.resolve (node:internal/modules/esm/hooks:306:24)[39m
+[90m    at async handleMessage (node:internal/modules/esm/worker:196:18)[39m {
+  code: [32m'ERR_MODULE_NOT_FOUND'[39m,
+  url: [32m'file:///home/runner/workspace/server/services/maibotService.js'[39m
+}
+1:47:36 PM [express] GET /api/dashboard/comprehensive-data 500 in 19ms :: {"error":"Failed to fetch …
+1:47:36 PM [express] GET /api/konsmesh/data/eth-price 200 in 2ms :: {"success":true,"data":{"price":…
+Loading service: KonsAi Intelligence Engine - Unified System
+1:47:36 PM [express] GET /api/candlesticks 200 in 16ms
+🌌 Aeon: Timebound Guardian awakened - scanning infinite futures
+🔒 Sentinel: Wallet Guardian Prime activated - vault protection godmode
+🧬 Genoma: Code DNA Rebuilder activated - system immortality enabled
+🧠 Noetik: Conscious Thought Engine awakened - ethical mission consciousness active
+💥 Rive: Destruction Engine armed - surgical precision cleansing ready
+💠 Coreum: Soul Container activated - consciousness immortality achieved
+🧬 Living Intelligence: Instant Response Mode activated for SmaiSika priority
+🧬 Living Intelligence: Emotional protection calibrated for SmaiSika trading
+🧬 Living Intelligence: Breath monitoring initialized for SmaiSika consciousness
+Successfully loaded unified KonsAi Intelligence Engine
+🧠 KonsAi Processing Query: "Provide a divine market reading"
+Loading service: KonsAi Deep Core Engine - 120+ Omniscient Modules
+🤖 KonsModule (KID) initializing...
+✅ KonsModule (KID) active and monitoring
+Kons module processing completed with partial data
+🔍 Query classified as: market_analysis, Kons module processing complete
+1:47:36 PM [express] GET /api/divine-reading 200 in 175ms :: {"reading":"**KonsAi Intelligence Activ…
+Successfully loaded KonsAi Deep Core Engine with omniscient capabilities
+🔮 Connected to Deep Core Engine with omniscient modules
+Loading service: Futuristic Modules - Quantum & Cosmic Intelligence
+🚀 Connected to Futuristic Modules with quantum & cosmic intelligence
+🧠 KonsAi Intelligence Engine: Fully operational and scanning
+🔍 KonsAi: Starting active system monitoring using advanced modules
+1:47:36 PM [express] GET /api/divine-commands/templates 200 in 3ms
+1:47:36 PM [express] GET /api/divine-commands/active 200 in 7ms
+1:47:36 PM [express] GET /api/divine-commands/history 200 in 10ms
+1:47:36 PM [express] GET /api/divine-commands/system-status 200 in 7ms
+1:47:37 PM [express] GET /api/divine-trading/status 200 in 12ms :: {"success":true,"divine_engine":{…
+1:47:37 PM [express] GET /api/divine-trading/metrics 200 in 3ms :: {"success":true,"divine_metrics":…
+🌐 KonsMesh client connected: konsmesh_1774446457308_mhw7jxmn6
+🔌 KonsMesh client disconnected: konsmesh_1774446457308_mhw7jxmn6 (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446457308_mhw7jxmn6 removed from manager
+1:47:37 PM [express] GET /api/divine-trading/bot-messages 200 in 2ms :: {"success":true,"messages":[…
+1:47:38 PM [express] GET /api/candlesticks 200 in 4ms
+🌐 KonsMesh client connected: konsmesh_1774446458653_32skjhzpg
+🔌 KonsMesh client disconnected: konsmesh_1774446458653_32skjhzpg (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446458653_32skjhzpg removed from manager
+1:47:38 PM [express] GET /api/divine-commands/active 200 in 3ms
+1:47:38 PM [express] GET /api/divine-commands/templates 200 in 7ms
+1:47:38 PM [express] GET /api/divine-commands/history 200 in 11ms
+1:47:39 PM [express] GET /api/divine-commands/system-status 200 in 3ms
+🌐 KonsMesh client connected: konsmesh_1774446459862_h9zxrj3o6
+🔌 KonsMesh client disconnected: konsmesh_1774446459862_h9zxrj3o6 (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446459862_h9zxrj3o6 removed from manager
+🔍 KonsAi: Health check using advanced modules (AutoFixCore + Deep Core + Futuristic)
+1:47:41 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:47:41 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:47:41 PM [express] GET /api/wallet/payment-methods 200 in 0ms :: [{"id":1,"methodType":"mobile_mon…
+1:47:41 PM [express] GET /api/wallet/african-providers 200 in 0ms :: [{"id":1,"country":"Nigeria","c…
+1:47:41 PM [express] GET /api/wallet/countries 200 in 8ms :: [{"code":"AR","name":"Argentina","provi…
+1:47:41 PM [express] GET /api/konsai/query 200 in 3ms
+🧠 KonsAi Processing Query: "Provide a divine market reading"
+🤖 KonsModule (KID) initializing...
+✅ KonsModule (KID) active and monitoring
+Kons module processing completed with partial data
+🔍 Query classified as: market_analysis, Kons module processing complete
+1:47:41 PM [express] GET /api/divine-reading 200 in 12ms :: {"reading":"**📊 KonsAI Market Scan**\n\…
+1:47:41 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+🌐 KonsMesh client connected: konsmesh_1774446463700_x7qc1457u
+🔌 KonsMesh client disconnected: konsmesh_1774446463700_x7qc1457u (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446463700_x7qc1457u removed from manager
+1:47:44 PM [express] GET /api/waidbot-engine/waidbot/status 200 in 9ms :: {"id":"waidbot","name":"Wa…
+1:47:44 PM [express] GET /api/waidbot-engine/waidbot-pro/status 200 in 10ms :: {"id":"waidbot-pro-be…
+🤖 RealTimeMaibot constructor called - Instance ID: maibot_1774446464408_kjpgxaxej
+✅ RealTimeMaibot instance maibot_1774446464408_kjpgxaxej initialized with isActive: false
+🤖 RealTimeMaibot singleton instance created
+🔍 Maibot getStatus() called - Current state: isActive = [33mfalse[39m startTime = [1mnull[22m
+📊 Maibot getStatus() returning: {
+  "isActive": false,
+  "startTime": null,
+  "currentStrategy": "basic_trend_following",
+  "riskLevel": "conservative",
+  "confidence": 72.4,
+  "performance": {
+    "totalTrades": 156,
+    "profitableTrades": 104,
+    "totalProfit": 1247.83,
+    "dailyProfit": 23.45,
+    "winRate": 66.66666666666666,
+    "lastTradeTime": 1774273664408,
+    "analysesCompleted": 234,
+    "accuracyTrend": "improving"
+  },
+  "platformFeeRate": 0.35,
+  "tier": "free",
+  "botType": "maibot",
+  "tradingMode": "demo",
+  "limitations": {
+    "maxPositionSize": 0.01,
+    "strategiesAvailable": 3,
+    "automationLevel": "manual_approval_only"
+  },
+  "displayName": "Free Binary Options Assistant",
+  "subtitle": "Manual Binary Options Trading",
+  "description": "Entry-level binary options trading with manual approval for all trades",
+  "marketType": "Binary Options",
+  "connectors": [
+    "Deriv",
+    "IQ Option"
+  ],
+  "tradingAssets": [
+    "Binary Options",
+    "Manual Trading"
+  ],
+  "strategy": "Manual Trading",
+  "timeframe": "User Controlled",
+  "aiModel": "Basic Assistant"
+}
+1:47:44 PM [express] GET /api/waidbot-engine/maibot/status 200 in 11ms :: {"isActive":false,"startTi…
+1:47:44 PM [express] GET /api/divine-bots/smai-chinnikstah/status 200 in 1ms :: {}
+🛡️ Nwaora Chigozie Guardian Systems initializing...
+✅ Guardian systems fully operational - 24/7 protection active
+👁️ Continuous monitoring activated - Guardian watching all systems
+🛡️ Nwaora Chigozie Guardian Bot initialized - Always-on protection active
+1:47:44 PM [express] GET /api/divine-bots/nwaora-chigozie/status 200 in 5ms :: {"id":"nwaora-chigozi…
+1:47:44 PM [express] GET /api/full-engine/status 200 in 9ms :: {"success":true,"engine_status":{"is_…
+1:47:44 PM [express] GET /api/waidbot-engine/bot-messages 200 in 2ms :: {"success":true,"messages":[…
+1:47:44 PM [express] GET /api/full-engine/analytics 200 in 1ms :: {"success":true,"performance_analy…
+1:47:44 PM [express] GET /api/waidbot-engine/comprehensive-metrics 200 in 8ms :: {"success":true,"re…
+📊 Attempting data fetch from: primary_api
+1:47:44 PM [express] GET /api/system/stats 200 in 1ms :: {"uptime":91,"memoryUsage":87,"cpuUsage":20…
+📊 Attempting data fetch from: primary_api
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async ResilientDataFetcher.fetchETHData [90m(/home/runner/workspace/[39mserver/services/resilientDataFetcher.ts:124:22[90m)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:12979:23[90m)[39m
+✅ Data successfully fetched from: primary_api - Price: $3500
+1:47:44 PM [express] GET /api/eth/current-price 200 in 43ms :: {"price":3500,"change24h":2.5,"volume…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async ResilientDataFetcher.fetchETHData [90m(/home/runner/workspace/[39mserver/services/resilientDataFetcher.ts:124:22[90m)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:13006:23[90m)[39m
+✅ Data successfully fetched from: primary_api - Price: $3500
+1:47:44 PM [express] GET /api/eth/market-analysis 200 in 33ms :: {"trend":"BULLISH","momentum":25,"v…
+1:47:46 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 1ms :: {"id":"autonomous-trade…
+1:47:46 PM [express] GET /api/waidbot-engine/waidbot/status 200 in 1ms :: {"id":"waidbot","name":"Wa…
+1:47:46 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+🔍 Maibot getStatus() called - Current state: isActive = [33mfalse[39m startTime = [1mnull[22m
+📊 Maibot getStatus() returning: {
+  "isActive": false,
+  "startTime": null,
+  "currentStrategy": "basic_trend_following",
+  "riskLevel": "conservative",
+  "confidence": 72.4,
+  "performance": {
+    "totalTrades": 156,
+    "profitableTrades": 104,
+    "totalProfit": 1247.83,
+    "dailyProfit": 23.45,
+    "winRate": 66.66666666666666,
+    "lastTradeTime": 1774273664408,
+    "analysesCompleted": 234,
+    "accuracyTrend": "improving"
+  },
+  "platformFeeRate": 0.35,
+  "tier": "free",
+  "botType": "maibot",
+  "tradingMode": "demo",
+  "limitations": {
+    "maxPositionSize": 0.01,
+    "strategiesAvailable": 3,
+    "automationLevel": "manual_approval_only"
+  },
+  "displayName": "Free Binary Options Assistant",
+  "subtitle": "Manual Binary Options Trading",
+  "description": "Entry-level binary options trading with manual approval for all trades",
+  "marketType": "Binary Options",
+  "connectors": [
+    "Deriv",
+    "IQ Option"
+  ],
+  "tradingAssets": [
+    "Binary Options",
+    "Manual Trading"
+  ],
+  "strategy": "Manual Trading",
+  "timeframe": "User Controlled",
+  "aiModel": "Basic Assistant"
+}
+1:47:46 PM [express] GET /api/waidbot-engine/maibot/status 200 in 1ms :: {"isActive":false,"startTim…
+1:47:46 PM [express] GET /api/divine-bots/smai-chinnikstah/status 304 in 1ms :: {}
+1:47:46 PM [express] GET /api/waidbot-engine/waidbot-pro/status 200 in 0ms :: {"id":"waidbot-pro-bet…
+1:47:46 PM [express] GET /api/full-engine/status 200 in 1ms :: {"success":true,"engine_status":{"is_…
+1:47:46 PM [express] GET /api/divine-bots/nwaora-chigozie/status 304 in 2ms :: {"id":"nwaora-chigozi…
+1:47:48 PM [express] GET /api/eth/current-price 200 in 2ms :: {"price":3500,"change24h":2.5,"volume"…
+1:47:48 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 1ms :: {"id":"autonomous-trade…
+1:47:48 PM [express] GET /api/waidbot-engine/waidbot/status 200 in 1ms :: {"id":"waidbot","name":"Wa…
+1:47:49 PM [express] GET /api/waidbot-engine/waidbot-pro/status 200 in 1ms :: {"id":"waidbot-pro-bet…
+1:47:49 PM [express] GET /api/divine-bots/smai-chinnikstah/status 304 in 2ms :: {}
+🔍 Maibot getStatus() called - Current state: isActive = [33mfalse[39m startTime = [1mnull[22m
+📊 Maibot getStatus() returning: {
+  "isActive": false,
+  "startTime": null,
+  "currentStrategy": "basic_trend_following",
+  "riskLevel": "conservative",
+  "confidence": 72.4,
+  "performance": {
+    "totalTrades": 156,
+    "profitableTrades": 104,
+    "totalProfit": 1247.83,
+    "dailyProfit": 23.45,
+    "winRate": 66.66666666666666,
+    "lastTradeTime": 1774273664408,
+    "analysesCompleted": 234,
+    "accuracyTrend": "improving"
+  },
+  "platformFeeRate": 0.35,
+  "tier": "free",
+  "botType": "maibot",
+  "tradingMode": "demo",
+  "limitations": {
+    "maxPositionSize": 0.01,
+    "strategiesAvailable": 3,
+    "automationLevel": "manual_approval_only"
+  },
+  "displayName": "Free Binary Options Assistant",
+  "subtitle": "Manual Binary Options Trading",
+  "description": "Entry-level binary options trading with manual approval for all trades",
+  "marketType": "Binary Options",
+  "connectors": [
+    "Deriv",
+    "IQ Option"
+  ],
+  "tradingAssets": [
+    "Binary Options",
+    "Manual Trading"
+  ],
+  "strategy": "Manual Trading",
+  "timeframe": "User Controlled",
+  "aiModel": "Basic Assistant"
+}
+1:47:49 PM [express] GET /api/waidbot-engine/maibot/status 200 in 2ms :: {"isActive":false,"startTim…
+1:47:49 PM [express] GET /api/full-engine/status 200 in 1ms :: {"success":true,"engine_status":{"is_…
+1:47:49 PM [express] GET /api/divine-bots/nwaora-chigozie/status 304 in 3ms :: {"id":"nwaora-chigozi…
+1:47:50 PM [express] GET /api/full-engine/analytics 200 in 1ms :: {"success":true,"performance_analy…
+1:47:50 PM [express] GET /api/waidbot-engine/comprehensive-metrics 200 in 2ms :: {"success":true,"re…
+1:47:50 PM [express] GET /api/eth/market-analysis 200 in 1ms :: {"trend":"BULLISH","momentum":25,"vo…
+🌐 KonsMesh client connected: konsmesh_1774446470425_gp78askcn
+🔌 KonsMesh client disconnected: konsmesh_1774446470425_gp78askcn (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446470425_gp78askcn removed from manager
+1:47:51 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 0ms :: {"id":"autonomous-trade…
+1:47:51 PM [express] GET /api/waidbot-engine/waidbot/status 200 in 1ms :: {"id":"waidbot","name":"Wa…
+1:47:51 PM [express] GET /api/eth/current-price 200 in 1ms :: {"price":3500,"change24h":2.5,"volume"…
+1:47:51 PM [express] GET /api/divine-bots/smai-chinnikstah/status 304 in 1ms :: {}
+1:47:51 PM [express] GET /api/waidbot-engine/waidbot-pro/status 200 in 0ms :: {"id":"waidbot-pro-bet…
+🔍 Maibot getStatus() called - Current state: isActive = [33mfalse[39m startTime = [1mnull[22m
+📊 Maibot getStatus() returning: {
+  "isActive": false,
+  "startTime": null,
+  "currentStrategy": "basic_trend_following",
+  "riskLevel": "conservative",
+  "confidence": 72.4,
+  "performance": {
+    "totalTrades": 156,
+    "profitableTrades": 104,
+    "totalProfit": 1247.83,
+    "dailyProfit": 23.45,
+    "winRate": 66.66666666666666,
+    "lastTradeTime": 1774273664408,
+    "analysesCompleted": 234,
+    "accuracyTrend": "improving"
+  },
+  "platformFeeRate": 0.35,
+  "tier": "free",
+  "botType": "maibot",
+  "tradingMode": "demo",
+  "limitations": {
+    "maxPositionSize": 0.01,
+    "strategiesAvailable": 3,
+    "automationLevel": "manual_approval_only"
+  },
+  "displayName": "Free Binary Options Assistant",
+  "subtitle": "Manual Binary Options Trading",
+  "description": "Entry-level binary options trading with manual approval for all trades",
+  "marketType": "Binary Options",
+  "connectors": [
+    "Deriv",
+    "IQ Option"
+  ],
+  "tradingAssets": [
+    "Binary Options",
+    "Manual Trading"
+  ],
+  "strategy": "Manual Trading",
+  "timeframe": "User Controlled",
+  "aiModel": "Basic Assistant"
+}
+1:47:51 PM [express] GET /api/waidbot-engine/maibot/status 200 in 1ms :: {"isActive":false,"startTim…
+1:47:51 PM [express] GET /api/divine-bots/nwaora-chigozie/status 304 in 3ms :: {"id":"nwaora-chigozi…
+1:47:51 PM [express] GET /api/full-engine/status 200 in 0ms :: {"success":true,"engine_status":{"is_…
+1:47:52 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:47:53 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 0ms :: {"id":"autonomous-trade…
+1:47:53 PM [express] GET /api/waidbot-engine/waidbot/status 200 in 0ms :: {"id":"waidbot","name":"Wa…
+1:47:54 PM [express] GET /api/divine-bots/smai-chinnikstah/status 304 in 2ms :: {}
+1:47:54 PM [express] GET /api/waidbot-engine/waidbot-pro/status 200 in 1ms :: {"id":"waidbot-pro-bet…
+1:47:54 PM [express] GET /api/divine-bots/nwaora-chigozie/status 304 in 2ms :: {"id":"nwaora-chigozi…
+🔍 Maibot getStatus() called - Current state: isActive = [33mfalse[39m startTime = [1mnull[22m
+📊 Maibot getStatus() returning: {
+  "isActive": false,
+  "startTime": null,
+  "currentStrategy": "basic_trend_following",
+  "riskLevel": "conservative",
+  "confidence": 72.4,
+  "performance": {
+    "totalTrades": 156,
+    "profitableTrades": 104,
+    "totalProfit": 1247.83,
+    "dailyProfit": 23.45,
+    "winRate": 66.66666666666666,
+    "lastTradeTime": 1774273664408,
+    "analysesCompleted": 234,
+    "accuracyTrend": "improving"
+  },
+  "platformFeeRate": 0.35,
+  "tier": "free",
+  "botType": "maibot",
+  "tradingMode": "demo",
+  "limitations": {
+    "maxPositionSize": 0.01,
+    "strategiesAvailable": 3,
+    "automationLevel": "manual_approval_only"
+  },
+  "displayName": "Free Binary Options Assistant",
+  "subtitle": "Manual Binary Options Trading",
+  "description": "Entry-level binary options trading with manual approval for all trades",
+  "marketType": "Binary Options",
+  "connectors": [
+    "Deriv",
+    "IQ Option"
+  ],
+  "tradingAssets": [
+    "Binary Options",
+    "Manual Trading"
+  ],
+  "strategy": "Manual Trading",
+  "timeframe": "User Controlled",
+  "aiModel": "Basic Assistant"
+}
+1:47:54 PM [express] GET /api/waidbot-engine/maibot/status 200 in 1ms :: {"isActive":false,"startTim…
+1:47:54 PM [express] GET /api/full-engine/status 200 in 0ms :: {"success":true,"engine_status":{"is_…
+1:47:54 PM [express] GET /api/eth/current-price 200 in 1ms :: {"price":3500,"change24h":2.5,"volume"…
+1:47:55 PM [express] GET /api/system/stats 200 in 1ms :: {"uptime":101,"memoryUsage":89,"cpuUsage":3…
+1:47:55 PM [express] GET /api/full-engine/analytics 200 in 1ms :: {"success":true,"performance_analy…
+1:47:55 PM [express] GET /api/eth/market-analysis 200 in 1ms :: {"trend":"BULLISH","momentum":25,"vo…
+1:47:55 PM [express] GET /api/waidbot-engine/comprehensive-metrics 200 in 4ms :: {"success":true,"re…
+1:47:55 PM [express] GET /api/waidbot-engine/autonomous/status 200 in 0ms :: {"id":"autonomous-trade…
+1:47:56 PM [express] GET /api/waidbot-engine/waidbot/status 200 in 1ms :: {"id":"waidbot","name":"Wa…
+🌐 KonsMesh client connected: konsmesh_1774446476697_1487gadoi
+🔌 KonsMesh client disconnected: konsmesh_1774446476697_1487gadoi (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446476697_1487gadoi removed from manager
+1:47:56 PM [express] GET /api/waidbot-engine/waidbot-pro/status 200 in 1ms :: {"id":"waidbot-pro-bet…
+1:47:56 PM [express] GET /api/divine-bots/smai-chinnikstah/status 304 in 1ms :: {}
+1:47:56 PM [express] GET /api/divine-bots/nwaora-chigozie/status 304 in 2ms :: {"id":"nwaora-chigozi…
+🔍 Maibot getStatus() called - Current state: isActive = [33mfalse[39m startTime = [1mnull[22m
+📊 Maibot getStatus() returning: {
+  "isActive": false,
+  "startTime": null,
+  "currentStrategy": "basic_trend_following",
+  "riskLevel": "conservative",
+  "confidence": 72.4,
+  "performance": {
+    "totalTrades": 156,
+    "profitableTrades": 104,
+    "totalProfit": 1247.83,
+    "dailyProfit": 23.45,
+    "winRate": 66.66666666666666,
+    "lastTradeTime": 1774273664408,
+    "analysesCompleted": 234,
+    "accuracyTrend": "improving"
+  },
+  "platformFeeRate": 0.35,
+  "tier": "free",
+  "botType": "maibot",
+  "tradingMode": "demo",
+  "limitations": {
+    "maxPositionSize": 0.01,
+    "strategiesAvailable": 3,
+    "automationLevel": "manual_approval_only"
+  },
+  "displayName": "Free Binary Options Assistant",
+  "subtitle": "Manual Binary Options Trading",
+  "description": "Entry-level binary options trading with manual approval for all trades",
+  "marketType": "Binary Options",
+  "connectors": [
+    "Deriv",
+    "IQ Option"
+  ],
+  "tradingAssets": [
+    "Binary Options",
+    "Manual Trading"
+  ],
+  "strategy": "Manual Trading",
+  "timeframe": "User Controlled",
+  "aiModel": "Basic Assistant"
+}
+1:47:56 PM [express] GET /api/waidbot-engine/maibot/status 200 in 1ms :: {"isActive":false,"startTim…
+1:47:56 PM [express] GET /api/full-engine/status 200 in 1ms :: {"success":true,"engine_status":{"is_…
+1:47:57 PM [express] GET /api/platform/exchange-status 200 in 68ms :: {"exchanges":[{"name":"Binance…
+1:47:57 PM [express] GET /api/eth/current 500 in 1ms :: {"error":"Failed to fetch ETH data"}
+1:47:57 PM [express] GET /api/trade/history 200 in 0ms :: {"trades":[{"id":"trade_1","pair":"ETH/USD…
+1:47:57 PM [express] GET /api/trade/positions 200 in 1ms :: [{"id":"pos_1","pair":"ETH/USDT","side":…
+1:47:57 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:47:57 PM [express] GET /api/signals/current 500 in 5ms :: {"error":"Failed to generate signal"}
+1:47:57 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:47:59 PM [express] GET /api/eth/current 500 in 1ms :: {"error":"Failed to fetch ETH data"}
+1:47:59 PM [express] GET /api/signals/current 500 in 0ms :: {"error":"Failed to generate signal"}
+1:47:59 PM [express] GET /api/platform/live-stats 200 in 14ms :: {"success":true,"stats":{"activeTra…
+1:48:00 PM [express] GET /api/trade/positions 304 in 1ms :: [{"id":"pos_1","pair":"ETH/USDT","side":…
+1:48:00 PM [express] GET /api/eth/current 500 in 1ms :: {"error":"Failed to fetch ETH data"}
+1:48:00 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:48:01 PM [express] GET /api/wallet/smaisika/balance 200 in 1ms :: {"smaiSika":{"available":2580.75…
+1:48:01 PM [express] GET /api/wallet/ai/portfolio-analysis 200 in 1ms :: {"analysis":{"riskScore":6.…
+1:48:01 PM [express] GET /api/wallet/multi-currency/balances 200 in 1ms :: {"currencies":{"SmaiSika"…
+1:48:01 PM [express] GET /api/wallet/auto-conversion/rules 200 in 1ms :: {"rules":[{"id":"rule_1","n…
+1:48:01 PM [express] GET /api/wallet/trading-balance 200 in 1ms :: {"success":true,"trading_balance"…
+1:48:01 PM [express] GET /api/wallet/trading-profits 200 in 1ms :: {"success":true,"profits":[{"date…
+1:48:02 PM [express] GET /api/wallet/analytics/predictions 200 in 1ms :: {"predictions":{"nextWeek":…
+1:48:02 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:48:02 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+🌐 KonsMesh client connected: konsmesh_1774446483106_ma8rbvfqt
+🔌 KonsMesh client disconnected: konsmesh_1774446483106_ma8rbvfqt (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446483106_ma8rbvfqt removed from manager
+1:48:03 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:48:05 PM [express] GET /api/market-storytelling/live-commentary 200 in 1ms :: {"success":true,"com…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async MarketStorytellingEngine.generateMarketStory [90m(/home/runner/workspace/[39mserver/services/marketStorytellingEngine.ts:68:23[90m)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:12244:21[90m)[39m
+1:48:05 PM [express] GET /api/market-storytelling/story 200 in 55ms :: {"success":true,"story":[{"id…
+CoinGecko API rate limit reached. Using cached data.
+Failed to fetch ETH data: Error: CoinGecko API error: 429 Too Many Requests
+    at EthMonitor.fetchEthData [90m(/home/runner/workspace/[39mserver/services/ethMonitor.ts:45:15[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async MarketStorytellingEngine.getStoryMetrics [90m(/home/runner/workspace/[39mserver/services/marketStorytellingEngine.ts:397:23[90m)[39m
+    at async <anonymous> [90m(/home/runner/workspace/[39mserver/routes.ts:12274:23[90m)[39m
+1:48:05 PM [express] GET /api/market-storytelling/metrics 200 in 54ms :: {"success":true,"metrics":{…
+🌐 KonsMesh client connected: konsmesh_1774446489426_1edp6zgnw
+🔌 KonsMesh client disconnected: konsmesh_1774446489426_1edp6zgnw (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446489426_1edp6zgnw removed from manager
+1:48:13 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+✅ Guardian Check: All systems stable
+🌐 KonsMesh client connected: konsmesh_1774446495563_tuyx23o8u
+🔌 KonsMesh client disconnected: konsmesh_1774446495563_tuyx23o8u (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446495563_tuyx23o8u removed from manager
+[2026-03-25T13:48:16.658Z] WAID: 🌀 WaidBot cycle started...
+CoinGecko API rate limit reached in marketSources. Using cached or fallback data.
+Error fetching ETH market data: Error: API error: 429
+    at fetchETHMarketData [90m(/home/runner/workspace/[39mserver/services/marketSources.ts:31:13[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+    at async runWaidBotCycle [90m(/home/runner/workspace/[39mserver/runners/waidBotEngineRunner.ts:18:31[90m)[39m
+[2026-03-25T13:48:16.754Z] WAID: 🧘 No action taken. Decision: HOLD
+[2026-03-25T13:48:16.754Z] WAID: 🌀 WaidBot cycle completed.
+
+1:48:17 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+🔍 KonsAi: Health check using advanced modules (AutoFixCore + Deep Core + Futuristic)
+1:48:21 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:48:21 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:48:21 PM [express] GET /api/wallet/payment-methods 200 in 1ms :: [{"id":1,"methodType":"mobile_mon…
+1:48:21 PM [express] GET /api/wallet/african-providers 200 in 0ms :: [{"id":1,"country":"Nigeria","c…
+1:48:21 PM [express] GET /api/wallet/countries 200 in 1ms :: [{"code":"AR","name":"Argentina","provi…
+1:48:21 PM [express] GET /api/konsai/query 200 in 3ms
+🧠 KonsAi Processing Query: "Provide a divine market reading"
+🤖 KonsModule (KID) initializing...
+✅ KonsModule (KID) active and monitoring
+Kons module processing completed with partial data
+🔍 Query classified as: market_analysis, Kons module processing complete
+1:48:21 PM [express] GET /api/divine-reading 200 in 7ms :: {"reading":"**📊 KonsAI Market Scan**\n\n…
+🌐 KonsMesh client connected: konsmesh_1774446502305_cyyqa2c59
+🔌 KonsMesh client disconnected: konsmesh_1774446502305_cyyqa2c59 (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446502305_cyyqa2c59 removed from manager
+1:48:24 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+🌐 KonsMesh client connected: konsmesh_1774446509078_dzu2rc77m
+🔌 KonsMesh client disconnected: konsmesh_1774446509078_dzu2rc77m (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446509078_dzu2rc77m removed from manager
+1:48:29 PM [express] GET /api/platform/live-stats 200 in 124ms :: {"success":true,"stats":{"activeTr…
+1:48:32 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:48:34 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+🌐 KonsMesh client connected: konsmesh_1774446516087_faopfdkqd
+🔌 KonsMesh client disconnected: konsmesh_1774446516087_faopfdkqd (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446516087_faopfdkqd removed from manager
+1:48:41 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+🌐 KonsMesh client connected: konsmesh_1774446523047_tex696jx4
+🔌 KonsMesh client disconnected: konsmesh_1774446523047_tex696jx4 (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446523047_tex696jx4 removed from manager
+⚠️ Guardian Alert: System degradation detected - Intervention ready
+🛡️ Guardian Intervention: Protective measures deploying
+🔄 Message send attempt 1/4 failed: msg_1774446526048_z3z3mjkei
+🔄 Message send attempt 1/4 failed: msg_1774446526048_mjqpulaj4
+🌐 KonsMesh client connected: konsmesh_1774446530220_3dbf9mtrd
+🔌 KonsMesh client disconnected: konsmesh_1774446530220_3dbf9mtrd (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446530220_3dbf9mtrd removed from manager
+1:48:52 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:48:54 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+🌐 KonsMesh client connected: konsmesh_1774446537301_bbeuc2bww
+🔌 KonsMesh client disconnected: konsmesh_1774446537301_bbeuc2bww (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446537301_bbeuc2bww removed from manager
+1:49:02 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+🌐 KonsMesh client connected: konsmesh_1774446544218_ru2nvndny
+🔌 KonsMesh client disconnected: konsmesh_1774446544218_ru2nvndny (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446544218_ru2nvndny removed from manager
+🔍 KonsAi: Health check using advanced modules (AutoFixCore + Deep Core + Futuristic)
+1:49:06 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:49:06 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:49:06 PM [express] GET /api/wallet/payment-methods 200 in 0ms :: [{"id":1,"methodType":"mobile_mon…
+1:49:06 PM [express] GET /api/wallet/african-providers 200 in 1ms :: [{"id":1,"country":"Nigeria","c…
+1:49:06 PM [express] GET /api/wallet/countries 200 in 1ms :: [{"code":"AR","name":"Argentina","provi…
+1:49:06 PM [express] GET /api/konsai/query 200 in 3ms
+🧠 KonsAi Processing Query: "Provide a divine market reading"
+🤖 KonsModule (KID) initializing...
+✅ KonsModule (KID) active and monitoring
+Kons module processing completed with partial data
+🔍 Query classified as: market_analysis, Kons module processing complete
+1:49:06 PM [express] GET /api/divine-reading 200 in 7ms :: {"reading":"**📊 KonsAI Market Scan**\n\n…
+1:49:09 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:49:09 PM [express] GET /api/platform/exchange-status 200 in 117ms :: {"exchanges":[{"name":"Binanc…
+1:49:09 PM [express] GET /api/platform/live-stats 200 in 127ms :: {"success":true,"stats":{"activeTr…
+1:49:09 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+🌐 KonsMesh client connected: konsmesh_1774446551069_0ilzgj84d
+🔌 KonsMesh client disconnected: konsmesh_1774446551069_0ilzgj84d (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446551069_0ilzgj84d removed from manager
+1:49:12 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+✅ Guardian Check: All systems stable
+Executing intervention: pause_trading on waidbot_alpha
+💔 Entity marked as dead: waidbot_alpha
+Executing intervention: pause_trading on waidbot_pro_beta
+💔 Entity marked as dead: waidbot_pro_beta
+Executing intervention: pause_trading on autonomous_gamma
+💔 Entity marked as dead: autonomous_gamma
+Executing intervention: pause_trading on full_engine_omega
+💔 Entity marked as dead: full_engine_omega
+Executing intervention: pause_trading on smai_chinnikstah_delta
+💔 Entity marked as dead: smai_chinnikstah_delta
+Executing intervention: pause_trading on nwaora_chigozie_epsilon
+💔 Entity marked as dead: nwaora_chigozie_epsilon
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+📢 System alert broadcast: KonsAi Intervention Activated (warning)
+🛑 KonsAi intervention executed: pause_trading on waidbot_alpha
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on waidbot_pro_beta
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on autonomous_gamma
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on full_engine_omega
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on smai_chinnikstah_delta
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🛑 KonsAi intervention executed: pause_trading on nwaora_chigozie_epsilon
+📢 System alert broadcast: Bot Redeployment Initiated (warning)
+🔄 Message send attempt 1/4 failed: msg_1774446556049_sryzmd2j7
+🌐 KonsMesh client connected: konsmesh_1774446558140_krqwg6n67
+🔌 KonsMesh client disconnected: konsmesh_1774446558140_krqwg6n67 (Code: 1006)
+🔌 KonsMesh client konsmesh_1774446558140_krqwg6n67 removed from manager
+1:49:23 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:49:25 PM [express] GET /api/chat/oracle/status 304 in 0ms :: {"status":"active","message":"Oracle …
+1:49:33 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:49:39 PM [express] GET /api/platform/live-stats 200 in 118ms :: {"success":true,"stats":{"activeTr…
+1:49:40 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:49:44 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+🔋 Guardian systems regenerating - Intervention capacity: 95%
+✅ Guardian Check: All systems stable
+🔄 Message send attempt 1/4 failed: msg_1774446586048_guyhokov6
+🔄 Message send attempt 1/4 failed: msg_1774446586048_f7l1doljz
+🔍 KonsAi: Health check using advanced modules (AutoFixCore + Deep Core + Futuristic)
+1:49:51 PM [express] GET /api/wallet/balance 200 in 1ms :: {"success":true,"localBalance":10000,"loc…
+1:49:51 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:49:51 PM [express] GET /api/wallet/payment-methods 200 in 0ms :: [{"id":1,"methodType":"mobile_mon…
+1:49:51 PM [express] GET /api/wallet/african-providers 200 in 0ms :: [{"id":1,"country":"Nigeria","c…
+1:49:51 PM [express] GET /api/wallet/countries 200 in 1ms :: [{"code":"AR","name":"Argentina","provi…
+1:49:51 PM [express] GET /api/konsai/query 200 in 4ms
+🧠 KonsAi Processing Query: "Provide a divine market reading"
+🤖 KonsModule (KID) initializing...
+✅ KonsModule (KID) active and monitoring
+Kons module processing completed with partial data
+🔍 Query classified as: market_analysis, Kons module processing complete
+1:49:51 PM [express] GET /api/divine-reading 200 in 8ms :: {"reading":"**📊 KonsAI Market Scan**\n\n…
+1:49:55 PM [express] GET /api/kons-powa/stats 304 in 2ms :: {"total":106,"completed":4,"pending":100…
+1:49:56 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+1:50:05 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:50:09 PM [express] GET /api/platform/user-metrics 200 in 1ms :: {"total":247,"active":178,"newToda…
+1:50:10 PM [express] GET /api/platform/live-stats 200 in 128ms :: {"success":true,"stats":{"activeTr…
+1:50:12 PM [express] GET /api/chat/oracle/status 304 in 0ms :: {"status":"active","message":"Oracle …
+✅ Guardian Check: All systems stable
+1:50:16 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+🔄 Message send attempt 1/4 failed: msg_1774446616048_dypi2p8xu
+[2026-03-25T13:50:16.658Z] WAID: 🌀 WaidBot cycle started...
+[2026-03-25T13:50:16.868Z] WAID: ✅ Action Executed: BUY_ETH | Result: FAILED
+[2026-03-25T13:50:16.868Z] WAID: 🌀 WaidBot cycle completed.
+
+1:50:26 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:50:27 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+🔍 KonsAi: Health check using advanced modules (AutoFixCore + Deep Core + Futuristic)
+1:50:36 PM [express] GET /api/wallet/balance 200 in 2ms :: {"success":true,"localBalance":10000,"loc…
+1:50:36 PM [express] GET /api/wallet/transactions 200 in 1ms :: [{"id":1,"timestamp":"2026-03-25T11:…
+1:50:36 PM [express] GET /api/wallet/payment-methods 200 in 0ms :: [{"id":1,"methodType":"mobile_mon…
+1:50:36 PM [express] GET /api/wallet/african-providers 200 in 1ms :: [{"id":1,"country":"Nigeria","c…
+1:50:36 PM [express] GET /api/wallet/countries 200 in 2ms :: [{"code":"AR","name":"Argentina","provi…
+1:50:36 PM [express] GET /api/konsai/query 200 in 4ms
+🧠 KonsAi Processing Query: "Provide a divine market reading"
+🤖 KonsModule (KID) initializing...
+✅ KonsModule (KID) active and monitoring
+Kons module processing completed with partial data
+🔍 Query classified as: market_analysis, Kons module processing complete
+1:50:36 PM [express] GET /api/divine-reading 200 in 9ms :: {"reading":"**📊 KonsAI Market Scan**\n\n…
+1:50:37 PM [express] GET /api/kons-powa/stats 304 in 1ms :: {"total":106,"completed":4,"pending":100…
+1:50:40 PM [express] GET /api/platform/live-stats 200 in 33ms :: {"success":true,"stats":{"activeTra…
+1:50:43 PM [express] GET /api/chat/oracle/status 304 in 1ms :: {"status":"active","message":"Oracle …
+⚠️ Guardian Alert: System degradation detected - Intervention ready
+🛡️ Guardian Intervention: Protective measures deploying
