@@ -55,32 +55,38 @@ const ProfessionalLanding = () => {
   const { user, isAuthenticated, logout } = useUserAuth();
   const [konsPowaActive, setKonsPowaActive] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const staticMode = import.meta.env.VITE_STATIC_SITE === 'true';
 
   // Fetch real-time platform statistics
   const { data: liveStatsData } = useQuery({
     queryKey: ['/api/platform/live-stats'],
-    refetchInterval: 30000
+    refetchInterval: 30000,
+    enabled: !staticMode,
   });
 
   const { data: userMetrics } = useQuery({
     queryKey: ['/api/platform/user-metrics'],
-    refetchInterval: 60000
+    refetchInterval: 60000,
+    enabled: !staticMode,
   });
 
   const { data: exchangeStatus } = useQuery({
     queryKey: ['/api/platform/exchange-status'],
-    refetchInterval: 120000
+    refetchInterval: 120000,
+    enabled: !staticMode,
   });
 
   // Fetch KonsPowa and KonsAI system data
   const { data: konsPowaStats } = useQuery({
     queryKey: ['/api/kons-powa/stats'],
-    refetchInterval: 10000
+    refetchInterval: 10000,
+    enabled: !staticMode,
   });
 
   const { data: konsaiStatus } = useQuery({
     queryKey: ['/api/chat/oracle/status'],
-    refetchInterval: 15000
+    refetchInterval: 15000,
+    enabled: !staticMode,
   });
 
   // Clean initialization effect

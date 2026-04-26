@@ -453,6 +453,10 @@ class MT5Connector {
     };
   }
 
+  async testConnection(): Promise<{ ok: boolean; reason?: string }> {
+    return this.connect();
+  }
+
   /**
    * Attempt to reconnect
    */
@@ -486,32 +490,4 @@ class MT5Connector {
 }
 
 export { MT5Connector };
-export default MT5Connector;
-      //   volume: params.volume,
-      //   sl: params.stopLoss,
-      //   tp: params.takeProfit,
-      //   comment: 'Waides KI Autonomous Trader'
-      // }
-
-      return {
-        success: true,
-        ticket: Date.now(), // Order ticket number
-        symbol: params.symbol,
-        volume: params.volume,
-        openPrice: params.action === 'BUY' ? 1.0852 : 1.0850
-      };
-    } catch (error) {
-      return { success: false, error: String(error) };
-    }
-  }
-
-  async testConnection(): Promise<{ ok: boolean; reason?: string }> {
-    return this.connect();
-  }
-
-  disconnect(): void {
-    this.connected = false;
-  }
-}
-
 export default MT5Connector;

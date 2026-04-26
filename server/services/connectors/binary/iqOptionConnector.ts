@@ -370,19 +370,3 @@ class IQOptionConnector {
 
 export { IQOptionConnector };
 export default IQOptionConnector;
-    } catch (error) {
-      return { success: false, error: String(error) };
-    }
-  }
-
-  async testConnection(): Promise<{ ok: boolean; reason?: string }> {
-    return this.connect();
-  }
-
-  disconnect(): void {
-    this.connected = false;
-    this.ssid = null;
-  }
-}
-
-export default IQOptionConnector;

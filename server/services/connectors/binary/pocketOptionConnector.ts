@@ -340,15 +340,3 @@ class PocketOptionConnector {
 
 export { PocketOptionConnector };
 export default PocketOptionConnector;
-  }
-
-  async testConnection(): Promise<{ ok: boolean; reason?: string }> {
-    return this.connect();
-  }
-
-  disconnect(): void {
-    this.connected = false;
-  }
-}
-
-export default PocketOptionConnector;

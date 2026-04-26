@@ -1,5 +1,13 @@
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import StaticGitHubPage from "./StaticGitHubPage";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+
+if (import.meta.env.VITE_STATIC_SITE === "true") {
+  root.render(<StaticGitHubPage />);
+} else {
+  import("./App").then(({ default: App }) => {
+    root.render(<App />);
+  });
+}

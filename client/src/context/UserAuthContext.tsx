@@ -30,8 +30,9 @@ interface UserAuthProviderProps {
 }
 
 export function UserAuthProvider({ children }: UserAuthProviderProps) {
+  const staticMode = import.meta.env.VITE_STATIC_SITE === 'true';
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('waides_user_auth_token');
+    return staticMode ? null : localStorage.getItem('waides_user_auth_token');
   });
   
   const [user, setUser] = useState<User | null>(null);
@@ -56,7 +57,7 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
       const data = await response.json();
       return data.user;
     },
-    enabled: !!token,
+    enabled: !!token && !staticMode,
     retry: false,
     staleTime: Infinity, // Never consider data stale - persistent session
     gcTime: Infinity, // Cache indefinitely (replaced cacheTime in v5)
@@ -68,6 +69,10 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async ({ email, password, rememberMe }: { email: string; password: string; rememberMe?: boolean }) => {
+      if (staticMode) {
+        throw new Error('Login requires the Waides KI backend API.');
+      }
+
       const response = await fetch('/api/user-auth/login', {
         method: 'POST',
         headers: {
@@ -99,6 +104,10 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
   // Register mutation
   const registerMutation = useMutation({
     mutationFn: async ({ username, email, password, confirmPassword }: { username: string; email: string; password: string; confirmPassword: string }) => {
+      if (staticMode) {
+        throw new Error('Registration requires the Waides KI backend API.');
+      }
+
       const response = await fetch('/api/user-auth/register', {
         method: 'POST',
         headers: {
@@ -128,6 +137,7 @@ export function UserAuthProvider({ children }: UserAuthProviderProps) {
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
+      if (staticMode) return;
       if (!token) return;
       
       await fetch('/api/user-auth/logout', {

@@ -1,4 +1,4 @@
-import { Switch, Route, Link, useLocation } from "wouter";
+import { Switch, Route, Link, useLocation, Router as WouterRouter } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -105,7 +105,7 @@ import ConnectorMonitoringPage from "@/pages/ConnectorMonitoringPage";
 
 import NotFound from "@/pages/not-found";
 
-function Router() {
+function AppRoutes() {
   const [location] = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
 
@@ -699,6 +699,11 @@ function Router() {
 }
 
 export default function App() {
+  const routeBase = (() => {
+    const basePath = new URL(import.meta.env.BASE_URL, window.location.href).pathname.replace(/\/$/, "");
+    return basePath === "" || basePath === "/" ? undefined : basePath;
+  })();
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -706,7 +711,9 @@ export default function App() {
           <UserAuthProvider>
             <SmaiWalletProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                <Router />
+                <WouterRouter base={routeBase}>
+                  <AppRoutes />
+                </WouterRouter>
                 <Toaster />
               </div>
             </SmaiWalletProvider>

@@ -34,8 +34,9 @@ interface AdminAuthProviderProps {
 }
 
 export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
+  const staticMode = import.meta.env.VITE_STATIC_SITE === 'true';
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('waides_admin_auth_token');
+    return staticMode ? null : localStorage.getItem('waides_admin_auth_token');
   });
   
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -60,13 +61,17 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
       const data = await response.json();
       return data.user;
     },
-    enabled: !!token,
+    enabled: !!token && !staticMode,
     retry: false,
   });
 
   // Admin login mutation
   const loginMutation = useMutation({
     mutationFn: async ({ email, password, rememberMe }: { email: string; password: string; rememberMe?: boolean }) => {
+      if (staticMode) {
+        throw new Error('Admin login requires the Waides KI backend API.');
+      }
+
       const response = await fetch('/api/admin-auth/login', {
         method: 'POST',
         headers: {
@@ -94,6 +99,7 @@ export function AdminAuthProvider({ children }: AdminAuthProviderProps) {
   // Admin logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
+      if (staticMode) return;
       if (!token) return;
       
       await fetch('/api/admin-auth/logout', {

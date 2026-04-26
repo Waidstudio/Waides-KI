@@ -338,29 +338,3 @@ class QuotexConnector {
 
 export { QuotexConnector };
 export default QuotexConnector;
-
-    try {
-      // TODO: Implement Quotex trade execution API
-      return {
-        success: true,
-        tradeId: `QTX_${Date.now()}`,
-        amount: params.amount,
-        payout: params.amount * 1.92, // 92% payout typical for Quotex
-        expiryTime: Date.now() + (params.expirationTime * 1000)
-      };
-    } catch (error) {
-      return { success: false, error: String(error) };
-    }
-  }
-
-  async testConnection(): Promise<{ ok: boolean; reason?: string }> {
-    return this.connect();
-  }
-
-  disconnect(): void {
-    this.authToken = null;
-    this.connected = false;
-  }
-}
-
-export default QuotexConnector;

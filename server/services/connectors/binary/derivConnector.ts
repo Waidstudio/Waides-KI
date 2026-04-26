@@ -530,26 +530,3 @@ export class DerivConnector {
 }
 
 export default DerivConnector;
-        buyPrice: params.stake,
-        payout: params.stake * 1.85, // 85% payout typical
-        expiryTime: Date.now() + (params.duration * 1000)
-      };
-    } catch (error) {
-      return { success: false, error: String(error) };
-    }
-  }
-
-  async testConnection(): Promise<{ ok: boolean; reason?: string }> {
-    return this.connect();
-  }
-
-  disconnect(): void {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-    this.connected = false;
-  }
-}
-
-export default DerivConnector;
