@@ -4,12 +4,12 @@
  * Handles: Binary Options, Forex/CFD, Spot Exchanges
  */
 
-import { DerivConnector, type DerivConfig, type BinaryTradeParams, type BinaryTradeResult } from './binary/derivConnector';
-import { QuotexConnector } from './binary/quotexConnector';
-import { PocketOptionConnector } from './binary/pocketOptionConnector';
-import { IQOptionConnector } from './binary/iqOptionConnector';
-import { MT5Connector } from './forex/mt5Connector';
-import { DerivForexConnector } from './forex/derivForexConnector';
+import { DerivConnector, type DerivConfig, type BinaryTradeParams, type BinaryTradeResult } from './connectors/binary/derivConnector';
+import { QuotexConnector } from './connectors/binary/quotexConnector';
+import { PocketOptionConnector } from './connectors/binary/pocketOptionConnector';
+import { IQOptionConnector } from './connectors/binary/iqOptionConnector';
+import { MT5Connector } from './connectors/forex/mt5Connector';
+import { DerivForexConnector } from './connectors/forex/derivForexConnector';
 
 export type BrokerType = 'deriv' | 'quotex' | 'pocketoption' | 'iqoption' | 'mt5' | 'deriv_forex' | 'binance' | 'coinbase';
 export type MarketType = 'binary' | 'forex' | 'spot';
